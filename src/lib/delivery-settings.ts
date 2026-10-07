@@ -8,39 +8,58 @@ import {
 export type { DeliveryZonePublic };
 
 export async function getDeliveryConfig(): Promise<DeliveryConfig> {
-  const row = await prisma.deliverySettings.upsert({
-    where: { id: "default" },
-    update: {},
-    create: { id: "default", ...defaultDeliveryConfig },
-  });
+  try {
+    const row = await prisma.deliverySettings.upsert({
+      where: { id: "default" },
+      update: {},
+      create: { id: "default", ...defaultDeliveryConfig },
+    });
 
-  return {
-    studioName: row.studioName,
-    includedKm: row.includedKm,
-    baseFee: row.baseFee,
-    midKm: row.midKm,
-    midFee: row.midFee,
-    maxKm: row.maxKm,
-    maxFee: row.maxFee,
-  };
+    return {
+      studioName: row.studioName,
+      includedKm: row.includedKm,
+      baseFee: row.baseFee,
+      midKm: row.midKm,
+      midFee: row.midFee,
+      maxKm: row.maxKm,
+      maxFee: row.maxFee,
+    };
+  } catch (error) {
+    console.error("getDeliveryConfig fallback", error);
+    return defaultDeliveryConfig;
+  }
 }
 
 export async function listActiveDeliveryZones(): Promise<DeliveryZonePublic[]> {
-  await ensureDefaultZones();
-  const rows = await prisma.deliveryZone.findMany({
-    where: { active: true },
-    orderBy: [{ sortOrder: "asc" }, { nameEn: "asc" }],
-  });
-  return rows.map((row) => ({
-    id: row.id,
-    nameEn: row.nameEn,
-    nameVi: row.nameVi,
-    km: row.km,
-    quoteOnly: row.quoteOnly,
-    noteEn: row.noteEn,
-    noteVi: row.noteVi,
-    sortOrder: row.sortOrder,
-  }));
+  try {
+    await ensureDefaultZones();
+    const rows = await prisma.deliveryZone.findMany({
+      where: { active: true },
+      orderBy: [{ sortOrder: "asc" }, { nameEn: "asc" }],
+    });
+    return rows.map((row) => ({
+      id: row.id,
+      nameEn: row.nameEn,
+      nameVi: row.nameVi,
+      km: row.km,
+      quoteOnly: row.quoteOnly,
+      noteEn: row.noteEn,
+      noteVi: row.noteVi,
+      sortOrder: row.sortOrder,
+    }));
+  } catch (error) {
+    console.error("listActiveDeliveryZones fallback", error);
+    return DEFAULT_ZONES.map((zone, index) => ({
+      id: `fallback-${index}`,
+      nameEn: zone.nameEn,
+      nameVi: zone.nameVi,
+      km: zone.km,
+      quoteOnly: "quoteOnly" in zone ? Boolean(zone.quoteOnly) : false,
+      noteEn: zone.noteEn,
+      noteVi: zone.noteVi,
+      sortOrder: zone.sortOrder,
+    }));
+  }
 }
 
 export async function listAllDeliveryZones() {
