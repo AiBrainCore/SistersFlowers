@@ -10,6 +10,10 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  // Keep SQLite + migrations available to serverless functions on Vercel
+  outputFileTracingIncludes: {
+    "/**": ["./prisma/**/*"],
+  },
 };
 
 export default nextConfig;

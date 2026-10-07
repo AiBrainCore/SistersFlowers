@@ -5,6 +5,8 @@ import { getDictionary } from "@/i18n/dictionaries";
 import { formatVnd } from "@/data/products";
 import { prisma } from "@/lib/db";
 
+export const dynamic = "force-dynamic";
+
 export default async function CheckoutSuccessPage({
   params,
   searchParams,
