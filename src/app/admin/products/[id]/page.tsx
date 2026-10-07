@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { AdminShell } from "@/app/admin/_shell";
 import { ProductForm } from "@/app/admin/products/product-form";
 import { getProductById } from "@/lib/products";
+import { getAdminT } from "@/lib/admin-locale";
 
 export default async function EditProductPage({
   params,
@@ -11,10 +12,11 @@ export default async function EditProductPage({
   const { id } = await params;
   const product = await getProductById(id);
   if (!product) notFound();
+  const { t } = await getAdminT();
 
   return (
-    <AdminShell title="Edit product">
-      <ProductForm product={product} />
+    <AdminShell title={t.products.editTitle}>
+      <ProductForm product={product} t={t} />
     </AdminShell>
   );
 }

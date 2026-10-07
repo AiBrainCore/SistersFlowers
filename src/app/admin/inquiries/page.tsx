@@ -1,45 +1,55 @@
 import { AdminShell } from "@/app/admin/_shell";
 import { updateInquiryStatusAction } from "@/app/admin/actions";
 import { prisma } from "@/lib/db";
+import { getAdminT } from "@/lib/admin-locale";
 
 export default async function AdminInquiriesPage() {
+  const { locale, t } = await getAdminT();
   const inquiries = await prisma.inquiry.findMany({
     orderBy: { createdAt: "desc" },
   });
 
   return (
-    <AdminShell title="Inquiries">
+    <AdminShell title={t.inquiries.title}>
       <div className="admin-card" style={{ padding: 0, overflow: "hidden" }}>
         <table className="admin-table">
           <thead>
             <tr>
-              <th>When</th>
-              <th>Type</th>
-              <th>Contact</th>
-              <th>Message</th>
-              <th>Status</th>
+              <th>{t.inquiries.when}</th>
+              <th>{t.inquiries.type}</th>
+              <th>{t.inquiries.contact}</th>
+              <th>{t.inquiries.message}</th>
+              <th>{t.common.status}</th>
             </tr>
           </thead>
           <tbody>
             {inquiries.length === 0 ? (
               <tr>
                 <td colSpan={5} style={{ padding: 24, opacity: 0.7 }}>
-                  No inquiries yet.
+                  {t.inquiries.empty}
                 </td>
               </tr>
             ) : (
               inquiries.map((row) => (
                 <tr key={row.id}>
                   <td style={{ whiteSpace: "nowrap", fontSize: 12 }}>
-                    {row.createdAt.toLocaleString()}
+                    {row.createdAt.toLocaleString(locale === "vi" ? "vi-VN" : "en-GB")}
                   </td>
                   <td>{row.variant}</td>
                   <td>
                     <strong>{row.name}</strong>
                     <div style={{ fontSize: 12 }}>{row.email}</div>
                     <div style={{ fontSize: 12 }}>{row.phone}</div>
-                    {row.hotel ? <div style={{ fontSize: 12 }}>Hotel: {row.hotel}</div> : null}
-                    {row.venue ? <div style={{ fontSize: 12 }}>Venue: {row.venue}</div> : null}
+                    {row.hotel ? (
+                      <div style={{ fontSize: 12 }}>
+                        {t.inquiries.hotel}: {row.hotel}
+                      </div>
+                    ) : null}
+                    {row.venue ? (
+                      <div style={{ fontSize: 12 }}>
+                        {t.inquiries.venue}: {row.venue}
+                      </div>
+                    ) : null}
                   </td>
                   <td style={{ maxWidth: 280, fontSize: 13, lineHeight: 1.5 }}>
                     {row.message}
@@ -53,7 +63,7 @@ export default async function AdminInquiriesPage() {
                         <option value="closed">closed</option>
                       </select>
                       <button type="submit" className="admin-btn secondary" style={{ marginTop: 8 }}>
-                        Update
+                        {t.common.update}
                       </button>
                     </form>
                   </td>

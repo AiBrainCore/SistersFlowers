@@ -10,6 +10,7 @@ import {
 } from "@/lib/delivery-settings";
 import { formatVnd } from "@/data/products";
 import { calcDeliveryFee } from "@/lib/delivery";
+import { getAdminT } from "@/lib/admin-locale";
 
 export default async function AdminDeliveryPage({
   searchParams,
@@ -19,27 +20,27 @@ export default async function AdminDeliveryPage({
   const config = await getDeliveryConfig();
   const zones = await listAllDeliveryZones();
   const { saved, zones: zonesSaved, error } = await searchParams;
+  const { locale, t } = await getAdminT();
 
   return (
-    <AdminShell title="Delivery">
+    <AdminShell title={t.delivery.title}>
       {saved ? (
-        <p style={{ marginBottom: 16, color: "#5c6b52" }}>Pricing rules saved.</p>
+        <p style={{ marginBottom: 16, color: "#5c6b52" }}>{t.delivery.pricingSaved}</p>
       ) : null}
       {zonesSaved ? (
-        <p style={{ marginBottom: 16, color: "#5c6b52" }}>Zones updated.</p>
+        <p style={{ marginBottom: 16, color: "#5c6b52" }}>{t.delivery.zonesUpdated}</p>
       ) : null}
       {error ? (
         <p style={{ marginBottom: 16, color: "#8b3a3a" }}>
-          Zone needs EN and VI names.
+          {t.delivery.zoneError}
         </p>
       ) : null}
 
       <h2 style={{ fontFamily: "serif", fontSize: 28, marginBottom: 12 }}>
-        Areas customers choose
+        {t.delivery.areasTitle}
       </h2>
       <p style={{ fontSize: 14, opacity: 0.75, maxWidth: 640, lineHeight: 1.6 }}>
-        Customers pick an area — they do not need kilometres. Fee = area km +
-        rules below. Mark “Quote only” for Other / not sure.
+        {t.delivery.areasIntro}
       </p>
 
       <div style={{ display: "grid", gap: 16, marginTop: 16 }}>
@@ -63,29 +64,30 @@ export default async function AdminDeliveryPage({
                 }}
               >
                 <strong style={{ fontSize: 14 }}>
-                  Preview fee: {fee === null ? "Quoted" : formatVnd(fee, "en")}
+                  {t.delivery.previewFee}:{" "}
+                  {fee === null ? t.delivery.quoted : formatVnd(fee, locale)}
                 </strong>
                 <button
                   formAction={deleteDeliveryZoneAction}
                   type="submit"
                   className="admin-btn secondary"
                 >
-                  Delete
+                  {t.common.delete}
                 </button>
               </div>
               <div className="admin-grid-2">
                 <label className="admin-field">
-                  <span>Name EN</span>
+                  <span>{t.common.nameEn}</span>
                   <input name="nameEn" required defaultValue={zone.nameEn} />
                 </label>
                 <label className="admin-field">
-                  <span>Name VI</span>
+                  <span>{t.common.nameVi}</span>
                   <input name="nameVi" required defaultValue={zone.nameVi} />
                 </label>
               </div>
               <div className="admin-grid-2">
                 <label className="admin-field">
-                  <span>Approx km</span>
+                  <span>{t.delivery.kmStudio}</span>
                   <input
                     name="km"
                     type="number"
@@ -95,7 +97,7 @@ export default async function AdminDeliveryPage({
                   />
                 </label>
                 <label className="admin-field">
-                  <span>Sort</span>
+                  <span>{t.common.sort}</span>
                   <input
                     name="sortOrder"
                     type="number"
@@ -105,11 +107,11 @@ export default async function AdminDeliveryPage({
               </div>
               <div className="admin-grid-2">
                 <label className="admin-field">
-                  <span>Note EN</span>
+                  <span>{t.delivery.noteEn}</span>
                   <input name="noteEn" defaultValue={zone.noteEn} />
                 </label>
                 <label className="admin-field">
-                  <span>Note VI</span>
+                  <span>{t.delivery.noteVi}</span>
                   <input name="noteVi" defaultValue={zone.noteVi} />
                 </label>
               </div>
@@ -120,7 +122,7 @@ export default async function AdminDeliveryPage({
                     name="active"
                     defaultChecked={zone.active}
                   />
-                  Active
+                  {t.common.active}
                 </label>
                 <label style={{ display: "flex", gap: 8, alignItems: "center", fontSize: 13 }}>
                   <input
@@ -128,11 +130,11 @@ export default async function AdminDeliveryPage({
                     name="quoteOnly"
                     defaultChecked={zone.quoteOnly}
                   />
-                  Quote only
+                  {t.delivery.quoteOnly}
                 </label>
               </div>
               <button type="submit" className="admin-btn">
-                Save area
+                {t.common.save}
               </button>
             </form>
           );
@@ -145,64 +147,64 @@ export default async function AdminDeliveryPage({
         style={{ marginTop: 24, maxWidth: 820 }}
       >
         <h3 style={{ marginTop: 0, fontFamily: "serif", fontSize: 22 }}>
-          Add new area
+          {t.delivery.addZone}
         </h3>
         <div className="admin-grid-2">
           <label className="admin-field">
-            <span>Name EN</span>
+            <span>{t.common.nameEn}</span>
             <input name="nameEn" required placeholder="Da Lat centre" />
           </label>
           <label className="admin-field">
-            <span>Name VI</span>
+            <span>{t.common.nameVi}</span>
             <input name="nameVi" required placeholder="Trung tâm Đà Lạt" />
           </label>
         </div>
         <div className="admin-grid-2">
           <label className="admin-field">
-            <span>Approx km from studio</span>
+            <span>{t.delivery.kmStudio}</span>
             <input name="km" type="number" min={0} defaultValue={5} required />
           </label>
           <label className="admin-field">
-            <span>Sort order</span>
+            <span>{t.common.sort}</span>
             <input name="sortOrder" type="number" defaultValue={zones.length + 1} />
           </label>
         </div>
         <div className="admin-grid-2">
           <label className="admin-field">
-            <span>Note EN</span>
+            <span>{t.delivery.noteEn}</span>
             <input name="noteEn" />
           </label>
           <label className="admin-field">
-            <span>Note VI</span>
+            <span>{t.delivery.noteVi}</span>
             <input name="noteVi" />
           </label>
         </div>
         <div style={{ display: "flex", gap: 20, flexWrap: "wrap", marginBottom: 12 }}>
           <label style={{ display: "flex", gap: 8, alignItems: "center", fontSize: 13 }}>
             <input type="checkbox" name="active" defaultChecked />
-            Active
+            {t.common.active}
           </label>
           <label style={{ display: "flex", gap: 8, alignItems: "center", fontSize: 13 }}>
             <input type="checkbox" name="quoteOnly" />
-            Quote only
+            {t.delivery.quoteOnly}
           </label>
         </div>
         <button type="submit" className="admin-btn">
-          Add area
+          {t.delivery.addZone}
         </button>
       </form>
 
       <h2 style={{ fontFamily: "serif", fontSize: 28, margin: "40px 0 12px" }}>
-        Fee rules (from km)
+        {t.delivery.rulesTitle}
       </h2>
       <form action={saveDeliverySettingsAction} className="admin-card" style={{ maxWidth: 720 }}>
         <label className="admin-field">
-          <span>Studio name</span>
+          <span>{t.delivery.studioName}</span>
           <input name="studioName" defaultValue={config.studioName} required />
         </label>
         <div className="admin-grid-2">
           <label className="admin-field">
-            <span>Near range ends (km)</span>
+            <span>{t.delivery.includedKm}</span>
             <input
               name="includedKm"
               type="number"
@@ -212,7 +214,7 @@ export default async function AdminDeliveryPage({
             />
           </label>
           <label className="admin-field">
-            <span>Fee at near range (VND)</span>
+            <span>{t.delivery.baseFee}</span>
             <input
               name="baseFee"
               type="number"
@@ -225,11 +227,11 @@ export default async function AdminDeliveryPage({
         </div>
         <div className="admin-grid-2">
           <label className="admin-field">
-            <span>Mid range ends (km)</span>
+            <span>{t.delivery.midKm}</span>
             <input name="midKm" type="number" min={1} defaultValue={config.midKm} required />
           </label>
           <label className="admin-field">
-            <span>Fee at mid range (VND)</span>
+            <span>{t.delivery.midFee}</span>
             <input
               name="midFee"
               type="number"
@@ -242,11 +244,11 @@ export default async function AdminDeliveryPage({
         </div>
         <div className="admin-grid-2">
           <label className="admin-field">
-            <span>Max standard range (km)</span>
+            <span>{t.delivery.maxKm}</span>
             <input name="maxKm" type="number" min={1} defaultValue={config.maxKm} required />
           </label>
           <label className="admin-field">
-            <span>Fee at max range (VND)</span>
+            <span>{t.delivery.maxFee}</span>
             <input
               name="maxFee"
               type="number"
@@ -258,7 +260,7 @@ export default async function AdminDeliveryPage({
           </label>
         </div>
         <button type="submit" className="admin-btn" style={{ marginTop: 12 }}>
-          Save fee rules
+          {t.delivery.saveRules}
         </button>
       </form>
     </AdminShell>

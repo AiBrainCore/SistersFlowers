@@ -2,6 +2,7 @@ import { AdminShell } from "@/app/admin/_shell";
 import { redeemVoucherAdminAction } from "@/app/admin/actions";
 import { formatVnd } from "@/data/products";
 import { listVouchers } from "@/lib/vouchers";
+import { getAdminT } from "@/lib/admin-locale";
 
 export default async function AdminVouchersPage({
   searchParams,
@@ -10,46 +11,44 @@ export default async function AdminVouchersPage({
 }) {
   const vouchers = await listVouchers();
   const { redeemed, error } = await searchParams;
+  const { locale, t } = await getAdminT();
 
   return (
-    <AdminShell title="Vouchers">
+    <AdminShell title={t.vouchers.title}>
       {redeemed ? (
         <p style={{ marginBottom: 16, color: "#5c6b52" }}>
-          Voucher marked as used. Remit the partner amount when you settle.
+          {t.vouchers.redeemedOk}
         </p>
       ) : null}
       {error ? (
         <p style={{ marginBottom: 16, color: "#8b3a3a" }}>
-          Could not redeem ({error}).
+          {t.vouchers.redeemError} ({error}).
         </p>
       ) : null}
 
       <p style={{ fontSize: 14, opacity: 0.75, maxWidth: 720, lineHeight: 1.7 }}>
-        Money vouchers issued at checkout. Partner checks codes at{" "}
+        {t.vouchers.intro}{" "}
         <a href="/voucher" target="_blank" rel="noreferrer">
           /voucher
         </a>
-        . After redeem, pay partner{" "}
-        <strong>face value − commission %</strong> (shown as Remit).
       </p>
 
       <div className="admin-card" style={{ padding: 0, overflow: "hidden", marginTop: 20 }}>
         <table className="admin-table">
           <thead>
             <tr>
-              <th>Code</th>
-              <th>Partner / value</th>
-              <th>Customer</th>
-              <th>Status</th>
-              <th>Settle</th>
+              <th>{t.vouchers.code}</th>
+              <th>{t.vouchers.partnerValue}</th>
+              <th>{t.vouchers.customer}</th>
+              <th>{t.common.status}</th>
+              <th>{t.vouchers.settle}</th>
             </tr>
           </thead>
           <tbody>
             {vouchers.length === 0 ? (
               <tr>
                 <td colSpan={5} style={{ padding: 24, opacity: 0.7 }}>
-                  No vouchers yet. They appear when an order includes a partner
-                  money voucher.
+                  {t.vouchers.empty}
                 </td>
               </tr>
             ) : (
@@ -60,11 +59,11 @@ export default async function AdminVouchersPage({
                       {v.code}
                     </strong>
                     <div style={{ fontSize: 11, opacity: 0.6 }}>
-                      Order {v.orderReference}
+                      {t.vouchers.order} {v.orderReference}
                     </div>
                     {v.expiresAt ? (
                       <div style={{ fontSize: 11, opacity: 0.6 }}>
-                        Until {v.expiresAt.toISOString().slice(0, 10)}
+                        {t.vouchers.until} {v.expiresAt.toISOString().slice(0, 10)}
                       </div>
                     ) : null}
                   </td>
@@ -74,7 +73,7 @@ export default async function AdminVouchersPage({
                       {v.partnerName || "—"}
                     </div>
                     <div style={{ fontSize: 13 }}>
-                      Face {formatVnd(v.faceValue, "en")}
+                      {t.vouchers.face} {formatVnd(v.faceValue, locale)}
                     </div>
                   </td>
                   <td>
@@ -96,13 +95,13 @@ export default async function AdminVouchersPage({
                     </strong>
                     {v.redeemedAt ? (
                       <div style={{ fontSize: 11, opacity: 0.6 }}>
-                        {v.redeemedAt.toLocaleString()}
+                        {v.redeemedAt.toLocaleString(locale === "vi" ? "vi-VN" : "en-GB")}
                       </div>
                     ) : null}
                   </td>
                   <td>
                     <div style={{ fontSize: 13 }}>
-                      Remit{" "}
+                      {t.vouchers.remit}{" "}
                       <strong>
                         {formatVnd(
                           v.remitAmount ??
@@ -114,7 +113,7 @@ export default async function AdminVouchersPage({
                                     100,
                                 ),
                             ),
-                          "en",
+                          locale,
                         )}
                       </strong>
                     </div>
@@ -122,7 +121,7 @@ export default async function AdminVouchersPage({
                       <div style={{ fontSize: 11, opacity: 0.65 }}>
                         Sisters {v.commissionPercent}%
                         {v.commissionAmount != null
-                          ? ` (~${formatVnd(v.commissionAmount, "en")})`
+                          ? ` (~${formatVnd(v.commissionAmount, locale)})`
                           : ""}
                       </div>
                     ) : null}
@@ -130,7 +129,7 @@ export default async function AdminVouchersPage({
                       <form action={redeemVoucherAdminAction} style={{ marginTop: 8 }}>
                         <input type="hidden" name="code" value={v.code} />
                         <button type="submit" className="admin-btn secondary">
-                          Mark used
+                          {t.vouchers.markUsed}
                         </button>
                       </form>
                     ) : null}

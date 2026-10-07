@@ -2,31 +2,33 @@ import { AdminShell } from "@/app/admin/_shell";
 import { updateOrderStatusAction } from "@/app/admin/actions";
 import { formatVnd } from "@/data/products";
 import { prisma } from "@/lib/db";
+import { getAdminT } from "@/lib/admin-locale";
 
 export default async function AdminOrdersPage() {
+  const { locale, t } = await getAdminT();
   const orders = await prisma.order.findMany({
     include: { items: true },
     orderBy: { createdAt: "desc" },
   });
 
   return (
-    <AdminShell title="Orders">
+    <AdminShell title={t.orders.title}>
       <div className="admin-card" style={{ padding: 0, overflow: "hidden" }}>
         <table className="admin-table">
           <thead>
             <tr>
-              <th>Ref</th>
-              <th>Customer</th>
-              <th>Items</th>
-              <th>Total</th>
-              <th>Status</th>
+              <th>{t.orders.ref}</th>
+              <th>{t.orders.customer}</th>
+              <th>{t.orders.items}</th>
+              <th>{t.orders.total}</th>
+              <th>{t.common.status}</th>
             </tr>
           </thead>
           <tbody>
             {orders.length === 0 ? (
               <tr>
                 <td colSpan={5} style={{ padding: 24, opacity: 0.7 }}>
-                  No orders yet.
+                  {t.orders.empty}
                 </td>
               </tr>
             ) : (
@@ -35,7 +37,7 @@ export default async function AdminOrdersPage() {
                   <td>
                     <strong>{order.reference}</strong>
                     <div style={{ fontSize: 11, opacity: 0.6 }}>
-                      {order.createdAt.toLocaleString()}
+                      {order.createdAt.toLocaleString(locale === "vi" ? "vi-VN" : "en-GB")}
                     </div>
                     {order.whatsappUrl ? (
                       <a href={order.whatsappUrl} target="_blank" rel="noreferrer">
@@ -51,7 +53,7 @@ export default async function AdminOrdersPage() {
                       {order.zone}
                       {order.deliveryKm != null ? ` · ${order.deliveryKm} km` : ""}
                       {order.deliveryFee != null
-                        ? ` · ${formatVnd(order.deliveryFee, "en")}`
+                        ? ` · ${formatVnd(order.deliveryFee, locale)}`
                         : ""}
                     </div>
                   </td>
@@ -64,7 +66,7 @@ export default async function AdminOrdersPage() {
                         ) : null}
                         {item.partnerName ? (
                           <div style={{ fontSize: 11, opacity: 0.7 }}>
-                            Partner: {item.partnerName}
+                            {t.orders.partner}: {item.partnerName}
                           </div>
                         ) : null}
                         {item.voucherCode ? (
@@ -81,12 +83,12 @@ export default async function AdminOrdersPage() {
                         ) : null}
                         {item.commissionAmount != null && item.commissionAmount > 0 ? (
                           <div style={{ fontSize: 11, color: "#5c6b52" }}>
-                            Sisters commission ~{formatVnd(item.commissionAmount, "en")}
+                            {t.orders.commission} ~{formatVnd(item.commissionAmount, locale)}
                             {item.commissionPercent != null
                               ? ` (${item.commissionPercent}%)`
                               : ""}
                             {item.remitAmount != null
-                              ? ` · remit ${formatVnd(item.remitAmount, "en")}`
+                              ? ` · ${t.orders.remit} ${formatVnd(item.remitAmount, locale)}`
                               : ""}
                           </div>
                         ) : null}
@@ -98,7 +100,7 @@ export default async function AdminOrdersPage() {
                       </div>
                     ))}
                   </td>
-                  <td>{formatVnd(order.subtotal, "en")}</td>
+                  <td>{formatVnd(order.subtotal, locale)}</td>
                   <td>
                     <form action={updateOrderStatusAction}>
                       <input type="hidden" name="id" value={order.id} />
@@ -109,7 +111,7 @@ export default async function AdminOrdersPage() {
                         <option value="cancelled">cancelled</option>
                       </select>
                       <button type="submit" className="admin-btn secondary" style={{ marginTop: 8 }}>
-                        Update
+                        {t.common.update}
                       </button>
                     </form>
                   </td>

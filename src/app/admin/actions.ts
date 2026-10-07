@@ -34,6 +34,22 @@ export async function logoutAction() {
   redirect("/admin/login");
 }
 
+export async function setAdminLocaleAction(formData: FormData) {
+  const locale = String(formData.get("locale") || "en");
+  const { ADMIN_LOCALE_COOKIE, isAdminLocale } = await import("@/lib/admin-locale");
+  const value = isAdminLocale(locale) ? locale : "en";
+  const { cookies } = await import("next/headers");
+  const jar = await cookies();
+  jar.set(ADMIN_LOCALE_COOKIE, value, {
+    httpOnly: false,
+    sameSite: "lax",
+    path: "/",
+    maxAge: 60 * 60 * 24 * 365,
+  });
+  const next = String(formData.get("next") || "/admin");
+  redirect(next.startsWith("/admin") ? next : "/admin");
+}
+
 export async function saveProductAction(formData: FormData) {
   await requireAdmin();
 

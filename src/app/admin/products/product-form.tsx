@@ -1,8 +1,15 @@
 import Image from "next/image";
 import { saveProductAction } from "@/app/admin/actions";
 import type { Product } from "@/data/products";
+import type { AdminDictionary } from "@/i18n/admin-dictionaries";
 
-export function ProductForm({ product }: { product?: Product }) {
+export function ProductForm({
+  product,
+  t,
+}: {
+  product?: Product;
+  t: AdminDictionary;
+}) {
   return (
     <form action={saveProductAction} className="admin-card" encType="multipart/form-data">
       {product?.id ? <input type="hidden" name="id" value={product.id} /> : null}
@@ -10,22 +17,26 @@ export function ProductForm({ product }: { product?: Product }) {
 
       <div className="admin-grid-2">
         <label className="admin-field">
-          <span>Name EN</span>
+          <span>{t.common.nameEn}</span>
           <input name="nameEn" required defaultValue={product?.names.en} />
         </label>
         <label className="admin-field">
-          <span>Name VI</span>
+          <span>{t.common.nameVi}</span>
           <input name="nameVi" required defaultValue={product?.names.vi} />
         </label>
       </div>
 
       <div className="admin-grid-2">
         <label className="admin-field">
-          <span>Slug</span>
-          <input name="slug" defaultValue={product?.slug} placeholder="auto from EN name" />
+          <span>{t.common.slug}</span>
+          <input
+            name="slug"
+            defaultValue={product?.slug}
+            placeholder={t.products.slugPlaceholder}
+          />
         </label>
         <label className="admin-field">
-          <span>Price (VND)</span>
+          <span>{t.products.priceVnd}</span>
           <input
             name="price"
             type="number"
@@ -39,18 +50,18 @@ export function ProductForm({ product }: { product?: Product }) {
 
       <div className="admin-grid-2">
         <label className="admin-field">
-          <span>Tag EN</span>
+          <span>{t.products.tagEn}</span>
           <input name="tagEn" defaultValue={product?.tags.en ?? "Wrapped bouquet"} />
         </label>
         <label className="admin-field">
-          <span>Tag VI</span>
+          <span>{t.products.tagVi}</span>
           <input name="tagVi" defaultValue={product?.tags.vi ?? "Bó hoa gói giấy"} />
         </label>
       </div>
 
       <div className="admin-grid-2">
         <label className="admin-field">
-          <span>Accent</span>
+          <span>{t.products.accent}</span>
           <select name="accent" defaultValue={product?.accent ?? "rose"}>
             <option value="rose">rose</option>
             <option value="blush">blush</option>
@@ -58,7 +69,7 @@ export function ProductForm({ product }: { product?: Product }) {
           </select>
         </label>
         <label className="admin-field">
-          <span>Sort order</span>
+          <span>{t.products.sortOrder}</span>
           <input
             name="sortOrder"
             type="number"
@@ -68,24 +79,24 @@ export function ProductForm({ product }: { product?: Product }) {
       </div>
 
       <label className="admin-field">
-        <span>Blurb EN</span>
+        <span>{t.products.blurbEn}</span>
         <textarea name="blurbEn" rows={2} defaultValue={product?.blurb.en} />
       </label>
       <label className="admin-field">
-        <span>Blurb VI</span>
+        <span>{t.products.blurbVi}</span>
         <textarea name="blurbVi" rows={2} defaultValue={product?.blurb.vi} />
       </label>
       <label className="admin-field">
-        <span>Story EN</span>
+        <span>{t.products.storyEn}</span>
         <textarea name="storyEn" rows={4} defaultValue={product?.story.en} />
       </label>
       <label className="admin-field">
-        <span>Story VI</span>
+        <span>{t.products.storyVi}</span>
         <textarea name="storyVi" rows={4} defaultValue={product?.story.vi} />
       </label>
 
       <label className="admin-field">
-        <span>Photo (jpg/png/webp)</span>
+        <span>{t.products.photo}</span>
         <input name="image" type="file" accept="image/jpeg,image/png,image/webp" />
       </label>
       {product?.image ? (
@@ -101,11 +112,11 @@ export function ProductForm({ product }: { product?: Product }) {
           defaultChecked={product?.published ?? true}
           style={{ width: "auto" }}
         />
-        <span style={{ margin: 0 }}>Published in shop</span>
+        <span style={{ margin: 0 }}>{t.products.publishedShop}</span>
       </label>
 
       <button type="submit" className="admin-btn">
-        Save product
+        {t.products.save}
       </button>
     </form>
   );

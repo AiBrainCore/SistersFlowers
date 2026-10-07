@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { AdminShell } from "@/app/admin/_shell";
 import { prisma } from "@/lib/db";
+import { getAdminT } from "@/lib/admin-locale";
 
 export default async function AdminDashboardPage() {
+  const { t } = await getAdminT();
   const [products, orders, inquiries, vouchersOpen] = await Promise.all([
     prisma.product.count(),
     prisma.order.count(),
@@ -13,48 +15,47 @@ export default async function AdminDashboardPage() {
   ]);
 
   return (
-    <AdminShell title="Dashboard">
+    <AdminShell title={t.dashboard.title}>
       <div className="admin-grid-2" style={{ marginBottom: 24 }}>
         <div className="admin-card">
           <p style={{ margin: 0, opacity: 0.65, fontSize: 12, letterSpacing: "0.14em", textTransform: "uppercase" }}>
-            Products
+            {t.dashboard.products}
           </p>
           <p style={{ fontFamily: "serif", fontSize: 42, margin: "8px 0" }}>{products}</p>
           <Link href="/admin/products" className="admin-btn secondary">
-            Manage
+            {t.common.manage}
           </Link>
         </div>
         <div className="admin-card">
           <p style={{ margin: 0, opacity: 0.65, fontSize: 12, letterSpacing: "0.14em", textTransform: "uppercase" }}>
-            Orders
+            {t.dashboard.orders}
           </p>
           <p style={{ fontFamily: "serif", fontSize: 42, margin: "8px 0" }}>{orders}</p>
           <Link href="/admin/orders" className="admin-btn secondary">
-            View
+            {t.common.view}
           </Link>
         </div>
         <div className="admin-card">
           <p style={{ margin: 0, opacity: 0.65, fontSize: 12, letterSpacing: "0.14em", textTransform: "uppercase" }}>
-            Open vouchers
+            {t.dashboard.openVouchers}
           </p>
           <p style={{ fontFamily: "serif", fontSize: 42, margin: "8px 0" }}>{vouchersOpen}</p>
           <Link href="/admin/vouchers" className="admin-btn secondary">
-            Vouchers
+            {t.nav.vouchers}
           </Link>
         </div>
         <div className="admin-card">
           <p style={{ margin: 0, opacity: 0.65, fontSize: 12, letterSpacing: "0.14em", textTransform: "uppercase" }}>
-            Inquiries
+            {t.dashboard.inquiries}
           </p>
           <p style={{ fontFamily: "serif", fontSize: 42, margin: "8px 0" }}>{inquiries}</p>
           <Link href="/admin/inquiries" className="admin-btn secondary">
-            View
+            {t.common.view}
           </Link>
         </div>
       </div>
       <p style={{ fontSize: 14, opacity: 0.75, maxWidth: 520, lineHeight: 1.7 }}>
-        Partner money vouchers: guest shows code → partner checks{" "}
-        <a href="/voucher">/voucher</a> → Mark as used → you remit face − commission.
+        {t.dashboard.hint}
       </p>
     </AdminShell>
   );

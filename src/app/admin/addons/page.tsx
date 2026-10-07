@@ -2,6 +2,7 @@ import { AdminShell } from "@/app/admin/_shell";
 import { deleteAddonAction, saveAddonAction } from "@/app/admin/actions";
 import { listAllAddons, commissionAmount } from "@/lib/addons";
 import { formatVnd } from "@/data/products";
+import { getAdminT } from "@/lib/admin-locale";
 
 export default async function AdminAddonsPage({
   searchParams,
@@ -10,27 +11,24 @@ export default async function AdminAddonsPage({
 }) {
   const addons = await listAllAddons();
   const { saved, error } = await searchParams;
+  const { locale, t } = await getAdminT();
 
   return (
-    <AdminShell title="Extras & partners">
+    <AdminShell title={t.addons.title}>
       {saved ? (
-        <p style={{ marginBottom: 16, color: "#5c6b52" }}>Saved.</p>
+        <p style={{ marginBottom: 16, color: "#5c6b52" }}>{t.addons.saved}</p>
       ) : null}
       {error ? (
         <p style={{ marginBottom: 16, color: "#8b3a3a" }}>
-          Name EN/VI and price are required.
+          {t.addons.error}
         </p>
       ) : null}
 
       <p style={{ fontSize: 14, opacity: 0.75, maxWidth: 720, lineHeight: 1.7 }}>
-        <strong>Extra</strong> = card, teddy, chocolate (your margin).{" "}
-        <strong>Partner</strong> = money voucher (spa, salon, taxi, hotel…) —
-        customer pays face value; on redeem Sisters remits partner face −
-        commission %. Codes are checked at{" "}
+        {t.addons.intro}{" "}
         <a href="/voucher" target="_blank" rel="noreferrer">
           /voucher
         </a>
-        .
       </p>
 
       <div style={{ display: "grid", gap: 16, marginTop: 20 }}>
@@ -54,12 +52,12 @@ export default async function AdminAddonsPage({
               }}
             >
               <strong>
-                {addon.kind === "partner" ? "Partner" : "Extra"} ·{" "}
-                {formatVnd(addon.price, "en")}
+                {addon.kind === "partner" ? t.addons.partner : t.addons.extra} ·{" "}
+                {formatVnd(addon.price, locale)}
                 {addon.kind === "partner" && addon.commissionPercent > 0
                   ? ` · Sisters ~${formatVnd(
                       commissionAmount(addon.price, addon.commissionPercent),
-                      "en",
+                      locale,
                     )} (${addon.commissionPercent}%)`
                   : ""}
               </strong>
@@ -68,49 +66,49 @@ export default async function AdminAddonsPage({
                 type="submit"
                 className="admin-btn secondary"
               >
-                Delete
+                {t.common.delete}
               </button>
             </div>
 
             <div className="admin-grid-2">
               <label className="admin-field">
-                <span>Type</span>
+                <span>{t.common.type}</span>
                 <select name="kind" defaultValue={addon.kind}>
-                  <option value="extra">Extra (card / teddy / chocolate…)</option>
-                  <option value="partner">Partner money voucher</option>
+                  <option value="extra">{t.addons.extra}</option>
+                  <option value="partner">{t.addons.partner}</option>
                 </select>
               </label>
               <label className="admin-field">
-                <span>Slug</span>
+                <span>{t.common.slug}</span>
                 <input name="slug" defaultValue={addon.slug} />
               </label>
             </div>
 
             <div className="admin-grid-2">
               <label className="admin-field">
-                <span>Name EN</span>
+                <span>{t.common.nameEn}</span>
                 <input name="nameEn" required defaultValue={addon.nameEn} />
               </label>
               <label className="admin-field">
-                <span>Name VI</span>
+                <span>{t.common.nameVi}</span>
                 <input name="nameVi" required defaultValue={addon.nameVi} />
               </label>
             </div>
 
             <div className="admin-grid-2">
               <label className="admin-field">
-                <span>Description EN</span>
+                <span>{t.common.descriptionEn}</span>
                 <input name="descriptionEn" defaultValue={addon.descriptionEn} />
               </label>
               <label className="admin-field">
-                <span>Description VI</span>
+                <span>{t.common.descriptionVi}</span>
                 <input name="descriptionVi" defaultValue={addon.descriptionVi} />
               </label>
             </div>
 
             <div className="admin-grid-2">
               <label className="admin-field">
-                <span>Face value (VND)</span>
+                <span>{t.addons.faceValue}</span>
                 <input
                   name="price"
                   type="number"
@@ -121,7 +119,7 @@ export default async function AdminAddonsPage({
                 />
               </label>
               <label className="admin-field">
-                <span>Sort</span>
+                <span>{t.common.sort}</span>
                 <input
                   name="sortOrder"
                   type="number"
@@ -132,15 +130,15 @@ export default async function AdminAddonsPage({
 
             <div className="admin-grid-2">
               <label className="admin-field">
-                <span>Partner name (if partner)</span>
+                <span>{t.addons.partnerName}</span>
                 <input
                   name="partnerName"
                   defaultValue={addon.partnerName}
-                  placeholder="Hotel / Spa / Salon brand"
+                  placeholder="Hotel / Spa / Salon"
                 />
               </label>
               <label className="admin-field">
-                <span>Category</span>
+                <span>{t.addons.category}</span>
                 <select
                   name="partnerCategory"
                   defaultValue={addon.partnerCategory || ""}
@@ -158,7 +156,7 @@ export default async function AdminAddonsPage({
 
             <div className="admin-grid-2">
               <label className="admin-field">
-                <span>Sisters commission %</span>
+                <span>{t.addons.commission}</span>
                 <input
                   name="commissionPercent"
                   type="number"
@@ -168,7 +166,7 @@ export default async function AdminAddonsPage({
                 />
               </label>
               <label className="admin-field">
-                <span>Validity days (voucher)</span>
+                <span>{t.addons.validityDays}</span>
                 <input
                   name="validityDays"
                   type="number"
@@ -179,14 +177,14 @@ export default async function AdminAddonsPage({
             </div>
 
             <label className="admin-field">
-              <span>Image (optional)</span>
+              <span>{t.addons.imageOptional}</span>
               <input name="image" type="file" accept="image/jpeg,image/png,image/webp" />
             </label>
 
             <div style={{ display: "flex", gap: 20, flexWrap: "wrap", marginBottom: 12 }}>
               <label style={{ display: "flex", gap: 8, alignItems: "center", fontSize: 13 }}>
                 <input type="checkbox" name="active" defaultChecked={addon.active} />
-                Active
+                {t.common.active}
               </label>
               <label style={{ display: "flex", gap: 8, alignItems: "center", fontSize: 13 }}>
                 <input
@@ -194,12 +192,12 @@ export default async function AdminAddonsPage({
                   name="requiresNote"
                   defaultChecked={addon.requiresNote}
                 />
-                Requires customer note
+                {t.addons.requiresNote}
               </label>
             </div>
 
             <button type="submit" className="admin-btn">
-              Save
+              {t.common.save}
             </button>
           </form>
         ))}
@@ -212,58 +210,58 @@ export default async function AdminAddonsPage({
         style={{ marginTop: 28, maxWidth: 860 }}
       >
         <h3 style={{ marginTop: 0, fontFamily: "serif", fontSize: 22 }}>
-          Add new extra or partner
+          {t.addons.addNew}
         </h3>
         <div className="admin-grid-2">
           <label className="admin-field">
-            <span>Type</span>
+            <span>{t.common.type}</span>
             <select name="kind" defaultValue="extra">
-              <option value="extra">Extra</option>
-              <option value="partner">Partner money voucher</option>
+              <option value="extra">{t.addons.extra}</option>
+              <option value="partner">{t.addons.partner}</option>
             </select>
           </label>
           <label className="admin-field">
-            <span>Slug (optional)</span>
-            <input name="slug" placeholder="auto from EN name" />
+            <span>{t.common.slug} ({t.common.optional})</span>
+            <input name="slug" placeholder={t.products.slugPlaceholder} />
           </label>
         </div>
         <div className="admin-grid-2">
           <label className="admin-field">
-            <span>Name EN</span>
+            <span>{t.common.nameEn}</span>
             <input name="nameEn" required />
           </label>
           <label className="admin-field">
-            <span>Name VI</span>
+            <span>{t.common.nameVi}</span>
             <input name="nameVi" required />
           </label>
         </div>
         <div className="admin-grid-2">
           <label className="admin-field">
-            <span>Description EN</span>
+            <span>{t.common.descriptionEn}</span>
             <input name="descriptionEn" />
           </label>
           <label className="admin-field">
-            <span>Description VI</span>
+            <span>{t.common.descriptionVi}</span>
             <input name="descriptionVi" />
           </label>
         </div>
         <div className="admin-grid-2">
           <label className="admin-field">
-            <span>Face value (VND)</span>
+            <span>{t.addons.faceValue}</span>
             <input name="price" type="number" min={0} step={1000} required defaultValue={100000} />
           </label>
           <label className="admin-field">
-            <span>Sort</span>
+            <span>{t.common.sort}</span>
             <input name="sortOrder" type="number" defaultValue={addons.length + 1} />
           </label>
         </div>
         <div className="admin-grid-2">
           <label className="admin-field">
-            <span>Partner name</span>
-            <input name="partnerName" placeholder="only for partner type" />
+            <span>{t.addons.partnerName}</span>
+            <input name="partnerName" />
           </label>
           <label className="admin-field">
-            <span>Category</span>
+            <span>{t.addons.category}</span>
             <select name="partnerCategory" defaultValue="">
               <option value="">—</option>
               <option value="spa">spa</option>
@@ -277,30 +275,30 @@ export default async function AdminAddonsPage({
         </div>
         <div className="admin-grid-2">
           <label className="admin-field">
-            <span>Sisters commission %</span>
+            <span>{t.addons.commission}</span>
             <input name="commissionPercent" type="number" min={0} max={100} defaultValue={10} />
           </label>
           <label className="admin-field">
-            <span>Validity days</span>
+            <span>{t.addons.validityDays}</span>
             <input name="validityDays" type="number" min={1} defaultValue={90} />
           </label>
         </div>
         <label className="admin-field">
-          <span>Image</span>
+          <span>{t.common.image}</span>
           <input name="image" type="file" accept="image/jpeg,image/png,image/webp" />
         </label>
         <div style={{ display: "flex", gap: 20, marginBottom: 12 }}>
           <label style={{ display: "flex", gap: 8, alignItems: "center", fontSize: 13 }}>
             <input type="checkbox" name="active" defaultChecked />
-            Active
+            {t.common.active}
           </label>
           <label style={{ display: "flex", gap: 8, alignItems: "center", fontSize: 13 }}>
             <input type="checkbox" name="requiresNote" />
-            Requires note
+            {t.addons.requiresNote}
           </label>
         </div>
         <button type="submit" className="admin-btn">
-          Add
+          {t.common.add}
         </button>
       </form>
     </AdminShell>
