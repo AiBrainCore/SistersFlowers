@@ -1,0 +1,143 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Product {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  price     Int
+  image     String
+  accent    String   @default("rose")
+  nameEn    String
+  nameVi    String
+  tagEn     String
+  tagVi     String
+  blurbEn   String
+  blurbVi   String
+  storyEn   String
+  storyVi   String
+  published Boolean  @default(true)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Order {
+  id             String      @id @default(cuid())
+  reference      String      @unique
+  locale         String
+  customerName   String
+  phone          String
+  email          String?
+  zone           String
+  deliveryKm     Int?
+  deliveryFee    Int?
+  address        String
+  deliveryDate   String?
+  deliveryTime   String?
+  notes          String?
+  recipientName  String?
+  hotelName      String?
+  roomNumber     String?
+  subtotal       Int
+  deliveryTotal  Int         @default(0)
+  status         String      @default("new")
+  whatsappUrl    String?
+  createdAt      DateTime    @default(now())
+  items          OrderItem[]
+}
+
+model OrderItem {
+  id                 String    @id @default(cuid())
+  orderId            String
+  order              Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  slug               String
+  name               String
+  price              Int
+  qty                Int
+  image              String
+  kind               String    @default("product")
+  note               String?
+  partnerName        String?
+  commissionPercent  Int?
+  commissionAmount   Int?
+  /// Money voucher code (partner items only), e.g. SF-V-A1B2C3
+  voucherCode        String?   @unique
+  /// issued | redeemed | expired
+  voucherStatus      String?
+  voucherExpiresAt   DateTime?
+  redeemedAt         DateTime?
+  /// Amount Sisters remits to partner after commission (face value − commission)
+  remitAmount        Int?
+}
+
+model Inquiry {
+  id        String   @id @default(cuid())
+  variant   String
+  name      String
+  email     String
+  phone     String?
+  date      String?
+  message   String
+  hotel     String?
+  room      String?
+  venue     String?
+  guests    String?
+  status    String   @default("new")
+  createdAt DateTime @default(now())
+}
+
+model DeliverySettings {
+  id         String   @id @default("default")
+  studioName String   @default("Da Lat")
+  includedKm Int      @default(8)
+  baseFee    Int      @default(30000)
+  midKm      Int      @default(20)
+  midFee     Int      @default(60000)
+  maxKm      Int      @default(45)
+  maxFee     Int      @default(120000)
+  updatedAt  DateTime @updatedAt
+}
+
+model DeliveryZone {
+  id        String   @id @default(cuid())
+  nameEn    String
+  nameVi    String
+  km        Int
+  quoteOnly Boolean  @default(false)
+  noteEn    String   @default("")
+  noteVi    String   @default("")
+  active    Boolean  @default(true)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Addon {
+  id                 String   @id @default(cuid())
+  slug               String   @unique
+  /// extra = teddy/card/chocolate; partner = money voucher (spa/salon/taxi/…)
+  kind               String   @default("extra")
+  nameEn             String
+  nameVi             String
+  descriptionEn      String   @default("")
+  descriptionVi      String   @default("")
+  price              Int
+  image              String   @default("")
+  requiresNote       Boolean  @default(false)
+  partnerName        String   @default("")
+  partnerCategory    String   @default("")
+  /// Percent commission Sisters earn from partner (0-100)
+  commissionPercent  Int      @default(0)
+  /// Days the issued voucher code stays valid after purchase
+  validityDays       Int      @default(90)
+  active             Boolean  @default(true)
+  sortOrder          Int      @default(0)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
