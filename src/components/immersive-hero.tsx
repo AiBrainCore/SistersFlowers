@@ -13,6 +13,7 @@ import {
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 
+/** Atmospheric studio photography — not linked to a shop SKU */
 const MAIN = "/bouquets/shown/w-04.jpg";
 const ATMOSPHERE = "/bouquets/b-16.jpg";
 const ACCENT = "/bouquets/clean/p03.jpg";
@@ -29,7 +30,6 @@ export function ImmersiveHero({
   dictionary: Dictionary;
 }) {
   const t = dictionary.hero;
-  const p = dictionary.heroPreview;
   const stageRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<number | null>(null);
   const target = useRef<Pose>({ ...REST });
@@ -230,22 +230,13 @@ export function ImmersiveHero({
               {t.custom}
             </Link>
           </div>
-          <p className="mt-6 text-[11px] tracking-[0.08em] text-moss/80">
-            {p.note}
-          </p>
-          <Link
-            href={`/${locale}`}
-            className="mt-3 inline-flex min-h-10 items-center text-[11px] tracking-[0.14em] text-citrus uppercase border-b border-citrus/40"
-          >
-            {p.back}
-          </Link>
         </div>
 
         <div className="order-2">
           <div
             ref={stageRef}
             role="img"
-            aria-label={`${t.brand} bouquet — ${p.hint}`}
+            aria-label={t.imageAlt}
             tabIndex={0}
             onKeyDown={onKeyDown}
             onPointerMove={onPointerMove}
@@ -256,7 +247,6 @@ export function ImmersiveHero({
             className="ih-stage relative mx-auto aspect-[4/5] w-full max-w-[420px] touch-none select-none outline-none focus-visible:ring-2 focus-visible:ring-citrus/50 sm:max-w-[480px] lg:max-w-none lg:aspect-[5/6]"
             style={{ cursor: reduced ? "default" : "grab" }}
           >
-            {/* Soft floor shadow */}
             <div
               aria-hidden
               className="pointer-events-none absolute inset-x-[12%] bottom-[6%] h-[14%] rounded-[100%] bg-forest/20 blur-2xl"
@@ -267,7 +257,6 @@ export function ImmersiveHero({
               }}
             />
 
-            {/* Atmosphere plate */}
             <div
               className="ih-layer pointer-events-none absolute inset-[8%] overflow-hidden rounded-[2rem] opacity-50"
               style={{ transform: atmosphereTransform }}
@@ -283,7 +272,6 @@ export function ImmersiveHero({
               <div className="absolute inset-0 bg-gradient-to-t from-paper via-transparent to-petal/20" />
             </div>
 
-            {/* Accent petal fragment */}
             <div
               className="ih-layer pointer-events-none absolute top-[8%] right-[2%] h-[28%] w-[28%] overflow-hidden rounded-2xl opacity-70 shadow-[0_12px_30px_rgba(36,53,42,0.12)]"
               style={{ transform: accentTransform }}
@@ -297,7 +285,6 @@ export function ImmersiveHero({
               />
             </div>
 
-            {/* Main bouquet */}
             <div
               className="ih-layer absolute inset-[10%] overflow-hidden rounded-[1.75rem] shadow-[0_28px_60px_rgba(36,53,42,0.22)]"
               style={{
@@ -307,7 +294,7 @@ export function ImmersiveHero({
             >
               <Image
                 src={MAIN}
-                alt="Handcrafted rose bouquet from Sisters Flowers Da Lat"
+                alt={t.imageAlt}
                 fill
                 priority
                 className="object-cover object-[center_20%]"
@@ -317,26 +304,23 @@ export function ImmersiveHero({
               <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-white/35" />
             </div>
 
-            {/* Premium glass badge */}
             <div
               className="ih-layer absolute bottom-[10%] left-[6%] z-10 max-w-[11.5rem]"
               style={{ transform: glassTransform }}
             >
               <div className="glass-premium rounded-2xl px-4 py-3">
                 <p className="relative z-[1] text-[10px] tracking-[0.2em] text-citrus uppercase">
-                  {p.badge}
+                  {t.badge}
                 </p>
                 <p className="relative z-[1] mt-1 text-xs leading-snug text-forest">
-                  {locale === "vi"
-                    ? "Studio hoa cao nguyên"
-                    : "Highland floral studio"}
+                  {t.studioLine}
                 </p>
               </div>
             </div>
 
             {!reduced ? (
               <p className="pointer-events-none absolute top-3 left-1/2 z-10 -translate-x-1/2 rounded-full bg-paper/70 px-3 py-1 text-[10px] tracking-[0.14em] text-moss uppercase backdrop-blur-sm">
-                {p.hint}
+                {t.interactHint}
               </p>
             ) : null}
           </div>

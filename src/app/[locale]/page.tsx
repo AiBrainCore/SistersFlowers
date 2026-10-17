@@ -9,9 +9,9 @@ import { listActiveCategories } from "@/lib/categories";
 import { FEATURED_CATEGORY_SLUGS } from "@/lib/category-constants";
 import { ProductCard } from "@/components/product-card";
 import { Reveal } from "@/components/reveal";
+import { ImmersiveHero } from "@/components/immersive-hero";
 import { buildPageMetadata } from "@/lib/seo";
 
-const heroImage = "/bouquets/b-16.jpg";
 const studioImage = "/bouquets/b-12.jpg";
 const personalImage = "/bouquets/b-08.jpg";
 
@@ -54,49 +54,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
 
   return (
     <div>
-      <section className="relative min-h-[100svh] overflow-hidden">
-        <Image
-          src={heroImage}
-          alt=""
-          fill
-          priority
-          className="object-cover object-[center_30%] scale-105"
-          sizes="100vw"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-forest/85 via-forest/35 to-forest/10" />
-        <div className="relative mx-auto flex min-h-[100svh] max-w-6xl flex-col justify-end px-4 pb-14 pt-28 text-ivory sm:px-5 sm:pb-20">
-          <div className="hero-copy max-w-2xl">
-            <p className="serif text-3xl leading-none sm:text-4xl">
-              {t.hero.brand}
-            </p>
-            <p className="mt-4 text-[11px] tracking-[0.32em] text-citrus-soft uppercase">
-              {t.hero.kicker}
-            </p>
-            <h1 className="serif mt-4 text-[2.65rem] leading-[1.02] sm:text-6xl lg:text-7xl">
-              {t.hero.titleBefore}
-              <span className="italic text-citrus">{t.hero.titleAccent}</span>
-              {t.hero.titleAfter}
-            </h1>
-            <p className="mt-5 max-w-lg text-base font-light leading-relaxed text-ivory/90 sm:text-lg">
-              {t.hero.subtitle}
-            </p>
-            <div className="mt-9 flex flex-wrap gap-3">
-              <Link
-                href={`/${locale}/shop`}
-                className="inline-flex min-h-12 items-center rounded-full bg-citrus px-6 text-[12px] tracking-[0.16em] text-ivory uppercase transition hover:bg-citrus/90"
-              >
-                {t.hero.shop}
-              </Link>
-              <Link
-                href={`/${locale}/custom`}
-                className="inline-flex min-h-12 items-center rounded-full border border-ivory/55 px-6 text-[12px] tracking-[0.16em] uppercase transition hover:bg-ivory/10"
-              >
-                {t.hero.custom}
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
+      <ImmersiveHero locale={locale} dictionary={t} />
 
       <section className="mx-auto max-w-6xl px-4 py-16 sm:px-5 sm:py-20">
         <Reveal>
