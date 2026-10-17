@@ -1,23 +1,48 @@
-/** Curated Hero set — real studio bouquets with matching shop slugs. */
-export const HERO_BOUQUET_SLUGS = [
-  "hong-do-qua",
-  "mix-keo-hong",
-  "lily-mix",
+/**
+ * Curated Hero collection — image + display names are locked together.
+ * Slugs point at matching shop products (seed names/images stay in sync).
+ */
+export const HERO_BOUQUETS = [
+  {
+    slug: "hong-do-qua",
+    image: "/bouquets/shown/w-04.jpg",
+    nameEn: "Pink tulip wrap",
+    nameVi: "Bó tulip hồng",
+  },
+  {
+    slug: "cau-hon",
+    image: "/bouquets/shown/w-06.jpg",
+    nameEn: "Pink rose eucalyptus",
+    nameVi: "Hồng phấn & bạch đàn",
+  },
+  {
+    slug: "tone-noi",
+    image: "/bouquets/shown/w-01.jpg",
+    nameEn: "Celebration garden wrap",
+    nameVi: "Bó vườn lễ hội",
+  },
+  {
+    slug: "valentine-mix",
+    image: "/bouquets/shown/w-09.jpg",
+    nameEn: "Pastel garden mix",
+    nameVi: "Mix vườn pastel",
+  },
+  {
+    slug: "mix-sang",
+    image: "/bouquets/shown/w-07.jpg",
+    nameEn: "Soft rose wrap",
+    nameVi: "Bó hồng dịu",
+  },
+  {
+    slug: "hong-do-giay-trang",
+    image: "/bouquets/shown/w-11.jpg",
+    nameEn: "Orange rose wrap",
+    nameVi: "Bó hồng cam",
+  },
 ] as const;
-
-/** Soft detail crops paired to each Hero bouquet (existing assets only). */
-export const HERO_BOUQUET_DETAILS: Record<
-  (typeof HERO_BOUQUET_SLUGS)[number],
-  string
-> = {
-  "hong-do-qua": "/bouquets/shown/w-11.jpg",
-  "mix-keo-hong": "/bouquets/clean/p03.jpg",
-  "lily-mix": "/bouquets/shown/w-13.jpg",
-};
 
 export type HeroBouquetItem = {
   slug: string | null;
   image: string;
-  detail: string;
   name: string;
 };

@@ -89,12 +89,14 @@ async function main() {
     console.log(`Seeded ${products.length} products`);
   } else {
     console.log(`Skip products create: ${productCount} already exist`);
-    // Refresh customer-facing copy from seed without resetting prices/images
+    // Refresh customer-facing copy + hero-critical images from seed
     let updated = 0;
     for (const product of products) {
       const result = await prisma.product.updateMany({
         where: { slug: product.slug },
         data: {
+          image: product.image,
+          accent: product.accent,
           nameEn: product.names.en,
           nameVi: product.names.vi,
           tagEn: product.tags.en,

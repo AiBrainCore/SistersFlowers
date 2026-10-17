@@ -1,11 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import type { CategoryPublic } from "@/lib/category-constants";
-import { FEATURED_CATEGORY_SLUGS } from "@/lib/category-constants";
+import { OCCASION_NAV_SLUGS } from "@/lib/category-constants";
 import { useCart } from "@/context/cart-context";
 import { LanguageSwitch } from "@/components/language-switch";
 
@@ -13,6 +13,18 @@ type OccasionLink = Pick<
   CategoryPublic,
   "slug" | "nameEn" | "nameVi" | "productCount"
 >;
+
+const OCCASION_FALLBACK: Record<
+  (typeof OCCASION_NAV_SLUGS)[number],
+  { en: string; vi: string }
+> = {
+  birthday: { en: "Birthday", vi: "Sinh nhật" },
+  romance: { en: "Romance", vi: "Lãng mạn" },
+  graduation: { en: "Graduation", vi: "Tốt nghiệp" },
+  wedding: { en: "Wedding", vi: "Cưới hỏi" },
+  condolences: { en: "Condolences", vi: "Chia buồn" },
+  everyday: { en: "Everyday", vi: "Hàng ngày" },
+};
 
 export function SiteHeader({
   locale,
@@ -32,17 +44,20 @@ export function SiteHeader({
   const [mobileServices, setMobileServices] = useState(false);
   const navRef = useRef<HTMLElement>(null);
 
-  const withProducts = occasions.filter((o) => (o.productCount ?? 1) > 0);
-  const featured = FEATURED_CATEGORY_SLUGS.map((slug) =>
-    withProducts.find((o) => o.slug === slug),
-  ).filter(Boolean) as OccasionLink[];
-  const rest = withProducts.filter(
-    (o) =>
-      !FEATURED_CATEGORY_SLUGS.includes(
-        o.slug as (typeof FEATURED_CATEGORY_SLUGS)[number],
-      ),
-  );
-  const occasionList = [...featured, ...rest];
+  const occasionList = useMemo(() => {
+    const bySlug = new Map(occasions.map((o) => [o.slug, o]));
+    return OCCASION_NAV_SLUGS.map((slug) => {
+      const found = bySlug.get(slug);
+      if (found) return found;
+      const fb = OCCASION_FALLBACK[slug];
+      return {
+        slug,
+        nameEn: fb.en,
+        nameVi: fb.vi,
+        productCount: 0,
+      } satisfies OccasionLink;
+    });
+  }, [occasions]);
 
   useEffect(() => {
     function onKey(event: KeyboardEvent) {
@@ -78,6 +93,21 @@ export function SiteHeader({
     setMenuOpen(false);
     setOpenGroup(null);
   };
+
+  const servicesLinks = [
+    {
+      href: `/${locale}/weddings`,
+      label: dictionary.nav.servicesWeddings,
+    },
+    {
+      href: `/${locale}/hotels`,
+      label: dictionary.nav.servicesHotels,
+    },
+    {
+      href: `/${locale}/delivery`,
+      label: dictionary.nav.delivery,
+    },
+  ];
 
   return (
     <header className="sticky top-0 z-40 border-b border-forest/10 bg-paper/85 backdrop-blur-md">
@@ -118,13 +148,6 @@ export function SiteHeader({
             </button>
             {openGroup === "occasions" ? (
               <div className="absolute top-full left-0 z-50 mt-1 min-w-[14rem] rounded-2xl border border-forest/10 bg-paper p-2 shadow-[0_16px_40px_rgba(36,53,42,0.12)]">
-                <Link
-                  href={`/${locale}/shop`}
-                  onClick={closeAll}
-                  className="block min-h-11 rounded-xl px-3 py-2.5 normal-case tracking-normal hover:bg-cream/80"
-                >
-                  {dictionary.nav.allOccasions}
-                </Link>
                 {occasionList.map((item) => (
                   <Link
                     key={item.slug}
@@ -162,20 +185,16 @@ export function SiteHeader({
             </button>
             {openGroup === "services" ? (
               <div className="absolute top-full left-0 z-50 mt-1 min-w-[15rem] rounded-2xl border border-forest/10 bg-paper p-2 shadow-[0_16px_40px_rgba(36,53,42,0.12)]">
-                <Link
-                  href={`/${locale}/weddings`}
-                  onClick={closeAll}
-                  className="block min-h-11 rounded-xl px-3 py-2.5 normal-case tracking-normal hover:bg-cream/80"
-                >
-                  {dictionary.nav.servicesWeddings}
-                </Link>
-                <Link
-                  href={`/${locale}/hotels`}
-                  onClick={closeAll}
-                  className="block min-h-11 rounded-xl px-3 py-2.5 normal-case tracking-normal hover:bg-cream/80"
-                >
-                  {dictionary.nav.servicesHotels}
-                </Link>
+                {servicesLinks.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={closeAll}
+                    className="block min-h-11 rounded-xl px-3 py-2.5 normal-case tracking-normal hover:bg-cream/80"
+                  >
+                    {item.label}
+                  </Link>
+                ))}
               </div>
             ) : null}
           </div>
@@ -231,13 +250,6 @@ export function SiteHeader({
             </button>
             {mobileOccasions ? (
               <div className="mb-2 space-y-1 border-b border-forest/10 pb-3 pl-3">
-                <Link
-                  href={`/${locale}/shop`}
-                  onClick={closeAll}
-                  className="flex min-h-11 items-center text-sm text-moss"
-                >
-                  {dictionary.nav.allOccasions}
-                </Link>
                 {occasionList.map((item) => (
                   <Link
                     key={item.slug}
@@ -269,20 +281,16 @@ export function SiteHeader({
             </button>
             {mobileServices ? (
               <div className="mb-2 space-y-1 border-b border-forest/10 pb-3 pl-3">
-                <Link
-                  href={`/${locale}/weddings`}
-                  onClick={closeAll}
-                  className="flex min-h-11 items-center text-sm text-moss"
-                >
-                  {dictionary.nav.servicesWeddings}
-                </Link>
-                <Link
-                  href={`/${locale}/hotels`}
-                  onClick={closeAll}
-                  className="flex min-h-11 items-center text-sm text-moss"
-                >
-                  {dictionary.nav.servicesHotels}
-                </Link>
+                {servicesLinks.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={closeAll}
+                    className="flex min-h-11 items-center text-sm text-moss"
+                  >
+                    {item.label}
+                  </Link>
+                ))}
               </div>
             ) : null}
 

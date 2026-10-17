@@ -17,7 +17,6 @@ import type { HeroBouquetItem } from "@/lib/hero-bouquets";
 type Pose = { rx: number; ry: number; px: number; py: number };
 
 const REST: Pose = { rx: -4, ry: 8, px: 0, py: 0 };
-
 const SWIPE_MIN = 48;
 
 type DragSession = {
@@ -47,7 +46,6 @@ export function ImmersiveHero({
           {
             slug: null as string | null,
             image: "/bouquets/shown/w-04.jpg",
-            detail: "/bouquets/clean/p03.jpg",
             name: t.studioLine,
           },
         ];
@@ -215,22 +213,6 @@ export function ImmersiveHero({
       goTo(index + 1);
       return;
     }
-    if (reduced) return;
-    const step = 3;
-    if (event.key === "ArrowUp") {
-      event.preventDefault();
-      target.current = {
-        ...target.current,
-        rx: Math.max(-16, target.current.rx - step),
-      };
-    }
-    if (event.key === "ArrowDown") {
-      event.preventDefault();
-      target.current = {
-        ...target.current,
-        rx: Math.min(10, target.current.rx + step),
-      };
-    }
   }
 
   const bouquetTransform = reduced
@@ -257,30 +239,30 @@ export function ImmersiveHero({
         className="pointer-events-none absolute -top-24 right-[-10%] h-72 w-72 rounded-full bg-citrus/10 blur-3xl"
       />
 
-      <div className="relative mx-auto grid max-w-6xl items-center gap-8 px-4 py-10 sm:px-5 sm:py-14 lg:grid-cols-[0.95fr_1.05fr] lg:gap-10 lg:py-16">
+      <div className="relative mx-auto grid max-w-6xl items-center gap-5 px-4 py-7 sm:gap-8 sm:px-5 sm:py-12 lg:grid-cols-[0.95fr_1.05fr] lg:gap-10 lg:py-16">
         <div className="order-1 max-w-xl">
-          <p className="serif text-2xl text-forest sm:text-3xl">{t.brand}</p>
-          <p className="mt-3 text-[11px] tracking-[0.28em] text-citrus uppercase">
+          <p className="serif text-xl text-forest sm:text-3xl">{t.brand}</p>
+          <p className="mt-2 text-[10px] tracking-[0.28em] text-citrus uppercase sm:mt-3 sm:text-[11px]">
             {t.kicker}
           </p>
-          <h1 className="serif mt-4 text-[2.35rem] leading-[1.05] text-forest sm:text-5xl lg:text-[3.35rem]">
+          <h1 className="serif mt-3 text-[2rem] leading-[1.05] text-forest sm:mt-4 sm:text-5xl lg:text-[3.35rem]">
             {t.titleBefore}
             <span className="italic text-citrus">{t.titleAccent}</span>
             {t.titleAfter}
           </h1>
-          <p className="mt-5 max-w-md text-sm leading-7 text-moss sm:text-base">
+          <p className="mt-3 max-w-md text-sm leading-6 text-moss sm:mt-5 sm:text-base sm:leading-7">
             {t.subtitle}
           </p>
-          <div className="mt-8 flex flex-wrap gap-3">
+          <div className="mt-5 flex flex-wrap gap-2.5 sm:mt-8 sm:gap-3">
             <Link
               href={`/${locale}/shop`}
-              className="inline-flex min-h-12 items-center rounded-full bg-citrus px-6 text-[12px] tracking-[0.16em] text-ivory uppercase transition hover:bg-citrus/90"
+              className="inline-flex min-h-11 items-center rounded-full bg-citrus px-5 text-[11px] tracking-[0.16em] text-ivory uppercase transition hover:bg-citrus/90 sm:min-h-12 sm:px-6 sm:text-[12px]"
             >
               {t.shop}
             </Link>
             <Link
               href={`/${locale}/custom`}
-              className="inline-flex min-h-12 items-center rounded-full border border-forest/20 bg-white/50 px-6 text-[12px] tracking-[0.16em] text-forest uppercase transition hover:border-citrus/40"
+              className="inline-flex min-h-11 items-center rounded-full border border-forest/20 bg-white/50 px-5 text-[11px] tracking-[0.16em] text-forest uppercase transition hover:border-citrus/40 sm:min-h-12 sm:px-6 sm:text-[12px]"
             >
               {t.custom}
             </Link>
@@ -291,7 +273,7 @@ export function ImmersiveHero({
           <div
             ref={stageRef}
             role="group"
-            aria-label={t.imageAlt}
+            aria-label={`${active.name}. ${t.imageAlt}`}
             tabIndex={0}
             onKeyDown={onKeyDown}
             onPointerMove={onPointerMove}
@@ -299,7 +281,7 @@ export function ImmersiveHero({
             onPointerUp={onPointerUp}
             onPointerCancel={onPointerUp}
             onPointerLeave={onPointerLeave}
-            className="ih-stage relative mx-auto aspect-[4/5] w-full max-w-[420px] touch-none select-none outline-none focus-visible:ring-2 focus-visible:ring-citrus/50 sm:max-w-[480px] lg:max-w-none lg:aspect-[5/6]"
+            className="ih-stage relative mx-auto aspect-[5/6] w-full max-w-[380px] touch-none select-none outline-none focus-visible:ring-2 focus-visible:ring-citrus/50 sm:max-w-[480px] sm:aspect-[4/5] lg:max-w-none lg:aspect-[5/6]"
             style={{ cursor: reduced ? "default" : "grab" }}
           >
             <div
@@ -313,7 +295,7 @@ export function ImmersiveHero({
             />
 
             <div
-              className="ih-layer pointer-events-none absolute inset-[8%] overflow-hidden rounded-[2rem] opacity-50"
+              className="ih-layer pointer-events-none absolute inset-[6%] overflow-hidden rounded-[1.75rem] opacity-45 sm:inset-[8%] sm:rounded-[2rem] sm:opacity-50"
               style={{ transform: atmosphereTransform }}
             >
               <Image
@@ -321,23 +303,22 @@ export function ImmersiveHero({
                 src={active.image}
                 alt=""
                 fill
-                className="object-cover blur-[2px] scale-110"
+                className="object-cover blur-[2px] scale-110 object-[center_28%]"
                 sizes="(min-width: 1024px) 40vw, 80vw"
-                priority={false}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-paper via-transparent to-petal/20" />
             </div>
 
             <div
-              className="ih-layer pointer-events-none absolute top-[8%] right-[2%] h-[28%] w-[28%] overflow-hidden rounded-2xl opacity-70 shadow-[0_12px_30px_rgba(36,53,42,0.12)]"
+              className="ih-layer pointer-events-none absolute top-[6%] right-[1%] hidden h-[26%] w-[26%] overflow-hidden rounded-2xl opacity-70 shadow-[0_12px_30px_rgba(36,53,42,0.12)] sm:block sm:top-[8%] sm:right-[2%] sm:h-[28%] sm:w-[28%]"
               style={{ transform: accentTransform }}
             >
               <Image
-                key={`det-${active.detail}`}
-                src={active.detail}
+                key={`det-${active.image}`}
+                src={active.image}
                 alt=""
                 fill
-                className="object-cover"
+                className="object-cover object-[center_40%] scale-125"
                 sizes="120px"
               />
             </div>
@@ -346,7 +327,7 @@ export function ImmersiveHero({
               href={href}
               onClick={onMainClick}
               aria-label={`${t.openBouquet}: ${active.name}`}
-              className="ih-layer absolute inset-[10%] overflow-hidden rounded-[1.75rem] shadow-[0_28px_60px_rgba(36,53,42,0.22)]"
+              className="ih-layer absolute inset-[7%] overflow-hidden rounded-[1.5rem] shadow-[0_28px_60px_rgba(36,53,42,0.22)] sm:inset-[10%] sm:rounded-[1.75rem]"
               style={{ transform: bouquetTransform }}
             >
               <Image
@@ -355,7 +336,7 @@ export function ImmersiveHero({
                 alt={active.name}
                 fill
                 priority={index === 0}
-                className="object-cover object-[center_20%]"
+                className="object-cover object-[center_22%]"
                 sizes="(min-width: 1024px) 42vw, 85vw"
               />
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-forest/25 via-transparent to-white/10" />
@@ -363,13 +344,13 @@ export function ImmersiveHero({
             </Link>
 
             <div
-              className="ih-layer absolute bottom-[10%] left-[6%] z-10 max-w-[11.5rem]"
+              className="ih-layer absolute bottom-[8%] left-[4%] z-10 max-w-[10.5rem] sm:bottom-[10%] sm:left-[6%] sm:max-w-[11.5rem]"
               style={{ transform: glassTransform }}
             >
               <Link
                 href={href}
                 onClick={onMainClick}
-                className="glass-premium block rounded-2xl px-4 py-3 transition hover:ring-1 hover:ring-citrus/30"
+                className="glass-premium block rounded-2xl px-3.5 py-2.5 transition hover:ring-1 hover:ring-citrus/30 sm:px-4 sm:py-3"
               >
                 <p className="relative z-[1] text-[10px] tracking-[0.2em] text-citrus uppercase">
                   {t.badge}
@@ -383,7 +364,7 @@ export function ImmersiveHero({
 
           {items.length > 1 ? (
             <div
-              className="mx-auto mt-5 flex max-w-[420px] items-center justify-center gap-3 sm:max-w-[480px] lg:max-w-none"
+              className="mx-auto mt-3 flex max-w-[380px] items-center justify-center gap-2 sm:mt-5 sm:max-w-[480px] sm:gap-2.5 lg:max-w-none"
               role="tablist"
               aria-label={t.selectBouquet}
             >
@@ -397,10 +378,10 @@ export function ImmersiveHero({
                     aria-selected={selected}
                     aria-label={`${t.selectBouquet}: ${item.name}`}
                     onClick={() => goTo(i)}
-                    className={`relative h-14 w-14 overflow-hidden rounded-2xl transition duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-citrus/50 sm:h-16 sm:w-16 ${
+                    className={`relative h-10 w-10 shrink-0 overflow-hidden rounded-xl transition duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-citrus/50 sm:h-12 sm:w-12 sm:rounded-2xl lg:h-14 lg:w-14 ${
                       selected
                         ? "ring-2 ring-citrus/70 ring-offset-2 ring-offset-paper shadow-[0_8px_20px_rgba(36,53,42,0.14)]"
-                        : "ring-1 ring-forest/10 opacity-70 hover:opacity-100"
+                        : "ring-1 ring-forest/10 opacity-65 hover:opacity-100"
                     }`}
                   >
                     <Image
@@ -408,7 +389,7 @@ export function ImmersiveHero({
                       alt=""
                       fill
                       className="object-cover object-[center_25%]"
-                      sizes="64px"
+                      sizes="56px"
                     />
                   </button>
                 );

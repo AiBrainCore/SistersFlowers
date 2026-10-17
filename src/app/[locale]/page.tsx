@@ -11,11 +11,7 @@ import { ProductCard } from "@/components/product-card";
 import { Reveal } from "@/components/reveal";
 import { ImmersiveHero } from "@/components/immersive-hero";
 import { buildPageMetadata } from "@/lib/seo";
-import {
-  HERO_BOUQUET_DETAILS,
-  HERO_BOUQUET_SLUGS,
-  type HeroBouquetItem,
-} from "@/lib/hero-bouquets";
+import { HERO_BOUQUETS, type HeroBouquetItem } from "@/lib/hero-bouquets";
 
 const studioImage = "/bouquets/b-12.jpg";
 const personalImage = "/bouquets/b-08.jpg";
@@ -57,21 +53,12 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
     categories.find((c) => c.slug === slug && (c.productCount ?? 0) > 0),
   ).filter(Boolean) as typeof categories;
 
-  const heroBouquets: HeroBouquetItem[] = HERO_BOUQUET_SLUGS.map((slug) => {
-    const product = products.find((p) => p.slug === slug);
-    if (!product) {
-      return {
-        slug: null,
-        image: `/bouquets/shown/w-04.jpg`,
-        detail: HERO_BOUQUET_DETAILS[slug],
-        name: t.hero.studioLine,
-      };
-    }
+  const heroBouquets: HeroBouquetItem[] = HERO_BOUQUETS.map((entry) => {
+    const product = products.find((p) => p.slug === entry.slug);
     return {
-      slug: product.slug,
-      image: product.image,
-      detail: HERO_BOUQUET_DETAILS[slug],
-      name: locale === "vi" ? product.names.vi : product.names.en,
+      slug: product ? product.slug : null,
+      image: entry.image,
+      name: locale === "vi" ? entry.nameVi : entry.nameEn,
     };
   });
 
