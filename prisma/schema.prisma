@@ -8,23 +8,45 @@ datasource db {
 }
 
 model Product {
-  id        String   @id @default(cuid())
-  slug      String   @unique
-  price     Int
-  image     String
-  accent    String   @default("rose")
+  id         String            @id @default(cuid())
+  slug       String            @unique
+  price      Int
+  image      String
+  accent     String            @default("rose")
+  nameEn     String
+  nameVi     String
+  tagEn      String
+  tagVi      String
+  blurbEn    String
+  blurbVi    String
+  storyEn    String
+  storyVi    String
+  published  Boolean           @default(true)
+  sortOrder  Int               @default(0)
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
+  categories ProductCategory[]
+}
+
+model Category {
+  id        String            @id @default(cuid())
+  slug      String            @unique
   nameEn    String
   nameVi    String
-  tagEn     String
-  tagVi     String
-  blurbEn   String
-  blurbVi   String
-  storyEn   String
-  storyVi   String
-  published Boolean  @default(true)
-  sortOrder Int      @default(0)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  sortOrder Int               @default(0)
+  active    Boolean           @default(true)
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+  products  ProductCategory[]
+}
+
+model ProductCategory {
+  productId  String
+  categoryId String
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([productId, categoryId])
 }
 
 model Order {

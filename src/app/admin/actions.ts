@@ -86,6 +86,13 @@ export async function saveProductAction(formData: FormData) {
     image = `/bouquets/uploads/${filename}`;
   }
 
+  const categoryIds = formData
+    .getAll("categoryIds")
+    .map((value) => String(value).trim())
+    .filter(Boolean);
+
+  let productId = id;
+
   if (id) {
     const current = await prisma.product.findUnique({ where: { id } });
     if (!current) redirect("/admin/products");
@@ -115,7 +122,7 @@ export async function saveProductAction(formData: FormData) {
   } else {
     const clash = await prisma.product.findUnique({ where: { slug } });
     if (clash) slug = `${slug}-${Date.now().toString(36)}`;
-    await prisma.product.create({
+    const created = await prisma.product.create({
       data: {
         slug,
         price,
@@ -133,6 +140,16 @@ export async function saveProductAction(formData: FormData) {
         published,
       },
     });
+    productId = created.id;
+  }
+
+  if (productId) {
+    await prisma.productCategory.deleteMany({ where: { productId } });
+    if (categoryIds.length) {
+      await prisma.productCategory.createMany({
+        data: categoryIds.map((categoryId) => ({ productId, categoryId })),
+      });
+    }
   }
 
   revalidatePath("/");

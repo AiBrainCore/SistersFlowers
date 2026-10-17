@@ -2,14 +2,19 @@ import Image from "next/image";
 import { saveProductAction } from "@/app/admin/actions";
 import type { Product } from "@/data/products";
 import type { AdminDictionary } from "@/i18n/admin-dictionaries";
+import type { CategoryPublic } from "@/lib/categories";
 
 export function ProductForm({
   product,
   t,
+  categories,
 }: {
   product?: Product;
   t: AdminDictionary;
+  categories: CategoryPublic[];
 }) {
+  const selected = new Set((product?.categories || []).map((c) => c.id));
+
   return (
     <form action={saveProductAction} className="admin-card" encType="multipart/form-data">
       {product?.id ? <input type="hidden" name="id" value={product.id} /> : null}
@@ -77,6 +82,42 @@ export function ProductForm({
           />
         </label>
       </div>
+
+      <fieldset style={{ marginBottom: 16, border: "none", padding: 0 }}>
+        <legend style={{ fontSize: 12, letterSpacing: "0.08em", textTransform: "uppercase", opacity: 0.7, marginBottom: 8 }}>
+          {t.products.categories}
+        </legend>
+        <p style={{ fontSize: 13, opacity: 0.7, marginTop: 0, marginBottom: 10 }}>
+          {t.products.categoriesHint}
+        </p>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+          {categories.map((cat) => (
+            <label
+              key={cat.id}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                fontSize: 13,
+                border: "1px solid rgba(45,58,40,0.15)",
+                borderRadius: 999,
+                padding: "6px 12px",
+              }}
+            >
+              <input
+                type="checkbox"
+                name="categoryIds"
+                value={cat.id}
+                defaultChecked={selected.has(cat.id)}
+                style={{ width: "auto" }}
+              />
+              <span>
+                {cat.nameEn} / {cat.nameVi}
+              </span>
+            </label>
+          ))}
+        </div>
+      </fieldset>
 
       <label className="admin-field">
         <span>{t.products.blurbEn}</span>

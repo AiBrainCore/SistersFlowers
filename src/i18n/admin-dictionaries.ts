@@ -71,6 +71,8 @@ const en = {
     photo: "Photo (jpg/png/webp)",
     publishedShop: "Published in shop",
     slugPlaceholder: "auto from EN name",
+    categories: "Categories (occasions)",
+    categoriesHint: "A bouquet can belong to several occasions.",
   },
   addons: {
     title: "Extras & partners",
@@ -225,6 +227,8 @@ const vi: typeof en = {
     photo: "Ảnh (jpg/png/webp)",
     publishedShop: "Hiện trên cửa hàng",
     slugPlaceholder: "tự tạo từ tên EN",
+    categories: "Danh mục (dịp)",
+    categoriesHint: "Một bó có thể thuộc nhiều dịp.",
   },
   addons: {
     title: "Quà kèm & đối tác",

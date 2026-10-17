@@ -1,3 +1,5 @@
+import type { CategoryPublic } from "@/lib/categories";
+
 export type Product = {
   id?: string;
   slug: string;
@@ -10,6 +12,8 @@ export type Product = {
   story: { en: string; vi: string };
   published?: boolean;
   sortOrder?: number;
+  createdAt?: Date;
+  categories?: CategoryPublic[];
 };
 
 export type ProductRecord = {
@@ -28,6 +32,8 @@ export type ProductRecord = {
   storyVi: string;
   published: boolean;
   sortOrder: number;
+  createdAt?: Date;
+  categories?: { category: CategoryPublic }[];
 };
 
 export function toProduct(record: ProductRecord): Product {
@@ -43,6 +49,8 @@ export function toProduct(record: ProductRecord): Product {
     story: { en: record.storyEn, vi: record.storyVi },
     published: record.published,
     sortOrder: record.sortOrder,
+    createdAt: record.createdAt,
+    categories: record.categories?.map((link) => link.category),
   };
 }
 
