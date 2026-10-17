@@ -181,7 +181,7 @@ export function ImmersiveHero({
         if (dx <= -SWIPE_MIN) goTo(index + 1);
         else if (dx >= SWIPE_MIN) goTo(index - 1);
         suppressNav.current = true;
-      } else if (session.moved) {
+      } else if (session.mode === "pose" && session.moved) {
         suppressNav.current = true;
       }
     }
