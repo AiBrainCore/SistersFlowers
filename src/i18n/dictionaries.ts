@@ -30,6 +30,12 @@ const en = {
     shop: "Explore Flowers",
     custom: "Create Your Bouquet",
   },
+  heroPreview: {
+    badge: "Handcrafted in Da Lat",
+    hint: "Drag to explore depth",
+    note: "Prototype — layered depth (not true 360° yet)",
+    back: "Back to current homepage",
+  },
   paths: {
     shopTitle: "Ready to gift",
     shopBody: "Studio bouquets photographed as they leave our hands.",
@@ -318,6 +324,12 @@ const vi = {
     body: "Những bó hoa tươi, món quà ý nghĩa và thiết kế hoa tinh tế, được chăm chút tỉ mỉ cho từng khoảnh khắc đặc biệt.",
     shop: "Khám phá hoa",
     custom: "Tạo bó theo ý bạn",
+  },
+  heroPreview: {
+    badge: "Làm thủ công tại Đà Lạt",
+    hint: "Kéo để cảm nhận chiều sâu",
+    note: "Nguyên mẫu — chiều sâu nhiều lớp (chưa phải 360° thật)",
+    back: "Về trang chủ hiện tại",
   },
   paths: {
     shopTitle: "Sẵn sàng tặng",
