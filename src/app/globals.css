@@ -103,6 +103,30 @@ body {
   );
 }
 
+/* Nav dropdowns: premium glass, high opacity for readability */
+.glass-menu {
+  background: rgba(251, 249, 245, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(16px) saturate(1.08);
+  -webkit-backdrop-filter: blur(16px) saturate(1.08);
+  box-shadow:
+    0 16px 40px rgba(36, 53, 42, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    inset 0 -1px 0 rgba(36, 53, 42, 0.04);
+  animation: glass-menu-in 160ms ease-out;
+}
+
+@keyframes glass-menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .ih-stage {
   transform-style: preserve-3d;
   perspective: 1200px;
@@ -134,6 +158,10 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .glass-menu {
+    animation: none;
+  }
+
   .ih-layer {
     will-change: auto;
     transition: none !important;

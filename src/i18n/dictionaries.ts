@@ -17,6 +17,12 @@ const en = {
     about: "About",
     menu: "Menu",
     close: "Close",
+    language: "Language",
+  },
+  language: {
+    label: "Language",
+    en: "English",
+    vi: "Tiếng Việt",
   },
   hero: {
     brand: "Sisters Flowers",
@@ -144,6 +150,7 @@ const en = {
   },
   cart: {
     title: "Your tray",
+    openAria: "Your cart",
     empty: "Nothing gathered yet.",
     emptyCta: "See bouquets",
     total: "Subtotal",
@@ -318,17 +325,22 @@ const en = {
   },
   location: {
     deliveringIn: "Delivering in",
-    chooseCity: "Choose city",
-    openNow: "Open",
+    chooseCity: "Choose delivery city",
+    openNow: "Available",
     comingSoon: "Coming soon",
     inactive: "Unavailable",
     switchNote:
-      "Changing city updates the shop for that location. Your tray is cleared if it had items.",
+      "City changes the shop assortment and delivery. Language stays separate.",
     comingSoonBody:
       "This Sisters studio is not open for orders yet. You can browse the brand, then order from an open city.",
     orderFrom: "Order from {city}",
     cartCleared:
       "Your tray was cleared because the shop location changed.",
+    switchConfirmTitle: "Change delivery city?",
+    switchConfirmBody:
+      "Your tray has {count} item(s). Switching city will clear it so locations are not mixed.",
+    switchConfirmKeep: "Keep tray",
+    switchConfirmClear: "Switch and clear",
   },
 };
 
@@ -349,6 +361,12 @@ const vi = {
     about: "Câu chuyện",
     menu: "Menu",
     close: "Đóng",
+    language: "Ngôn ngữ",
+  },
+  language: {
+    label: "Ngôn ngữ",
+    en: "English",
+    vi: "Tiếng Việt",
   },
   hero: {
     brand: "Sisters Flowers",
@@ -476,6 +494,7 @@ const vi = {
   },
   cart: {
     title: "Khay của bạn",
+    openAria: "Giỏ hàng của bạn",
     empty: "Chưa gom hoa nào.",
     emptyCta: "Xem bó hoa",
     total: "Tạm tính",
@@ -651,16 +670,21 @@ const vi = {
   },
   location: {
     deliveringIn: "Giao tại",
-    chooseCity: "Chọn thành phố",
+    chooseCity: "Chọn thành phố giao",
     openNow: "Đang mở",
     comingSoon: "Sắp mở",
     inactive: "Chưa có",
     switchNote:
-      "Đổi thành phố sẽ đổi cửa hàng theo địa điểm đó. Khay hàng được xóa nếu còn sản phẩm.",
+      "Thành phố đổi cửa hàng và giao hàng. Ngôn ngữ là lựa chọn riêng.",
     comingSoonBody:
       "Studio Sisters tại đây chưa nhận đơn. Bạn có thể xem thương hiệu, rồi đặt từ thành phố đang mở.",
     orderFrom: "Đặt từ {city}",
     cartCleared: "Khay đã được xóa vì bạn đổi địa điểm mua hàng.",
+    switchConfirmTitle: "Đổi thành phố giao?",
+    switchConfirmBody:
+      "Khay đang có {count} món. Đổi thành phố sẽ xóa khay để không trộn địa điểm.",
+    switchConfirmKeep: "Giữ khay",
+    switchConfirmClear: "Đổi và xóa",
   },
 };
 
