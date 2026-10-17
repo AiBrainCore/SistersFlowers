@@ -12,38 +12,60 @@ import {
 } from "react";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
-
-/** Atmospheric studio photography — not linked to a shop SKU */
-const MAIN = "/bouquets/shown/w-04.jpg";
-const ATMOSPHERE = "/bouquets/b-16.jpg";
-const ACCENT = "/bouquets/clean/p03.jpg";
+import type { HeroBouquetItem } from "@/lib/hero-bouquets";
 
 type Pose = { rx: number; ry: number; px: number; py: number };
 
 const REST: Pose = { rx: -4, ry: 8, px: 0, py: 0 };
 
+const SWIPE_MIN = 48;
+
+type DragSession = {
+  active: boolean;
+  x: number;
+  y: number;
+  ry: number;
+  rx: number;
+  mode: "pending" | "pose" | "swipe";
+  moved: boolean;
+};
+
 export function ImmersiveHero({
   locale,
   dictionary,
+  bouquets,
 }: {
   locale: Locale;
   dictionary: Dictionary;
+  bouquets: HeroBouquetItem[];
 }) {
   const t = dictionary.hero;
+  const items =
+    bouquets.length > 0
+      ? bouquets
+      : [
+          {
+            slug: null as string | null,
+            image: "/bouquets/shown/w-04.jpg",
+            detail: "/bouquets/clean/p03.jpg",
+            name: t.studioLine,
+          },
+        ];
+
   const stageRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<number | null>(null);
   const target = useRef<Pose>({ ...REST });
   const current = useRef<Pose>({ ...REST });
-  const drag = useRef<{
-    active: boolean;
-    x: number;
-    y: number;
-    ry: number;
-    rx: number;
-  } | null>(null);
+  const drag = useRef<DragSession | null>(null);
+  const suppressNav = useRef(false);
   const [pose, setPose] = useState<Pose>(REST);
   const [reduced, setReduced] = useState(false);
-  const [ready, setReady] = useState(false);
+  const [index, setIndex] = useState(0);
+
+  const active = items[Math.min(index, items.length - 1)]!;
+  const href = active.slug
+    ? `/${locale}/shop/${active.slug}`
+    : `/${locale}/shop`;
 
   const tick = useCallback(() => {
     const c = current.current;
@@ -62,7 +84,6 @@ export function ImmersiveHero({
     const apply = () => setReduced(mq.matches);
     apply();
     mq.addEventListener("change", apply);
-    setReady(true);
     return () => mq.removeEventListener("change", apply);
   }, []);
 
@@ -79,6 +100,15 @@ export function ImmersiveHero({
     };
   }, [reduced, tick]);
 
+  function goTo(next: number) {
+    const len = items.length;
+    if (len < 2) return;
+    setIndex(((next % len) + len) % len);
+    target.current = { ...REST };
+    current.current = { ...REST };
+    setPose(REST);
+  }
+
   function setFromPointer(clientX: number, clientY: number, amplify = 1) {
     const el = stageRef.current;
     if (!el || reduced) return;
@@ -94,23 +124,37 @@ export function ImmersiveHero({
   }
 
   function onPointerMove(event: ReactPointerEvent<HTMLDivElement>) {
-    if (reduced) return;
-    if (drag.current?.active) {
-      const dx = event.clientX - drag.current.x;
-      const dy = event.clientY - drag.current.y;
+    const session = drag.current;
+    if (!session?.active) {
+      if (!reduced) setFromPointer(event.clientX, event.clientY, 1);
+      return;
+    }
+
+    const dx = event.clientX - session.x;
+    const dy = event.clientY - session.y;
+    if (Math.abs(dx) > 6 || Math.abs(dy) > 6) session.moved = true;
+
+    if (session.mode === "pending") {
+      if (Math.abs(dx) > 22 && Math.abs(dx) > Math.abs(dy) * 1.25) {
+        session.mode = "swipe";
+      } else if (Math.abs(dx) > 10 || Math.abs(dy) > 10) {
+        session.mode = "pose";
+      }
+    }
+
+    if (session.mode === "swipe" || reduced) return;
+
+    if (session.mode === "pose") {
       target.current = {
-        rx: Math.max(-16, Math.min(10, drag.current.rx + dy * 0.08)),
-        ry: Math.max(-22, Math.min(28, drag.current.ry + dx * 0.12)),
+        rx: Math.max(-16, Math.min(10, session.rx + dy * 0.08)),
+        ry: Math.max(-22, Math.min(28, session.ry + dx * 0.12)),
         px: dx * 0.04,
         py: dy * 0.03,
       };
-      return;
     }
-    setFromPointer(event.clientX, event.clientY, 1);
   }
 
   function onPointerDown(event: ReactPointerEvent<HTMLDivElement>) {
-    if (reduced) return;
     (event.currentTarget as HTMLElement).setPointerCapture(event.pointerId);
     drag.current = {
       active: true,
@@ -118,24 +162,32 @@ export function ImmersiveHero({
       y: event.clientY,
       ry: target.current.ry,
       rx: target.current.rx,
+      mode: "pending",
+      moved: false,
     };
   }
 
   function onPointerUp(event: ReactPointerEvent<HTMLDivElement>) {
-    if (drag.current?.active) {
+    const session = drag.current;
+    if (session?.active) {
       try {
         event.currentTarget.releasePointerCapture(event.pointerId);
       } catch {
         // ignore
       }
+
+      if (session.mode === "swipe") {
+        const dx = event.clientX - session.x;
+        if (dx <= -SWIPE_MIN) goTo(index + 1);
+        else if (dx >= SWIPE_MIN) goTo(index - 1);
+        suppressNav.current = true;
+      } else if (session.moved) {
+        suppressNav.current = true;
+      }
     }
     drag.current = null;
     if (!reduced) {
-      target.current = {
-        ...target.current,
-        px: 0,
-        py: 0,
-      };
+      target.current = { ...target.current, px: 0, py: 0 };
     }
   }
 
@@ -145,23 +197,26 @@ export function ImmersiveHero({
     }
   }
 
+  function onMainClick(event: React.MouseEvent) {
+    if (suppressNav.current) {
+      event.preventDefault();
+      suppressNav.current = false;
+    }
+  }
+
   function onKeyDown(event: ReactKeyboardEvent<HTMLDivElement>) {
-    if (reduced) return;
-    const step = 3;
     if (event.key === "ArrowLeft") {
       event.preventDefault();
-      target.current = {
-        ...target.current,
-        ry: Math.max(-22, target.current.ry - step),
-      };
+      goTo(index - 1);
+      return;
     }
     if (event.key === "ArrowRight") {
       event.preventDefault();
-      target.current = {
-        ...target.current,
-        ry: Math.min(28, target.current.ry + step),
-      };
+      goTo(index + 1);
+      return;
     }
+    if (reduced) return;
+    const step = 3;
     if (event.key === "ArrowUp") {
       event.preventDefault();
       target.current = {
@@ -235,7 +290,7 @@ export function ImmersiveHero({
         <div className="order-2">
           <div
             ref={stageRef}
-            role="img"
+            role="group"
             aria-label={t.imageAlt}
             tabIndex={0}
             onKeyDown={onKeyDown}
@@ -262,7 +317,8 @@ export function ImmersiveHero({
               style={{ transform: atmosphereTransform }}
             >
               <Image
-                src={ATMOSPHERE}
+                key={`atm-${active.image}`}
+                src={active.image}
                 alt=""
                 fill
                 className="object-cover blur-[2px] scale-110"
@@ -277,7 +333,8 @@ export function ImmersiveHero({
               style={{ transform: accentTransform }}
             >
               <Image
-                src={ACCENT}
+                key={`det-${active.detail}`}
+                src={active.detail}
                 alt=""
                 fill
                 className="object-cover"
@@ -285,45 +342,79 @@ export function ImmersiveHero({
               />
             </div>
 
-            <div
+            <Link
+              href={href}
+              onClick={onMainClick}
+              aria-label={`${t.openBouquet}: ${active.name}`}
               className="ih-layer absolute inset-[10%] overflow-hidden rounded-[1.75rem] shadow-[0_28px_60px_rgba(36,53,42,0.22)]"
-              style={{
-                transform: bouquetTransform,
-                transition: ready && !reduced ? undefined : "none",
-              }}
+              style={{ transform: bouquetTransform }}
             >
               <Image
-                src={MAIN}
-                alt={t.imageAlt}
+                key={`main-${active.image}`}
+                src={active.image}
+                alt={active.name}
                 fill
-                priority
+                priority={index === 0}
                 className="object-cover object-[center_20%]"
                 sizes="(min-width: 1024px) 42vw, 85vw"
               />
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-forest/25 via-transparent to-white/10" />
               <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-white/35" />
-            </div>
+            </Link>
 
             <div
               className="ih-layer absolute bottom-[10%] left-[6%] z-10 max-w-[11.5rem]"
               style={{ transform: glassTransform }}
             >
-              <div className="glass-premium rounded-2xl px-4 py-3">
+              <Link
+                href={href}
+                onClick={onMainClick}
+                className="glass-premium block rounded-2xl px-4 py-3 transition hover:ring-1 hover:ring-citrus/30"
+              >
                 <p className="relative z-[1] text-[10px] tracking-[0.2em] text-citrus uppercase">
                   {t.badge}
                 </p>
                 <p className="relative z-[1] mt-1 text-xs leading-snug text-forest">
-                  {t.studioLine}
+                  {active.name}
                 </p>
-              </div>
+              </Link>
             </div>
-
-            {!reduced ? (
-              <p className="pointer-events-none absolute top-3 left-1/2 z-10 -translate-x-1/2 rounded-full bg-paper/70 px-3 py-1 text-[10px] tracking-[0.14em] text-moss uppercase backdrop-blur-sm">
-                {t.interactHint}
-              </p>
-            ) : null}
           </div>
+
+          {items.length > 1 ? (
+            <div
+              className="mx-auto mt-5 flex max-w-[420px] items-center justify-center gap-3 sm:max-w-[480px] lg:max-w-none"
+              role="tablist"
+              aria-label={t.selectBouquet}
+            >
+              {items.map((item, i) => {
+                const selected = i === index;
+                return (
+                  <button
+                    key={`${item.slug ?? "shop"}-${item.image}`}
+                    type="button"
+                    role="tab"
+                    aria-selected={selected}
+                    aria-label={`${t.selectBouquet}: ${item.name}`}
+                    onClick={() => goTo(i)}
+                    className={`relative h-14 w-14 overflow-hidden rounded-2xl transition duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-citrus/50 sm:h-16 sm:w-16 ${
+                      selected
+                        ? "ring-2 ring-citrus/70 ring-offset-2 ring-offset-paper shadow-[0_8px_20px_rgba(36,53,42,0.14)]"
+                        : "ring-1 ring-forest/10 opacity-70 hover:opacity-100"
+                    }`}
+                  >
+                    <Image
+                      src={item.image}
+                      alt=""
+                      fill
+                      className="object-cover object-[center_25%]"
+                      sizes="64px"
+                    />
+                  </button>
+                );
+              })}
+            </div>
+          ) : null}
         </div>
       </div>
     </section>

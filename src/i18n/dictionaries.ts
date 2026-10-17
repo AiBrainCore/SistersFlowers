@@ -33,6 +33,8 @@ const en = {
     studioLine: "Highland floral studio",
     interactHint: "Discover the bouquet",
     imageAlt: "Floral arrangement from Sisters Flowers in Da Lat",
+    selectBouquet: "Show bouquet",
+    openBouquet: "View this bouquet",
   },
   heroPreview: {
     badge: "Handcrafted in Da Lat",
@@ -341,6 +343,8 @@ const vi = {
     studioLine: "Studio hoa cao nguyên",
     interactHint: "Khám phá bó hoa",
     imageAlt: "Bó hoa từ Sisters Flowers tại Đà Lạt",
+    selectBouquet: "Xem bó hoa",
+    openBouquet: "Xem bó này",
   },
   heroPreview: {
     badge: "Làm thủ công tại Đà Lạt",
