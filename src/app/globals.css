@@ -63,11 +63,19 @@ body {
 }
 
 .glass {
-  background: rgba(251, 249, 245, 0.72);
+  background: rgba(251, 249, 245, 0.78);
   border: 1px solid rgba(255, 255, 255, 0.55);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   box-shadow: 0 12px 40px rgba(36, 53, 42, 0.08);
+}
+
+@media (max-width: 767px) {
+  .glass {
+    background: rgba(251, 249, 245, 0.88);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
 }
 
 .reveal {

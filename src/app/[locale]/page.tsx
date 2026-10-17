@@ -1,13 +1,15 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { isLocale } from "@/i18n/config";
+import type { Metadata } from "next";
+import { isLocale, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
 import { listPublishedProducts } from "@/lib/products";
 import { listActiveCategories } from "@/lib/categories";
 import { FEATURED_CATEGORY_SLUGS } from "@/lib/category-constants";
 import { ProductCard } from "@/components/product-card";
 import { Reveal } from "@/components/reveal";
+import { buildPageMetadata } from "@/lib/seo";
 
 const heroImage = "/bouquets/b-16.jpg";
 const studioImage = "/bouquets/b-12.jpg";
@@ -22,6 +24,20 @@ const occasionTints = [
 ];
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({
+  params,
+}: PageProps<"/[locale]">): Promise<Metadata> {
+  const { locale } = await params;
+  if (!isLocale(locale)) return {};
+  const t = getDictionary(locale as Locale);
+  return buildPageMetadata({
+    locale: locale as Locale,
+    title: `${t.brand} · ${t.origin}`,
+    description: t.hero.subtitle,
+    pathWithoutLocale: "",
+  });
+}
 
 export default async function HomePage({ params }: PageProps<"/[locale]">) {
   const { locale } = await params;

@@ -318,7 +318,7 @@ export function CatalogFilters({
 
       <form
         onSubmit={onSubmit}
-        className="hidden rounded-[1.5rem] border border-forest/10 bg-cream/35 p-5 md:block"
+        className="glass hidden rounded-[1.5rem] p-5 md:block"
       >
         <div className="grid gap-5 lg:grid-cols-[1fr_1.1fr_0.7fr_auto] lg:items-end">
           {filterFields}

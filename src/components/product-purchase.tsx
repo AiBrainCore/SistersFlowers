@@ -71,10 +71,10 @@ export function ProductPurchase({
                 <button
                   type="button"
                   onClick={() => toggle(addon.id)}
-                  className={`flex w-full items-start justify-between gap-4 rounded-2xl border px-4 py-3 text-left transition ${
+                  className={`flex min-h-14 w-full items-start justify-between gap-4 rounded-2xl border px-4 py-3.5 text-left transition ${
                     on
-                      ? "border-rose bg-blush/35"
-                      : "border-forest/10 bg-white/50 hover:border-forest/25"
+                      ? "border-citrus/40 bg-citrus/10 shadow-[0_8px_24px_rgba(232,106,43,0.12)]"
+                      : "glass border-forest/10 hover:border-citrus/30"
                   }`}
                 >
                   <span>
@@ -116,7 +116,7 @@ export function ProductPurchase({
                       }))
                     }
                     placeholder={dictionary.product.addonNotePlaceholder}
-                    className="mt-2 w-full rounded-full border border-forest/15 bg-white/70 px-4 py-2.5 text-sm outline-none focus:border-rose"
+                    className="mt-2 min-h-11 w-full rounded-full border border-forest/15 bg-white/80 px-4 py-2.5 text-sm outline-none focus:border-citrus"
                   />
                 ) : null}
               </li>
@@ -148,7 +148,7 @@ export function ProductPurchase({
             setAdded(true);
             window.setTimeout(() => setAdded(false), 1600);
           }}
-          className="rounded-full bg-forest px-8 py-3 text-[12px] tracking-[0.18em] text-ivory uppercase"
+          className="min-h-12 rounded-full bg-citrus px-8 py-3 text-[12px] tracking-[0.18em] text-ivory uppercase transition hover:bg-citrus/90"
         >
           {added ? dictionary.product.added : dictionary.product.add}
         </button>

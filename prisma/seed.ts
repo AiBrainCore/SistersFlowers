@@ -88,7 +88,26 @@ async function main() {
     }
     console.log(`Seeded ${products.length} products`);
   } else {
-    console.log(`Skip products: ${productCount} already exist`);
+    console.log(`Skip products create: ${productCount} already exist`);
+    // Refresh customer-facing copy from seed without resetting prices/images
+    let updated = 0;
+    for (const product of products) {
+      const result = await prisma.product.updateMany({
+        where: { slug: product.slug },
+        data: {
+          nameEn: product.names.en,
+          nameVi: product.names.vi,
+          tagEn: product.tags.en,
+          tagVi: product.tags.vi,
+          blurbEn: product.blurb.en,
+          blurbVi: product.blurb.vi,
+          storyEn: product.story.en,
+          storyVi: product.story.vi,
+        },
+      });
+      updated += result.count;
+    }
+    console.log(`Refreshed copy for ${updated} products`);
   }
 
   await prisma.deliverySettings.upsert({

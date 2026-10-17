@@ -22,8 +22,8 @@ export const products: Product[] = [
       vi: "Giấy đỏ rượu, bó hoa nổi trên ảnh.",
     },
     story: {
-      en: "The shop only sells finished bouquets — this one is wrapped Korean-style, ribboned, and ready to hand over. Not stems. A full bouquet.",
-      vi: "Tiệm chỉ bán bó hoa hoàn chỉnh — gói kiểu Hàn, nơ sẵn, trao tay. Không bán cành lẻ.",
+      en: "A finished studio wrap — ribboned and ready to hand over as a complete bouquet.",
+      vi: "Bó hoa gói sẵn tại studio — nơ đẹp, trao tay như một món quà hoàn chỉnh.",
     },
   },
   {
@@ -134,8 +134,8 @@ export const products: Product[] = [
       vi: "Hồng đỏ dày, giấy trắng — bó full khách thích nhất.",
     },
     story: {
-      en: "Packed roses in a Korean wrap. This is the core product: one bouquet, finished, ready to gift.",
-      vi: "Hồng xếp dày, gói Hàn. Đây là sản phẩm chính: một bó xong, sẵn sàng tặng.",
+      en: "Packed roses in a studio wrap — one finished bouquet, ready to gift.",
+      vi: "Hồng xếp dày, gói studio — một bó hoàn chỉnh, sẵn sàng tặng.",
     },
   },
   {
@@ -160,10 +160,10 @@ export const products: Product[] = [
     image: "/bouquets/shown/w-10.jpg",
     accent: "blush",
     names: { en: "Pink ribbon", vi: "Nơ hồng" },
-    tags: { en: "Ribbon wrap bouquet", vi: "Bó nơ Hàn" },
+    tags: { en: "Ribbon wrap bouquet", vi: "Bó nơ dài" },
     blurb: {
-      en: "Soft mix with a long Korean ribbon.",
-      vi: "Mix dịu với nơ Hàn dài.",
+      en: "Soft mix with a long studio ribbon.",
+      vi: "Mix dịu với nơ dài.",
     },
     story: {
       en: "The ribbon is part of the bouquet. Finished in the shop, same language as the social clips.",
@@ -215,7 +215,7 @@ export const products: Product[] = [
     },
     story: {
       en: "Garden wrap from the shop floor. No single-stem sales.",
-      vi: "Bó garden làm tại tiệm. Không bán hoa cành lẻ.",
+      vi: "Bó garden làm tại studio — tươi và sẵn sàng tặng.",
     },
   },
   {
@@ -230,8 +230,8 @@ export const products: Product[] = [
       vi: "Bó garden nhiều màu như trên clip.",
     },
     story: {
-      en: "Mixed seasonal flowers, Korean paper, one complete bouquet.",
-      vi: "Hoa mix theo ngày, giấy Hàn, một bó hoàn chỉnh.",
+      en: "Mixed seasonal flowers, studio paper wrap, one complete bouquet.",
+      vi: "Hoa mix theo ngày, giấy gói studio, một bó hoàn chỉnh.",
     },
   },
   {
@@ -374,8 +374,8 @@ export const products: Product[] = [
       vi: "Bó hồng nhạt dày — gói lớn.",
     },
     story: {
-      en: "Packed pink roses, Korean wrap. This is the product: one bouquet.",
-      vi: "Hồng nhạt xếp dày, gói Hàn. Sản phẩm là một bó.",
+      en: "Packed pink roses in a studio wrap — one finished bouquet.",
+      vi: "Hồng nhạt xếp dày, gói studio — một bó hoàn chỉnh.",
     },
   },
   {
