@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     template: "%s · Sisters Flowers",
   },
   description:
-    "Flowers from Da Lat. Made with feeling. Handmade bouquets, local delivery, weddings, and hotel gifting.",
+    "Sisters Flowers — florist studio in Da Lat. Handcrafted bouquets, gifts, weddings, hotel floristry, and local delivery.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

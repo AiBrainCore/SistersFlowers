@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import type { Locale } from "@/i18n/config";
 import { isLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
+import { listActiveCategories } from "@/lib/categories";
 import { CartProvider } from "@/context/cart-context";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
@@ -18,11 +19,16 @@ export default async function LocaleLayout({
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
   const dictionary = getDictionary(locale as Locale);
+  const categories = await listActiveCategories();
 
   return (
     <CartProvider>
       <div className="flex min-h-full flex-col">
-        <SiteHeader locale={locale as Locale} dictionary={dictionary} />
+        <SiteHeader
+          locale={locale as Locale}
+          dictionary={dictionary}
+          occasions={categories}
+        />
         <main className="flex-1">{children}</main>
         <SiteFooter locale={locale as Locale} dictionary={dictionary} />
         <CartDrawer locale={locale as Locale} dictionary={dictionary} />
