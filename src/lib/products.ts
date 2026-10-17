@@ -32,21 +32,7 @@ export async function listPublishedProducts(
   } = { published: true };
 
   const and: object[] = [];
-
   const q = query.q?.trim();
-  if (q) {
-    and.push({
-      OR: [
-        { nameEn: { contains: q } },
-        { nameVi: { contains: q } },
-        { tagEn: { contains: q } },
-        { tagVi: { contains: q } },
-        { blurbEn: { contains: q } },
-        { blurbVi: { contains: q } },
-        { slug: { contains: q.toLowerCase() } },
-      ],
-    });
-  }
 
   if (query.minPrice != null && Number.isFinite(query.minPrice)) {
     and.push({ price: { gte: query.minPrice } });
@@ -78,7 +64,36 @@ export async function listPublishedProducts(
     include: categoryInclude,
     orderBy,
   });
-  return rows.map(toProduct);
+
+  let products = rows.map(toProduct);
+
+  // Accent-insensitive EN/VI search (SQLite has no unaccent)
+  if (q) {
+    const needle = stripDiacritics(q);
+    products = products.filter((product) => {
+      const hay = stripDiacritics(
+        [
+          product.slug,
+          product.names.en,
+          product.names.vi,
+          product.tags.en,
+          product.tags.vi,
+          product.blurb.en,
+          product.blurb.vi,
+        ].join(" "),
+      );
+      return hay.includes(needle);
+    });
+  }
+
+  return products;
+}
+
+export function stripDiacritics(input: string) {
+  return input
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
 }
 
 export async function listAllProducts(): Promise<Product[]> {

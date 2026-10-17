@@ -1,0 +1,45 @@
+---
+description: Permanent Sisters Flowers UI/UX standards for all frontend work
+alwaysApply: true
+---
+
+# Sisters Flowers — Permanent UI/UX Standards
+
+All design and frontend development must follow these principles.
+
+## Design direction
+- Light, fresh, elegant Vietnamese flower studio
+- Pastel field-flower colors with citrus orange accents (`--citrus`)
+- 70% calm/professional, 30% vivid creative energy (homepage may be bolder; catalog/checkout stay calm)
+- Photography sells first — avoid cluttered UI and generic template aesthetics
+
+## Principles
+1. **Mobile-first** — design for smartphones first; desktop equally polished
+2. **Visual symmetry** — consistent spacing, alignment, card proportions, typography; use the spacing system, avoid arbitrary margins
+3. **Comfort** — intuitive, calm, one-hand friendly; minimize unnecessary steps
+4. **Professional** — consistent tokens, radii, components, iconography
+5. **Responsive product grids** — prefer 2 columns on suitable mobile widths; consistent image aspect ratios; align titles/prices; prevent layout shift
+6. **Touch-friendly** — aim for ≥44×44px targets; filters in a sheet on mobile, not half the screen
+7. **Performance** — optimized images, lazy below-fold media, light animations; respect `prefers-reduced-motion`
+8. **Accessibility** — readable type, contrast, focus states, accessible forms
+9. **Language compatibility** — EN/VI (and future locales); layouts must tolerate longer Vietnamese strings
+10. **Consistency across** homepage, catalog, product, custom bouquet, cart, checkout — without forcing identical card/block patterns everywhere (harmony ≠ sameness)
+
+## Catalog specifics
+- Featured occasions first; rest behind “All occasions”
+- Prominent EN/VI search (accent-insensitive)
+- Price presets + custom min/max
+- Visible result counts; hide empty categories from chips
+- Clean cards: photo → name → price → open (no card clutter)
+- Subtle hover lift on desktop only; no heavy 3D/glass on every catalog card
+
+## Effects policy
+- Homepage / brand pages: stronger scroll/visual storytelling allowed
+- Catalog & checkout: minimal motion
+- Prefer CSS transforms/opacity over heavy WebGL unless a real product need (e.g. future 3D prints)
+
+## Quality control
+Test at 320, 375, 390, 430, 768, 1024, 1440px: alignment, wrapping, touch targets, image ratios, overflow, CLS.
+
+## Stack constraints
+Keep Prisma + SQLite until an explicit migration task. Do not change production secrets. Prefer staging deploys for review.

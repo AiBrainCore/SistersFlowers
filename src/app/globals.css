@@ -1,15 +1,18 @@
 @import "tailwindcss";
 
 :root {
-  --ivory: #f6f0e6;
-  --cream: #efe4d4;
-  --blush: #e7c6c4;
-  --rose: #c07a76;
+  --ivory: #f7f3ec;
+  --cream: #f0e8dc;
+  --blush: #e8cfc8;
+  --rose: #c57b72;
+  --citrus: #e07a3d;
+  --citrus-soft: #f3c29a;
   --sage: #8b9a7d;
-  --moss: #5c6b52;
-  --forest: #2f3b32;
-  --ink: #2c2723;
-  --paper: #fbf7f0;
+  --sky: #c5d5d8;
+  --moss: #5a6950;
+  --forest: #2c3a30;
+  --ink: #2a261f;
+  --paper: #fbf8f3;
 }
 
 @theme inline {
@@ -17,7 +20,10 @@
   --color-cream: var(--cream);
   --color-blush: var(--blush);
   --color-rose: var(--rose);
+  --color-citrus: var(--citrus);
+  --color-citrus-soft: var(--citrus-soft);
   --color-sage: var(--sage);
+  --color-sky: var(--sky);
   --color-moss: var(--moss);
   --color-forest: var(--forest);
   --color-ink: var(--ink);

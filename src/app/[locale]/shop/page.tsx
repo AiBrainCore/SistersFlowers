@@ -26,12 +26,14 @@ export default async function ShopPage({
   ]);
 
   return (
-    <div className="mx-auto max-w-6xl px-5 py-16">
-      <p className="text-[11px] tracking-[0.28em] text-rose uppercase">
+    <div className="mx-auto max-w-6xl px-4 py-10 sm:px-5 sm:py-16">
+      <p className="text-[11px] tracking-[0.28em] text-citrus uppercase">
         {t.shop.kicker}
       </p>
-      <h1 className="serif mt-3 max-w-2xl text-5xl text-forest">{t.shop.title}</h1>
-      <p className="mt-5 max-w-xl text-sm leading-7 text-moss">{t.shop.intro}</p>
+      <h1 className="serif mt-3 max-w-2xl text-4xl text-forest sm:text-5xl">
+        {t.shop.title}
+      </h1>
+      <p className="mt-4 max-w-xl text-sm leading-7 text-moss">{t.shop.intro}</p>
 
       <CatalogFilters
         locale={locale}
@@ -44,7 +46,7 @@ export default async function ShopPage({
       {products.length === 0 ? (
         <p className="mt-12 text-sm text-moss">{t.shop.empty}</p>
       ) : (
-        <div className="mt-10 grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-3 lg:grid-cols-4">
+        <div className="mt-8 grid grid-cols-2 gap-x-3 gap-y-7 sm:gap-x-4 sm:gap-y-10 md:grid-cols-3 lg:grid-cols-4">
           {products.map((product) => (
             <ProductCard key={product.slug} product={product} locale={locale} />
           ))}

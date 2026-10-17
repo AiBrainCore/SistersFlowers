@@ -1,12 +1,11 @@
 import { prisma } from "@/lib/db";
+import {
+  FEATURED_CATEGORY_SLUGS,
+  type CategoryPublic,
+} from "@/lib/category-constants";
 
-export type CategoryPublic = {
-  id: string;
-  slug: string;
-  nameEn: string;
-  nameVi: string;
-  sortOrder: number;
-};
+export type { CategoryPublic };
+export { FEATURED_CATEGORY_SLUGS };
 
 export const DEFAULT_CATEGORIES = [
   { slug: "birthday", nameEn: "Birthday", nameVi: "Sinh nhật", sortOrder: 1 },
@@ -52,6 +51,15 @@ export async function listActiveCategories(): Promise<CategoryPublic[]> {
   const rows = await prisma.category.findMany({
     where: { active: true },
     orderBy: [{ sortOrder: "asc" }, { nameEn: "asc" }],
+    include: {
+      _count: {
+        select: {
+          products: {
+            where: { product: { published: true } },
+          },
+        },
+      },
+    },
   });
   return rows.map((row) => ({
     id: row.id,
@@ -59,6 +67,7 @@ export async function listActiveCategories(): Promise<CategoryPublic[]> {
     nameEn: row.nameEn,
     nameVi: row.nameVi,
     sortOrder: row.sortOrder,
+    productCount: row._count.products,
   }));
 }
 
