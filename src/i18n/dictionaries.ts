@@ -36,6 +36,15 @@ const en = {
     note: "Prototype — layered depth (not true 360° yet)",
     back: "Back to current homepage",
   },
+  hero3d: {
+    badge: "Handcrafted in Da Lat",
+    hint: "Drag · pinch · rotate",
+    note: "Real WebGL PoC — third-party CC0 sample model (not a Sisters SKU)",
+    disclaimer:
+      "This bouquet model is a Khronos CC0 sample for technology testing. Sisters Flowers products will use our own Da Lat studio photography or a custom scan.",
+    back: "Back to current homepage",
+    compare2d: "See 2.5D preview",
+  },
   paths: {
     shopTitle: "Ready to gift",
     shopBody: "Studio bouquets photographed as they leave our hands.",
@@ -330,6 +339,15 @@ const vi = {
     hint: "Kéo để cảm nhận chiều sâu",
     note: "Nguyên mẫu — chiều sâu nhiều lớp (chưa phải 360° thật)",
     back: "Về trang chủ hiện tại",
+  },
+  hero3d: {
+    badge: "Làm thủ công tại Đà Lạt",
+    hint: "Kéo · chạm · xoay",
+    note: "PoC WebGL thật — mẫu CC0 bên thứ ba (không phải sản phẩm Sisters)",
+    disclaimer:
+      "Mô hình bó hoa này là mẫu Khronos CC0 để thử công nghệ. Sản phẩm Sisters Flowers sẽ dùng ảnh studio Đà Lạt hoặc scan riêng.",
+    back: "Về trang chủ hiện tại",
+    compare2d: "Xem bản 2.5D",
   },
   paths: {
     shopTitle: "Sẵn sàng tặng",
