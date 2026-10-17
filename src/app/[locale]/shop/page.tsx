@@ -7,6 +7,10 @@ import {
   parseCatalogSearchParams,
 } from "@/lib/products";
 import { listActiveCategories } from "@/lib/categories";
+import {
+  getActiveCity,
+  listAvailableProductIdsForCity,
+} from "@/lib/locations";
 import { ProductCard } from "@/components/product-card";
 import { CatalogFilters } from "@/components/catalog-filters";
 import { buildPageMetadata } from "@/lib/seo";
@@ -36,8 +40,10 @@ export default async function ShopPage({
   const t = getDictionary(locale);
   const raw = await searchParams;
   const query = parseCatalogSearchParams(raw);
+  const activeCity = await getActiveCity();
+  const cityProductIds = await listAvailableProductIdsForCity(activeCity.id);
   const [products, categories] = await Promise.all([
-    listPublishedProducts(query),
+    listPublishedProducts({ ...query, cityProductIds }),
     listActiveCategories(),
   ]);
 

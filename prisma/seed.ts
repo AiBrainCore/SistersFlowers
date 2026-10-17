@@ -147,6 +147,90 @@ async function main() {
   } else {
     console.log(`Skip zones: ${zoneCount} already exist`);
   }
+
+  // Multi-location network: City → Branch (idempotent)
+  const cities = [
+    {
+      slug: "dalat",
+      nameEn: "Da Lat",
+      nameVi: "Đà Lạt",
+      status: "open",
+      sortOrder: 1,
+      branch: {
+        slug: "dalat-studio",
+        nameEn: "Sisters Flowers Da Lat",
+        nameVi: "Sisters Flowers Đà Lạt",
+        status: "open",
+        addressEn: "Da Lat, Lam Dong",
+        addressVi: "Đà Lạt, Lâm Đồng",
+      },
+    },
+    {
+      slug: "danang",
+      nameEn: "Da Nang",
+      nameVi: "Đà Nẵng",
+      status: "coming_soon",
+      sortOrder: 2,
+      branch: {
+        slug: "danang-studio",
+        nameEn: "Sisters Flowers Da Nang",
+        nameVi: "Sisters Flowers Đà Nẵng",
+        status: "coming_soon",
+        addressEn: "Da Nang — opening later",
+        addressVi: "Đà Nẵng — sắp mở",
+      },
+    },
+  ] as const;
+
+  for (const city of cities) {
+    const saved = await prisma.city.upsert({
+      where: { slug: city.slug },
+      update: {
+        nameEn: city.nameEn,
+        nameVi: city.nameVi,
+        status: city.status,
+        sortOrder: city.sortOrder,
+      },
+      create: {
+        slug: city.slug,
+        nameEn: city.nameEn,
+        nameVi: city.nameVi,
+        status: city.status,
+        sortOrder: city.sortOrder,
+      },
+    });
+    const existingBranch = await prisma.branch.findFirst({
+      where: { cityId: saved.id, slug: city.branch.slug },
+    });
+    if (existingBranch) {
+      await prisma.branch.update({
+        where: { id: existingBranch.id },
+        data: {
+          nameEn: city.branch.nameEn,
+          nameVi: city.branch.nameVi,
+          status: city.branch.status,
+          isPrimary: true,
+          addressEn: city.branch.addressEn,
+          addressVi: city.branch.addressVi,
+        },
+      });
+    } else {
+      await prisma.branch.create({
+        data: {
+          cityId: saved.id,
+          slug: city.branch.slug,
+          nameEn: city.branch.nameEn,
+          nameVi: city.branch.nameVi,
+          status: city.branch.status,
+          isPrimary: true,
+          addressEn: city.branch.addressEn,
+          addressVi: city.branch.addressVi,
+          sortOrder: 1,
+        },
+      });
+    }
+  }
+  console.log(`Ensured ${cities.length} network cities`);
 }
 
 main()

@@ -155,6 +155,7 @@ export async function submitInquiryAction(formData: FormData): Promise<SubmitInq
   const room = String(formData.get("room") || "").trim() || null;
   const venue = String(formData.get("venue") || "").trim() || null;
   const guests = String(formData.get("guests") || "").trim() || null;
+  const citySlug = String(formData.get("citySlug") || "").trim() || null;
 
   if (!["custom", "wedding", "hotel"].includes(variant)) {
     return { ok: false, error: "invalid variant" };
@@ -175,6 +176,7 @@ export async function submitInquiryAction(formData: FormData): Promise<SubmitInq
       room,
       venue,
       guests,
+      citySlug,
     },
   });
 

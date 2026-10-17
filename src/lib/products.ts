@@ -18,6 +18,8 @@ export type CatalogQuery = {
   minPrice?: number;
   maxPrice?: number;
   sort?: CatalogSort;
+  /** When set, apply city assortment (null list = all published). */
+  cityProductIds?: string[] | null;
 };
 
 export async function listPublishedProducts(
@@ -27,6 +29,7 @@ export async function listPublishedProducts(
 
   const where: {
     published: boolean;
+    id?: { in: string[] };
     AND?: object[];
     categories?: object;
   } = { published: true };
@@ -45,6 +48,10 @@ export async function listPublishedProducts(
     where.categories = {
       some: { category: { slug: query.category.trim(), active: true } },
     };
+  }
+
+  if (query.cityProductIds) {
+    where.id = { in: query.cityProductIds };
   }
 
   if (and.length) where.AND = and;

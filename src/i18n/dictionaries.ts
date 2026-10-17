@@ -316,6 +316,20 @@ const en = {
     line: "A florist studio in Da Lat, Vietnam. Bouquets, gifts, and celebrations — Da Nang coming later.",
     rights: "Sisters Flowers",
   },
+  location: {
+    deliveringIn: "Delivering in",
+    chooseCity: "Choose city",
+    openNow: "Open",
+    comingSoon: "Coming soon",
+    inactive: "Unavailable",
+    switchNote:
+      "Changing city updates the shop for that location. Your tray is cleared if it had items.",
+    comingSoonBody:
+      "This Sisters studio is not open for orders yet. You can browse the brand, then order from an open city.",
+    orderFrom: "Order from {city}",
+    cartCleared:
+      "Your tray was cleared because the shop location changed.",
+  },
 };
 
 const vi = {
@@ -634,6 +648,19 @@ const vi = {
   footer: {
     line: "Studio hoa tại Đà Lạt, Việt Nam. Bó hoa, quà tặng và lễ hội — Đà Nẵng sẽ đến sau.",
     rights: "Sisters Flowers",
+  },
+  location: {
+    deliveringIn: "Giao tại",
+    chooseCity: "Chọn thành phố",
+    openNow: "Đang mở",
+    comingSoon: "Sắp mở",
+    inactive: "Chưa có",
+    switchNote:
+      "Đổi thành phố sẽ đổi cửa hàng theo địa điểm đó. Khay hàng được xóa nếu còn sản phẩm.",
+    comingSoonBody:
+      "Studio Sisters tại đây chưa nhận đơn. Bạn có thể xem thương hiệu, rồi đặt từ thành phố đang mở.",
+    orderFrom: "Đặt từ {city}",
+    cartCleared: "Khay đã được xóa vì bạn đổi địa điểm mua hàng.",
   },
 };
 

@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from "react";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { submitInquiryAction } from "@/app/actions/orders";
+import { useLocation } from "@/context/location-context";
 
 type Variant = "custom" | "wedding" | "hotel";
 
@@ -17,6 +18,7 @@ export function InquiryForm({
   presetMessage?: string;
   notesLabel?: string;
 }) {
+  const { activeCity } = useLocation();
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">(
     "idle",
   );
@@ -26,6 +28,7 @@ export function InquiryForm({
     setStatus("sending");
     const formData = new FormData(event.currentTarget);
     formData.set("variant", variant);
+    formData.set("citySlug", activeCity.slug);
 
     if (presetMessage) {
       const notes = String(formData.get("notes") || "").trim();

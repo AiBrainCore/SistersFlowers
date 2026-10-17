@@ -8,6 +8,7 @@ import type { CategoryPublic } from "@/lib/category-constants";
 import { OCCASION_NAV_SLUGS } from "@/lib/category-constants";
 import { useCart } from "@/context/cart-context";
 import { LanguageSwitch } from "@/components/language-switch";
+import { CitySwitcher } from "@/components/city-switcher";
 
 type OccasionLink = Pick<
   CategoryPublic,
@@ -208,6 +209,7 @@ export function SiteHeader({
         </nav>
 
         <div className="flex items-center gap-2 sm:gap-3">
+          <CitySwitcher locale={locale} dictionary={dictionary} />
           <LanguageSwitch locale={locale} />
           <button
             type="button"

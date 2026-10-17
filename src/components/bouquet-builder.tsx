@@ -21,6 +21,7 @@ import {
   DEFAULT_BUILDER_LOCATION,
 } from "@/data/bouquet-builder";
 import { InquiryForm } from "@/components/inquiry-form";
+import { useLocation } from "@/context/location-context";
 
 type Labels = Dictionary["builder"];
 
@@ -35,10 +36,16 @@ export function BouquetBuilder({
 }: {
   locale: Locale;
   dictionary: Dictionary;
-  /** Active sales location — reserved for future multi-city availability */
+  /** Fallback when LocationProvider is unavailable */
   locationId?: BuilderLocationId;
 }) {
-  void locationId;
+  const { activeCity } = useLocation();
+  // Reserved for city-specific stems / pricing when Da Nang opens
+  const activeLocationId: BuilderLocationId =
+    activeCity.slug === "danang" || activeCity.slug === "dalat"
+      ? activeCity.slug
+      : locationId;
+  void activeLocationId;
   const t = dictionary.builder;
   const [sizeId, setSizeId] = useState("classic");
   const [moodId, setMoodId] = useState("soft-blush");
