@@ -66,9 +66,10 @@ const en = {
     occasionBody: "Birthday, romance, graduation, wedding, and more.",
   },
   home: {
-    occasionsKicker: "Occasions",
-    occasionsTitle: "Find a feeling.",
-    occasionsBody: "Start with the moment — then choose the bouquet.",
+    occasionsKicker: "Shop by occasion",
+    occasionsTitle: "Flowers for every occasion.",
+    occasionsBody:
+      "Find the perfect flowers for life's meaningful moments.",
     fieldTitle: "From Da Lat, with flowers.",
     fieldBody:
       "Sisters Flowers is a highland florist studio. We craft wrapped bouquets, personal gifts, and floristry for celebrations — the same handwork you know from our social clips.",
@@ -410,9 +411,10 @@ const vi = {
     occasionBody: "Sinh nhật, lãng mạn, tốt nghiệp, cưới hỏi và hơn thế.",
   },
   home: {
-    occasionsKicker: "Dịp",
-    occasionsTitle: "Chọn một cảm xúc.",
-    occasionsBody: "Bắt đầu từ khoảnh khắc — rồi chọn bó hoa.",
+    occasionsKicker: "Chọn hoa theo dịp",
+    occasionsTitle: "Hoa cho mọi dịp.",
+    occasionsBody:
+      "Tìm bó hoa phù hợp cho những khoảnh khắc ý nghĩa trong đời.",
     fieldTitle: "Từ Đà Lạt, bằng hoa.",
     fieldBody:
       "Sisters Flowers là studio hoa cao nguyên. Chúng tôi làm bó hoa gói tay, quà tặng cá nhân và hoa cho lễ hội — cùng bàn tay như trên clip của tiệm.",

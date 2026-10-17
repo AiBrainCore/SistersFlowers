@@ -6,23 +6,15 @@ import { isLocale, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
 import { listPublishedProducts } from "@/lib/products";
 import { listActiveCategories } from "@/lib/categories";
-import { FEATURED_CATEGORY_SLUGS } from "@/lib/category-constants";
 import { ProductCard } from "@/components/product-card";
 import { Reveal } from "@/components/reveal";
 import { ImmersiveHero } from "@/components/immersive-hero";
+import { ShopByOccasion } from "@/components/shop-by-occasion";
 import { buildPageMetadata } from "@/lib/seo";
 import { HERO_BOUQUETS, type HeroBouquetItem } from "@/lib/hero-bouquets";
 
 const studioImage = "/bouquets/b-12.jpg";
 const personalImage = "/bouquets/b-08.jpg";
-
-const occasionTints = [
-  "bg-petal/45",
-  "bg-blush/55",
-  "bg-pollen/50",
-  "bg-mist/70",
-  "bg-sky/55",
-];
 
 export const dynamic = "force-dynamic";
 
@@ -49,9 +41,6 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
     listActiveCategories(),
   ]);
   const featured = products.slice(0, 8);
-  const occasions = FEATURED_CATEGORY_SLUGS.map((slug) =>
-    categories.find((c) => c.slug === slug && (c.productCount ?? 0) > 0),
-  ).filter(Boolean) as typeof categories;
 
   const heroBouquets: HeroBouquetItem[] = HERO_BOUQUETS.map((entry) => {
     const product = products.find((p) => p.slug === entry.slug);
@@ -70,36 +59,11 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
         bouquets={heroBouquets}
       />
 
-      <section className="mx-auto max-w-6xl px-4 py-16 sm:px-5 sm:py-20">
-        <Reveal>
-          <p className="text-[11px] tracking-[0.28em] text-citrus uppercase">
-            {t.home.occasionsKicker}
-          </p>
-          <h2 className="serif mt-3 max-w-xl text-4xl text-forest sm:text-5xl">
-            {t.home.occasionsTitle}
-          </h2>
-          <p className="mt-3 max-w-md text-sm leading-7 text-moss">
-            {t.home.occasionsBody}
-          </p>
-        </Reveal>
-        <div className="mt-10 grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-5">
-          {occasions.map((cat, index) => (
-            <Reveal key={cat.slug} delay={(index % 3) as 0 | 1 | 2 | 3}>
-              <Link
-                href={`/${locale}/shop?category=${cat.slug}`}
-                className={`group flex min-h-[7.5rem] flex-col justify-end rounded-[1.4rem] p-4 transition duration-500 hover:-translate-y-1 ${occasionTints[index % occasionTints.length]}`}
-              >
-                <span className="serif text-xl leading-tight text-forest sm:text-2xl">
-                  {locale === "vi" ? cat.nameVi : cat.nameEn}
-                </span>
-                <span className="mt-2 text-[10px] tracking-[0.16em] text-moss uppercase opacity-0 transition group-hover:opacity-100">
-                  →
-                </span>
-              </Link>
-            </Reveal>
-          ))}
-        </div>
-      </section>
+      <ShopByOccasion
+        locale={locale}
+        dictionary={t}
+        categories={categories}
+      />
 
       <section className="relative overflow-hidden">
         <div className="grid items-stretch lg:grid-cols-2">
