@@ -103,11 +103,11 @@ function LanguageDropdown({
         aria-label={t.label}
         title={t.label}
         onClick={() => setOpen((v) => !v)}
-        className="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-forest/12 bg-white/55 px-2.5 text-[11px] tracking-[0.1em] text-forest uppercase transition hover:border-citrus/35"
+        className="inline-flex min-h-11 min-w-11 items-center justify-center gap-1 rounded-full border border-forest/12 bg-white/55 px-2 text-[11px] tracking-[0.1em] text-forest uppercase transition hover:border-citrus/35 sm:min-w-0 sm:gap-1.5 sm:px-2.5"
       >
-        <IconGlobe className="h-3.5 w-3.5 text-moss" />
+        <IconGlobe className="h-3.5 w-3.5 shrink-0 text-moss" />
         <span className="font-medium">{locale}</span>
-        <span aria-hidden className="text-[9px] text-moss">
+        <span aria-hidden className="hidden text-[9px] text-moss sm:inline">
           ▾
         </span>
       </button>

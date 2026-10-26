@@ -132,7 +132,7 @@ export function SiteHeader({
         {/* Centre nav — from 1200px to avoid cramped mid-widths */}
         <nav
           ref={navRef}
-          className="hidden items-center gap-0.5 text-[11px] tracking-[0.14em] text-forest uppercase min-[1200px]:flex"
+          className="hidden items-center gap-0.5 text-[13px] tracking-normal text-forest min-[1200px]:flex"
         >
           <Link
             href={`/${locale}/shop`}
@@ -216,11 +216,9 @@ export function SiteHeader({
           </Link>
         </nav>
 
-        {/* Right: language (desktop) + bag + hamburger */}
-        <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
-          <div className="hidden min-[1200px]:block">
-            <LanguageSwitch locale={locale} dictionary={dictionary} />
-          </div>
+        {/* Right: language + bag + hamburger (lang always visible — EN/VI tourists on phone) */}
+        <div className="flex shrink-0 items-center gap-1 sm:gap-2">
+          <LanguageSwitch locale={locale} dictionary={dictionary} />
 
           <button
             type="button"
@@ -255,7 +253,7 @@ export function SiteHeader({
             <Link
               href={`/${locale}/shop`}
               onClick={closeAll}
-              className="flex min-h-12 items-center border-b border-forest/10 text-[13px] tracking-[0.16em] uppercase"
+              className="flex min-h-12 items-center border-b border-forest/10 text-[15px] text-forest"
             >
               {dictionary.nav.shop}
             </Link>
@@ -263,7 +261,7 @@ export function SiteHeader({
             <button
               type="button"
               onClick={() => setMobileOccasions((v) => !v)}
-              className="flex min-h-12 items-center justify-between border-b border-forest/10 text-[13px] tracking-[0.16em] uppercase"
+              className="flex min-h-12 items-center justify-between border-b border-forest/10 text-[15px] text-forest"
             >
               {dictionary.nav.occasions}
               <span aria-hidden>{mobileOccasions ? "−" : "+"}</span>
@@ -286,7 +284,7 @@ export function SiteHeader({
             <Link
               href={`/${locale}/custom`}
               onClick={closeAll}
-              className="flex min-h-12 items-center border-b border-forest/10 text-[13px] tracking-[0.16em] uppercase"
+              className="flex min-h-12 items-center border-b border-forest/10 text-[15px] text-forest"
             >
               {dictionary.nav.custom}
             </Link>
@@ -294,7 +292,7 @@ export function SiteHeader({
             <button
               type="button"
               onClick={() => setMobileServices((v) => !v)}
-              className="flex min-h-12 items-center justify-between border-b border-forest/10 text-[13px] tracking-[0.16em] uppercase"
+              className="flex min-h-12 items-center justify-between border-b border-forest/10 text-[15px] text-forest"
             >
               {dictionary.nav.services}
               <span aria-hidden>{mobileServices ? "−" : "+"}</span>
@@ -317,14 +315,14 @@ export function SiteHeader({
             <Link
               href={`/${locale}/delivery`}
               onClick={closeAll}
-              className="flex min-h-12 items-center border-b border-forest/10 text-[13px] tracking-[0.16em] uppercase"
+              className="flex min-h-12 items-center border-b border-forest/10 text-[15px] text-forest"
             >
               {dictionary.nav.delivery}
             </Link>
             <Link
               href={`/${locale}/about`}
               onClick={closeAll}
-              className="flex min-h-12 items-center border-b border-forest/10 text-[13px] tracking-[0.16em] uppercase"
+              className="flex min-h-12 items-center border-b border-forest/10 text-[15px] text-forest"
             >
               {dictionary.nav.about}
             </Link>
