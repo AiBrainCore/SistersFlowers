@@ -10,7 +10,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  // Keep SQLite + migrations available to serverless functions on Vercel
+  // Keep Prisma schema + SQLite assets available in the Node server bundle (Hostinger).
   outputFileTracingIncludes: {
     "/**": ["./prisma/**/*"],
   },

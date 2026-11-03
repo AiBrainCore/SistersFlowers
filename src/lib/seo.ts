@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
 import { locales, type Locale } from "@/i18n/config";
 
+/** Public site origin for Hostinger (set in production env). */
 const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ||
-  (process.env.VERCEL_URL
-    ? `https://${process.env.VERCEL_URL}`
-    : "https://sisters-flowers-lofu.vercel.app");
+  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
+  "http://localhost:3000";
 
 export function siteUrl(path = "") {
   const base = SITE_URL.replace(/\/$/, "");
