@@ -10,6 +10,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { CartDrawer } from "@/components/cart-drawer";
 import { LocationBanner } from "@/components/location-banner";
+import { ShopBotRoot } from "@/components/shop-bot/ShopBotRoot";
 
 export function generateStaticParams() {
   return [{ locale: "en" }, { locale: "vi" }];
@@ -44,6 +45,7 @@ export default async function LocaleLayout({
           <main className="flex-1">{children}</main>
           <SiteFooter locale={locale as Locale} dictionary={dictionary} />
           <CartDrawer locale={locale as Locale} dictionary={dictionary} />
+          <ShopBotRoot locale={locale as Locale} dictionary={dictionary} />
         </div>
       </LocationProvider>
     </CartProvider>

@@ -11,6 +11,10 @@ import { useCart } from "@/context/cart-context";
 import { submitOrderAction } from "@/app/actions/orders";
 import { DeliveryCalculator } from "@/components/delivery-calculator";
 import type { DeliveryConfig, DeliveryZonePublic } from "@/lib/delivery";
+import {
+  clearCheckoutHints,
+  readCheckoutHints,
+} from "@/features/shop-bot/checkout-hints";
 
 export function CheckoutForm({
   locale,
@@ -32,6 +36,21 @@ export function CheckoutForm({
     deliveryConfig.baseFee,
   );
   const [deliveryZone, setDeliveryZone] = useState("");
+  const [hints, setHints] = useState<{
+    hotelName?: string;
+    recipientName?: string;
+    notes?: string;
+  }>({});
+  const [hintsReady, setHintsReady] = useState(false);
+
+  useEffect(() => {
+    queueMicrotask(() => {
+      const saved = readCheckoutHints();
+      if (saved) setHints(saved);
+      clearCheckoutHints();
+      setHintsReady(true);
+    });
+  }, []);
 
   const onDeliveryChange = useCallback(
     (value: { km: number; fee: number | null; zone: string }) => {
@@ -98,7 +117,7 @@ export function CheckoutForm({
     router.push(`/${locale}/checkout/success?${params.toString()}`);
   }
 
-  if (!hydrated || items.length === 0) {
+  if (!hydrated || !hintsReady || items.length === 0) {
     return (
       <p className="text-sm text-moss">{dictionary.checkout.redirecting}</p>
     );
@@ -127,9 +146,17 @@ export function CheckoutForm({
           <Field label={dictionary.checkout.date} name="deliveryDate" type="date" />
           <Field label={dictionary.checkout.time} name="deliveryTime" />
         </div>
-        <Field label={dictionary.checkout.recipient} name="recipientName" />
+        <Field
+          label={dictionary.checkout.recipient}
+          name="recipientName"
+          defaultValue={hints.recipientName}
+        />
         <div className="grid gap-5 sm:grid-cols-2">
-          <Field label={dictionary.checkout.hotel} name="hotelName" />
+          <Field
+            label={dictionary.checkout.hotel}
+            name="hotelName"
+            defaultValue={hints.hotelName}
+          />
           <Field label={dictionary.checkout.room} name="roomNumber" />
         </div>
         <label className="block">
@@ -139,6 +166,7 @@ export function CheckoutForm({
           <textarea
             name="notes"
             rows={4}
+            defaultValue={hints.notes}
             className="mt-2 w-full rounded-2xl border border-forest/15 bg-white/70 px-4 py-3 text-sm outline-none focus:border-rose"
           />
         </label>
@@ -218,11 +246,13 @@ function Field({
   name,
   type = "text",
   required,
+  defaultValue,
 }: {
   label: string;
   name: string;
   type?: string;
   required?: boolean;
+  defaultValue?: string;
 }) {
   return (
     <label className="block">
@@ -233,6 +263,7 @@ function Field({
         name={name}
         type={type}
         required={required}
+        defaultValue={defaultValue}
         className="mt-2 w-full rounded-full border border-forest/15 bg-white/70 px-4 py-3 text-sm outline-none focus:border-rose"
       />
     </label>

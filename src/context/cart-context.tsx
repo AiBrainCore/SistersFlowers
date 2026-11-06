@@ -43,8 +43,14 @@ type CartContextValue = {
     product: Product,
     locale: Locale,
     addons?: SelectedAddon[],
+    options?: { openDrawer?: boolean },
   ) => void;
-  addAddon: (addon: AddonPublic, locale: Locale, note?: string) => void;
+  addAddon: (
+    addon: AddonPublic,
+    locale: Locale,
+    note?: string,
+    options?: { openDrawer?: boolean },
+  ) => void;
   remove: (key: string) => void;
   setQty: (key: string, qty: number) => void;
   clear: () => void;
@@ -106,7 +112,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const addProduct = useCallback(
-    (product: Product, locale: Locale, addons: SelectedAddon[] = []) => {
+    (
+      product: Product,
+      locale: Locale,
+      addons: SelectedAddon[] = [],
+      options?: { openDrawer?: boolean },
+    ) => {
       bumpOrInsert({
         key: lineKey("product", product.slug),
         type: "product",
@@ -137,13 +148,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
               : undefined,
         });
       }
-      setOpen(true);
+      if (options?.openDrawer !== false) setOpen(true);
     },
     [bumpOrInsert],
   );
 
   const addAddon = useCallback(
-    (addon: AddonPublic, locale: Locale, note?: string) => {
+    (
+      addon: AddonPublic,
+      locale: Locale,
+      note?: string,
+      options?: { openDrawer?: boolean },
+    ) => {
       const clean = note?.trim() || undefined;
       bumpOrInsert({
         key: lineKey("addon", addon.slug, clean),
@@ -160,7 +176,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         validityDays:
           addon.kind === "partner" ? addon.validityDays || 90 : undefined,
       });
-      setOpen(true);
+      if (options?.openDrawer !== false) setOpen(true);
     },
     [bumpOrInsert],
   );
