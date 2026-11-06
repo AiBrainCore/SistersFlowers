@@ -8,10 +8,12 @@ alwaysApply: true
 All design and frontend development must follow these principles.
 
 ## Design direction
-- Light, fresh, elegant Vietnamese flower studio
-- Pastel field-flower colors with citrus orange accents (`--citrus`)
+- Premium Da Lat flower studio digital extension (orange signage, white logo, wood, warm light)
+- Brand tokens: Orange `#C34C1A`, Cream `#FFF7F1`, White `#FFFFFF`, Grey `#77736F`, Wood `#B58B65`
+- Orange is accent only (CTA, price, active states, logo on light) — never flood the page
+- Cream/white dominate so bouquet photography sells first
 - 70% calm/professional, 30% vivid creative energy (homepage may be bolder; catalog/checkout stay calm)
-- Photography sells first — avoid cluttered UI and generic template aesthetics
+- Avoid pastel pink/sage “field flower” gradients and generic template aesthetics
 
 ## Principles
 1. **Mobile-first** — design for smartphones first; desktop equally polished
@@ -42,4 +44,4 @@ All design and frontend development must follow these principles.
 Test at 320, 375, 390, 430, 768, 1024, 1440px: alignment, wrapping, touch targets, image ratios, overflow, CLS.
 
 ## Stack constraints
-Keep Prisma + SQLite until an explicit migration task. Do not change production secrets. Prefer staging deploys for review.
+Keep Prisma + SQLite until an explicit migration task. Do not change production secrets. Prefer Hostinger deploys for review.

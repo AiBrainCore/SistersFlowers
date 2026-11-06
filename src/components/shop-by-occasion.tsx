@@ -75,9 +75,9 @@ export function ShopByOccasion({
                 href={`/${locale}/shop?category=${card.slug}`}
                 className={`group relative block aspect-[3/4] overflow-hidden rounded-[1.15rem] outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-citrus ${
                   calm
-                    ? "shadow-[0_8px_24px_rgba(36,53,42,0.06)]"
-                    : "shadow-[0_10px_28px_rgba(36,53,42,0.08)]"
-                } transition duration-500 ease-out motion-safe:hover:-translate-y-1 motion-safe:hover:shadow-[0_16px_36px_rgba(36,53,42,0.12)]`}
+                    ? "shadow-[0_8px_24px_rgba(44,41,38,0.06)]"
+                    : "shadow-[0_10px_28px_rgba(44,41,38,0.08)]"
+                } transition duration-500 ease-out motion-safe:hover:-translate-y-1 motion-safe:hover:shadow-[0_16px_36px_rgba(44,41,38,0.12)]`}
               >
                 <Image
                   src={card.image}

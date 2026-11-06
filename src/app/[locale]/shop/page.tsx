@@ -51,7 +51,7 @@ export default async function ShopPage({
     <div className="relative overflow-hidden">
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-64 bg-[radial-gradient(ellipse_at_top,rgba(242,184,198,0.28),transparent_60%)]"
+        className="pointer-events-none absolute inset-x-0 top-0 h-64 bg-[radial-gradient(ellipse_at_top,rgba(195,76,26,0.08),transparent_60%)]"
       />
       <div className="relative mx-auto max-w-6xl px-4 py-10 sm:px-5 sm:py-16">
         <p className="text-[11px] tracking-[0.28em] text-citrus uppercase">

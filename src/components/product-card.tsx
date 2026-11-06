@@ -15,7 +15,7 @@ export function ProductCard({
       href={`/${locale}/shop/${product.slug}`}
       className="group flex h-full flex-col [perspective:900px]"
     >
-      <div className="relative aspect-[3/4] overflow-hidden rounded-2xl bg-cream shadow-[0_12px_28px_rgba(36,53,42,0.08)] transition duration-500 ease-out will-change-transform group-hover:-translate-y-1.5 group-hover:shadow-[0_20px_40px_rgba(232,106,43,0.18)] motion-reduce:transition-none motion-reduce:group-hover:translate-y-0">
+      <div className="relative aspect-[3/4] overflow-hidden rounded-2xl bg-white shadow-[0_12px_28px_rgba(44,41,38,0.08)] transition duration-500 ease-out will-change-transform group-hover:-translate-y-1.5 group-hover:shadow-[0_20px_40px_rgba(195,76,26,0.16)] motion-reduce:transition-none motion-reduce:group-hover:translate-y-0">
         <Image
           src={product.image}
           alt={product.names[locale]}

@@ -219,7 +219,7 @@ export function BouquetBuilder({
                     onClick={() => toggleAddon(option.id)}
                     className={`group flex min-h-[4.5rem] items-stretch gap-3 overflow-hidden rounded-2xl border text-left transition ${
                       selected
-                        ? "border-citrus/50 bg-citrus/5 shadow-[0_0_0_1px_rgba(232,106,43,0.25)]"
+                        ? "border-citrus/50 bg-citrus/5 shadow-[0_0_0_1px_rgba(195,76,26,0.25)]"
                         : "border-forest/10 bg-white/60 hover:border-citrus/30"
                     }`}
                   >
@@ -275,7 +275,7 @@ export function BouquetBuilder({
         </div>
 
         <aside className="lg:sticky lg:top-24 h-fit space-y-6">
-          <div className="overflow-hidden rounded-[1.75rem] border border-forest/10 bg-[linear-gradient(165deg,#fbf9f5_0%,#f3ebe0_55%,#f0d4cc_100%)] shadow-[0_20px_50px_rgba(36,53,42,0.08)]">
+          <div className="overflow-hidden rounded-[1.75rem] border border-forest/10 bg-[linear-gradient(165deg,#ffffff_0%,#fff7f1_55%,#f3e4d8_100%)] shadow-[0_20px_50px_rgba(44,41,38,0.08)]">
             <div className="relative aspect-[4/5] overflow-hidden sm:aspect-[5/6]">
               <Image
                 key={previewSrc}
@@ -514,7 +514,7 @@ function Choice({
       onClick={onClick}
       className={`overflow-hidden rounded-2xl border text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-citrus/50 ${
         selected
-          ? "border-citrus/55 bg-citrus/5 shadow-[0_0_0_1px_rgba(232,106,43,0.28)]"
+          ? "border-citrus/55 bg-citrus/5 shadow-[0_0_0_1px_rgba(195,76,26,0.28)]"
           : "border-forest/10 bg-white/60 hover:border-citrus/30"
       }`}
     >

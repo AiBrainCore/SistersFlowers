@@ -232,7 +232,7 @@ export function ImmersiveHero({
     : `translate3d(${pose.px * -0.25}px, ${pose.py * -0.2}px, 60px)`;
 
   return (
-    <section className="relative overflow-hidden bg-[linear-gradient(165deg,#fbf9f5_0%,#f3ebe0_42%,#f0d4cc_78%,#dfe9e6_100%)]">
+    <section className="relative overflow-hidden bg-[linear-gradient(165deg,#ffffff_0%,#fff7f1_45%,#f3e4d8_78%,#ebe3da_100%)]">
       <div className="ih-bloom pointer-events-none absolute inset-0 opacity-90" />
       <div
         aria-hidden
@@ -306,7 +306,7 @@ export function ImmersiveHero({
                 className="object-cover blur-[2px] scale-110 object-[center_28%]"
                 sizes="(min-width: 1024px) 40vw, 80vw"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-paper via-transparent to-petal/20" />
+              <div className="absolute inset-0 bg-gradient-to-t from-paper via-transparent to-wood/10" />
             </div>
 
             <div

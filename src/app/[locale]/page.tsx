@@ -161,7 +161,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
         </div>
       </section>
 
-      <section className="border-y border-forest/10 bg-[linear-gradient(135deg,#efe4d4_0%,#fbf7f0_40%,#f0d4cc_78%,#dfe9e6_100%)]">
+      <section className="border-y border-forest/10 bg-[linear-gradient(135deg,#fff7f1_0%,#ffffff_42%,#f3e4d8_100%)]">
         <div className="mx-auto max-w-6xl px-4 py-16 sm:px-5 sm:py-20">
           <Reveal>
             <p className="text-[11px] tracking-[0.28em] text-citrus uppercase">
@@ -239,7 +239,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
             <Reveal delay={1}>
               <Link
                 href={`/${locale}/weddings`}
-                className="group flex min-h-[11rem] flex-col justify-end rounded-[1.5rem] bg-petal/40 p-6 transition duration-500 hover:-translate-y-1"
+                className="group flex min-h-[11rem] flex-col justify-end rounded-[1.5rem] bg-wood/15 p-6 transition duration-500 hover:-translate-y-1"
               >
                 <h3 className="serif text-2xl text-forest">
                   {t.home.weddingTitle}
