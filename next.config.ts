@@ -10,6 +10,14 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  // Hostinger Node plans hit OS thread limits with default "N CPU" static workers.
+  // Keep generation sequential/low-concurrency so `next build` does not SIGABRT.
+  experimental: {
+    cpus: 1,
+    workerThreads: false,
+    staticGenerationMaxConcurrency: 2,
+    staticGenerationMinPagesPerWorker: 50,
+  },
   // Keep Prisma schema + SQLite assets available in the Node server bundle (Hostinger).
   outputFileTracingIncludes: {
     "/**": ["./prisma/**/*"],
