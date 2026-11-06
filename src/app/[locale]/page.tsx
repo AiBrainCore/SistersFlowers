@@ -177,20 +177,20 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
 
           <div className="relative mt-12 grid gap-10 md:grid-cols-[1fr_auto_1fr] md:items-stretch md:gap-0">
             <article className="network-city">
-              <p className="text-[11px] tracking-[0.2em] text-meadow uppercase">
-                {t.home.dalatStatus}
+              <p className="text-[11px] tracking-[0.2em] text-citrus uppercase">
+                {t.home.danangStatus}
               </p>
               <h3 className="serif mt-2 text-4xl text-forest sm:text-5xl">
-                {t.home.dalatName}
+                {t.home.danangName}
               </h3>
               <p className="mt-4 max-w-sm text-sm leading-7 text-moss">
-                {t.home.dalatNote}
+                {t.home.danangNote}
               </p>
               <Link
                 href={`/${locale}/shop`}
                 className="mt-8 inline-flex min-h-12 items-center rounded-full bg-citrus px-6 text-[12px] tracking-[0.16em] text-ivory uppercase"
               >
-                {t.home.dalatCta}
+                {t.home.danangCta}
               </Link>
             </article>
 
@@ -202,18 +202,21 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
             </div>
 
             <article className="network-city border-t border-forest/15 pt-10 md:border-t-0 md:pt-0 md:text-right">
-              <p className="text-[11px] tracking-[0.2em] text-rose/80 uppercase">
-                {t.home.danangStatus}
+              <p className="text-[11px] tracking-[0.2em] text-citrus uppercase">
+                {t.home.dalatStatus}
               </p>
-              <h3 className="serif mt-2 text-4xl text-forest/55 sm:text-5xl">
-                {t.home.danangName}
+              <h3 className="serif mt-2 text-4xl text-forest sm:text-5xl">
+                {t.home.dalatName}
               </h3>
               <p className="mt-4 max-w-sm text-sm leading-7 text-moss md:ml-auto">
-                {t.home.danangNote}
+                {t.home.dalatNote}
               </p>
-              <p className="mt-8 inline-block text-[12px] tracking-[0.16em] text-moss/70 uppercase">
-                {t.home.danangCta}
-              </p>
+              <Link
+                href={`/${locale}/shop`}
+                className="mt-8 inline-flex min-h-12 items-center rounded-full border border-citrus/40 px-6 text-[12px] tracking-[0.16em] text-citrus uppercase md:ml-auto"
+              >
+                {t.home.dalatCta}
+              </Link>
             </article>
           </div>
         </div>

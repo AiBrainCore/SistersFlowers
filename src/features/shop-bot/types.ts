@@ -32,9 +32,11 @@ export type BotProduct = {
   tag?: string;
 };
 
+export type ShopBotCity = "danang" | "dalat";
+
 export type BotRecommendInput = {
   locale: "en" | "vi";
-  city: "dalat";
+  city: ShopBotCity;
   intent: ShopBotIntent;
   occasion?: ShopBotOccasion;
   budgetMaxVnd?: number;
@@ -55,7 +57,7 @@ export type ShopBotHotelHints = {
 export type ShopBotState = {
   step: ShopBotStep;
   locale: "en" | "vi";
-  city: "dalat";
+  city: ShopBotCity;
   intent?: ShopBotIntent;
   occasion?: ShopBotOccasion;
   budgetMaxVnd?: number;

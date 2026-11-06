@@ -151,33 +151,33 @@ async function main() {
   // Multi-location network: City → Branch (idempotent)
   const cities = [
     {
+      slug: "danang",
+      nameEn: "Da Nang",
+      nameVi: "Đà Nẵng",
+      status: "open",
+      sortOrder: 1,
+      branch: {
+        slug: "danang-studio",
+        nameEn: "Sisters Flowers Da Nang",
+        nameVi: "Sisters Flowers Đà Nẵng",
+        status: "open",
+        addressEn: "53 Luong Nhu Hoc, Hoa Cuong Bac, Hai Chau, Da Nang",
+        addressVi: "53 Lương Nhữ Hộc, Hòa Cường Bắc, Hải Châu, Đà Nẵng",
+      },
+    },
+    {
       slug: "dalat",
       nameEn: "Da Lat",
       nameVi: "Đà Lạt",
       status: "open",
-      sortOrder: 1,
+      sortOrder: 2,
       branch: {
         slug: "dalat-studio",
         nameEn: "Sisters Flowers Da Lat",
         nameVi: "Sisters Flowers Đà Lạt",
         status: "open",
-        addressEn: "Da Lat, Lam Dong",
-        addressVi: "Đà Lạt, Lâm Đồng",
-      },
-    },
-    {
-      slug: "danang",
-      nameEn: "Da Nang",
-      nameVi: "Đà Nẵng",
-      status: "coming_soon",
-      sortOrder: 2,
-      branch: {
-        slug: "danang-studio",
-        nameEn: "Sisters Flowers Da Nang",
-        nameVi: "Sisters Flowers Đà Nẵng",
-        status: "coming_soon",
-        addressEn: "Da Nang — opening later",
-        addressVi: "Đà Nẵng — sắp mở",
+        addressEn: "04 Chi Lang, Ward 9, Da Lat, Lam Dong",
+        addressVi: "Số 04 Chi Lăng, P. 9, TP. Đà Lạt, Lâm Đồng",
       },
     },
   ] as const;

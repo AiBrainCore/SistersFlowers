@@ -13,7 +13,7 @@ export function createInitialShopBotState(
   const state: ShopBotState = {
     step: "greeting",
     locale,
-    city: "dalat",
+    city: "danang",
     selectedAddonIds: [],
     hotel: {},
     source: deepLink.source,
@@ -49,7 +49,7 @@ export function restartShopBot(locale: "en" | "vi", source?: string): ShopBotSta
   return {
     step: "greeting",
     locale,
-    city: "dalat",
+    city: "danang",
     selectedAddonIds: [],
     hotel: {},
     source,

@@ -58,7 +58,9 @@ export function buildWhatsAppUrl(
   payload: CheckoutPayload,
   vouchers: IssuedVoucherLine[] = [],
 ) {
-  const number = (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "").replace(/\D/g, "");
+  const number = (
+    process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "84327453536"
+  ).replace(/\D/g, "");
   const lines = [
     `Sisters Flowers order ${reference}`,
     `Name: ${payload.customerName}`,

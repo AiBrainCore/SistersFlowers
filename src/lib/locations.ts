@@ -2,7 +2,13 @@ import { cookies } from "next/headers";
 import { prisma } from "@/lib/db";
 
 export const CITY_COOKIE = "sf_city";
-export const DEFAULT_CITY_SLUG = "dalat";
+/** Da Nang is the primary / first studio in the network UI. */
+export const DEFAULT_CITY_SLUG = "danang";
+
+export const STUDIO_PHONE_E164 = "+84327453536";
+export const STUDIO_PHONE_DISPLAY = "+84 327 453 536";
+/** Digits only for wa.me / tel links */
+export const STUDIO_PHONE_DIGITS = "84327453536";
 
 export type CityStatus = "open" | "coming_soon" | "inactive";
 
@@ -31,35 +37,35 @@ export type CityPublic = {
 
 const SEED_CITIES = [
   {
+    slug: "danang",
+    nameEn: "Da Nang",
+    nameVi: "Đà Nẵng",
+    status: "open" as const,
+    sortOrder: 1,
+    branch: {
+      slug: "danang-studio",
+      nameEn: "Sisters Flowers Da Nang",
+      nameVi: "Sisters Flowers Đà Nẵng",
+      status: "open" as const,
+      isPrimary: true,
+      addressEn: "53 Luong Nhu Hoc, Hoa Cuong Bac, Hai Chau, Da Nang",
+      addressVi: "53 Lương Nhữ Hộc, Hòa Cường Bắc, Hải Châu, Đà Nẵng",
+    },
+  },
+  {
     slug: "dalat",
     nameEn: "Da Lat",
     nameVi: "Đà Lạt",
     status: "open" as const,
-    sortOrder: 1,
+    sortOrder: 2,
     branch: {
       slug: "dalat-studio",
       nameEn: "Sisters Flowers Da Lat",
       nameVi: "Sisters Flowers Đà Lạt",
       status: "open" as const,
       isPrimary: true,
-      addressEn: "Da Lat, Lam Dong",
-      addressVi: "Đà Lạt, Lâm Đồng",
-    },
-  },
-  {
-    slug: "danang",
-    nameEn: "Da Nang",
-    nameVi: "Đà Nẵng",
-    status: "coming_soon" as const,
-    sortOrder: 2,
-    branch: {
-      slug: "danang-studio",
-      nameEn: "Sisters Flowers Da Nang",
-      nameVi: "Sisters Flowers Đà Nẵng",
-      status: "coming_soon" as const,
-      isPrimary: true,
-      addressEn: "Da Nang — opening later",
-      addressVi: "Đà Nẵng — sắp mở",
+      addressEn: "04 Chi Lang, Ward 9, Da Lat, Lam Dong",
+      addressVi: "Số 04 Chi Lăng, P. 9, TP. Đà Lạt, Lâm Đồng",
     },
   },
 ] as const;
@@ -194,13 +200,16 @@ export async function resolveActiveCity(
   preferredSlug?: string | null,
 ): Promise<CityPublic> {
   const cities = await listCities();
-  const open = cities.find((c) => c.acceptsOrders) ?? cities[0];
-  if (!open) {
+  const preferredDefault =
+    cities.find((c) => c.slug === DEFAULT_CITY_SLUG && c.acceptsOrders) ??
+    cities.find((c) => c.acceptsOrders) ??
+    cities[0];
+  if (!preferredDefault) {
     throw new Error("No Sisters Flowers cities configured");
   }
-  if (!preferredSlug) return open;
+  if (!preferredSlug) return preferredDefault;
   const match = cities.find((c) => c.slug === preferredSlug);
-  return match ?? open;
+  return match ?? preferredDefault;
 }
 
 export async function readCitySlugFromCookie(): Promise<string | null> {

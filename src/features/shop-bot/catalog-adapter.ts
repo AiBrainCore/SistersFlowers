@@ -27,11 +27,14 @@ function toBotProduct(
   };
 }
 
-/** Trusted Da Lat catalog for the bot (published + city assortment). */
-export async function loadDalAtBotCatalog(locale: Locale): Promise<BotProduct[]> {
-  const dalat = await getCityBySlug(DEFAULT_CITY_SLUG);
-  const cityProductIds = dalat
-    ? await listAvailableProductIdsForCity(dalat.id)
+/** Trusted city catalog for the bot (published + city assortment). */
+export async function loadDalAtBotCatalog(
+  locale: Locale,
+  citySlug: string = DEFAULT_CITY_SLUG,
+): Promise<BotProduct[]> {
+  const city = await getCityBySlug(citySlug);
+  const cityProductIds = city
+    ? await listAvailableProductIdsForCity(city.id)
     : null;
 
   const products = await listPublishedProducts({
@@ -45,7 +48,7 @@ export async function loadDalAtBotCatalog(locale: Locale): Promise<BotProduct[]>
 export async function recommendForShopBot(
   input: BotRecommendInput,
 ): Promise<BotRecommendResult> {
-  const catalog = await loadDalAtBotCatalog(input.locale);
+  const catalog = await loadDalAtBotCatalog(input.locale, input.city);
   const occasionCategorySlug = occasionToCategorySlug(input.occasion);
 
   return rankBotProducts({

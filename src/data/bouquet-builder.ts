@@ -13,7 +13,7 @@ export type BuilderOption = {
   image?: string;
 };
 
-export const DEFAULT_BUILDER_LOCATION: BuilderLocationId = "dalat";
+export const DEFAULT_BUILDER_LOCATION: BuilderLocationId = "danang";
 
 export const builderSizes: BuilderOption[] = [
   { id: "mini", price: 450000, swatch: "#e7c6c4" },

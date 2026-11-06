@@ -111,7 +111,7 @@ export function ShopBotFlow({
       try {
         const result = await recommendShopBotAction({
           locale,
-          city: "dalat",
+          city: state.city,
           intent: state.intent!,
           occasion: state.occasion,
           budgetMaxVnd: state.budgetMaxVnd,

@@ -15,7 +15,7 @@ function sanitizeRecommendInput(
   input: BotRecommendInput,
 ): BotRecommendInput | null {
   if (input.locale !== "en" && input.locale !== "vi") return null;
-  if (input.city !== "dalat") return null;
+  if (input.city !== "dalat" && input.city !== "danang") return null;
   if (!SHOP_BOT_INTENTS.includes(input.intent)) return null;
   if (
     input.occasion != null &&
@@ -33,7 +33,7 @@ function sanitizeRecommendInput(
   }
   return {
     locale: input.locale,
-    city: "dalat",
+    city: input.city,
     intent: input.intent,
     occasion: input.occasion,
     budgetMaxVnd,
