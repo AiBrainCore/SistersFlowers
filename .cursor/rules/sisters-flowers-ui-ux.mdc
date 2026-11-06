@@ -8,11 +8,11 @@ alwaysApply: true
 All design and frontend development must follow these principles.
 
 ## Design direction
-- Premium Da Lat flower studio digital extension (orange signage, white logo, wood, warm light)
-- Brand tokens: Orange `#C34C1A`, Cream `#FFF7F1`, White `#FFFFFF`, Grey `#77736F`, Wood `#B58B65`
-- Orange is accent only (CTA, price, active states, logo on light) — never flood the page
-- Cream/white dominate so bouquet photography sells first
-- 70% calm/professional, 30% vivid creative energy (homepage may be bolder; catalog/checkout stay calm)
+- Premium Da Lat flower studio digital extension matching SF orange brand materials (flyer/sign: bold burnt orange + black type)
+- Brand tokens: Orange `#C24712`, Cream `#FFF4EB`, White `#FFFFFF`, Grey `#5C574F`, Wood `#B58B65`
+- Orange must be unmistakable: header accent bar, brand wordmark, primary CTAs, prices, bot launcher, and intentional brand bands
+- Cream/white still dominate catalog/product surfaces so bouquet photography sells first — do not paint every page solid orange
+- Homepage may use a full orange brand band (like print materials); catalog/checkout stay calmer
 - Avoid pastel pink/sage “field flower” gradients and generic template aesthetics
 
 ## Principles

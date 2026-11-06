@@ -76,28 +76,28 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
               sizes="(min-width: 1024px) 50vw, 100vw"
             />
           </div>
-          <div className="relative flex flex-col justify-center bg-forest px-6 py-14 text-ivory sm:px-12 sm:py-20">
+          <div className="brand-band relative flex flex-col justify-center px-6 py-14 sm:px-12 sm:py-20">
             <Reveal>
-              <p className="text-[11px] tracking-[0.28em] text-citrus-soft uppercase">
+              <p className="text-[11px] tracking-[0.28em] text-ink/70 uppercase">
                 {t.origin}
               </p>
-              <h2 className="serif mt-4 text-4xl sm:text-5xl">
+              <h2 className="serif mt-4 text-4xl text-ink sm:text-5xl">
                 {t.home.fieldTitle}
               </h2>
-              <p className="mt-6 max-w-md text-sm leading-7 text-ivory/80">
+              <p className="mt-6 max-w-md text-sm leading-7 text-ink/80">
                 {t.home.fieldBody}
               </p>
               <ul className="mt-8 grid gap-3 text-[12px] tracking-[0.12em] uppercase sm:grid-cols-2">
-                <li className="rounded-full border border-ivory/15 px-4 py-2.5 text-center">
+                <li className="rounded-full border border-ink/20 bg-ink/5 px-4 py-2.5 text-center text-ink">
                   {t.home.fresh}
                 </li>
-                <li className="rounded-full border border-ivory/15 px-4 py-2.5 text-center">
+                <li className="rounded-full border border-ink/20 bg-ink/5 px-4 py-2.5 text-center text-ink">
                   {t.home.handmade}
                 </li>
-                <li className="rounded-full border border-ivory/15 px-4 py-2.5 text-center">
+                <li className="rounded-full border border-ink/20 bg-ink/5 px-4 py-2.5 text-center text-ink">
                   {t.home.gifting}
                 </li>
-                <li className="rounded-full border border-ivory/15 px-4 py-2.5 text-center">
+                <li className="rounded-full border border-ink/20 bg-ink/5 px-4 py-2.5 text-center text-ink">
                   {t.home.local}
                 </li>
               </ul>
@@ -188,7 +188,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
               </p>
               <Link
                 href={`/${locale}/shop`}
-                className="mt-8 inline-flex min-h-12 items-center rounded-full bg-forest px-6 text-[12px] tracking-[0.16em] text-ivory uppercase"
+                className="mt-8 inline-flex min-h-12 items-center rounded-full bg-citrus px-6 text-[12px] tracking-[0.16em] text-ivory uppercase"
               >
                 {t.home.dalatCta}
               </Link>

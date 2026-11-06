@@ -174,7 +174,7 @@ export function CheckoutForm({
         <button
           type="submit"
           disabled={status === "sending"}
-          className="mt-2 rounded-full bg-forest px-8 py-3 text-[12px] tracking-[0.18em] text-ivory uppercase disabled:opacity-60"
+          className="mt-2 rounded-full bg-citrus px-8 py-3 text-[12px] tracking-[0.18em] text-ivory uppercase transition hover:bg-citrus/90 disabled:opacity-60"
         >
           {status === "sending"
             ? dictionary.checkout.sending
