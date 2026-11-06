@@ -16,7 +16,7 @@ export function ImmersiveHero3D({
   const p = dictionary.hero3d;
 
   return (
-    <section className="relative overflow-hidden bg-[linear-gradient(165deg,#fbf9f5_0%,#f3ebe0_40%,#f0d4cc_72%,#dfe9e6_100%)]">
+    <section className="relative overflow-hidden bg-[linear-gradient(165deg,#ffffff_0%,#fff7f1_42%,#f3e4d8_72%,#ebe3da_100%)]">
       <div className="ih-bloom pointer-events-none absolute inset-0 opacity-90" />
       <div
         aria-hidden
