@@ -115,13 +115,14 @@ export function SiteHeader({
     "glass-menu absolute top-full left-0 z-50 mt-1.5 min-w-[14rem] rounded-2xl p-2";
 
   return (
-    <header className="sticky top-0 z-40 border-b border-forest/10 bg-paper/88 backdrop-blur-md">
+    <header className="sticky top-0 z-40 border-b border-citrus/15 bg-paper/90 backdrop-blur-md">
+      <div className="h-1 w-full bg-citrus" aria-hidden />
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-2.5 sm:px-5 sm:py-3">
         {/* Brand + city (Variant A) */}
         <div className="min-w-0 shrink-0">
           <Link
             href={`/${locale}`}
-            className="serif block text-xl leading-none text-forest sm:text-2xl"
+            className="serif block text-xl leading-none text-citrus sm:text-2xl"
             onClick={closeAll}
           >
             {dictionary.brand}

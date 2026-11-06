@@ -236,7 +236,7 @@ export function ImmersiveHero({
       <div className="ih-bloom pointer-events-none absolute inset-0 opacity-90" />
       <div
         aria-hidden
-        className="pointer-events-none absolute -top-24 right-[-10%] h-72 w-72 rounded-full bg-citrus/10 blur-3xl"
+        className="pointer-events-none absolute -top-24 right-[-10%] h-72 w-72 rounded-full bg-citrus/22 blur-3xl"
       />
 
       <div className="relative mx-auto grid max-w-6xl items-center gap-5 px-4 py-7 sm:gap-8 sm:px-5 sm:py-12 lg:grid-cols-[0.95fr_1.05fr] lg:gap-10 lg:py-16">

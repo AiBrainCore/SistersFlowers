@@ -2,25 +2,26 @@
 
 /*
   Sisters Flowers — studio brand tokens
-  Physical studio: orange signage, white logo, wood, warm light.
-  Orange is accent only; cream/white give bouquet photos room to sell.
+  Match physical SF materials: bold burnt-orange field + black type
+  (signage / flyer). Cream pages keep bouquet photos readable;
+  orange must read clearly on CTAs, header accents, and brand bands.
 */
 :root {
-  --orange: #c34c1a;
-  --cream: #fff7f1;
+  /* Sampled direction from SF orange brand card */
+  --orange: #c24712;
+  --cream: #fff4eb;
   --white: #ffffff;
-  --grey: #77736f;
+  --grey: #5c574f;
   --wood: #b58b65;
 
-  /* Soft orange wash for chips / selection (not loud fills) */
-  --citrus: #c34c1a;
-  --citrus-soft: #f0c4a8;
+  --citrus: #c24712;
+  --citrus-soft: #f2b48a;
 
   --ivory: #ffffff;
-  --paper: #fff7f1;
-  --ink: #2c2926;
-  --forest: #2c2926;
-  --moss: #77736f;
+  --paper: #fff4eb;
+  --ink: #1a1714;
+  --forest: #1a1714;
+  --moss: #5c574f;
 
   /* Former pastel accents → warm neutrals (compat for old class names) */
   --blush: #f3e4d8;
@@ -64,11 +65,17 @@ html {
 
 body {
   background:
-    radial-gradient(1100px 520px at 8% -8%, rgba(195, 76, 26, 0.07), transparent 55%),
-    radial-gradient(900px 480px at 100% 0%, rgba(181, 139, 101, 0.1), transparent 52%),
+    radial-gradient(1100px 560px at 6% -12%, rgba(194, 71, 18, 0.16), transparent 58%),
+    radial-gradient(900px 500px at 100% 0%, rgba(194, 71, 18, 0.1), transparent 52%),
     var(--cream);
   color: var(--ink);
   font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+/* Full orange brand band — flyer / signage energy */
+.brand-band {
+  background: var(--citrus);
+  color: var(--ink);
 }
 
 ::selection {
@@ -174,9 +181,9 @@ body {
 
 .ih-bloom {
   background:
-    radial-gradient(ellipse at 50% 40%, rgba(195, 76, 26, 0.12), transparent 55%),
-    radial-gradient(ellipse at 72% 68%, rgba(181, 139, 101, 0.18), transparent 50%),
-    radial-gradient(ellipse at 22% 78%, rgba(255, 247, 241, 0.65), transparent 45%);
+    radial-gradient(ellipse at 50% 40%, rgba(194, 71, 18, 0.22), transparent 55%),
+    radial-gradient(ellipse at 72% 68%, rgba(194, 71, 18, 0.14), transparent 50%),
+    radial-gradient(ellipse at 22% 78%, rgba(255, 244, 235, 0.7), transparent 45%);
 }
 
 @media (max-width: 767px) {
