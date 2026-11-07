@@ -347,14 +347,6 @@ export function SiteHeader({
             >
               {dictionary.nav.about}
             </Link>
-
-            <div className="mt-4 border-t border-forest/10 pt-4">
-              <LanguageSwitch
-                locale={locale}
-                dictionary={dictionary}
-                variant="panel"
-              />
-            </div>
           </nav>
         </div>
       ) : null}
