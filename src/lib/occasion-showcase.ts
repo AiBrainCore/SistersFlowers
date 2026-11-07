@@ -16,7 +16,7 @@ export const OCCASION_SHOWCASE = [
   },
   {
     slug: "congratulations",
-    image: "/bouquets/shown/w-01.jpg",
+    image: "/bouquets/shown/w-09.jpg",
     mood: "playful" as const,
   },
   {

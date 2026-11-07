@@ -122,33 +122,49 @@ export async function ensureOccasionCategoryLinks() {
   if (occasionLinksEnsured) return;
   await ensureDefaultCategories();
 
-  // Cheap skip when congratulation/anniversary assortments already exist.
-  const ready = await prisma.category.findFirst({
-    where: {
-      slug: { in: ["congratulations", "anniversary"] },
-      products: { some: { product: { published: true } } },
-    },
-    select: { id: true },
-  });
-  if (ready) {
+  const [products, categories] = await Promise.all([
+    prisma.product.findMany({ where: { published: true } }),
+    prisma.category.findMany({
+      include: {
+        _count: {
+          select: {
+            products: { where: { product: { published: true } } },
+          },
+        },
+      },
+    }),
+  ]);
+  const bySlug = new Map(categories.map((c) => [c.slug, c.id]));
+  const countBySlug = new Map(
+    categories.map((c) => [c.slug, c._count.products]),
+  );
+
+  const needsBackfill = ["congratulations", "anniversary", "everyday"].some(
+    (slug) => (countBySlug.get(slug) ?? 0) === 0,
+  );
+
+  if (!needsBackfill) {
     occasionLinksEnsured = true;
     return;
   }
 
-  const [products, categories] = await Promise.all([
-    prisma.product.findMany({ where: { published: true } }),
-    prisma.category.findMany(),
-  ]);
-  const bySlug = new Map(categories.map((c) => [c.slug, c.id]));
+  const everydayId = bySlug.get("everyday");
 
   for (const product of products) {
     const haystack = productHaystack(product);
+    const matched = new Set<string>();
     for (const rule of ASSIGN_RULES) {
       if (!rule.needles.some((n) => haystack.includes(n.toLowerCase()))) {
         continue;
       }
       const categoryId = bySlug.get(rule.slug);
-      if (!categoryId) continue;
+      if (categoryId) matched.add(categoryId);
+    }
+    // Keep Everyday stocked so the 8th homepage occasion card can show.
+    if (everydayId && (matched.size === 0 || (countBySlug.get("everyday") ?? 0) === 0)) {
+      matched.add(everydayId);
+    }
+    for (const categoryId of matched) {
       await prisma.productCategory.upsert({
         where: {
           productId_categoryId: {
