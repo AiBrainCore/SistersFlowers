@@ -2,7 +2,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { isLocale, type Locale } from "@/i18n/config";
-import { getDictionary } from "@/i18n/dictionaries";
+import { getStorefrontDictionary } from "@/lib/storefront";
 import { formatVnd } from "@/data/products";
 import { getProductBySlug, listPublishedProducts } from "@/lib/products";
 import { listActiveAddons } from "@/lib/addons";
@@ -39,7 +39,7 @@ export default async function ProductPage({
   if (!isLocale(locale)) notFound();
   const product = await getProductBySlug(slug);
   if (!product) notFound();
-  const t = getDictionary(locale);
+  const { dictionary: t } = await getStorefrontDictionary(locale);
   const [others, addons] = await Promise.all([
     listPublishedProducts().then((rows) =>
       rows.filter((item) => item.slug !== slug).slice(0, 8),

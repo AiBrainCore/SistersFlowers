@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { isLocale, type Locale } from "@/i18n/config";
-import { getDictionary } from "@/i18n/dictionaries";
+import { getStorefrontDictionary } from "@/lib/storefront";
 import { ImmersiveHero3D } from "@/components/immersive-hero-3d";
 import { buildPageMetadata } from "@/lib/seo";
 
@@ -13,7 +13,7 @@ export async function generateMetadata({
 }: PageProps<"/[locale]/hero-3d">): Promise<Metadata> {
   const { locale } = await params;
   if (!isLocale(locale)) return {};
-  const t = getDictionary(locale as Locale);
+  const { dictionary: t } = await getStorefrontDictionary(locale as Locale);
   const base = buildPageMetadata({
     locale: locale as Locale,
     title: `3D Hero PoC · ${t.brand}`,
@@ -36,7 +36,7 @@ export default async function Hero3DPage({
 }: PageProps<"/[locale]/hero-3d">) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
-  const t = getDictionary(locale);
+  const { dictionary: t } = await getStorefrontDictionary(locale);
 
   return (
     <div>

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { isLocale, type Locale } from "@/i18n/config";
-import { getDictionary } from "@/i18n/dictionaries";
+import { getStorefrontDictionary } from "@/lib/storefront";
 import { parseShopBotParams } from "@/features/shop-bot/params";
 import { ShopBotFlow } from "@/components/shop-bot/ShopBotFlow";
 
@@ -14,7 +14,7 @@ export default async function AssistantPage({
   const { locale: raw } = await params;
   if (!isLocale(raw)) notFound();
   const locale = raw as Locale;
-  const dictionary = getDictionary(locale);
+  const { dictionary } = await getStorefrontDictionary(locale);
   const query = await searchParams;
   const deepLink = parseShopBotParams(query);
   const t = dictionary.shopBot;

@@ -219,7 +219,7 @@ export function BouquetBuilder({
                     onClick={() => toggleAddon(option.id)}
                     className={`group flex min-h-[4.5rem] items-stretch gap-3 overflow-hidden rounded-2xl border text-left transition ${
                       selected
-                        ? "border-citrus/50 bg-citrus/5 shadow-[0_0_0_1px_rgba(195,76,26,0.25)]"
+                        ? "border-citrus/50 bg-citrus/5 shadow-[0_0_0_1px_rgba(176,84,44,0.25)]"
                         : "border-forest/10 bg-white/60 hover:border-citrus/30"
                     }`}
                   >
@@ -514,7 +514,7 @@ function Choice({
       onClick={onClick}
       className={`overflow-hidden rounded-2xl border text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-citrus/50 ${
         selected
-          ? "border-citrus/55 bg-citrus/5 shadow-[0_0_0_1px_rgba(195,76,26,0.28)]"
+          ? "border-citrus/55 bg-citrus/5 shadow-[0_0_0_1px_rgba(176,84,44,0.28)]"
           : "border-forest/10 bg-white/60 hover:border-citrus/30"
       }`}
     >

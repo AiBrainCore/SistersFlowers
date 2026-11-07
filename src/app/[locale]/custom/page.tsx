@@ -2,7 +2,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { isLocale, type Locale } from "@/i18n/config";
-import { getDictionary } from "@/i18n/dictionaries";
+import { getStorefrontDictionary } from "@/lib/storefront";
 import { BouquetBuilder } from "@/components/bouquet-builder";
 import { buildPageMetadata } from "@/lib/seo";
 import { DEFAULT_BUILDER_LOCATION } from "@/data/bouquet-builder";
@@ -14,7 +14,7 @@ export async function generateMetadata({
 }: PageProps<"/[locale]/custom">): Promise<Metadata> {
   const { locale } = await params;
   if (!isLocale(locale)) return {};
-  const t = getDictionary(locale as Locale);
+  const { dictionary: t } = await getStorefrontDictionary(locale as Locale);
   return buildPageMetadata({
     locale: locale as Locale,
     title: t.custom.title,
@@ -28,7 +28,7 @@ export default async function CustomPage({
 }: PageProps<"/[locale]/custom">) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
-  const t = getDictionary(locale);
+  const { dictionary: t } = await getStorefrontDictionary(locale);
 
   return (
     <div>

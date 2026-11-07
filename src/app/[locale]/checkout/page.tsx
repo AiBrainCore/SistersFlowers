@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { isLocale } from "@/i18n/config";
-import { getDictionary } from "@/i18n/dictionaries";
+import { getStorefrontDictionary } from "@/lib/storefront";
 import { CheckoutForm } from "@/components/checkout-form";
 import {
   getDeliveryConfig,
@@ -14,7 +14,7 @@ export default async function CheckoutPage({
 }: PageProps<"/[locale]/checkout">) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
-  const t = getDictionary(locale);
+  const { dictionary: t } = await getStorefrontDictionary(locale);
   const [deliveryConfig, zones] = await Promise.all([
     getDeliveryConfig(),
     listActiveDeliveryZones(),

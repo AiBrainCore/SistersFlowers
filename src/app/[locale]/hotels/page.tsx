@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { isLocale } from "@/i18n/config";
-import { getDictionary } from "@/i18n/dictionaries";
+import { getStorefrontDictionary } from "@/lib/storefront";
 import { InquiryForm } from "@/components/inquiry-form";
 
 const image = "/bouquets/b-14.jpg";
@@ -11,7 +11,7 @@ export default async function HotelsPage({
 }: PageProps<"/[locale]/hotels">) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
-  const t = getDictionary(locale);
+  const { dictionary: t } = await getStorefrontDictionary(locale);
 
   return (
     <div className="mx-auto grid max-w-6xl items-start gap-12 px-5 py-16 lg:grid-cols-[1.1fr_0.9fr]">

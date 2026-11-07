@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { isLocale } from "@/i18n/config";
-import { getDictionary } from "@/i18n/dictionaries";
+import { getStorefrontDictionary } from "@/lib/storefront";
 import { DeliveryCalculator } from "@/components/delivery-calculator";
 import {
   getDeliveryConfig,
@@ -16,7 +16,7 @@ export default async function DeliveryPage({
 }: PageProps<"/[locale]/delivery">) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
-  const t = getDictionary(locale);
+  const { dictionary: t } = await getStorefrontDictionary(locale);
   const [config, zones] = await Promise.all([
     getDeliveryConfig(),
     listActiveDeliveryZones(),

@@ -3,9 +3,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { isLocale, type Locale } from "@/i18n/config";
-import { getDictionary } from "@/i18n/dictionaries";
+import { getStorefrontDictionary } from "@/lib/storefront";
 import { listPublishedProducts } from "@/lib/products";
 import { listActiveCategories } from "@/lib/categories";
+import { listAvailableProductIdsForCity } from "@/lib/locations";
 import { ProductCard } from "@/components/product-card";
 import { Reveal } from "@/components/reveal";
 import { ImmersiveHero } from "@/components/immersive-hero";
@@ -23,7 +24,7 @@ export async function generateMetadata({
 }: PageProps<"/[locale]">): Promise<Metadata> {
   const { locale } = await params;
   if (!isLocale(locale)) return {};
-  const t = getDictionary(locale as Locale);
+  const { dictionary: t } = await getStorefrontDictionary(locale as Locale);
   return buildPageMetadata({
     locale: locale as Locale,
     title: `${t.brand} · ${t.origin}`,
@@ -35,9 +36,10 @@ export async function generateMetadata({
 export default async function HomePage({ params }: PageProps<"/[locale]">) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
-  const t = getDictionary(locale);
+  const { dictionary: t, activeCity } = await getStorefrontDictionary(locale);
+  const cityProductIds = await listAvailableProductIdsForCity(activeCity.id);
   const [products, categories] = await Promise.all([
-    listPublishedProducts(),
+    listPublishedProducts({ cityProductIds }),
     listActiveCategories(),
   ]);
   const featured = products.slice(0, 8);

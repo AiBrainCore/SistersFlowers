@@ -2,7 +2,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { isLocale, type Locale } from "@/i18n/config";
-import { getDictionary } from "@/i18n/dictionaries";
+import { getStorefrontDictionary } from "@/lib/storefront";
 import { buildPageMetadata } from "@/lib/seo";
 
 const image = "/bouquets/b-20.jpg";
@@ -12,7 +12,7 @@ export async function generateMetadata({
 }: PageProps<"/[locale]/about">): Promise<Metadata> {
   const { locale } = await params;
   if (!isLocale(locale)) return {};
-  const t = getDictionary(locale as Locale);
+  const { dictionary: t } = await getStorefrontDictionary(locale as Locale);
   return buildPageMetadata({
     locale: locale as Locale,
     title: t.about.title,
@@ -26,7 +26,7 @@ export default async function AboutPage({
 }: PageProps<"/[locale]/about">) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
-  const t = getDictionary(locale);
+  const { dictionary: t } = await getStorefrontDictionary(locale);
 
   return (
     <div>

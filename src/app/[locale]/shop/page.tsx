@@ -1,16 +1,13 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { isLocale, type Locale } from "@/i18n/config";
-import { getDictionary } from "@/i18n/dictionaries";
+import { getStorefrontDictionary } from "@/lib/storefront";
 import {
   listPublishedProducts,
   parseCatalogSearchParams,
 } from "@/lib/products";
 import { listActiveCategories } from "@/lib/categories";
-import {
-  getActiveCity,
-  listAvailableProductIdsForCity,
-} from "@/lib/locations";
+import { listAvailableProductIdsForCity } from "@/lib/locations";
 import { ProductCard } from "@/components/product-card";
 import { CatalogFilters } from "@/components/catalog-filters";
 import { buildPageMetadata } from "@/lib/seo";
@@ -22,7 +19,7 @@ export async function generateMetadata({
 }: PageProps<"/[locale]/shop">): Promise<Metadata> {
   const { locale } = await params;
   if (!isLocale(locale)) return {};
-  const t = getDictionary(locale as Locale);
+  const { dictionary: t } = await getStorefrontDictionary(locale as Locale);
   return buildPageMetadata({
     locale: locale as Locale,
     title: t.shop.title,
@@ -37,10 +34,9 @@ export default async function ShopPage({
 }: PageProps<"/[locale]/shop">) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
-  const t = getDictionary(locale);
+  const { dictionary: t, activeCity } = await getStorefrontDictionary(locale);
   const raw = await searchParams;
   const query = parseCatalogSearchParams(raw);
-  const activeCity = await getActiveCity();
   const cityProductIds = await listAvailableProductIdsForCity(activeCity.id);
   const [products, categories] = await Promise.all([
     listPublishedProducts({ ...query, cityProductIds }),
@@ -51,7 +47,7 @@ export default async function ShopPage({
     <div className="relative overflow-hidden">
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-64 bg-[radial-gradient(ellipse_at_top,rgba(195,76,26,0.08),transparent_60%)]"
+        className="pointer-events-none absolute inset-x-0 top-0 h-64 bg-[radial-gradient(ellipse_at_top,rgba(176,84,44,0.08),transparent_60%)]"
       />
       <div className="relative mx-auto max-w-6xl px-4 py-10 sm:px-5 sm:py-16">
         <p className="text-[11px] tracking-[0.28em] text-citrus uppercase">

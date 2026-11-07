@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { isLocale } from "@/i18n/config";
-import { getDictionary } from "@/i18n/dictionaries";
+import { getStorefrontDictionary } from "@/lib/storefront";
 import { formatVnd } from "@/data/products";
 import { prisma } from "@/lib/db";
 
@@ -13,7 +13,7 @@ export default async function CheckoutSuccessPage({
 }: PageProps<"/[locale]/checkout/success">) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
-  const t = getDictionary(locale);
+  const { dictionary: t } = await getStorefrontDictionary(locale);
   const query = await searchParams;
   const reference = typeof query.ref === "string" ? query.ref : "";
   const whatsapp = typeof query.wa === "string" ? query.wa : "";

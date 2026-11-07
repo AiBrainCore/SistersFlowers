@@ -2,7 +2,7 @@ import type { Locale } from "./config";
 
 const en = {
   brand: "Sisters Flowers",
-  origin: "Da Nang",
+  origin: "{city}",
   nav: {
     shop: "Shop",
     occasions: "Occasions",
@@ -26,8 +26,8 @@ const en = {
   },
   hero: {
     brand: "Sisters Flowers",
-    kicker: "A floral studio · Da Nang & Da Lat",
-    titleBefore: "From Da Nang, with ",
+    kicker: "A floral studio · {city}, Vietnam",
+    titleBefore: "From {city}, with ",
     titleAccent: "flowers",
     titleAfter: ".",
     subtitle:
@@ -35,21 +35,21 @@ const en = {
     body: "Fresh bouquets, thoughtful gifts and beautiful floral creations, handcrafted with care for every special moment.",
     shop: "Explore Flowers",
     custom: "Create Your Bouquet",
-    badge: "Handcrafted in Da Nang",
-    studioLine: "Studios in Da Nang & Da Lat",
+    badge: "Handcrafted in {city}",
+    studioLine: "Studio in {city}",
     interactHint: "Discover the bouquet",
-    imageAlt: "Floral arrangement from Sisters Flowers",
+    imageAlt: "Floral arrangement from Sisters Flowers in {city}",
     selectBouquet: "Show bouquet",
     openBouquet: "View this bouquet",
   },
   heroPreview: {
-    badge: "Handcrafted in Da Nang",
+    badge: "Handcrafted in {city}",
     hint: "Discover the bouquet",
     note: "",
     back: "Back to homepage",
   },
   hero3d: {
-    badge: "Handcrafted in Da Nang",
+    badge: "Handcrafted in {city}",
     hint: "Drag · pinch · rotate",
     note: "Real WebGL PoC — third-party CC0 sample model (not a Sisters SKU)",
     disclaimer:
@@ -70,11 +70,11 @@ const en = {
     occasionsTitle: "Flowers for every occasion.",
     occasionsBody:
       "Find the perfect flowers for life's meaningful moments.",
-    fieldTitle: "From Da Nang & Da Lat, with flowers.",
+    fieldTitle: "From {city}, with flowers.",
     fieldBody:
-      "Sisters Flowers crafts wrapped bouquets, personal gifts, and floristry for celebrations — from our Da Nang studio and our open Da Lat studio.",
-    fresh: "Fresh from the studio",
-    handmade: "Handcrafted in studio",
+      "Sisters Flowers crafts wrapped bouquets, personal gifts, and floristry for celebrations — finished in our {city} studio.",
+    fresh: "Fresh from {city}",
+    handmade: "Handcrafted in {city}",
     gifting: "Gifts & extras welcome",
     local: "Delivery planned with care",
     featured: "Popular from the studio",
@@ -86,15 +86,15 @@ const en = {
     personalCta: "Build a custom wrap",
     deliveryTitle: "Local delivery, priced by distance.",
     deliveryBody:
-      "Choose Da Nang or Da Lat above. Then the road between us and the door — homes, hotels, and celebration tables.",
+      "From our {city} studio to the door — homes, hotels, and celebration tables. Switch city above anytime.",
     hotelTitle: "Hotels & business",
     hotelBody: "Room arrivals, lobbies, and thoughtful corporate floristry.",
     weddingTitle: "Weddings & events",
-    weddingBody: "Ceremony, dinner, and the quiet details in highland light.",
+    weddingBody: "Ceremony, dinner, and the quiet details in {city} light.",
     networkKicker: "Where we are",
     networkTitle: "Da Nang & Da Lat.",
     networkBody:
-      "Order with the city switcher above. Da Nang is our primary studio; Da Lat remains open in the highlands.",
+      "Pick a city under the logo. Da Nang is our primary studio; Da Lat remains open in the highlands.",
     dalatName: "Da Lat",
     dalatStatus: "Open now",
     dalatNote: "04 Chi Lang, Ward 9, Da Lat, Lam Dong",
@@ -108,7 +108,7 @@ const en = {
     kicker: "Studio shop",
     title: "Flowers for every moment.",
     intro:
-      "Handcrafted bouquets and gift-ready wraps from our Da Lat studio — mix, rose, garden and ribbon finishes.",
+      "Handcrafted bouquets and gift-ready wraps from our {city} studio — mix, rose, garden and ribbon finishes.",
     search: "Search flowers",
     searchPlaceholder: "Name, colour, occasion…",
     categories: "Occasion",
@@ -135,7 +135,7 @@ const en = {
     showResults: "Show {count}",
   },
   product: {
-    handmade: "Handmade in Da Lat",
+    handmade: "Handmade in {city}",
     add: "Add to bouquet tray",
     added: "Added to tray",
     deliveryNote: "Delivery is priced by distance at confirmation.",
@@ -262,19 +262,19 @@ const en = {
     kicker: "Weddings & events",
     title: "Tables that still feel like a field.",
     intro:
-      "Ceremony, dinner, welcome flowers. We design for Da Lat light — mist, pine, and petals that do not look imported.",
+      "Ceremony, dinner, welcome flowers. We design for {city} light — petals finished by hand, never looking imported.",
   },
   hotels: {
     kicker: "Hotel delivery",
     title: "A bouquet waiting behind the door.",
     intro:
-      "For guests arriving in Da Lat, or already in the room. We coordinate with reception when needed.",
+      "For guests arriving in {city}, or already in the room. We coordinate with reception when needed.",
   },
   delivery: {
     kicker: "Distance-based delivery",
     title: "Pick your area. See the fee.",
     intro:
-      "You do not need to know the kilometres. Choose a Da Lat area near the recipient — we estimate from the studio.",
+      "You do not need to know the kilometres. Choose a {city} area near the recipient — we estimate from the studio.",
     calculatorKicker: "Delivery areas",
     calculatorTitle: "Where should the bouquet go?",
     calculatorBody:
@@ -298,10 +298,10 @@ const en = {
   about: {
     kicker: "About Sisters",
     title: "From the flower city, with feeling.",
-    p1: "Da Lat is Vietnam’s iconic flower city. Cool mornings, red earth, greenhouses in the mist, and bunches leaving the market while they are still drinking water.",
+    p1: "Vietnam’s flower culture runs deep — cool mornings, greenhouses in the mist, coastal celebrations, and bunches that still drink water when they leave our hands.",
     p2: "Sisters Flowers begins there — a local florist studio with two hands, a knife, ribbon, and the day’s harvest. Not stock photos: flowers prepared the way our customers already know from the studio.",
-    p3: "We craft bouquets and thoughtful gifts for birthdays, romance, celebrations, weddings, and hotel arrivals. Every order is finished with care in Da Lat before it finds its way to the door.",
-    p4: "Vietnamese and international guests are both welcome. English and Tiếng Việt sit side by side. Studios in Da Nang and Da Lat — switch city anytime in the header.",
+    p3: "We craft bouquets and thoughtful gifts for birthdays, romance, celebrations, weddings, and hotel arrivals. Every order is finished with care in {city} before it finds its way to the door.",
+    p4: "Vietnamese and international guests are both welcome. English and Tiếng Việt sit side by side. You are shopping our {city} studio — switch city anytime in the header.",
   },
   form: {
     name: "Your name",
@@ -312,7 +312,7 @@ const en = {
     hotel: "Hotel name",
     room: "Room number",
     guests: "Guest count (optional)",
-    venue: "Venue or area in Da Lat",
+    venue: "Venue or area in {city}",
     submit: "Send inquiry",
     sending: "Gathering…",
     successTitle: "We received the feeling.",
@@ -321,7 +321,7 @@ const en = {
     another: "Write another note",
   },
   footer: {
-    line: "Sisters Flowers — Da Nang & Da Lat. Bouquets, gifts, and celebrations.",
+    line: "Sisters Flowers · {city}. Bouquets, gifts, and celebrations — studios in Da Nang & Da Lat.",
     phone: "Phone",
     address: "Studios",
     rights: "Sisters Flowers",
@@ -355,7 +355,7 @@ const en = {
     progress: "Step {current} of {total}",
     greetingTitle: "Let's find something lovely.",
     greetingBody:
-      "A short guide to a Da Lat bouquet — then extras if you like. The studio confirms your order after checkout.",
+      "A short guide to a {city} bouquet — then extras if you like. The studio confirms your order after checkout.",
     greetingCta: "Start",
     intentTitle: "Who is this for?",
     intentSelf: "Flowers for myself",
@@ -405,14 +405,14 @@ const en = {
     pageKicker: "Flower assistant",
     pageTitle: "Choose a bouquet with us.",
     pageIntro:
-      "Answer a few quick questions. We only suggest real Da Lat bouquets from the shop — no invented prices.",
+      "Answer a few quick questions. We only suggest real {city} bouquets from the shop — no invented prices.",
     pageFallback: "Prefer browsing? Open the full shop.",
   },
 };
 
 const vi = {
   brand: "Sisters Flowers",
-  origin: "Đà Nẵng",
+  origin: "{city}",
   nav: {
     shop: "Cửa hàng",
     occasions: "Dịp",
@@ -436,8 +436,8 @@ const vi = {
   },
   hero: {
     brand: "Sisters Flowers",
-    kicker: "Tiệm hoa · Đà Nẵng & Đà Lạt",
-    titleBefore: "Từ Đà Nẵng, gửi ",
+    kicker: "Tiệm hoa · {city}, Việt Nam",
+    titleBefore: "Từ {city}, gửi ",
     titleAccent: "ngàn sắc hoa",
     titleAfter: ".",
     subtitle:
@@ -445,21 +445,21 @@ const vi = {
     body: "Những bó hoa tươi, món quà ý nghĩa và thiết kế hoa tinh tế, được chăm chút tỉ mỉ cho từng khoảnh khắc đặc biệt.",
     shop: "Khám phá hoa",
     custom: "Tạo bó theo ý bạn",
-    badge: "Làm thủ công tại Đà Nẵng",
-    studioLine: "Studio tại Đà Nẵng & Đà Lạt",
+    badge: "Làm thủ công tại {city}",
+    studioLine: "Studio tại {city}",
     interactHint: "Khám phá bó hoa",
-    imageAlt: "Bó hoa từ Sisters Flowers",
+    imageAlt: "Bó hoa từ Sisters Flowers tại {city}",
     selectBouquet: "Xem bó hoa",
     openBouquet: "Xem bó này",
   },
   heroPreview: {
-    badge: "Làm thủ công tại Đà Nẵng",
+    badge: "Làm thủ công tại {city}",
     hint: "Khám phá bó hoa",
     note: "",
     back: "Về trang chủ",
   },
   hero3d: {
-    badge: "Làm thủ công tại Đà Nẵng",
+    badge: "Làm thủ công tại {city}",
     hint: "Kéo · chạm · xoay",
     note: "PoC WebGL thật — mẫu CC0 bên thứ ba (không phải sản phẩm Sisters)",
     disclaimer:
@@ -480,11 +480,11 @@ const vi = {
     occasionsTitle: "Hoa cho mọi dịp.",
     occasionsBody:
       "Tìm bó hoa phù hợp cho những khoảnh khắc ý nghĩa trong đời.",
-    fieldTitle: "Từ Đà Nẵng & Đà Lạt, bằng hoa.",
+    fieldTitle: "Từ {city}, bằng hoa.",
     fieldBody:
-      "Sisters Flowers làm bó hoa gói tay, quà tặng cá nhân và hoa cho lễ hội — từ studio Đà Nẵng và studio Đà Lạt đang mở.",
-    fresh: "Tươi từ studio",
-    handmade: "Làm thủ công tại studio",
+      "Sisters Flowers làm bó hoa gói tay, quà tặng cá nhân và hoa cho lễ hội — hoàn thiện tại studio {city}.",
+    fresh: "Tươi từ {city}",
+    handmade: "Làm thủ công tại {city}",
     gifting: "Quà kèm được chào đón",
     local: "Giao hàng tính toán cẩn thận",
     featured: "Nổi bật từ studio",
@@ -496,15 +496,15 @@ const vi = {
     personalCta: "Tạo bó theo yêu cầu",
     deliveryTitle: "Giao gần, tính phí theo khoảng cách.",
     deliveryBody:
-      "Chọn Đà Nẵng hoặc Đà Lạt ở trên. Rồi con đường tới cửa — nhà, khách sạn, bàn tiệc.",
+      "Từ studio {city} tới cửa — nhà, khách sạn, bàn tiệc. Đổi thành phố ở trên bất cứ lúc nào.",
     hotelTitle: "Khách sạn & doanh nghiệp",
     hotelBody: "Phòng khách, sảnh và hoa doanh nghiệp tinh tế.",
     weddingTitle: "Cưới hỏi & sự kiện",
-    weddingBody: "Lễ, tiệc và những chi tiết nhỏ dưới ánh sáng cao nguyên.",
+    weddingBody: "Lễ, tiệc và những chi tiết nhỏ dưới ánh sáng {city}.",
     networkKicker: "Chúng tôi ở đâu",
     networkTitle: "Đà Nẵng & Đà Lạt.",
     networkBody:
-      "Chọn thành phố ở trên. Đà Nẵng là studio chính; Đà Lạt vẫn mở trên cao nguyên.",
+      "Chọn thành phố dưới logo. Đà Nẵng là studio chính; Đà Lạt vẫn mở trên cao nguyên.",
     dalatName: "Đà Lạt",
     dalatStatus: "Đang mở",
     dalatNote: "Số 04 Chi Lăng, P. 9, TP. Đà Lạt, Lâm Đồng",
@@ -518,7 +518,7 @@ const vi = {
     kicker: "Cửa hàng studio",
     title: "Hoa cho mọi khoảnh khắc.",
     intro:
-      "Bó hoa thủ công và gói quà từ studio Đà Lạt — mix, hồng, garden và nơ.",
+      "Bó hoa thủ công và gói quà từ studio {city} — mix, hồng, garden và nơ.",
     search: "Tìm hoa",
     searchPlaceholder: "Tên, màu, dịp…",
     categories: "Dịp",
@@ -545,7 +545,7 @@ const vi = {
     showResults: "Xem {count}",
   },
   product: {
-    handmade: "Làm thủ công tại Đà Lạt",
+    handmade: "Làm thủ công tại {city}",
     add: "Thêm vào khay hoa",
     added: "Đã thêm vào khay",
     deliveryNote: "Phí giao được tính theo khoảng cách khi xác nhận.",
@@ -673,19 +673,19 @@ const vi = {
     kicker: "Cưới hỏi & sự kiện",
     title: "Những bàn tiệc vẫn như một thửa ruộng hoa.",
     intro:
-      "Lễ, tiệc, hoa chào. Chúng tôi làm cho ánh sáng Đà Lạt — sương, thông, và cánh hoa không trông như hàng nhập.",
+      "Lễ, tiệc, hoa chào. Chúng tôi làm cho ánh sáng {city} — cánh hoa hoàn thiện bằng tay, không trông như hàng nhập.",
   },
   hotels: {
     kicker: "Giao hoa khách sạn",
     title: "Một bó hoa đợi sau cánh cửa.",
     intro:
-      "Cho khách vừa tới Đà Lạt, hoặc đã ở trong phòng. Chúng tôi phối hợp lễ tân khi cần.",
+      "Cho khách vừa tới {city}, hoặc đã ở trong phòng. Chúng tôi phối hợp lễ tân khi cần.",
   },
   delivery: {
     kicker: "Giao hoa theo khoảng cách",
     title: "Chọn khu vực. Thấy phí ngay.",
     intro:
-      "Không cần biết số kilomet. Chọn khu Đà Lạt gần người nhận — chúng tôi ước tính từ studio.",
+      "Không cần biết số kilomet. Chọn khu {city} gần người nhận — chúng tôi ước tính từ studio.",
     calculatorKicker: "Khu vực giao",
     calculatorTitle: "Bó hoa giao tới đâu?",
     calculatorBody:
@@ -709,10 +709,10 @@ const vi = {
   about: {
     kicker: "Về Sisters",
     title: "Từ thành phố ngàn hoa, bằng cảm xúc.",
-    p1: "Đà Lạt là thành phố hoa biểu tượng của Việt Nam. Buổi sớm se lạnh, đất đỏ, nhà kính trong sương, và những bó hoa rời chợ khi vẫn còn uống nước.",
+    p1: "Văn hóa hoa Việt Nam rất sâu — buổi sớm se lạnh, nhà kính trong sương, lễ hội ven biển, và những bó hoa vẫn còn uống nước khi rời tay chúng tôi.",
     p2: "Sisters Flowers bắt đầu từ đó — một studio hoa địa phương với hai bàn tay, dao, nơ và hoa của ngày. Không phải ảnh catalogue: hoa được chuẩn bị như khách đã biết từ studio.",
-    p3: "Chúng tôi làm bó hoa và món quà ý nghĩa cho sinh nhật, lãng mạn, lễ hội, cưới hỏi và khách sạn. Mỗi đơn hàng được hoàn thiện tại Đà Lạt trước khi đến tay người nhận.",
-    p4: "Khách Việt và khách quốc tế đều được chào đón. English và Tiếng Việt đứng cạnh nhau. Studio tại Đà Nẵng và Đà Lạt — đổi thành phố bất cứ lúc nào trên thanh điều hướng.",
+    p3: "Chúng tôi làm bó hoa và món quà ý nghĩa cho sinh nhật, lãng mạn, lễ hội, cưới hỏi và khách sạn. Mỗi đơn hàng được hoàn thiện tại {city} trước khi đến tay người nhận.",
+    p4: "Khách Việt và khách quốc tế đều được chào đón. English và Tiếng Việt đứng cạnh nhau. Bạn đang xem studio {city} — đổi thành phố bất cứ lúc nào trên thanh điều hướng.",
   },
   form: {
     name: "Tên của bạn",
@@ -723,7 +723,7 @@ const vi = {
     hotel: "Tên khách sạn",
     room: "Số phòng",
     guests: "Số khách (không bắt buộc)",
-    venue: "Địa điểm hoặc khu vực ở Đà Lạt",
+    venue: "Địa điểm hoặc khu vực ở {city}",
     submit: "Gửi lời nhắn",
     sending: "Đang gom hoa…",
     successTitle: "Chúng tôi đã nhận cảm xúc.",
@@ -732,7 +732,7 @@ const vi = {
     another: "Viết thêm một lời",
   },
   footer: {
-    line: "Sisters Flowers — Đà Nẵng & Đà Lạt. Bó hoa, quà tặng và lễ hội.",
+    line: "Sisters Flowers · {city}. Bó hoa, quà tặng và lễ hội — studio tại Đà Nẵng & Đà Lạt.",
     phone: "Điện thoại",
     address: "Studio",
     rights: "Sisters Flowers",
@@ -765,7 +765,7 @@ const vi = {
     progress: "Bước {current}/{total}",
     greetingTitle: "Mình cùng chọn một bó hoa thật đẹp nhé!",
     greetingBody:
-      "Vài bước ngắn để chọn bó hoa Đà Lạt — có thể thêm quà. Cửa hàng sẽ xác nhận đơn sau khi bạn gửi.",
+      "Vài bước ngắn để chọn bó hoa {city} — có thể thêm quà. Cửa hàng sẽ xác nhận đơn sau khi bạn gửi.",
     greetingCta: "Bắt đầu",
     intentTitle: "Bạn chọn hoa cho ai?",
     intentSelf: "Hoa cho mình",
@@ -815,7 +815,7 @@ const vi = {
     pageKicker: "Trợ lý chọn hoa",
     pageTitle: "Cùng chọn một bó hoa.",
     pageIntro:
-      "Trả lời vài câu hỏi ngắn. Chỉ gợi ý bó hoa Đà Lạt thật từ cửa hàng — không bịa giá.",
+      "Trả lời vài câu hỏi ngắn. Chỉ gợi ý bó hoa {city} thật từ cửa hàng — không bịa giá.",
     pageFallback: "Muốn xem hết? Mở cửa hàng.",
   },
 };
@@ -824,6 +824,26 @@ export type Dictionary = typeof en;
 
 export const dictionaries: Record<Locale, Dictionary> = { en, vi };
 
-export function getDictionary(locale: Locale): Dictionary {
-  return dictionaries[locale];
+function applyCityPlaceholders(value: unknown, cityName: string): unknown {
+  if (typeof value === "string") {
+    return value.replaceAll("{city}", cityName);
+  }
+  if (Array.isArray(value)) {
+    return value.map((item) => applyCityPlaceholders(item, cityName));
+  }
+  if (value && typeof value === "object") {
+    const out: Record<string, unknown> = {};
+    for (const [key, nested] of Object.entries(value)) {
+      out[key] = applyCityPlaceholders(nested, cityName);
+    }
+    return out;
+  }
+  return value;
+}
+
+/** Pass `cityName` so every `{city}` token matches the active studio. */
+export function getDictionary(locale: Locale, cityName?: string): Dictionary {
+  const base = dictionaries[locale];
+  if (!cityName) return base;
+  return applyCityPlaceholders(base, cityName) as Dictionary;
 }

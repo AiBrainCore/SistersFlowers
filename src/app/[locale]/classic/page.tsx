@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { isLocale, type Locale } from "@/i18n/config";
-import { getDictionary } from "@/i18n/dictionaries";
+import { getStorefrontDictionary } from "@/lib/storefront";
 import { listPublishedProducts } from "@/lib/products";
 import { listActiveCategories } from "@/lib/categories";
 import { FEATURED_CATEGORY_SLUGS } from "@/lib/category-constants";
@@ -30,7 +30,7 @@ export async function generateMetadata({
 }: PageProps<"/[locale]/classic">): Promise<Metadata> {
   const { locale } = await params;
   if (!isLocale(locale)) return {};
-  const t = getDictionary(locale as Locale);
+  const { dictionary: t } = await getStorefrontDictionary(locale as Locale);
   return {
     title: `${t.brand} · ${t.origin}`,
     description: t.hero.subtitle,
@@ -43,7 +43,7 @@ export default async function ClassicHomePage({
 }: PageProps<"/[locale]/classic">) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
-  const t = getDictionary(locale);
+  const { dictionary: t } = await getStorefrontDictionary(locale);
   const [products, categories] = await Promise.all([
     listPublishedProducts(),
     listActiveCategories(),

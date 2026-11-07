@@ -1,9 +1,9 @@
 import { notFound } from "next/navigation";
 import type { Locale } from "@/i18n/config";
 import { isLocale } from "@/i18n/config";
-import { getDictionary } from "@/i18n/dictionaries";
 import { listActiveCategories } from "@/lib/categories";
-import { getActiveCity, listCities } from "@/lib/locations";
+import { listCities } from "@/lib/locations";
+import { getStorefrontDictionary } from "@/lib/storefront";
 import { CartProvider } from "@/context/cart-context";
 import { LocationProvider } from "@/context/location-context";
 import { SiteHeader } from "@/components/site-header";
@@ -22,11 +22,10 @@ export default async function LocaleLayout({
 }: LayoutProps<"/[locale]">) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
-  const dictionary = getDictionary(locale as Locale);
-  const [categories, cities, activeCity] = await Promise.all([
+  const [{ dictionary, activeCity }, categories, cities] = await Promise.all([
+    getStorefrontDictionary(locale as Locale),
     listActiveCategories(),
     listCities(),
-    getActiveCity(),
   ]);
 
   return (

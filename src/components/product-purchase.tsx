@@ -73,7 +73,7 @@ export function ProductPurchase({
                   onClick={() => toggle(addon.id)}
                   className={`flex min-h-14 w-full items-start justify-between gap-4 rounded-2xl border px-4 py-3.5 text-left transition ${
                     on
-                      ? "border-citrus/40 bg-citrus/10 shadow-[0_8px_24px_rgba(195,76,26,0.12)]"
+                      ? "border-citrus/40 bg-citrus/10 shadow-[0_8px_24px_rgba(176,84,44,0.12)]"
                       : "glass border-forest/10 hover:border-citrus/30"
                   }`}
                 >

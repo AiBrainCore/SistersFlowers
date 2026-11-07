@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { isLocale } from "@/i18n/config";
-import { getDictionary } from "@/i18n/dictionaries";
+import { getStorefrontDictionary } from "@/lib/storefront";
 import { InquiryForm } from "@/components/inquiry-form";
 
 const image = "/bouquets/b-11.jpg";
@@ -11,7 +11,7 @@ export default async function WeddingsPage({
 }: PageProps<"/[locale]/weddings">) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
-  const t = getDictionary(locale);
+  const { dictionary: t } = await getStorefrontDictionary(locale);
 
   return (
     <div>

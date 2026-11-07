@@ -8,7 +8,9 @@ import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { formatVnd, type Product } from "@/data/products";
 import { useCart } from "@/context/cart-context";
+import { useLocation } from "@/context/location-context";
 import type { AddonPublic } from "@/lib/addons";
+import type { ShopBotCity } from "@/features/shop-bot/types";
 import {
   recommendShopBotAction,
   listShopBotAddonsAction,
@@ -76,9 +78,15 @@ export function ShopBotFlow({
   const t = dictionary.shopBot;
   const router = useRouter();
   const { addProduct } = useCart();
-  const [state, setState] = useState<ShopBotState>(() =>
-    createInitialShopBotState(locale, deepLink),
-  );
+  const { activeCity } = useLocation();
+  const botCity: ShopBotCity =
+    activeCity.slug === "dalat" || activeCity.slug === "danang"
+      ? activeCity.slug
+      : "danang";
+  const [state, setState] = useState<ShopBotState>(() => ({
+    ...createInitialShopBotState(locale, deepLink),
+    city: botCity,
+  }));
   const [recommendations, setRecommendations] = useState<BotProduct[]>([]);
   const [filtersRelaxed, setFiltersRelaxed] = useState(false);
   const [addons, setAddons] = useState<AddonPublic[]>([]);
@@ -222,7 +230,12 @@ export function ShopBotFlow({
             <button
               type="button"
               className="min-h-11 rounded-full px-3 text-[11px] tracking-[0.12em] text-moss uppercase"
-              onClick={() => setState(restartShopBot(locale, state.source))}
+              onClick={() =>
+                setState({
+                  ...restartShopBot(locale, state.source),
+                  city: botCity,
+                })
+              }
             >
               {t.restart}
             </button>

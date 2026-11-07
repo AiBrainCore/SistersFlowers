@@ -16,11 +16,11 @@ const serif = Source_Serif_4({
 
 export const metadata: Metadata = {
   title: {
-    default: "Sisters Flowers Da Lat",
+    default: "Sisters Flowers",
     template: "%s · Sisters Flowers",
   },
   description:
-    "Sisters Flowers — florist studio in Da Lat. Handcrafted bouquets, gifts, weddings, hotel floristry, and local delivery.",
+    "Sisters Flowers — florist studios in Da Nang & Da Lat. Handcrafted bouquets, gifts, weddings, hotel floristry, and local delivery.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

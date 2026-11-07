@@ -35,7 +35,7 @@ export function ShopBotLauncher({
         type="button"
         aria-label={dictionary.shopBot.launcherAria}
         onClick={() => setManualOpen(true)}
-        className="fixed right-4 bottom-[max(1rem,env(safe-area-inset-bottom))] z-40 flex min-h-12 items-center gap-2 rounded-full bg-citrus px-4 py-3 text-ivory shadow-[0_14px_32px_rgba(194,71,18,0.38)] transition hover:bg-citrus/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-citrus sm:right-6"
+        className="fixed right-4 bottom-[max(1rem,env(safe-area-inset-bottom))] z-40 flex min-h-12 items-center gap-2 rounded-full bg-citrus px-4 py-3 text-ivory shadow-[0_14px_32px_rgba(176,84,44,0.38)] transition hover:bg-citrus/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-citrus sm:right-6"
       >
         <span aria-hidden className="inline-flex h-5 w-5 items-center justify-center">
           <svg viewBox="0 0 24 24" className="h-4 w-4 fill-current" aria-hidden>
