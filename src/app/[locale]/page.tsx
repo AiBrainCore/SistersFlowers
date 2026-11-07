@@ -11,7 +11,11 @@ import { ProductCard } from "@/components/product-card";
 import { Reveal } from "@/components/reveal";
 import { ImmersiveHero } from "@/components/immersive-hero";
 import { ShopByOccasion } from "@/components/shop-by-occasion";
-import { buildPageMetadata } from "@/lib/seo";
+import {
+  buildPageMetadata,
+  homepageProductListJsonLd,
+  organizationJsonLd,
+} from "@/lib/seo";
 import { HERO_BOUQUETS, type HeroBouquetItem } from "@/lib/hero-bouquets";
 
 const studioImage = "/bouquets/b-12.jpg";
@@ -53,8 +57,28 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
     };
   });
 
+  const orgLd = organizationJsonLd(locale);
+  const listLd = homepageProductListJsonLd(
+    locale,
+    featured.map((product) => ({
+      name: product.names[locale],
+      description: product.blurb[locale],
+      image: product.image,
+      price: product.price,
+      slug: product.slug,
+    })),
+  );
+
   return (
     <div>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(orgLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(listLd) }}
+      />
       <ImmersiveHero
         locale={locale}
         dictionary={t}

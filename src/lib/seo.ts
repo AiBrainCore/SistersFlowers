@@ -95,3 +95,125 @@ export function productJsonLd(input: {
     },
   };
 }
+
+export function organizationJsonLd(locale: Locale) {
+  const home = siteUrl(`/${locale}`);
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": `${home}#organization`,
+        name: "Sisters Flowers",
+        url: home,
+        logo: siteUrl("/favicon.ico"),
+        foundingDate: "2020",
+        sameAs: [
+          "https://wa.me/84327453536",
+          siteUrl("/en"),
+          siteUrl("/vi"),
+        ],
+        contactPoint: [
+          {
+            "@type": "ContactPoint",
+            telephone: "+84-327-453-536",
+            contactType: "customer service",
+            areaServed: ["VN"],
+            availableLanguage: ["English", "Vietnamese"],
+          },
+        ],
+      },
+      {
+        "@type": "Florist",
+        "@id": `${home}#danang`,
+        name: "Sisters Flowers Da Nang",
+        parentOrganization: { "@id": `${home}#organization` },
+        url: home,
+        image: siteUrl("/bouquets/shown/w-01.jpg"),
+        telephone: ["+84-904-985-761", "+84-327-453-536"],
+        address: {
+          "@type": "PostalAddress",
+          streetAddress: "53 Luong Nhu Hoc, Hoa Cuong Bac, Hai Chau",
+          addressLocality: "Da Nang",
+          addressCountry: "VN",
+        },
+        areaServed: {
+          "@type": "City",
+          name: "Da Nang",
+        },
+        priceRange: "₫₫",
+        sameAs: ["https://wa.me/84327453536"],
+      },
+      {
+        "@type": "Florist",
+        "@id": `${home}#dalat`,
+        name: "Sisters Flowers Da Lat",
+        parentOrganization: { "@id": `${home}#organization` },
+        url: home,
+        image: siteUrl("/bouquets/shown/w-06.jpg"),
+        telephone: ["+84-904-985-761", "+84-964-889-329"],
+        address: {
+          "@type": "PostalAddress",
+          streetAddress: "04 Chi Lang, Ward 9",
+          addressLocality: "Da Lat",
+          addressRegion: "Lam Dong",
+          addressCountry: "VN",
+        },
+        areaServed: {
+          "@type": "City",
+          name: "Da Lat",
+        },
+        priceRange: "₫₫",
+        sameAs: ["https://wa.me/84327453536"],
+      },
+      {
+        "@type": "WebSite",
+        "@id": `${home}#website`,
+        url: home,
+        name: "Sisters Flowers",
+        publisher: { "@id": `${home}#organization` },
+        inLanguage: [locale === "vi" ? "vi-VN" : "en-US", "vi-VN", "en-US"],
+        potentialAction: {
+          "@type": "SearchAction",
+          target: `${siteUrl(`/${locale}/shop`)}?q={search_term_string}`,
+          "query-input": "required name=search_term_string",
+        },
+      },
+    ],
+  };
+}
+
+export function homepageProductListJsonLd(
+  locale: Locale,
+  products: {
+    name: string;
+    description: string;
+    image: string;
+    price: number;
+    slug: string;
+  }[],
+) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "Featured bouquets",
+    itemListElement: products.map((product, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      item: {
+        "@type": "Product",
+        name: product.name,
+        description: product.description,
+        image: [siteUrl(product.image)],
+        url: siteUrl(`/${locale}/shop/${product.slug}`),
+        offers: {
+          "@type": "Offer",
+          priceCurrency: "VND",
+          price: product.price,
+          availability: "https://schema.org/InStock",
+          url: siteUrl(`/${locale}/shop/${product.slug}`),
+        },
+      },
+    })),
+  };
+}

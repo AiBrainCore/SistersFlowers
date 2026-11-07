@@ -15,6 +15,8 @@ const en = {
     hotels: "Hotels",
     delivery: "Delivery",
     about: "About",
+    contact: "Contact",
+    terms: "Terms",
     menu: "Menu",
     close: "Close",
     language: "Language",
@@ -329,6 +331,27 @@ const en = {
     rights:
       "© {years} Sisters Flowers. All rights reserved.",
   },
+  contact: {
+    kicker: "Contact",
+    title: "Talk to the studio.",
+    intro:
+      "Two Sisters Flowers studios in Da Nang and Da Lat. Call, WhatsApp, or visit — English and Vietnamese welcome.",
+  },
+  terms: {
+    kicker: "Legal",
+    title: "Terms & privacy.",
+    intro:
+      "Simple studio terms for online bouquet requests. Full confirmation happens with our team before payment.",
+    ordersTitle: "Orders",
+    ordersBody:
+      "Website orders are requests. The studio confirms flowers, timing, and fees before you pay. Prices on the shop are in VND and visible without login.",
+    deliveryTitle: "Delivery",
+    deliveryBody:
+      "Delivery fees are estimated by distance from the selected city studio and confirmed with your address.",
+    privacyTitle: "Privacy",
+    privacyBody:
+      "We use your contact details only to fulfil and confirm your order. We do not sell personal data.",
+  },
   location: {
     deliveringIn: "Delivering in",
     chooseCity: "Choose delivery city",
@@ -428,6 +451,8 @@ const vi = {
     hotels: "Khách sạn",
     delivery: "Giao hoa",
     about: "Câu chuyện",
+    contact: "Liên hệ",
+    terms: "Điều khoản",
     menu: "Menu",
     close: "Đóng",
     language: "Ngôn ngữ",
@@ -741,6 +766,27 @@ const vi = {
     studios: "Studio của chúng tôi",
     rights:
       "© {years} Sisters Flowers. Mọi quyền được bảo lưu.",
+  },
+  contact: {
+    kicker: "Liên hệ",
+    title: "Nhắn studio.",
+    intro:
+      "Hai studio Sisters Flowers tại Đà Nẵng và Đà Lạt. Gọi, WhatsApp hoặc đến trực tiếp — English và tiếng Việt đều được chào đón.",
+  },
+  terms: {
+    kicker: "Pháp lý",
+    title: "Điều khoản & bảo mật.",
+    intro:
+      "Điều khoản ngắn cho yêu cầu bó hoa online. Studio xác nhận trước khi thanh toán.",
+    ordersTitle: "Đơn hàng",
+    ordersBody:
+      "Đơn trên website là yêu cầu. Studio xác nhận hoa, thời gian và phí trước khi bạn trả tiền. Giá trên cửa hàng tính bằng VND, xem được không cần đăng nhập.",
+    deliveryTitle: "Giao hàng",
+    deliveryBody:
+      "Phí giao ước tính theo khoảng cách từ studio thành phố đã chọn và được xác nhận theo địa chỉ của bạn.",
+    privacyTitle: "Bảo mật",
+    privacyBody:
+      "Chúng tôi dùng thông tin liên hệ chỉ để xử lý và xác nhận đơn. Không bán dữ liệu cá nhân.",
   },
   location: {
     deliveringIn: "Giao tại",

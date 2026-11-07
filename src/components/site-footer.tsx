@@ -103,6 +103,18 @@ export function SiteFooter({
           >
             {dictionary.nav.about}
           </Link>
+          <Link
+            href={`/${locale}/contact`}
+            className="min-h-11 inline-flex items-center hover:text-citrus"
+          >
+            {dictionary.nav.contact}
+          </Link>
+          <Link
+            href={`/${locale}/terms`}
+            className="min-h-11 inline-flex items-center hover:text-citrus"
+          >
+            {dictionary.nav.terms}
+          </Link>
           <a
             href={`https://wa.me/${STUDIO_PHONE_DIGITS}`}
             className="min-h-11 inline-flex items-center hover:text-citrus"

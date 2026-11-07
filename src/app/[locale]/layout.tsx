@@ -11,6 +11,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { CartDrawer } from "@/components/cart-drawer";
 import { LocationBanner } from "@/components/location-banner";
 import { ShopBotRoot } from "@/components/shop-bot/ShopBotRoot";
+import { WebMcpTools } from "@/components/webmcp-tools";
 
 export function generateStaticParams() {
   return [{ locale: "en" }, { locale: "vi" }];
@@ -45,6 +46,7 @@ export default async function LocaleLayout({
           <SiteFooter locale={locale as Locale} dictionary={dictionary} />
           <CartDrawer locale={locale as Locale} dictionary={dictionary} />
           <ShopBotRoot locale={locale as Locale} dictionary={dictionary} />
+          <WebMcpTools locale={locale as Locale} />
         </div>
       </LocationProvider>
     </CartProvider>

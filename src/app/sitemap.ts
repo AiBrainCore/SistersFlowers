@@ -11,6 +11,9 @@ const staticPaths = [
   "/hotels",
   "/delivery",
   "/about",
+  "/contact",
+  "/terms",
+  "/assistant",
 ] as const;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
