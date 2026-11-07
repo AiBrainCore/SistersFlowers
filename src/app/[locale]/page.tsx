@@ -27,8 +27,8 @@ export async function generateMetadata({
   const { dictionary: t } = await getStorefrontDictionary(locale as Locale);
   return buildPageMetadata({
     locale: locale as Locale,
-    title: `${t.brand} · ${t.origin}`,
-    description: t.hero.subtitle,
+    title: t.home.seoTitle,
+    description: t.home.seoDescription,
     pathWithoutLocale: "",
   });
 }
@@ -81,7 +81,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
           <div className="brand-band relative flex flex-col justify-center px-6 py-14 sm:px-12 sm:py-20">
             <Reveal>
               <p className="text-[11px] tracking-[0.28em] text-white/75 uppercase">
-                {t.origin}
+                {t.home.fieldKicker}
               </p>
               <h2 className="serif mt-4 text-4xl text-white sm:text-5xl">
                 {t.home.fieldTitle}
@@ -160,67 +160,6 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
               </Link>
             </div>
           </Reveal>
-        </div>
-      </section>
-
-      <section className="border-y border-forest/10 bg-[linear-gradient(135deg,#fff7f1_0%,#ffffff_42%,#f3e4d8_100%)]">
-        <div className="mx-auto max-w-6xl px-4 py-16 sm:px-5 sm:py-20">
-          <Reveal>
-            <p className="text-[11px] tracking-[0.28em] text-citrus uppercase">
-              {t.home.networkKicker}
-            </p>
-            <h2 className="serif mt-3 max-w-xl text-4xl text-forest sm:text-5xl">
-              {t.home.networkTitle}
-            </h2>
-            <p className="mt-4 max-w-lg text-sm leading-7 text-moss">
-              {t.home.networkBody}
-            </p>
-          </Reveal>
-
-          <div className="relative mt-12 grid gap-10 md:grid-cols-[1fr_auto_1fr] md:items-stretch md:gap-0">
-            <article className="network-city">
-              <p className="text-[11px] tracking-[0.2em] text-citrus uppercase">
-                {t.home.danangStatus}
-              </p>
-              <h3 className="serif mt-2 text-4xl text-forest sm:text-5xl">
-                {t.home.danangName}
-              </h3>
-              <p className="mt-4 max-w-sm text-sm leading-7 text-moss">
-                {t.home.danangNote}
-              </p>
-              <Link
-                href={`/${locale}/shop`}
-                className="mt-8 inline-flex min-h-12 items-center rounded-full bg-citrus px-6 text-[12px] tracking-[0.16em] text-ivory uppercase"
-              >
-                {t.home.danangCta}
-              </Link>
-            </article>
-
-            <div
-              className="hidden items-center px-8 md:flex"
-              aria-hidden="true"
-            >
-              <div className="network-line h-px w-24 bg-citrus/50" />
-            </div>
-
-            <article className="network-city border-t border-forest/15 pt-10 md:border-t-0 md:pt-0 md:text-right">
-              <p className="text-[11px] tracking-[0.2em] text-citrus uppercase">
-                {t.home.dalatStatus}
-              </p>
-              <h3 className="serif mt-2 text-4xl text-forest sm:text-5xl">
-                {t.home.dalatName}
-              </h3>
-              <p className="mt-4 max-w-sm text-sm leading-7 text-moss md:ml-auto">
-                {t.home.dalatNote}
-              </p>
-              <Link
-                href={`/${locale}/shop`}
-                className="mt-8 inline-flex min-h-12 items-center rounded-full border border-citrus/40 px-6 text-[12px] tracking-[0.16em] text-citrus uppercase md:ml-auto"
-              >
-                {t.home.dalatCta}
-              </Link>
-            </article>
-          </div>
         </div>
       </section>
 
