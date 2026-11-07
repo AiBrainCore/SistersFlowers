@@ -321,10 +321,12 @@ const en = {
     another: "Write another note",
   },
   footer: {
-    line: "Sisters Flowers · {city}. Bouquets, gifts, and celebrations — studios in Da Nang & Da Lat.",
+    line: "Two Sisters Flowers studios — same brand, local phones & delivery.",
     phone: "Phone",
-    address: "Studios",
-    rights: "Sisters Flowers",
+    address: "Address",
+    studios: "Our studios",
+    rights:
+      "© {years} Sisters Flowers. All rights reserved.",
   },
   location: {
     deliveringIn: "Delivering in",
@@ -732,10 +734,12 @@ const vi = {
     another: "Viết thêm một lời",
   },
   footer: {
-    line: "Sisters Flowers · {city}. Bó hoa, quà tặng và lễ hội — studio tại Đà Nẵng & Đà Lạt.",
+    line: "Hai studio Sisters Flowers — cùng thương hiệu, số điện thoại và giao hàng theo từng thành phố.",
     phone: "Điện thoại",
-    address: "Studio",
-    rights: "Sisters Flowers",
+    address: "Địa chỉ",
+    studios: "Studio của chúng tôi",
+    rights:
+      "© {years} Sisters Flowers. Mọi quyền được bảo lưu.",
   },
   location: {
     deliveringIn: "Giao tại",

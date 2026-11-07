@@ -2,9 +2,11 @@ import Link from "next/link";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import {
+  STUDIO_CONTACTS,
   STUDIO_PHONE_DIGITS,
-  STUDIO_PHONE_DISPLAY,
 } from "@/lib/locations";
+
+const BRAND_SINCE = 2020;
 
 export function SiteFooter({
   locale,
@@ -14,51 +16,57 @@ export function SiteFooter({
   dictionary: Dictionary;
 }) {
   const t = dictionary.footer;
-  const danangAddress =
-    locale === "vi"
-      ? "53 Lương Nhữ Hộc, Hòa Cường Bắc, Hải Châu, Đà Nẵng"
-      : "53 Luong Nhu Hoc, Hoa Cuong Bac, Hai Chau, Da Nang";
-  const dalatAddress =
-    locale === "vi"
-      ? "Số 04 Chi Lăng, P. 9, TP. Đà Lạt, Lâm Đồng"
-      : "04 Chi Lang, Ward 9, Da Lat, Lam Dong";
+  const year = new Date().getFullYear();
+  const yearsLabel = year > BRAND_SINCE ? `${BRAND_SINCE}–${year}` : `${BRAND_SINCE}`;
+  const rights = t.rights.replace("{years}", yearsLabel);
 
   return (
     <footer className="border-t border-forest/10 bg-cream/55">
-      <div className="mx-auto flex max-w-6xl flex-col gap-10 px-4 py-14 sm:px-5 sm:flex-row sm:items-start sm:justify-between">
-        <div>
+      <div className="mx-auto max-w-6xl px-4 py-14 sm:px-5">
+        <div className="max-w-xl">
           <p className="serif text-3xl text-citrus">{dictionary.brand}</p>
-          <p className="mt-3 max-w-sm text-sm leading-7 text-moss">{t.line}</p>
-          <p className="mt-5 text-[11px] tracking-[0.16em] text-moss uppercase">
-            {t.phone}
+          <p className="mt-3 text-sm leading-7 text-moss">{t.line}</p>
+          <p className="mt-6 text-[11px] tracking-[0.16em] text-moss uppercase">
+            {t.studios}
           </p>
-          <a
-            href={`tel:+${STUDIO_PHONE_DIGITS}`}
-            className="mt-1 inline-flex min-h-11 items-center text-sm font-medium text-forest hover:text-citrus"
-          >
-            {STUDIO_PHONE_DISPLAY}
-          </a>
-          <p className="mt-5 text-[11px] tracking-[0.16em] text-moss uppercase">
-            {t.address}
-          </p>
-          <ul className="mt-2 space-y-2 text-sm leading-6 text-forest">
-            <li>
-              <span className="font-medium text-citrus">
-                {dictionary.home.danangName}
-              </span>
-              <br />
-              {danangAddress}
-            </li>
-            <li>
-              <span className="font-medium text-citrus">
-                {dictionary.home.dalatName}
-              </span>
-              <br />
-              {dalatAddress}
-            </li>
-          </ul>
         </div>
-        <div className="flex flex-wrap gap-x-5 gap-y-3 text-[11px] tracking-[0.14em] text-forest uppercase">
+
+        <div className="mt-5 grid gap-4 sm:grid-cols-2">
+          {STUDIO_CONTACTS.map((studio) => {
+            const name = locale === "vi" ? studio.nameVi : studio.nameEn;
+            const address =
+              locale === "vi" ? studio.addressVi : studio.addressEn;
+            return (
+              <article
+                key={studio.slug}
+                className="rounded-2xl border border-citrus/15 bg-white/55 px-5 py-5"
+              >
+                <h3 className="serif text-2xl text-citrus">{name}</h3>
+                <p className="mt-4 text-[11px] tracking-[0.14em] text-moss uppercase">
+                  {t.address}
+                </p>
+                <p className="mt-1 text-sm leading-6 text-forest">{address}</p>
+                <p className="mt-4 text-[11px] tracking-[0.14em] text-moss uppercase">
+                  {t.phone}
+                </p>
+                <ul className="mt-1 space-y-1">
+                  {studio.phones.map((phone) => (
+                    <li key={phone.digits}>
+                      <a
+                        href={`tel:+${phone.digits}`}
+                        className="inline-flex min-h-11 items-center text-sm font-medium text-forest hover:text-citrus"
+                      >
+                        {phone.display}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </article>
+            );
+          })}
+        </div>
+
+        <div className="mt-10 flex flex-wrap gap-x-5 gap-y-3 text-[11px] tracking-[0.14em] text-forest uppercase">
           <Link
             href={`/${locale}/shop`}
             className="min-h-11 inline-flex items-center hover:text-citrus"
@@ -105,8 +113,8 @@ export function SiteFooter({
           </a>
         </div>
       </div>
-      <p className="border-t border-forest/10 px-5 py-4 text-center text-[11px] tracking-[0.12em] text-moss">
-        {t.rights}
+      <p className="border-t border-forest/10 px-5 py-4 text-center text-[11px] leading-5 tracking-[0.08em] text-moss">
+        {rights}
       </p>
     </footer>
   );

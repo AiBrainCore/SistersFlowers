@@ -80,26 +80,26 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
           </div>
           <div className="brand-band relative flex flex-col justify-center px-6 py-14 sm:px-12 sm:py-20">
             <Reveal>
-              <p className="text-[11px] tracking-[0.28em] text-ink/70 uppercase">
+              <p className="text-[11px] tracking-[0.28em] text-white/75 uppercase">
                 {t.origin}
               </p>
-              <h2 className="serif mt-4 text-4xl text-ink sm:text-5xl">
+              <h2 className="serif mt-4 text-4xl text-white sm:text-5xl">
                 {t.home.fieldTitle}
               </h2>
-              <p className="mt-6 max-w-md text-sm leading-7 text-ink/80">
+              <p className="mt-6 max-w-md text-sm leading-7 text-white/85">
                 {t.home.fieldBody}
               </p>
               <ul className="mt-8 grid gap-3 text-[12px] tracking-[0.12em] uppercase sm:grid-cols-2">
-                <li className="rounded-full border border-ink/20 bg-ink/5 px-4 py-2.5 text-center text-ink">
+                <li className="rounded-full border border-white/35 bg-white/10 px-4 py-2.5 text-center text-white">
                   {t.home.fresh}
                 </li>
-                <li className="rounded-full border border-ink/20 bg-ink/5 px-4 py-2.5 text-center text-ink">
+                <li className="rounded-full border border-white/35 bg-white/10 px-4 py-2.5 text-center text-white">
                   {t.home.handmade}
                 </li>
-                <li className="rounded-full border border-ink/20 bg-ink/5 px-4 py-2.5 text-center text-ink">
+                <li className="rounded-full border border-white/35 bg-white/10 px-4 py-2.5 text-center text-white">
                   {t.home.gifting}
                 </li>
-                <li className="rounded-full border border-ink/20 bg-ink/5 px-4 py-2.5 text-center text-ink">
+                <li className="rounded-full border border-white/35 bg-white/10 px-4 py-2.5 text-center text-white">
                   {t.home.local}
                 </li>
               </ul>

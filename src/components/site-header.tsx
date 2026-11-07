@@ -115,7 +115,8 @@ export function SiteHeader({
     "glass-menu absolute top-full left-0 z-50 mt-1.5 min-w-[14rem] rounded-2xl p-2";
 
   return (
-    <header className="sticky top-0 z-40 border-b border-citrus/15 bg-paper/90 backdrop-blur-md">
+    <>
+    <header className="sticky top-0 z-50 border-b border-citrus/15 bg-paper/90 backdrop-blur-md">
       <div className="h-1 w-full bg-citrus" aria-hidden />
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-2.5 sm:px-5 sm:py-3">
         {/* Brand + city (Variant A) */}
@@ -240,6 +241,7 @@ export function SiteHeader({
             type="button"
             className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border border-forest/12 text-[13px] text-forest min-[1200px]:hidden"
             aria-expanded={menuOpen}
+            aria-controls="site-mobile-menu"
             aria-label={menuOpen ? dictionary.nav.close : dictionary.nav.menu}
             onClick={() => setMenuOpen((value) => !value)}
           >
@@ -247,10 +249,28 @@ export function SiteHeader({
           </button>
         </div>
       </div>
+    </header>
 
+      {/* Outside header: backdrop-filter on <header> otherwise traps position:fixed */}
       {menuOpen ? (
-        <div className="fixed inset-0 top-[62px] z-40 bg-paper/96 backdrop-blur-sm min-[1200px]:hidden">
-          <nav className="mx-auto flex h-full max-w-6xl flex-col gap-1 overflow-y-auto px-4 py-5 sm:px-5">
+        <div
+          id="site-mobile-menu"
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-[60] bg-paper min-[1200px]:hidden"
+        >
+          <div className="flex h-14 items-center justify-between border-b border-citrus/15 px-4">
+            <p className="serif text-lg text-citrus">{dictionary.brand}</p>
+            <button
+              type="button"
+              className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border border-forest/12 text-[13px] text-forest"
+              aria-label={dictionary.nav.close}
+              onClick={closeAll}
+            >
+              ✕
+            </button>
+          </div>
+          <nav className="mx-auto flex h-[calc(100dvh-3.5rem)] max-w-6xl flex-col gap-1 overflow-y-auto px-4 py-5 sm:px-5">
             <Link
               href={`/${locale}/shop`}
               onClick={closeAll}
@@ -338,6 +358,6 @@ export function SiteHeader({
           </nav>
         </div>
       ) : null}
-    </header>
+    </>
   );
 }

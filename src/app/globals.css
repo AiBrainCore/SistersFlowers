@@ -72,10 +72,10 @@ body {
   font-family: var(--font-sans), system-ui, sans-serif;
 }
 
-/* Full orange brand band — flyer / signage energy */
+/* Full orange brand band — flyer / signage energy; white type for contrast */
 .brand-band {
   background: var(--citrus);
-  color: var(--ink);
+  color: #fff;
 }
 
 ::selection {
