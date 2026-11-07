@@ -13,6 +13,7 @@ import {
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import type { HeroBouquetItem } from "@/lib/hero-bouquets";
+import { CitySwitcher } from "@/components/city-switcher";
 
 type Pose = { rx: number; ry: number; px: number; py: number };
 
@@ -245,7 +246,14 @@ export function ImmersiveHero({
           <p className="text-[10px] tracking-[0.28em] text-citrus uppercase sm:text-[11px]">
             {t.kicker}
           </p>
-          <h1 className="serif mt-3 text-[2rem] leading-[1.05] text-forest sm:mt-4 sm:text-5xl lg:text-[3.35rem]">
+          <div className="mt-4 sm:mt-5">
+            <CitySwitcher
+              locale={locale}
+              dictionary={dictionary}
+              variant="hero"
+            />
+          </div>
+          <h1 className="serif mt-4 text-[2rem] leading-[1.05] text-forest sm:mt-5 sm:text-5xl lg:text-[3.35rem]">
             {t.titleBefore}
             <span className="italic text-citrus">{t.titleAccent}</span>
             {t.titleAfter}

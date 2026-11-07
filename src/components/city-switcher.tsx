@@ -10,16 +10,20 @@ import { IconPin } from "@/components/nav-icons";
 export function CitySwitcher({
   locale,
   dictionary,
+  variant = "compact",
 }: {
   locale: Locale;
   dictionary: Dictionary;
   /** Kept for call-site compat; unused with the inline switcher */
   align?: "left" | "right";
+  /** compact = header under logo; hero = large city names in the homepage hero */
+  variant?: "compact" | "hero";
 }) {
   const { cities, activeCity, setCity, pending } = useLocation();
   const { count } = useCart();
   const [pendingSlug, setPendingSlug] = useState<string | null>(null);
   const t = dictionary.location;
+  const isHero = variant === "hero";
 
   async function applyCity(slug: string) {
     setPendingSlug(null);
@@ -43,20 +47,40 @@ export function CitySwitcher({
     : "";
 
   return (
-    <div className="relative mt-1">
+    <div className={`relative ${isHero ? "" : "mt-1"}`}>
+      {isHero ? (
+        <p className="text-[11px] tracking-[0.22em] text-moss uppercase">
+          {t.deliveringIn}
+        </p>
+      ) : null}
+
       <div
         role="group"
         aria-label={t.chooseCity}
-        className="inline-flex max-w-full flex-wrap items-center gap-x-1.5 gap-y-0.5 text-[10px] tracking-[0.16em] uppercase"
+        className={
+          isHero
+            ? "mt-2 inline-flex max-w-full flex-wrap items-baseline gap-x-2.5 gap-y-1"
+            : "inline-flex max-w-full flex-wrap items-center gap-x-1.5 gap-y-0.5 text-[10px] tracking-[0.16em] uppercase"
+        }
       >
         {cities.map((city, index) => {
           const name = locale === "vi" ? city.nameVi : city.nameEn;
           const selected = city.slug === activeCity.slug;
           const disabled = pending || city.status !== "open";
           return (
-            <span key={city.slug} className="inline-flex items-center gap-x-1.5">
+            <span
+              key={city.slug}
+              className={
+                isHero
+                  ? "inline-flex items-baseline gap-x-2.5"
+                  : "inline-flex items-center gap-x-1.5"
+              }
+            >
               {index > 0 ? (
-                <span aria-hidden className="text-moss/45">
+                <span
+                  aria-hidden
+                  className={isHero ? "serif text-2xl text-moss/35 sm:text-3xl" : "text-moss/45"}
+                >
                   ·
                 </span>
               ) : null}
@@ -66,15 +90,27 @@ export function CitySwitcher({
                 aria-current={selected ? "true" : undefined}
                 disabled={disabled}
                 onClick={() => requestCity(city.slug)}
-                className={`inline-flex min-h-8 items-center gap-1 rounded-sm px-0.5 transition disabled:opacity-45 ${
-                  selected
-                    ? "font-semibold text-citrus"
-                    : "font-medium text-moss/65 hover:text-citrus"
-                }`}
+                className={
+                  isHero
+                    ? `inline-flex min-h-11 items-baseline gap-1.5 rounded-sm transition disabled:opacity-45 ${
+                        selected
+                          ? "serif text-[1.85rem] leading-none font-normal text-citrus sm:text-4xl"
+                          : "serif text-[1.35rem] leading-none text-moss/45 hover:text-citrus sm:text-2xl"
+                      }`
+                    : `inline-flex min-h-8 items-center gap-1 rounded-sm px-0.5 transition disabled:opacity-45 ${
+                        selected
+                          ? "font-semibold text-citrus"
+                          : "font-medium text-moss/65 hover:text-citrus"
+                      }`
+                }
               >
                 {selected ? (
                   <IconPin
-                    className="h-2.5 w-2.5 shrink-0 text-citrus"
+                    className={
+                      isHero
+                        ? "mb-0.5 h-3.5 w-3.5 shrink-0 self-center text-citrus sm:h-4 sm:w-4"
+                        : "h-2.5 w-2.5 shrink-0 text-citrus"
+                    }
                     aria-hidden
                   />
                 ) : null}
@@ -85,8 +121,18 @@ export function CitySwitcher({
         })}
       </div>
 
+      {isHero ? (
+        <p className="mt-2 max-w-sm text-xs leading-5 text-moss/80 normal-case tracking-normal">
+          {t.heroSwitchHint}
+        </p>
+      ) : null}
+
       {pendingSlug && pendingCity ? (
-        <div className="glass-menu absolute top-full left-0 z-50 mt-2 w-[min(18rem,calc(100vw-2rem))] rounded-2xl p-3">
+        <div
+          className={`glass-menu absolute z-50 mt-2 w-[min(18rem,calc(100vw-2rem))] rounded-2xl p-3 ${
+            isHero ? "top-full left-0" : "top-full left-0"
+          }`}
+        >
           <p className="text-[10px] tracking-[0.16em] text-moss uppercase">
             {t.switchConfirmTitle}
           </p>

@@ -33,8 +33,8 @@ const en = {
     titleAccent: "feel",
     titleAfter: ".",
     subtitle:
-      "Bouquets and gifts for birthdays, romance, hotels and celebrations — delivered in Da Nang and Da Lat.",
-    body: "Bouquets and gifts for birthdays, romance, hotels and celebrations — delivered in Da Nang and Da Lat.",
+      "Bouquets and gifts for birthdays, romance, hotels and celebrations — delivered in {city}.",
+    body: "Bouquets and gifts for birthdays, romance, hotels and celebrations — delivered in {city}.",
     shop: "Browse bouquets",
     custom: "Design yours",
     badge: "Finished by hand",
@@ -360,6 +360,7 @@ const en = {
     inactive: "Unavailable",
     switchNote:
       "City changes the shop assortment and delivery. Language stays separate.",
+    heroSwitchHint: "Choose your city — shop, delivery and studio phone follow.",
     comingSoonBody:
       "This Sisters studio is not open for orders yet. You can browse the brand, then order from an open city.",
     orderFrom: "Order from {city}",
@@ -469,8 +470,8 @@ const vi = {
     titleAccent: "cảm nhận được",
     titleAfter: ".",
     subtitle:
-      "Bó hoa và quà tặng cho sinh nhật, lãng mạn, khách sạn và lễ hội — giao tại Đà Nẵng và Đà Lạt.",
-    body: "Bó hoa và quà tặng cho sinh nhật, lãng mạn, khách sạn và lễ hội — giao tại Đà Nẵng và Đà Lạt.",
+      "Bó hoa và quà tặng cho sinh nhật, lãng mạn, khách sạn và lễ hội — giao tại {city}.",
+    body: "Bó hoa và quà tặng cho sinh nhật, lãng mạn, khách sạn và lễ hội — giao tại {city}.",
     shop: "Xem bó hoa",
     custom: "Thiết kế bó của bạn",
     badge: "Gói tay tỉ mỉ",
@@ -796,6 +797,8 @@ const vi = {
     inactive: "Chưa có",
     switchNote:
       "Thành phố đổi cửa hàng và giao hàng. Ngôn ngữ là lựa chọn riêng.",
+    heroSwitchHint:
+      "Chọn thành phố — cửa hàng, giao hàng và số studio đổi theo.",
     comingSoonBody:
       "Studio Sisters tại đây chưa nhận đơn. Bạn có thể xem thương hiệu, rồi đặt từ thành phố đang mở.",
     orderFrom: "Đặt từ {city}",
