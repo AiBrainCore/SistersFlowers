@@ -67,10 +67,7 @@ export default async function ClassicHomePage({
         <div className="absolute inset-0 bg-gradient-to-t from-forest/85 via-forest/35 to-forest/10" />
         <div className="relative mx-auto flex min-h-[100svh] max-w-6xl flex-col justify-end px-4 pb-14 pt-28 text-ivory sm:px-5 sm:pb-20">
           <div className="hero-copy max-w-2xl">
-            <p className="serif text-3xl leading-none sm:text-4xl">
-              {t.hero.brand}
-            </p>
-            <p className="mt-4 text-[11px] tracking-[0.32em] text-citrus-soft uppercase">
+            <p className="text-[11px] tracking-[0.32em] text-citrus-soft uppercase">
               {t.hero.kicker}
             </p>
             <h1 className="serif mt-4 text-[2.65rem] leading-[1.02] sm:text-6xl lg:text-7xl">
