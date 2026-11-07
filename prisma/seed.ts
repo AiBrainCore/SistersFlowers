@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { products } from "../src/data/seed-products";
+import { ensureOccasionCategoryLinks } from "../src/lib/categories";
 
 const prisma = new PrismaClient();
 
@@ -231,6 +232,9 @@ async function main() {
     }
   }
   console.log(`Ensured ${cities.length} network cities`);
+
+  await ensureOccasionCategoryLinks();
+  console.log("Ensured occasion category links");
 }
 
 main()

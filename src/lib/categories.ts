@@ -63,7 +63,6 @@ export async function ensureDefaultCategories() {
 
 export async function listActiveCategories(): Promise<CategoryPublic[]> {
   await ensureDefaultCategories();
-  await ensureOccasionCategoryLinks();
   const rows = await prisma.category.findMany({
     where: { active: true },
     orderBy: [{ sortOrder: "asc" }, { nameEn: "asc" }],
@@ -116,9 +115,26 @@ function productHaystack(product: {
     .toLowerCase();
 }
 
-/** Idempotent: add missing occasion links (keeps existing ProductCategory rows). */
+let occasionLinksEnsured = false;
+
+/** Idempotent: add missing occasion links once per process (keeps existing rows). */
 export async function ensureOccasionCategoryLinks() {
+  if (occasionLinksEnsured) return;
   await ensureDefaultCategories();
+
+  // Cheap skip when congratulation/anniversary assortments already exist.
+  const ready = await prisma.category.findFirst({
+    where: {
+      slug: { in: ["congratulations", "anniversary"] },
+      products: { some: { product: { published: true } } },
+    },
+    select: { id: true },
+  });
+  if (ready) {
+    occasionLinksEnsured = true;
+    return;
+  }
+
   const [products, categories] = await Promise.all([
     prisma.product.findMany({ where: { published: true } }),
     prisma.category.findMany(),
@@ -145,6 +161,7 @@ export async function ensureOccasionCategoryLinks() {
       });
     }
   }
+  occasionLinksEnsured = true;
 }
 
 export async function seedProductCategoriesIfEmpty() {
