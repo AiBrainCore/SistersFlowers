@@ -26,13 +26,13 @@ const en = {
   },
   hero: {
     brand: "Sisters Flowers",
-    kicker: "Flower delivery · Da Nang & Da Lat, Vietnam",
+    kicker: "Handcrafted floristry · Vietnam",
     titleBefore: "Beauty you can ",
     titleAccent: "feel",
     titleAfter: ".",
     subtitle:
-      "Handcrafted bouquets and gifts for birthdays, romance, hotels and celebrations — delivered across Da Nang and Da Lat.",
-    body: "Handcrafted bouquets and gifts for birthdays, romance, hotels and celebrations — delivered across Da Nang and Da Lat.",
+      "Bouquets and gifts for birthdays, romance, hotels and celebrations — delivered in Da Nang and Da Lat.",
+    body: "Bouquets and gifts for birthdays, romance, hotels and celebrations — delivered in Da Nang and Da Lat.",
     shop: "Browse bouquets",
     custom: "Design yours",
     badge: "Finished by hand",
@@ -439,13 +439,13 @@ const vi = {
   },
   hero: {
     brand: "Sisters Flowers",
-    kicker: "Giao hoa · Đà Nẵng & Đà Lạt, Việt Nam",
+    kicker: "Hoa thủ công · Việt Nam",
     titleBefore: "Vẻ đẹp ",
     titleAccent: "cảm nhận được",
     titleAfter: ".",
     subtitle:
-      "Bó hoa thủ công và quà tặng cho sinh nhật, lãng mạn, khách sạn và lễ hội — giao tại Đà Nẵng và Đà Lạt.",
-    body: "Bó hoa thủ công và quà tặng cho sinh nhật, lãng mạn, khách sạn và lễ hội — giao tại Đà Nẵng và Đà Lạt.",
+      "Bó hoa và quà tặng cho sinh nhật, lãng mạn, khách sạn và lễ hội — giao tại Đà Nẵng và Đà Lạt.",
+    body: "Bó hoa và quà tặng cho sinh nhật, lãng mạn, khách sạn và lễ hội — giao tại Đà Nẵng và Đà Lạt.",
     shop: "Xem bó hoa",
     custom: "Thiết kế bó của bạn",
     badge: "Gói tay tỉ mỉ",

@@ -25,8 +25,7 @@ export function ImmersiveHero3D({
 
       <div className="relative mx-auto grid max-w-6xl items-center gap-8 px-4 py-10 sm:px-5 sm:py-14 lg:grid-cols-[0.95fr_1.05fr] lg:gap-8 lg:py-14">
         <div className="order-1 max-w-xl">
-          <p className="serif text-2xl text-forest sm:text-3xl">{t.brand}</p>
-          <p className="mt-3 text-[11px] tracking-[0.28em] text-citrus uppercase">
+          <p className="text-[11px] tracking-[0.28em] text-citrus uppercase">
             {t.kicker}
           </p>
           <h1 className="serif mt-4 text-[2.35rem] leading-[1.05] text-forest sm:text-5xl lg:text-[3.25rem]">

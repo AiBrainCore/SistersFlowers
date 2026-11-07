@@ -241,8 +241,8 @@ export function ImmersiveHero({
 
       <div className="relative mx-auto grid max-w-6xl items-center gap-5 px-4 py-7 sm:gap-8 sm:px-5 sm:py-12 lg:grid-cols-[0.95fr_1.05fr] lg:gap-10 lg:py-16">
         <div className="order-1 max-w-xl">
-          <p className="serif text-xl text-forest sm:text-3xl">{t.brand}</p>
-          <p className="mt-2 text-[10px] tracking-[0.28em] text-citrus uppercase sm:mt-3 sm:text-[11px]">
+          {/* Brand lives in the sticky header — no second Sisters Flowers here */}
+          <p className="text-[10px] tracking-[0.28em] text-citrus uppercase sm:text-[11px]">
             {t.kicker}
           </p>
           <h1 className="serif mt-3 text-[2rem] leading-[1.05] text-forest sm:mt-4 sm:text-5xl lg:text-[3.35rem]">
