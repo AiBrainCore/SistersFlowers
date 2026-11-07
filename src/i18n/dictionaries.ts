@@ -65,7 +65,8 @@ const en = {
     customTitle: "Make it yours",
     customBody: "Tone, size, ribbon — a wrap composed for someone specific.",
     occasionTitle: "For every occasion",
-    occasionBody: "Birthday, romance, graduation, wedding, and more.",
+    occasionBody:
+      "Birthday, romance, congratulations, anniversary, wedding, graduation, condolences, everyday.",
   },
   home: {
     seoTitle: "Sisters Flowers | Flower Delivery Da Nang & Da Lat, Vietnam",
@@ -75,7 +76,7 @@ const en = {
     occasionsKicker: "By occasion",
     occasionsTitle: "The right flowers for the moment.",
     occasionsBody:
-      "Shop bouquets by occasion — birthday, romance, congratulations, anniversary, wedding, graduation, and everyday gifts. Pick a feeling; we wrap it.",
+      "Shop bouquets by occasion — birthday, romance, congratulations, anniversary, wedding, graduation, condolences, and everyday gifts. Pick a feeling; we wrap it.",
     fieldTitle: "Grown in Vietnam’s flower culture.",
     fieldBody:
       "From Da Lat’s cool mornings to Da Nang by the sea, Sisters Flowers wraps every bouquet by hand — for homes, hotels, and celebrations that matter.",
@@ -502,7 +503,8 @@ const vi = {
     customTitle: "Làm theo ý bạn",
     customBody: "Tone, size, nơ — một bó dành riêng cho một người.",
     occasionTitle: "Cho mọi dịp",
-    occasionBody: "Sinh nhật, lãng mạn, tốt nghiệp, cưới hỏi và hơn thế.",
+    occasionBody:
+      "Sinh nhật, lãng mạn, chúc mừng, kỷ niệm, cưới hỏi, tốt nghiệp, chia buồn, hàng ngày.",
   },
   home: {
     seoTitle: "Sisters Flowers | Giao hoa Đà Nẵng & Đà Lạt, Việt Nam",
@@ -512,7 +514,7 @@ const vi = {
     occasionsKicker: "Theo dịp",
     occasionsTitle: "Hoa đúng cảm xúc của ngày.",
     occasionsBody:
-      "Chọn bó hoa theo dịp — sinh nhật, lãng mạn, chúc mừng, kỷ niệm, cưới hỏi, tốt nghiệp và hoa hàng ngày. Chọn cảm xúc; chúng tôi gói giúp bạn.",
+      "Chọn bó hoa theo dịp — sinh nhật, lãng mạn, chúc mừng, kỷ niệm, cưới hỏi, tốt nghiệp, chia buồn và hoa hàng ngày. Chọn cảm xúc; chúng tôi gói giúp bạn.",
     fieldTitle: "Từ văn hóa hoa Việt Nam.",
     fieldBody:
       "Từ buổi sớm se lạnh Đà Lạt đến Đà Nẵng bên biển, Sisters Flowers gói mỗi bó bằng tay — cho nhà, khách sạn và những ngày đáng nhớ.",
