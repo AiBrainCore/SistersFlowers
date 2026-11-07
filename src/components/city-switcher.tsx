@@ -49,7 +49,6 @@ export function CitySwitcher({
         aria-label={t.chooseCity}
         className="inline-flex max-w-full flex-wrap items-center gap-x-1.5 gap-y-0.5 text-[10px] tracking-[0.16em] uppercase"
       >
-        <IconPin className="h-2.5 w-2.5 shrink-0 text-citrus" aria-hidden />
         {cities.map((city, index) => {
           const name = locale === "vi" ? city.nameVi : city.nameEn;
           const selected = city.slug === activeCity.slug;
@@ -67,12 +66,18 @@ export function CitySwitcher({
                 aria-current={selected ? "true" : undefined}
                 disabled={disabled}
                 onClick={() => requestCity(city.slug)}
-                className={`min-h-8 rounded-sm px-0.5 transition disabled:opacity-45 ${
+                className={`inline-flex min-h-8 items-center gap-1 rounded-sm px-0.5 transition disabled:opacity-45 ${
                   selected
                     ? "font-semibold text-citrus"
                     : "font-medium text-moss/65 hover:text-citrus"
                 }`}
               >
+                {selected ? (
+                  <IconPin
+                    className="h-2.5 w-2.5 shrink-0 text-citrus"
+                    aria-hidden
+                  />
+                ) : null}
                 {name}
               </button>
             </span>
