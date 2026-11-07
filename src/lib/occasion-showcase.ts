@@ -7,32 +7,42 @@ export const OCCASION_SHOWCASE = [
   {
     slug: "birthday",
     image: "/bouquets/shown/w-01.jpg",
-    /** Cheerful pink hydrangea mix */
     mood: "playful" as const,
   },
   {
     slug: "romance",
     image: "/bouquets/shown/w-06.jpg",
-    /** Pink roses + eucalyptus */
     mood: "warm" as const,
   },
   {
-    slug: "graduation",
-    image: "/bouquets/shown/w-03.jpg",
-    /** Soft pastel celebration wrap */
+    slug: "congratulations",
+    image: "/bouquets/shown/w-01.jpg",
     mood: "playful" as const,
+  },
+  {
+    slug: "anniversary",
+    image: "/bouquets/shown/w-08.jpg",
+    mood: "warm" as const,
   },
   {
     slug: "wedding",
     image: "/bouquets/shown/w-04.jpg",
-    /** Elegant pink tulips */
     mood: "refined" as const,
+  },
+  {
+    slug: "graduation",
+    image: "/bouquets/shown/w-03.jpg",
+    mood: "playful" as const,
   },
   {
     slug: "condolences",
     image: "/bouquets/shown/w-18.jpg",
-    /** Calm white baby's breath — respectful tone */
     mood: "calm" as const,
+  },
+  {
+    slug: "everyday",
+    image: "/bouquets/shown/w-07.jpg",
+    mood: "refined" as const,
   },
 ] as const;
 

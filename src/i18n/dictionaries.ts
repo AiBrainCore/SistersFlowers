@@ -73,7 +73,7 @@ const en = {
     occasionsKicker: "By occasion",
     occasionsTitle: "The right flowers for the moment.",
     occasionsBody:
-      "Birthday, romance, congratulations, weddings — pick a feeling and we wrap it.",
+      "Shop bouquets by occasion — birthday, romance, congratulations, anniversary, wedding, graduation, and everyday gifts. Pick a feeling; we wrap it.",
     fieldTitle: "Grown in Vietnam’s flower culture.",
     fieldBody:
       "From Da Lat’s cool mornings to Da Nang by the sea, Sisters Flowers wraps every bouquet by hand — for homes, hotels, and celebrations that matter.",
@@ -486,7 +486,7 @@ const vi = {
     occasionsKicker: "Theo dịp",
     occasionsTitle: "Hoa đúng cảm xúc của ngày.",
     occasionsBody:
-      "Sinh nhật, lãng mạn, chúc mừng, cưới hỏi — chọn cảm xúc, chúng tôi gói giúp bạn.",
+      "Chọn bó hoa theo dịp — sinh nhật, lãng mạn, chúc mừng, kỷ niệm, cưới hỏi, tốt nghiệp và hoa hàng ngày. Chọn cảm xúc; chúng tôi gói giúp bạn.",
     fieldTitle: "Từ văn hóa hoa Việt Nam.",
     fieldBody:
       "Từ buổi sớm se lạnh Đà Lạt đến Đà Nẵng bên biển, Sisters Flowers gói mỗi bó bằng tay — cho nhà, khách sạn và những ngày đáng nhớ.",

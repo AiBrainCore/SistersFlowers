@@ -22,6 +22,8 @@ const OCCASION_FALLBACK: Record<
 > = {
   birthday: { en: "Birthday", vi: "Sinh nhật" },
   romance: { en: "Romance", vi: "Lãng mạn" },
+  congratulations: { en: "Congratulations", vi: "Chúc mừng" },
+  anniversary: { en: "Anniversary", vi: "Kỷ niệm" },
   graduation: { en: "Graduation", vi: "Tốt nghiệp" },
   wedding: { en: "Wedding", vi: "Cưới hỏi" },
   condolences: { en: "Condolences", vi: "Chia buồn" },

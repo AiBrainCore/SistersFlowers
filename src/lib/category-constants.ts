@@ -11,6 +11,8 @@ export type CategoryPublic = {
 export const OCCASION_NAV_SLUGS = [
   "birthday",
   "romance",
+  "congratulations",
+  "anniversary",
   "graduation",
   "wedding",
   "condolences",
@@ -21,9 +23,12 @@ export const OCCASION_NAV_SLUGS = [
 export const SHOP_OCCASION_CHIP_SLUGS = [
   "birthday",
   "romance",
+  "congratulations",
+  "anniversary",
   "graduation",
   "wedding",
   "condolences",
+  "everyday",
 ] as const;
 
 /** @deprecated use SHOP_OCCASION_CHIP_SLUGS / OCCASION_NAV_SLUGS */

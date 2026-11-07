@@ -26,6 +26,21 @@ const ASSIGN_RULES: { slug: string; needles: string[] }[] = [
   { slug: "wedding", needles: ["cuoi", "cưới", "cau-hon", "cầu hôn", "bridal", "wedding"] },
   { slug: "romance", needles: ["valentine", "hong-do", "hồng đỏ", "love", "romance", "tim"] },
   { slug: "birthday", needles: ["sinh nhật", "birthday", "party"] },
+  {
+    slug: "congratulations",
+    needles: [
+      "congratul",
+      "chúc mừng",
+      "chuc mung",
+      "celebration",
+      "tone-noi",
+      "tot-nghiep",
+    ],
+  },
+  {
+    slug: "anniversary",
+    needles: ["annivers", "kỷ niệm", "ky niem", "valentine", "cau-hon", "hong-do"],
+  },
   { slug: "condolences", needles: ["tang", "chia buồn", "condolence", "funeral", "white"] },
   { slug: "hotel", needles: ["hotel", "khách sạn", "room"] },
   { slug: "premium", needles: ["grand", "premium", "sang", "luxury"] },
@@ -48,6 +63,7 @@ export async function ensureDefaultCategories() {
 
 export async function listActiveCategories(): Promise<CategoryPublic[]> {
   await ensureDefaultCategories();
+  await ensureOccasionCategoryLinks();
   const rows = await prisma.category.findMany({
     where: { active: true },
     orderBy: [{ sortOrder: "asc" }, { nameEn: "asc" }],
@@ -78,10 +94,66 @@ export async function listAllCategories() {
   });
 }
 
+function productHaystack(product: {
+  slug: string;
+  nameEn: string;
+  nameVi: string;
+  tagEn: string;
+  tagVi: string;
+  blurbEn: string;
+  blurbVi: string;
+}) {
+  return [
+    product.slug,
+    product.nameEn,
+    product.nameVi,
+    product.tagEn,
+    product.tagVi,
+    product.blurbEn,
+    product.blurbVi,
+  ]
+    .join(" ")
+    .toLowerCase();
+}
+
+/** Idempotent: add missing occasion links (keeps existing ProductCategory rows). */
+export async function ensureOccasionCategoryLinks() {
+  await ensureDefaultCategories();
+  const [products, categories] = await Promise.all([
+    prisma.product.findMany({ where: { published: true } }),
+    prisma.category.findMany(),
+  ]);
+  const bySlug = new Map(categories.map((c) => [c.slug, c.id]));
+
+  for (const product of products) {
+    const haystack = productHaystack(product);
+    for (const rule of ASSIGN_RULES) {
+      if (!rule.needles.some((n) => haystack.includes(n.toLowerCase()))) {
+        continue;
+      }
+      const categoryId = bySlug.get(rule.slug);
+      if (!categoryId) continue;
+      await prisma.productCategory.upsert({
+        where: {
+          productId_categoryId: {
+            productId: product.id,
+            categoryId,
+          },
+        },
+        create: { productId: product.id, categoryId },
+        update: {},
+      });
+    }
+  }
+}
+
 export async function seedProductCategoriesIfEmpty() {
   await ensureDefaultCategories();
   const linkCount = await prisma.productCategory.count();
-  if (linkCount > 0) return;
+  if (linkCount > 0) {
+    await ensureOccasionCategoryLinks();
+    return;
+  }
 
   const [products, categories] = await Promise.all([
     prisma.product.findMany(),
@@ -91,17 +163,7 @@ export async function seedProductCategoriesIfEmpty() {
   const everydayId = bySlug.get("everyday");
 
   for (const product of products) {
-    const haystack = [
-      product.slug,
-      product.nameEn,
-      product.nameVi,
-      product.tagEn,
-      product.tagVi,
-      product.blurbEn,
-      product.blurbVi,
-    ]
-      .join(" ")
-      .toLowerCase();
+    const haystack = productHaystack(product);
 
     const matched = new Set<string>();
     for (const rule of ASSIGN_RULES) {

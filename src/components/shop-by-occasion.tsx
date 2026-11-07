@@ -48,17 +48,17 @@ export function ShopByOccasion({
         <p className="text-[11px] tracking-[0.28em] text-citrus uppercase">
           {t.occasionsKicker}
         </p>
-        <h2 className="serif mt-2.5 max-w-xl text-3xl text-forest sm:text-4xl">
+        <h2 className="serif mt-2.5 text-3xl text-forest sm:text-4xl lg:whitespace-nowrap">
           {t.occasionsTitle}
         </h2>
-        <p className="mt-2.5 max-w-md text-sm leading-6 text-moss">
+        <p className="mt-2.5 max-w-2xl text-sm leading-6 text-moss">
           {t.occasionsBody}
         </p>
       </Reveal>
 
-      {/* Mobile: snap rail · Desktop: equal 5-up row */}
+      {/* Mobile: snap rail · Desktop: responsive occasion grid */}
       <div
-        className="mt-7 flex gap-3 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] snap-x snap-mandatory scroll-px-4 sm:mt-8 sm:gap-3.5 md:grid md:grid-cols-5 md:gap-3 md:overflow-visible md:pb-0 md:snap-none [&::-webkit-scrollbar]:hidden"
+        className="mt-7 flex gap-3 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] snap-x snap-mandatory scroll-px-4 sm:mt-8 sm:gap-3.5 md:grid md:grid-cols-4 md:gap-3.5 md:overflow-visible md:pb-0 md:snap-none [&::-webkit-scrollbar]:hidden"
         role="list"
       >
         {cards.map((card, index) => {
