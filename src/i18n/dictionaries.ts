@@ -325,10 +325,10 @@ const en = {
     another: "Write another note",
   },
   footer: {
-    line: "Two Sisters Flowers studios — same brand, local phones & delivery.",
-    phone: "Phone",
-    address: "Address",
-    studios: "Our studios",
+    line: "Come by either studio — we wrap, deliver, and answer from both cities.",
+    phone: "Call",
+    address: "Visit",
+    studios: "Find us",
     rights:
       "© {years} Sisters Flowers. All rights reserved.",
   },
@@ -763,10 +763,10 @@ const vi = {
     another: "Viết thêm một lời",
   },
   footer: {
-    line: "Hai studio Sisters Flowers — cùng thương hiệu, số điện thoại và giao hàng theo từng thành phố.",
-    phone: "Điện thoại",
-    address: "Địa chỉ",
-    studios: "Studio của chúng tôi",
+    line: "Ghé studio nào cũng được — chúng tôi gói, giao và trả lời từ cả hai thành phố.",
+    phone: "Gọi",
+    address: "Đến",
+    studios: "Ghé thăm",
     rights:
       "© {years} Sisters Flowers. Mọi quyền được bảo lưu.",
   },

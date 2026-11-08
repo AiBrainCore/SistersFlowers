@@ -24,14 +24,11 @@ export function SiteFooter({
     <footer className="border-t border-forest/10 bg-cream/55">
       <div className="mx-auto max-w-6xl px-4 py-14 sm:px-5">
         <div className="max-w-xl">
-          <p className="serif text-3xl text-citrus">{dictionary.brand}</p>
+          <p className="serif text-2xl text-forest sm:text-3xl">{t.studios}</p>
           <p className="mt-3 text-sm leading-7 text-moss">{t.line}</p>
-          <p className="mt-6 text-[11px] tracking-[0.16em] text-moss uppercase">
-            {t.studios}
-          </p>
         </div>
 
-        <div className="mt-5 grid gap-4 sm:grid-cols-2">
+        <div className="mt-6 grid gap-4 sm:grid-cols-2">
           {STUDIO_CONTACTS.map((studio) => {
             const name = locale === "vi" ? studio.nameVi : studio.nameEn;
             const address =
@@ -42,14 +39,8 @@ export function SiteFooter({
                 className="rounded-2xl border border-citrus/15 bg-white/55 px-5 py-5"
               >
                 <h3 className="serif text-2xl text-citrus">{name}</h3>
-                <p className="mt-4 text-[11px] tracking-[0.14em] text-moss uppercase">
-                  {t.address}
-                </p>
-                <p className="mt-1 text-sm leading-6 text-forest">{address}</p>
-                <p className="mt-4 text-[11px] tracking-[0.14em] text-moss uppercase">
-                  {t.phone}
-                </p>
-                <ul className="mt-1 space-y-1">
+                <p className="mt-3 text-sm leading-6 text-forest">{address}</p>
+                <ul className="mt-4 space-y-1">
                   {studio.phones.map((phone) => (
                     <li key={phone.digits}>
                       <a
