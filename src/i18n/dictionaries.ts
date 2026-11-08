@@ -329,6 +329,8 @@ const en = {
     phone: "Call",
     address: "Visit",
     studios: "Find us",
+    directions: "Directions",
+    call: "Call",
     rights:
       "© {years} Sisters Flowers. All rights reserved.",
   },
@@ -767,6 +769,8 @@ const vi = {
     phone: "Gọi",
     address: "Đến",
     studios: "Ghé thăm",
+    directions: "Chỉ đường",
+    call: "Gọi",
     rights:
       "© {years} Sisters Flowers. Mọi quyền được bảo lưu.",
   },

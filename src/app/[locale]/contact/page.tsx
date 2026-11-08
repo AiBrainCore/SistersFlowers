@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { isLocale, type Locale } from "@/i18n/config";
 import { getStorefrontDictionary } from "@/lib/storefront";
 import { buildPageMetadata } from "@/lib/seo";
+import { StudioCard } from "@/components/studio-card";
 import { STUDIO_CONTACTS, STUDIO_PHONE_DIGITS } from "@/lib/locations";
 
 export const dynamic = "force-dynamic";
@@ -40,32 +41,15 @@ export default async function ContactPage({
       <p className="mt-5 max-w-xl text-sm leading-7 text-moss">{t.contact.intro}</p>
 
       <div className="mt-10 grid gap-4 sm:grid-cols-2">
-        {STUDIO_CONTACTS.map((studio) => {
-          const name = locale === "vi" ? studio.nameVi : studio.nameEn;
-          const address =
-            locale === "vi" ? studio.addressVi : studio.addressEn;
-          return (
-            <article
-              key={studio.slug}
-              className="rounded-2xl border border-citrus/15 bg-white/60 px-5 py-5"
-            >
-              <h2 className="serif text-2xl text-citrus">{name}</h2>
-              <p className="mt-3 text-sm leading-6 text-forest">{address}</p>
-              <ul className="mt-4 space-y-1">
-                {studio.phones.map((phone) => (
-                  <li key={phone.digits}>
-                    <a
-                      href={`tel:+${phone.digits}`}
-                      className="inline-flex min-h-11 items-center text-sm font-medium text-forest hover:text-citrus"
-                    >
-                      {phone.display}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </article>
-          );
-        })}
+        {STUDIO_CONTACTS.map((studio) => (
+          <StudioCard
+            key={studio.slug}
+            studio={studio}
+            locale={locale}
+            directionsLabel={t.footer.directions}
+            callLabel={t.footer.call}
+          />
+        ))}
       </div>
 
       <a

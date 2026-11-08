@@ -1,10 +1,8 @@
 import Link from "next/link";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
-import {
-  STUDIO_CONTACTS,
-  STUDIO_PHONE_DIGITS,
-} from "@/lib/locations";
+import { StudioCard } from "@/components/studio-card";
+import { STUDIO_CONTACTS, STUDIO_PHONE_DIGITS } from "@/lib/locations";
 
 const BRAND_SINCE = 2020;
 
@@ -29,32 +27,15 @@ export function SiteFooter({
         </div>
 
         <div className="mt-6 grid gap-4 sm:grid-cols-2">
-          {STUDIO_CONTACTS.map((studio) => {
-            const name = locale === "vi" ? studio.nameVi : studio.nameEn;
-            const address =
-              locale === "vi" ? studio.addressVi : studio.addressEn;
-            return (
-              <article
-                key={studio.slug}
-                className="rounded-2xl border border-citrus/15 bg-white/55 px-5 py-5"
-              >
-                <h3 className="serif text-2xl text-citrus">{name}</h3>
-                <p className="mt-3 text-sm leading-6 text-forest">{address}</p>
-                <ul className="mt-4 space-y-1">
-                  {studio.phones.map((phone) => (
-                    <li key={phone.digits}>
-                      <a
-                        href={`tel:+${phone.digits}`}
-                        className="inline-flex min-h-11 items-center text-sm font-medium text-forest hover:text-citrus"
-                      >
-                        {phone.display}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </article>
-            );
-          })}
+          {STUDIO_CONTACTS.map((studio) => (
+            <StudioCard
+              key={studio.slug}
+              studio={studio}
+              locale={locale}
+              directionsLabel={t.directions}
+              callLabel={t.call}
+            />
+          ))}
         </div>
 
         <div className="mt-10 flex flex-wrap gap-x-5 gap-y-3 text-[11px] tracking-[0.14em] text-forest uppercase">
