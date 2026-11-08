@@ -104,29 +104,12 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
           </div>
           <div className="brand-band relative flex flex-col justify-center px-6 py-14 sm:px-12 sm:py-20">
             <Reveal>
-              <p className="text-[11px] tracking-[0.28em] text-white/75 uppercase">
-                {t.home.fieldKicker}
-              </p>
-              <h2 className="serif mt-4 text-4xl text-white sm:text-5xl">
+              <h2 className="serif text-4xl text-white sm:text-5xl">
                 {t.home.fieldTitle}
               </h2>
-              <p className="mt-6 max-w-md text-sm leading-7 text-white/85">
+              <p className="mt-5 max-w-md text-base leading-7 text-white/90 sm:text-lg sm:leading-8">
                 {t.home.fieldBody}
               </p>
-              <ul className="mt-8 grid gap-3 text-[12px] tracking-[0.12em] uppercase sm:grid-cols-2">
-                <li className="rounded-full border border-white/35 bg-white/10 px-4 py-2.5 text-center text-white">
-                  {t.home.fresh}
-                </li>
-                <li className="rounded-full border border-white/35 bg-white/10 px-4 py-2.5 text-center text-white">
-                  {t.home.handmade}
-                </li>
-                <li className="rounded-full border border-white/35 bg-white/10 px-4 py-2.5 text-center text-white">
-                  {t.home.gifting}
-                </li>
-                <li className="rounded-full border border-white/35 bg-white/10 px-4 py-2.5 text-center text-white">
-                  {t.home.local}
-                </li>
-              </ul>
             </Reveal>
           </div>
         </div>
@@ -167,18 +150,15 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
         <div className="relative mx-auto flex min-h-[420px] max-w-6xl items-end px-4 py-14 sm:px-5 sm:py-20">
           <Reveal>
             <div className="glass max-w-md rounded-[1.75rem] p-6 sm:p-8">
-              <p className="text-[11px] tracking-[0.28em] text-citrus uppercase">
-                {t.home.personalKicker}
-              </p>
-              <h2 className="serif mt-3 text-3xl text-forest sm:text-4xl">
+              <h2 className="serif text-3xl text-forest sm:text-4xl">
                 {t.home.personalTitle}
               </h2>
-              <p className="mt-4 text-sm leading-7 text-moss">
+              <p className="mt-4 text-base leading-7 text-moss">
                 {t.home.personalBody}
               </p>
               <Link
                 href={`/${locale}/custom`}
-                className="mt-7 inline-flex min-h-12 items-center rounded-full bg-citrus px-5 text-[12px] tracking-[0.16em] text-ivory uppercase"
+                className="mt-7 inline-flex min-h-12 items-center rounded-full bg-citrus px-6 text-sm tracking-[0.08em] text-ivory uppercase"
               >
                 {t.home.personalCta}
               </Link>
@@ -193,12 +173,12 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
             <h2 className="serif text-4xl text-forest sm:text-5xl">
               {t.home.deliveryTitle}
             </h2>
-            <p className="mt-4 max-w-md text-sm leading-7 text-moss">
+            <p className="mt-4 max-w-md text-base leading-7 text-moss">
               {t.home.deliveryBody}
             </p>
             <Link
               href={`/${locale}/delivery`}
-              className="mt-6 inline-flex min-h-11 items-center text-[12px] tracking-[0.16em] text-citrus uppercase border-b border-citrus/50"
+              className="mt-6 inline-flex min-h-11 items-center text-sm tracking-[0.08em] text-citrus uppercase border-b border-citrus/50"
             >
               {t.nav.delivery}
             </Link>

@@ -45,13 +45,10 @@ export function ShopByOccasion({
   return (
     <section className="mx-auto max-w-6xl px-4 py-10 sm:px-5 sm:py-14">
       <Reveal>
-        <p className="text-[11px] tracking-[0.28em] text-citrus uppercase">
-          {t.occasionsKicker}
-        </p>
-        <h2 className="serif mt-2.5 text-3xl text-forest sm:text-4xl lg:whitespace-nowrap">
+        <h2 className="serif text-3xl text-forest sm:text-4xl lg:whitespace-nowrap">
           {t.occasionsTitle}
         </h2>
-        <p className="mt-2.5 max-w-2xl text-sm leading-6 text-moss">
+        <p className="mt-3 max-w-xl text-base leading-7 text-moss">
           {t.occasionsBody}
         </p>
       </Reveal>

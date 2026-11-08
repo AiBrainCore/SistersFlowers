@@ -48,18 +48,12 @@ export function CitySwitcher({
 
   return (
     <div className={`relative ${isHero ? "" : "mt-1"}`}>
-      {isHero ? (
-        <p className="text-[11px] tracking-[0.22em] text-moss uppercase">
-          {t.deliveringIn}
-        </p>
-      ) : null}
-
       <div
         role="group"
         aria-label={t.chooseCity}
         className={
           isHero
-            ? "mt-2 inline-flex max-w-full flex-wrap items-baseline gap-x-2.5 gap-y-1"
+            ? "inline-flex max-w-full flex-wrap items-baseline gap-x-3 gap-y-1"
             : "inline-flex max-w-full flex-wrap items-center gap-x-1.5 gap-y-0.5 text-[10px] tracking-[0.16em] uppercase"
         }
       >
@@ -92,10 +86,10 @@ export function CitySwitcher({
                 onClick={() => requestCity(city.slug)}
                 className={
                   isHero
-                    ? `inline-flex min-h-11 items-baseline gap-1.5 rounded-sm transition disabled:opacity-45 ${
+                    ? `inline-flex min-h-12 items-baseline gap-1.5 rounded-sm transition disabled:opacity-45 ${
                         selected
-                          ? "serif text-[1.85rem] leading-none font-normal text-citrus sm:text-4xl"
-                          : "serif text-[1.35rem] leading-none text-moss/45 hover:text-citrus sm:text-2xl"
+                          ? "serif text-[2.15rem] leading-none font-normal text-citrus sm:text-[2.75rem]"
+                          : "serif text-[1.55rem] leading-none text-moss/40 hover:text-citrus sm:text-[2rem]"
                       }`
                     : `inline-flex min-h-8 items-center gap-1 rounded-sm px-0.5 transition disabled:opacity-45 ${
                         selected
@@ -120,12 +114,6 @@ export function CitySwitcher({
           );
         })}
       </div>
-
-      {isHero ? (
-        <p className="mt-2 max-w-sm text-xs leading-5 text-moss/80 normal-case tracking-normal">
-          {t.heroSwitchHint}
-        </p>
-      ) : null}
 
       {pendingSlug && pendingCity ? (
         <div

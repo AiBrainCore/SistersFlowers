@@ -242,35 +242,30 @@ export function ImmersiveHero({
 
       <div className="relative mx-auto grid max-w-6xl items-center gap-5 px-4 py-7 sm:gap-8 sm:px-5 sm:py-12 lg:grid-cols-[0.95fr_1.05fr] lg:gap-10 lg:py-16">
         <div className="order-1 max-w-xl">
-          {/* Brand lives in the sticky header — no second Sisters Flowers here */}
-          <p className="text-[10px] tracking-[0.28em] text-citrus uppercase sm:text-[11px]">
-            {t.kicker}
-          </p>
-          <div className="mt-4 sm:mt-5">
-            <CitySwitcher
-              locale={locale}
-              dictionary={dictionary}
-              variant="hero"
-            />
-          </div>
-          <h1 className="serif mt-4 text-[2rem] leading-[1.05] text-forest sm:mt-5 sm:text-5xl lg:text-[3.35rem]">
+          {/* Brand in sticky header — keep hero to city + one headline + one line */}
+          <CitySwitcher
+            locale={locale}
+            dictionary={dictionary}
+            variant="hero"
+          />
+          <h1 className="serif mt-5 text-[2.45rem] leading-[1.02] text-forest sm:mt-6 sm:text-5xl lg:text-[3.6rem]">
             {t.titleBefore}
             <span className="italic text-citrus">{t.titleAccent}</span>
             {t.titleAfter}
           </h1>
-          <p className="mt-3 max-w-md text-sm leading-6 text-moss sm:mt-5 sm:text-base sm:leading-7">
+          <p className="mt-4 max-w-md text-base leading-7 text-moss sm:mt-5 sm:text-lg sm:leading-8">
             {t.subtitle}
           </p>
-          <div className="mt-5 flex flex-wrap gap-2.5 sm:mt-8 sm:gap-3">
+          <div className="mt-6 flex flex-wrap gap-3 sm:mt-8">
             <Link
               href={`/${locale}/shop`}
-              className="inline-flex min-h-11 items-center rounded-full bg-citrus px-5 text-[11px] tracking-[0.16em] text-ivory uppercase transition hover:bg-citrus/90 sm:min-h-12 sm:px-6 sm:text-[12px]"
+              className="inline-flex min-h-12 items-center rounded-full bg-citrus px-6 text-sm tracking-[0.08em] text-ivory uppercase transition hover:bg-citrus/90"
             >
               {t.shop}
             </Link>
             <Link
               href={`/${locale}/custom`}
-              className="inline-flex min-h-11 items-center rounded-full border border-forest/20 bg-white/50 px-5 text-[11px] tracking-[0.16em] text-forest uppercase transition hover:border-citrus/40 sm:min-h-12 sm:px-6 sm:text-[12px]"
+              className="inline-flex min-h-12 items-center rounded-full border border-forest/25 bg-white/55 px-6 text-sm tracking-[0.08em] text-forest uppercase transition hover:border-citrus/40"
             >
               {t.custom}
             </Link>
