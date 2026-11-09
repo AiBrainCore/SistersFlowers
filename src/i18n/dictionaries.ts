@@ -33,6 +33,7 @@ const en = {
     titleAccent: "feel",
     titleAfter: ".",
     subtitle: "Handcrafted bouquets, delivered in {city}.",
+    subtitleLead: "Handcrafted bouquets, delivered in",
     body: "Handcrafted bouquets, delivered in {city}.",
     shop: "Browse bouquets",
     custom: "Design yours",
@@ -42,6 +43,9 @@ const en = {
     imageAlt: "Handcrafted bouquet from Sisters Flowers Vietnam",
     selectBouquet: "Show bouquet",
     openBouquet: "View this bouquet",
+    featureDelivery: "Same-day Delivery",
+    featureFresh: "Fresh Flowers",
+    featureHandcrafted: "Handcrafted with Care",
   },
   heroPreview: {
     badge: "Finished by hand",
@@ -354,6 +358,7 @@ const en = {
   location: {
     deliveringIn: "Delivering in",
     chooseCity: "Choose delivery city",
+    deliveryToday: "Delivery today",
     openNow: "Available",
     comingSoon: "Coming soon",
     inactive: "Unavailable",
@@ -469,6 +474,7 @@ const vi = {
     titleAccent: "cảm nhận được",
     titleAfter: ".",
     subtitle: "Bó hoa thủ công, giao tại {city}.",
+    subtitleLead: "Bó hoa thủ công, giao tại",
     body: "Bó hoa thủ công, giao tại {city}.",
     shop: "Xem bó hoa",
     custom: "Thiết kế bó của bạn",
@@ -478,6 +484,9 @@ const vi = {
     imageAlt: "Bó hoa thủ công từ Sisters Flowers Việt Nam",
     selectBouquet: "Xem bó hoa",
     openBouquet: "Xem bó này",
+    featureDelivery: "Giao trong ngày",
+    featureFresh: "Hoa tươi",
+    featureHandcrafted: "Gói tay tỉ mỉ",
   },
   heroPreview: {
     badge: "Gói tay tỉ mỉ",
@@ -790,6 +799,7 @@ const vi = {
   location: {
     deliveringIn: "Giao tại",
     chooseCity: "Chọn thành phố giao",
+    deliveryToday: "Giao hôm nay",
     openNow: "Đang mở",
     comingSoon: "Sắp mở",
     inactive: "Chưa có",

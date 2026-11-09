@@ -175,6 +175,33 @@ body {
   animation: glass-menu-in 160ms ease-out;
 }
 
+/* Hero city picker + feature strip — frosted glass over soft peach */
+.glass-hero-city,
+.glass-hero-features {
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(20px) saturate(1.12);
+  -webkit-backdrop-filter: blur(20px) saturate(1.12);
+  box-shadow:
+    0 14px 40px rgba(44, 41, 38, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85);
+}
+
+.hero-petal {
+  pointer-events: none;
+  position: absolute;
+  overflow: hidden;
+  border-radius: 999px;
+  opacity: 0.55;
+  filter: blur(0.2px);
+}
+
+.hero-petal img {
+  object-fit: cover;
+  object-position: center 30%;
+  transform: scale(1.15);
+}
+
 @keyframes glass-menu-in {
   from {
     opacity: 0;

@@ -50,16 +50,105 @@ export function CitySwitcher({
       : pendingCity.nameEn
     : "";
 
+  const confirmPanel =
+    pendingSlug && pendingCity ? (
+      <div
+        className={`glass-menu absolute z-50 mt-2 w-[min(18rem,calc(100vw-2rem))] rounded-2xl p-3 ${
+          isHero ? "top-full left-0" : "top-full left-0"
+        }`}
+      >
+        <p className="text-[10px] tracking-[0.16em] text-moss uppercase">
+          {t.switchConfirmTitle}
+        </p>
+        <p className="mt-2 text-sm leading-5 text-forest normal-case tracking-normal">
+          {t.switchConfirmBody
+            .replace("{count}", String(count))
+            .replace("{city}", pendingName)}
+        </p>
+        <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+          <button
+            type="button"
+            onClick={() => setPendingSlug(null)}
+            className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full border border-forest/15 px-3 text-[11px] tracking-[0.12em] uppercase"
+          >
+            {t.switchConfirmKeep}
+          </button>
+          <button
+            type="button"
+            disabled={pending}
+            onClick={() => void applyCity(pendingSlug)}
+            className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full bg-forest px-3 text-[11px] tracking-[0.12em] text-ivory uppercase disabled:opacity-60"
+          >
+            {t.switchConfirmClear}
+          </button>
+        </div>
+      </div>
+    ) : null;
+
+  if (isHero) {
+    return (
+      <div className="relative w-full max-w-lg">
+        <div
+          role="group"
+          aria-label={t.chooseCity}
+          className="glass-hero-city grid grid-cols-2 gap-2 rounded-[1.35rem] p-2 sm:gap-2.5 sm:rounded-[1.6rem] sm:p-2.5"
+        >
+          {cities.map((city) => {
+            const name = locale === "vi" ? city.nameVi : city.nameEn;
+            const selected = city.slug === activeCity.slug;
+            const disabled = pending || city.status !== "open";
+            return (
+              <button
+                key={city.slug}
+                type="button"
+                aria-pressed={selected}
+                aria-current={selected ? "true" : undefined}
+                disabled={disabled}
+                onClick={() => requestCity(city.slug)}
+                className={`relative flex min-h-[4.25rem] flex-col items-start justify-center rounded-[1.1rem] px-3.5 py-3 text-left transition disabled:opacity-45 sm:min-h-[4.6rem] sm:px-4 ${
+                  selected
+                    ? "bg-citrus text-white shadow-[0_10px_28px_rgba(176,84,44,0.28)]"
+                    : "bg-white/72 text-forest hover:bg-white/90"
+                }`}
+              >
+                <span className="inline-flex items-center gap-1.5">
+                  <IconPin
+                    className={`h-3.5 w-3.5 shrink-0 ${selected ? "text-white" : "text-citrus"}`}
+                  />
+                  <span className="serif text-lg leading-none sm:text-xl">
+                    {name}
+                  </span>
+                </span>
+                <span
+                  className={`mt-1.5 text-[11px] leading-none ${
+                    selected ? "text-white/85" : "text-moss"
+                  }`}
+                >
+                  {t.deliveryToday}
+                </span>
+                {selected ? (
+                  <span
+                    className="absolute top-2.5 right-2.5 flex h-5 w-5 items-center justify-center rounded-full bg-white/20 text-[11px] text-white"
+                    aria-hidden
+                  >
+                    ✓
+                  </span>
+                ) : null}
+              </button>
+            );
+          })}
+        </div>
+        {confirmPanel}
+      </div>
+    );
+  }
+
   return (
-    <div className={`relative ${isHero ? "" : "mt-1"}`}>
+    <div className="relative mt-1">
       <div
         role="group"
         aria-label={t.chooseCity}
-        className={
-          isHero
-            ? "inline-flex max-w-full flex-wrap items-baseline gap-x-3 gap-y-1"
-            : "inline-flex max-w-full flex-wrap items-center gap-x-1.5 gap-y-0.5 text-[10px] tracking-[0.16em] uppercase"
-        }
+        className="inline-flex max-w-full flex-wrap items-center gap-x-1.5 gap-y-0.5 text-[10px] tracking-[0.16em] uppercase"
       >
         {cities.map((city, index) => {
           const name = locale === "vi" ? city.nameVi : city.nameEn;
@@ -68,22 +157,12 @@ export function CitySwitcher({
           return (
             <span
               key={city.slug}
-              className={
-                isHero
-                  ? "inline-flex items-baseline gap-x-2.5"
-                  : "inline-flex items-center gap-x-1.5"
-              }
+              className="inline-flex items-center gap-x-1.5"
             >
               {index > 0 ? (
                 <span
                   aria-hidden
-                  className={
-                    isHero
-                      ? "serif text-2xl text-moss/35 sm:text-3xl"
-                      : onBrand
-                        ? "text-white/45"
-                        : "text-moss/45"
-                  }
+                  className={onBrand ? "text-white/45" : "text-moss/45"}
                 >
                   ·
                 </span>
@@ -94,32 +173,22 @@ export function CitySwitcher({
                 aria-current={selected ? "true" : undefined}
                 disabled={disabled}
                 onClick={() => requestCity(city.slug)}
-                className={
-                  isHero
-                    ? `inline-flex min-h-12 items-baseline gap-1.5 rounded-sm transition disabled:opacity-45 ${
-                        selected
-                          ? "serif text-[2.15rem] leading-none font-normal text-citrus sm:text-[2.75rem]"
-                          : "serif text-[1.55rem] leading-none text-moss/40 hover:text-citrus sm:text-[2rem]"
-                      }`
-                    : `inline-flex min-h-8 items-center gap-1 rounded-sm px-0.5 transition disabled:opacity-45 ${
-                        selected
-                          ? onBrand
-                            ? "font-semibold text-white"
-                            : "font-semibold text-citrus"
-                          : onBrand
-                            ? "font-medium text-white/65 hover:text-white"
-                            : "font-medium text-moss/65 hover:text-citrus"
-                      }`
-                }
+                className={`inline-flex min-h-8 items-center gap-1 rounded-sm px-0.5 transition disabled:opacity-45 ${
+                  selected
+                    ? onBrand
+                      ? "font-semibold text-white"
+                      : "font-semibold text-citrus"
+                    : onBrand
+                      ? "font-medium text-white/65 hover:text-white"
+                      : "font-medium text-moss/65 hover:text-citrus"
+                }`}
               >
                 {selected ? (
                   <IconPin
                     className={
-                      isHero
-                        ? "mb-0.5 h-3.5 w-3.5 shrink-0 self-center text-citrus sm:h-4 sm:w-4"
-                        : onBrand
-                          ? "h-2.5 w-2.5 shrink-0 text-white"
-                          : "h-2.5 w-2.5 shrink-0 text-citrus"
+                      onBrand
+                        ? "h-2.5 w-2.5 shrink-0 text-white"
+                        : "h-2.5 w-2.5 shrink-0 text-citrus"
                     }
                     aria-hidden
                   />
@@ -130,40 +199,7 @@ export function CitySwitcher({
           );
         })}
       </div>
-
-      {pendingSlug && pendingCity ? (
-        <div
-          className={`glass-menu absolute z-50 mt-2 w-[min(18rem,calc(100vw-2rem))] rounded-2xl p-3 ${
-            isHero ? "top-full left-0" : "top-full left-0"
-          }`}
-        >
-          <p className="text-[10px] tracking-[0.16em] text-moss uppercase">
-            {t.switchConfirmTitle}
-          </p>
-          <p className="mt-2 text-sm leading-5 text-forest normal-case tracking-normal">
-            {t.switchConfirmBody
-              .replace("{count}", String(count))
-              .replace("{city}", pendingName)}
-          </p>
-          <div className="mt-3 flex flex-col gap-2 sm:flex-row">
-            <button
-              type="button"
-              onClick={() => setPendingSlug(null)}
-              className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full border border-forest/15 px-3 text-[11px] tracking-[0.12em] uppercase"
-            >
-              {t.switchConfirmKeep}
-            </button>
-            <button
-              type="button"
-              disabled={pending}
-              onClick={() => void applyCity(pendingSlug)}
-              className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full bg-forest px-3 text-[11px] tracking-[0.12em] text-ivory uppercase disabled:opacity-60"
-            >
-              {t.switchConfirmClear}
-            </button>
-          </div>
-        </div>
-      ) : null}
+      {confirmPanel}
     </div>
   );
 }

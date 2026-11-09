@@ -14,6 +14,12 @@ import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import type { HeroBouquetItem } from "@/lib/hero-bouquets";
 import { CitySwitcher } from "@/components/city-switcher";
+import { useLocation } from "@/context/location-context";
+import {
+  IconBloom,
+  IconHeart,
+  IconTruck,
+} from "@/components/nav-icons";
 
 type Pose = { rx: number; ry: number; px: number; py: number };
 
@@ -40,6 +46,8 @@ export function ImmersiveHero({
   bouquets: HeroBouquetItem[];
 }) {
   const t = dictionary.hero;
+  const { activeCity } = useLocation();
+  const cityName = locale === "vi" ? activeCity.nameVi : activeCity.nameEn;
   const items =
     bouquets.length > 0
       ? bouquets
@@ -224,48 +232,67 @@ export function ImmersiveHero({
     ? "none"
     : `translate3d(${pose.px * -0.45}px, ${pose.py * -0.35}px, -80px) scale(1.08)`;
 
-  const accentTransform = reduced
-    ? "none"
-    : `translate3d(${pose.px * 0.7}px, ${pose.py * 0.55}px, 40px) rotate(${pose.ry * 0.15}deg)`;
-
   const glassTransform = reduced
     ? "none"
     : `translate3d(${pose.px * -0.25}px, ${pose.py * -0.2}px, 60px)`;
 
   return (
-    <section className="relative overflow-hidden bg-[linear-gradient(165deg,#ffffff_0%,#fff7f1_45%,#f3e4d8_78%,#ebe3da_100%)]">
-      <div className="ih-bloom pointer-events-none absolute inset-0 opacity-90" />
+    <section className="relative overflow-hidden bg-[linear-gradient(168deg,#fff8f2_0%,#ffe9dc_42%,#f7d7c6_100%)]">
+      <div className="ih-bloom pointer-events-none absolute inset-0 opacity-70" />
+
+      {/* Soft flower petals around the composition */}
       <div
         aria-hidden
-        className="pointer-events-none absolute -top-24 right-[-10%] h-72 w-72 rounded-full bg-citrus/22 blur-3xl"
-      />
+        className="hero-petal -left-8 top-16 h-28 w-28 opacity-40 sm:left-2 sm:h-36 sm:w-36"
+      >
+        <Image src="/bouquets/shown/w-06.jpg" alt="" fill sizes="160px" />
+      </div>
+      <div
+        aria-hidden
+        className="hero-petal -right-6 top-28 h-24 w-24 rotate-12 opacity-45 sm:right-4 sm:h-32 sm:w-32"
+      >
+        <Image src="/bouquets/shown/w-01.jpg" alt="" fill sizes="140px" />
+      </div>
+      <div
+        aria-hidden
+        className="hero-petal bottom-28 -left-10 hidden h-32 w-32 -rotate-6 opacity-35 sm:block"
+      >
+        <Image src="/bouquets/shown/w-08.jpg" alt="" fill sizes="140px" />
+      </div>
+      <div
+        aria-hidden
+        className="hero-petal right-[8%] bottom-40 hidden h-20 w-20 rotate-[-10deg] opacity-40 lg:block"
+      >
+        <Image src="/bouquets/shown/w-03.jpg" alt="" fill sizes="100px" />
+      </div>
 
-      <div className="relative mx-auto grid max-w-6xl items-center gap-5 px-4 py-7 sm:gap-8 sm:px-5 sm:py-12 lg:grid-cols-[0.95fr_1.05fr] lg:gap-10 lg:py-16">
+      <div className="relative mx-auto grid max-w-6xl items-center gap-6 px-4 pt-7 pb-8 sm:gap-8 sm:px-5 sm:pt-12 sm:pb-10 lg:grid-cols-[0.95fr_1.05fr] lg:gap-10 lg:pt-14 lg:pb-12">
         <div className="order-1 max-w-xl">
-          {/* Brand in sticky header — keep hero to city + one headline + one line */}
           <CitySwitcher
             locale={locale}
             dictionary={dictionary}
             variant="hero"
           />
-          <h1 className="serif mt-5 text-[2.45rem] leading-[1.02] text-forest sm:mt-6 sm:text-5xl lg:text-[3.6rem]">
+          <h1 className="serif mt-6 text-[2.45rem] leading-[1.02] text-forest sm:mt-7 sm:text-5xl lg:text-[3.6rem]">
             {t.titleBefore}
             <span className="italic text-citrus">{t.titleAccent}</span>
             {t.titleAfter}
           </h1>
           <p className="mt-4 max-w-md text-base leading-7 text-moss sm:mt-5 sm:text-lg sm:leading-8">
-            {t.subtitle}
+            {t.subtitleLead}{" "}
+            <span className="serif italic text-citrus">{cityName}</span>.
           </p>
           <div className="mt-6 flex flex-wrap gap-3 sm:mt-8">
             <Link
               href={`/${locale}/shop`}
-              className="inline-flex min-h-12 items-center rounded-full bg-citrus px-6 text-sm tracking-[0.08em] text-ivory uppercase transition hover:bg-citrus/90"
+              className="inline-flex min-h-12 items-center gap-2 rounded-full bg-citrus px-6 text-sm tracking-[0.08em] text-ivory uppercase transition hover:bg-citrus/90"
             >
               {t.shop}
+              <span aria-hidden>→</span>
             </Link>
             <Link
               href={`/${locale}/custom`}
-              className="inline-flex min-h-12 items-center rounded-full border border-forest/25 bg-white/55 px-6 text-sm tracking-[0.08em] text-forest uppercase transition hover:border-citrus/40"
+              className="inline-flex min-h-12 items-center rounded-full border border-forest/15 bg-white/70 px-6 text-sm tracking-[0.08em] text-forest uppercase transition hover:border-citrus/40"
             >
               {t.custom}
             </Link>
@@ -289,7 +316,13 @@ export function ImmersiveHero({
           >
             <div
               aria-hidden
-              className="pointer-events-none absolute inset-x-[12%] bottom-[6%] h-[14%] rounded-[100%] bg-forest/20 blur-2xl"
+              className="pointer-events-none absolute inset-x-[8%] top-[10%] bottom-[8%] rounded-[2rem] bg-[#f3c9b8]/70 shadow-[0_24px_50px_rgba(176,84,44,0.16)] sm:rounded-[2.25rem]"
+              style={{ transform: atmosphereTransform }}
+            />
+
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-x-[14%] bottom-[4%] h-[12%] rounded-[100%] bg-forest/15 blur-2xl"
               style={{
                 transform: reduced
                   ? undefined
@@ -297,40 +330,11 @@ export function ImmersiveHero({
               }}
             />
 
-            <div
-              className="ih-layer pointer-events-none absolute inset-[6%] overflow-hidden rounded-[1.75rem] opacity-45 sm:inset-[8%] sm:rounded-[2rem] sm:opacity-50"
-              style={{ transform: atmosphereTransform }}
-            >
-              <Image
-                key={`atm-${active.image}`}
-                src={active.image}
-                alt=""
-                fill
-                className="object-cover blur-[2px] scale-110 object-[center_28%]"
-                sizes="(min-width: 1024px) 40vw, 80vw"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-paper via-transparent to-wood/10" />
-            </div>
-
-            <div
-              className="ih-layer pointer-events-none absolute top-[6%] right-[1%] hidden h-[26%] w-[26%] overflow-hidden rounded-2xl opacity-70 shadow-[0_12px_30px_rgba(36,53,42,0.12)] sm:block sm:top-[8%] sm:right-[2%] sm:h-[28%] sm:w-[28%]"
-              style={{ transform: accentTransform }}
-            >
-              <Image
-                key={`det-${active.image}`}
-                src={active.image}
-                alt=""
-                fill
-                className="object-cover object-[center_40%] scale-125"
-                sizes="120px"
-              />
-            </div>
-
             <Link
               href={href}
               onClick={onMainClick}
               aria-label={`${t.openBouquet}: ${active.name}`}
-              className="ih-layer absolute inset-[7%] overflow-hidden rounded-[1.5rem] shadow-[0_28px_60px_rgba(36,53,42,0.22)] sm:inset-[10%] sm:rounded-[1.75rem]"
+              className="ih-layer absolute inset-[9%] overflow-hidden rounded-[1.5rem] shadow-[0_28px_60px_rgba(36,53,42,0.18)] sm:inset-[11%] sm:rounded-[1.85rem]"
               style={{ transform: bouquetTransform }}
             >
               <Image
@@ -342,12 +346,12 @@ export function ImmersiveHero({
                 className="object-cover object-[center_22%]"
                 sizes="(min-width: 1024px) 42vw, 85vw"
               />
-              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-forest/25 via-transparent to-white/10" />
-              <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-white/35" />
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-forest/20 via-transparent to-white/10" />
+              <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-white/40" />
             </Link>
 
             <div
-              className="ih-layer absolute bottom-[8%] left-[4%] z-10 max-w-[10.5rem] sm:bottom-[10%] sm:left-[6%] sm:max-w-[11.5rem]"
+              className="ih-layer absolute bottom-[9%] left-[5%] z-10 max-w-[10.5rem] sm:bottom-[11%] sm:left-[7%] sm:max-w-[11.5rem]"
               style={{ transform: glassTransform }}
             >
               <Link
@@ -383,7 +387,7 @@ export function ImmersiveHero({
                     onClick={() => goTo(i)}
                     className={`relative h-10 w-10 shrink-0 overflow-hidden rounded-xl transition duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-citrus/50 sm:h-12 sm:w-12 sm:rounded-2xl lg:h-14 lg:w-14 ${
                       selected
-                        ? "ring-2 ring-citrus/70 ring-offset-2 ring-offset-paper shadow-[0_8px_20px_rgba(36,53,42,0.14)]"
+                        ? "ring-2 ring-citrus/70 ring-offset-2 ring-offset-[#ffe9dc] shadow-[0_8px_20px_rgba(36,53,42,0.14)]"
                         : "ring-1 ring-forest/10 opacity-65 hover:opacity-100"
                     }`}
                   >
@@ -399,6 +403,29 @@ export function ImmersiveHero({
               })}
             </div>
           ) : null}
+        </div>
+      </div>
+
+      <div className="relative mx-auto max-w-6xl px-4 pb-8 sm:px-5 sm:pb-10">
+        <div className="glass-hero-features grid grid-cols-3 divide-x divide-citrus/15 rounded-[1.35rem] px-2 py-3.5 sm:rounded-[1.6rem] sm:px-4 sm:py-4">
+          <div className="flex flex-col items-center gap-1.5 px-2 text-center sm:flex-row sm:justify-center sm:gap-2.5 sm:px-3">
+            <IconTruck className="h-5 w-5 text-citrus" />
+            <p className="text-[10px] leading-snug font-medium text-citrus sm:text-[12px]">
+              {t.featureDelivery}
+            </p>
+          </div>
+          <div className="flex flex-col items-center gap-1.5 px-2 text-center sm:flex-row sm:justify-center sm:gap-2.5 sm:px-3">
+            <IconBloom className="h-5 w-5 text-citrus" />
+            <p className="text-[10px] leading-snug font-medium text-citrus sm:text-[12px]">
+              {t.featureFresh}
+            </p>
+          </div>
+          <div className="flex flex-col items-center gap-1.5 px-2 text-center sm:flex-row sm:justify-center sm:gap-2.5 sm:px-3">
+            <IconHeart className="h-5 w-5 text-citrus" />
+            <p className="text-[10px] leading-snug font-medium text-citrus sm:text-[12px]">
+              {t.featureHandcrafted}
+            </p>
+          </div>
         </div>
       </div>
     </section>
