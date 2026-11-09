@@ -384,7 +384,7 @@ export function ImmersiveHero({
                     aria-selected={selected}
                     aria-label={`${t.selectBouquet}: ${item.name}`}
                     onClick={() => goTo(i)}
-                    className={`relative h-10 w-10 shrink-0 overflow-hidden rounded-xl transition duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-citrus/50 sm:h-12 sm:w-12 sm:rounded-2xl lg:h-14 lg:w-14 ${
+                    className={`relative h-9 w-9 shrink-0 overflow-hidden rounded-xl transition duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-citrus/50 sm:h-11 sm:w-11 sm:rounded-2xl lg:h-12 lg:w-12 ${
                       selected
                         ? "ring-2 ring-citrus/70 ring-offset-2 ring-offset-[#ffe9dc] shadow-[0_8px_20px_rgba(36,53,42,0.14)]"
                         : "ring-1 ring-forest/10 opacity-65 hover:opacity-100"

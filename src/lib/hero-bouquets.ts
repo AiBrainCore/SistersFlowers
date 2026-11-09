@@ -39,6 +39,12 @@ export const HERO_BOUQUETS = [
     nameEn: "Orange rose wrap",
     nameVi: "Bó hồng cam",
   },
+  {
+    slug: "garden-mix",
+    image: "/bouquets/shown/w-03.jpg",
+    nameEn: "Garden mix wrap",
+    nameVi: "Bó mix vườn",
+  },
 ] as const;
 
 export type HeroBouquetItem = {

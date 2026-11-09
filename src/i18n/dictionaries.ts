@@ -43,9 +43,9 @@ const en = {
     imageAlt: "Handcrafted bouquet from Sisters Flowers Vietnam",
     selectBouquet: "Show bouquet",
     openBouquet: "View this bouquet",
-    featureDelivery: "Same-day Delivery",
+    featureDelivery: "Fast Delivery",
     featureFresh: "Fresh Flowers",
-    featureHandcrafted: "Handcrafted with Care",
+    featureHandcrafted: "Handmade with love",
   },
   heroPreview: {
     badge: "Finished by hand",
@@ -484,9 +484,9 @@ const vi = {
     imageAlt: "Bó hoa thủ công từ Sisters Flowers Việt Nam",
     selectBouquet: "Xem bó hoa",
     openBouquet: "Xem bó này",
-    featureDelivery: "Giao trong ngày",
+    featureDelivery: "Giao nhanh",
     featureFresh: "Hoa tươi",
-    featureHandcrafted: "Gói tay tỉ mỉ",
+    featureHandcrafted: "Gói tay với yêu thương",
   },
   heroPreview: {
     badge: "Gói tay tỉ mỉ",
