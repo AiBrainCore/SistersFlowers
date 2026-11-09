@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
@@ -40,6 +41,10 @@ export function SiteHeader({
   occasions: OccasionLink[];
 }) {
   const { count, setOpen } = useCart();
+  const pathname = usePathname();
+  /** Homepage already has the large hero city switcher — avoid the tiny duplicate under the logo. */
+  const isHome =
+    pathname === `/${locale}` || pathname === `/${locale}/`;
   const [menuOpen, setMenuOpen] = useState(false);
   const [openGroup, setOpenGroup] = useState<"occasions" | "services" | null>(
     null,
@@ -130,7 +135,13 @@ export function SiteHeader({
           >
             {dictionary.brand}
           </Link>
-          <CitySwitcher locale={locale} dictionary={dictionary} align="left" />
+          {!isHome ? (
+            <CitySwitcher
+              locale={locale}
+              dictionary={dictionary}
+              align="left"
+            />
+          ) : null}
         </div>
 
         {/* Centre nav — from 1200px to avoid cramped mid-widths */}
