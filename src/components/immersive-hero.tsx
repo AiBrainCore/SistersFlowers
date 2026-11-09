@@ -282,17 +282,16 @@ export function ImmersiveHero({
             {t.subtitleLead}{" "}
             <span className="serif italic text-citrus">{cityName}</span>.
           </p>
-          <div className="mt-6 flex flex-wrap justify-center gap-3 sm:mt-8 sm:justify-start">
+          <div className="mt-6 flex w-full flex-col items-center gap-3 sm:mt-8 sm:w-auto sm:flex-row sm:flex-wrap sm:justify-start">
             <Link
               href={`/${locale}/shop`}
-              className="inline-flex min-h-12 items-center gap-2 rounded-full bg-citrus px-6 text-sm tracking-[0.08em] text-ivory uppercase transition hover:bg-citrus/90"
+              className="inline-flex min-h-12 w-full max-w-[16.5rem] items-center justify-center rounded-full bg-citrus px-6 text-center text-sm tracking-[0.08em] text-ivory uppercase transition hover:bg-citrus/90 sm:w-auto sm:max-w-none"
             >
               {t.shop}
-              <span aria-hidden>→</span>
             </Link>
             <Link
               href={`/${locale}/custom`}
-              className="inline-flex min-h-12 items-center rounded-full border border-forest/15 bg-white/70 px-6 text-sm tracking-[0.08em] text-forest uppercase transition hover:border-citrus/40"
+              className="inline-flex min-h-12 w-full max-w-[16.5rem] items-center justify-center rounded-full border border-forest/15 bg-white/70 px-6 text-center text-sm tracking-[0.08em] text-forest uppercase transition hover:border-citrus/40 sm:w-auto sm:max-w-none"
             >
               {t.custom}
             </Link>
