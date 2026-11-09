@@ -282,7 +282,7 @@ export function ImmersiveHero({
             {t.subtitleLead}{" "}
             <span className="serif italic text-citrus">{cityName}</span>.
           </p>
-          <div className="mt-6 flex flex-wrap gap-3 sm:mt-8">
+          <div className="mt-6 flex flex-wrap justify-center gap-3 sm:mt-8 sm:justify-start">
             <Link
               href={`/${locale}/shop`}
               className="inline-flex min-h-12 items-center gap-2 rounded-full bg-citrus px-6 text-sm tracking-[0.08em] text-ivory uppercase transition hover:bg-citrus/90"

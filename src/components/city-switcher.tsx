@@ -105,13 +105,13 @@ export function CitySwitcher({
                 aria-current={selected ? "true" : undefined}
                 disabled={disabled}
                 onClick={() => requestCity(city.slug)}
-                className={`relative flex min-h-[4.25rem] flex-col items-start justify-center rounded-2xl px-3.5 py-3 text-left transition disabled:opacity-45 sm:min-h-[4.6rem] sm:rounded-[1.25rem] sm:px-4 ${
+                className={`relative flex min-h-12 items-center rounded-2xl px-3.5 py-3 text-left transition disabled:opacity-45 sm:min-h-[3.25rem] sm:rounded-[1.25rem] sm:px-4 ${
                   selected
                     ? "bg-citrus text-white shadow-[0_10px_28px_rgba(176,84,44,0.28)]"
                     : "border border-white/70 bg-white/80 text-forest shadow-[0_8px_24px_rgba(44,41,38,0.06)] hover:bg-white"
                 }`}
               >
-                <span className="inline-flex items-center gap-1.5">
+                <span className="inline-flex items-center gap-1.5 pr-6">
                   <IconPin
                     className={`h-3.5 w-3.5 shrink-0 ${selected ? "text-white" : "text-citrus"}`}
                   />
@@ -119,16 +119,9 @@ export function CitySwitcher({
                     {name}
                   </span>
                 </span>
-                <span
-                  className={`mt-1.5 text-[11px] leading-none ${
-                    selected ? "text-white/85" : "text-moss"
-                  }`}
-                >
-                  {t.deliveryToday}
-                </span>
                 {selected ? (
                   <span
-                    className="absolute top-2.5 right-2.5 flex h-5 w-5 items-center justify-center rounded-full bg-white/20 text-[11px] text-white"
+                    className="absolute top-1/2 right-2.5 flex h-5 w-5 -translate-y-1/2 items-center justify-center rounded-full bg-white text-[11px] font-semibold text-citrus"
                     aria-hidden
                   >
                     ✓
