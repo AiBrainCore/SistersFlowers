@@ -91,7 +91,7 @@ export function CitySwitcher({
         <div
           role="group"
           aria-label={t.chooseCity}
-          className="glass-hero-city grid grid-cols-2 gap-2 rounded-[1.35rem] p-2 sm:gap-2.5 sm:rounded-[1.6rem] sm:p-2.5"
+          className="grid grid-cols-2 gap-2.5 sm:gap-3"
         >
           {cities.map((city) => {
             const name = locale === "vi" ? city.nameVi : city.nameEn;
@@ -105,10 +105,10 @@ export function CitySwitcher({
                 aria-current={selected ? "true" : undefined}
                 disabled={disabled}
                 onClick={() => requestCity(city.slug)}
-                className={`relative flex min-h-[4.25rem] flex-col items-start justify-center rounded-[1.1rem] px-3.5 py-3 text-left transition disabled:opacity-45 sm:min-h-[4.6rem] sm:px-4 ${
+                className={`relative flex min-h-[4.25rem] flex-col items-start justify-center rounded-2xl px-3.5 py-3 text-left transition disabled:opacity-45 sm:min-h-[4.6rem] sm:rounded-[1.25rem] sm:px-4 ${
                   selected
                     ? "bg-citrus text-white shadow-[0_10px_28px_rgba(176,84,44,0.28)]"
-                    : "bg-white/72 text-forest hover:bg-white/90"
+                    : "border border-white/70 bg-white/80 text-forest shadow-[0_8px_24px_rgba(44,41,38,0.06)] hover:bg-white"
                 }`}
               >
                 <span className="inline-flex items-center gap-1.5">
