@@ -17,11 +17,14 @@ export function LanguageSwitch({
   locale,
   dictionary,
   variant = "desktop",
+  tone = "default",
 }: {
   locale: Locale;
   dictionary: Dictionary;
   /** desktop = compact globe trigger; panel = full list for mobile drawer */
   variant?: "desktop" | "panel";
+  /** onBrand = white controls for the citrus glass header */
+  tone?: "default" | "onBrand";
 }) {
   const pathname = usePathname();
   const rest = pathname.split("/").slice(2).join("/");
@@ -61,16 +64,25 @@ export function LanguageSwitch({
     );
   }
 
-  return <LanguageDropdown locale={locale} dictionary={dictionary} />;
+  return (
+    <LanguageDropdown
+      locale={locale}
+      dictionary={dictionary}
+      tone={tone}
+    />
+  );
 }
 
 function LanguageDropdown({
   locale,
   dictionary,
+  tone = "default",
 }: {
   locale: Locale;
   dictionary: Dictionary;
+  tone?: "default" | "onBrand";
 }) {
+  const onBrand = tone === "onBrand";
   const pathname = usePathname();
   const rest = pathname.split("/").slice(2).join("/");
   const [open, setOpen] = useState(false);
@@ -103,11 +115,20 @@ function LanguageDropdown({
         aria-label={t.label}
         title={t.label}
         onClick={() => setOpen((v) => !v)}
-        className="inline-flex min-h-11 min-w-11 items-center justify-center gap-1 rounded-full border border-forest/12 bg-white/55 px-2 text-[11px] tracking-[0.1em] text-forest uppercase transition hover:border-citrus/35 sm:min-w-0 sm:gap-1.5 sm:px-2.5"
+        className={
+          onBrand
+            ? "inline-flex min-h-11 min-w-11 items-center justify-center gap-1 rounded-full border border-white/35 bg-white/15 px-2 text-[11px] tracking-[0.1em] text-white uppercase transition hover:bg-white/25 sm:min-w-0 sm:gap-1.5 sm:px-2.5"
+            : "inline-flex min-h-11 min-w-11 items-center justify-center gap-1 rounded-full border border-forest/12 bg-white/55 px-2 text-[11px] tracking-[0.1em] text-forest uppercase transition hover:border-citrus/35 sm:min-w-0 sm:gap-1.5 sm:px-2.5"
+        }
       >
-        <IconGlobe className="h-3.5 w-3.5 shrink-0 text-moss" />
+        <IconGlobe
+          className={`h-3.5 w-3.5 shrink-0 ${onBrand ? "text-white/90" : "text-moss"}`}
+        />
         <span className="font-medium">{locale}</span>
-        <span aria-hidden className="hidden text-[9px] text-moss sm:inline">
+        <span
+          aria-hidden
+          className={`hidden text-[9px] sm:inline ${onBrand ? "text-white/75" : "text-moss"}`}
+        >
           ▾
         </span>
       </button>

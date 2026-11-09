@@ -11,6 +11,7 @@ export function CitySwitcher({
   locale,
   dictionary,
   variant = "compact",
+  tone = "default",
 }: {
   locale: Locale;
   dictionary: Dictionary;
@@ -18,12 +19,15 @@ export function CitySwitcher({
   align?: "left" | "right";
   /** compact = header under logo; hero = large city names in the homepage hero */
   variant?: "compact" | "hero";
+  /** onBrand = white type for the citrus glass header */
+  tone?: "default" | "onBrand";
 }) {
   const { cities, activeCity, setCity, pending } = useLocation();
   const { count } = useCart();
   const [pendingSlug, setPendingSlug] = useState<string | null>(null);
   const t = dictionary.location;
   const isHero = variant === "hero";
+  const onBrand = tone === "onBrand" && !isHero;
 
   async function applyCity(slug: string) {
     setPendingSlug(null);
@@ -73,7 +77,13 @@ export function CitySwitcher({
               {index > 0 ? (
                 <span
                   aria-hidden
-                  className={isHero ? "serif text-2xl text-moss/35 sm:text-3xl" : "text-moss/45"}
+                  className={
+                    isHero
+                      ? "serif text-2xl text-moss/35 sm:text-3xl"
+                      : onBrand
+                        ? "text-white/45"
+                        : "text-moss/45"
+                  }
                 >
                   ·
                 </span>
@@ -93,8 +103,12 @@ export function CitySwitcher({
                       }`
                     : `inline-flex min-h-8 items-center gap-1 rounded-sm px-0.5 transition disabled:opacity-45 ${
                         selected
-                          ? "font-semibold text-citrus"
-                          : "font-medium text-moss/65 hover:text-citrus"
+                          ? onBrand
+                            ? "font-semibold text-white"
+                            : "font-semibold text-citrus"
+                          : onBrand
+                            ? "font-medium text-white/65 hover:text-white"
+                            : "font-medium text-moss/65 hover:text-citrus"
                       }`
                 }
               >
@@ -103,7 +117,9 @@ export function CitySwitcher({
                     className={
                       isHero
                         ? "mb-0.5 h-3.5 w-3.5 shrink-0 self-center text-citrus sm:h-4 sm:w-4"
-                        : "h-2.5 w-2.5 shrink-0 text-citrus"
+                        : onBrand
+                          ? "h-2.5 w-2.5 shrink-0 text-white"
+                          : "h-2.5 w-2.5 shrink-0 text-citrus"
                     }
                     aria-hidden
                   />

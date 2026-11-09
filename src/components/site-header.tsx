@@ -123,14 +123,13 @@ export function SiteHeader({
 
   return (
     <>
-    <header className="sticky top-0 z-50 border-b border-citrus/15 bg-paper/90 backdrop-blur-md">
-      <div className="h-1 w-full bg-citrus" aria-hidden />
+    <header className="site-header-bar sticky top-0 z-50">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-2.5 sm:px-5 sm:py-3">
         {/* Brand + city (Variant A) */}
         <div className="min-w-0 shrink-0">
           <Link
             href={`/${locale}`}
-            className="serif block text-xl leading-none text-citrus sm:text-2xl"
+            className="serif block text-xl leading-none text-white sm:text-2xl"
             onClick={closeAll}
           >
             {dictionary.brand}
@@ -140,6 +139,7 @@ export function SiteHeader({
               locale={locale}
               dictionary={dictionary}
               align="left"
+              tone="onBrand"
             />
           ) : null}
         </div>
@@ -147,11 +147,11 @@ export function SiteHeader({
         {/* Centre nav — from 1200px to avoid cramped mid-widths */}
         <nav
           ref={navRef}
-          className="hidden items-center gap-0.5 text-[13px] tracking-normal text-forest min-[1200px]:flex"
+          className="hidden items-center gap-0.5 text-[13px] tracking-normal text-white/90 min-[1200px]:flex"
         >
           <Link
             href={`/${locale}/shop`}
-            className="min-h-11 rounded-full px-2.5 py-2.5 transition hover:text-citrus lg:px-3"
+            className="min-h-11 rounded-full px-2.5 py-2.5 transition hover:bg-white/12 hover:text-white lg:px-3"
           >
             {dictionary.nav.shop}
           </Link>
@@ -163,10 +163,10 @@ export function SiteHeader({
               onClick={() =>
                 setOpenGroup((g) => (g === "occasions" ? null : "occasions"))
               }
-              className="inline-flex min-h-11 items-center gap-1 rounded-full px-2.5 py-2.5 transition hover:text-citrus lg:px-3"
+              className="inline-flex min-h-11 items-center gap-1 rounded-full px-2.5 py-2.5 transition hover:bg-white/12 hover:text-white lg:px-3"
             >
               {dictionary.nav.occasions}
-              <span aria-hidden className="text-[9px]">
+              <span aria-hidden className="text-[9px] text-white/70">
                 ▾
               </span>
             </button>
@@ -177,7 +177,7 @@ export function SiteHeader({
                     key={item.slug}
                     href={`/${locale}/shop?category=${item.slug}`}
                     onClick={closeAll}
-                    className="block min-h-11 rounded-xl px-3 py-2.5 normal-case tracking-normal hover:bg-cream/70"
+                    className="block min-h-11 rounded-xl px-3 py-2.5 normal-case tracking-normal text-forest hover:bg-cream/70"
                   >
                     {label(item)}
                   </Link>
@@ -188,7 +188,7 @@ export function SiteHeader({
 
           <Link
             href={`/${locale}/custom`}
-            className="min-h-11 rounded-full px-2.5 py-2.5 transition hover:text-citrus lg:px-3"
+            className="min-h-11 rounded-full px-2.5 py-2.5 transition hover:bg-white/12 hover:text-white lg:px-3"
           >
             {dictionary.nav.custom}
           </Link>
@@ -200,10 +200,10 @@ export function SiteHeader({
               onClick={() =>
                 setOpenGroup((g) => (g === "services" ? null : "services"))
               }
-              className="inline-flex min-h-11 items-center gap-1 rounded-full px-2.5 py-2.5 transition hover:text-citrus lg:px-3"
+              className="inline-flex min-h-11 items-center gap-1 rounded-full px-2.5 py-2.5 transition hover:bg-white/12 hover:text-white lg:px-3"
             >
               {dictionary.nav.services}
-              <span aria-hidden className="text-[9px]">
+              <span aria-hidden className="text-[9px] text-white/70">
                 ▾
               </span>
             </button>
@@ -214,7 +214,7 @@ export function SiteHeader({
                     key={item.href}
                     href={item.href}
                     onClick={closeAll}
-                    className="block min-h-11 rounded-xl px-3 py-2.5 normal-case tracking-normal hover:bg-cream/70"
+                    className="block min-h-11 rounded-xl px-3 py-2.5 normal-case tracking-normal text-forest hover:bg-cream/70"
                   >
                     {item.label}
                   </Link>
@@ -225,7 +225,7 @@ export function SiteHeader({
 
           <Link
             href={`/${locale}/delivery`}
-            className="min-h-11 rounded-full px-2.5 py-2.5 transition hover:text-citrus lg:px-3"
+            className="min-h-11 rounded-full px-2.5 py-2.5 transition hover:bg-white/12 hover:text-white lg:px-3"
           >
             {dictionary.nav.delivery}
           </Link>
@@ -233,18 +233,22 @@ export function SiteHeader({
 
         {/* Right: language + bag + hamburger (lang always visible — EN/VI tourists on phone) */}
         <div className="flex shrink-0 items-center gap-1 sm:gap-2">
-          <LanguageSwitch locale={locale} dictionary={dictionary} />
+          <LanguageSwitch
+            locale={locale}
+            dictionary={dictionary}
+            tone="onBrand"
+          />
 
           <button
             type="button"
             onClick={() => setOpen(true)}
             aria-label={dictionary.cart.openAria}
             title={dictionary.cart.openAria}
-            className="relative inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border border-forest/12 bg-white/55 text-forest transition hover:border-citrus/35 hover:text-citrus"
+            className="relative inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border border-white/35 bg-white/15 text-white transition hover:bg-white/25"
           >
             <IconBag />
             {count > 0 ? (
-              <span className="absolute -top-0.5 -right-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-citrus px-1 text-[10px] font-medium text-ivory">
+              <span className="absolute -top-0.5 -right-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-white px-1 text-[10px] font-medium text-citrus">
                 {count > 99 ? "99+" : count}
               </span>
             ) : null}
@@ -252,7 +256,7 @@ export function SiteHeader({
 
           <button
             type="button"
-            className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border border-forest/12 text-[13px] text-forest min-[1200px]:hidden"
+            className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border border-white/35 bg-white/15 text-[13px] text-white min-[1200px]:hidden"
             aria-expanded={menuOpen}
             aria-controls="site-mobile-menu"
             aria-label={menuOpen ? dictionary.nav.close : dictionary.nav.menu}
