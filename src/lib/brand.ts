@@ -32,6 +32,11 @@ export const BRAND = {
   emailMarkBlack: "/brand/email-mark-black.png",
   /** Default Open Graph image */
   ogDefault: "/brand/og-default.png",
+  /** Print QR (also archived in repo `brand/print/`) */
+  qrPrintCard: "/brand/qr-print-card.png",
+  qrPrintCardPdf: "/brand/qr-print-card.pdf",
+  qrPrintPoster: "/brand/qr-print-poster.png",
+  qrMarkOnly: "/brand/qr-sistersflowers.png",
 } as const;
 
 export type BrandTone = "onBrand" | "onLight" | "onDark";
