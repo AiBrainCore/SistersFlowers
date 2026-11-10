@@ -15,10 +15,8 @@ Never paste passwords into chat, pull requests, or committed files.
 
 ## Supabase
 
-After creating the project in the dashboard:
+1. Keep URL + publishable key + DB password in `secrets/supabase.env`
+2. Local app/Prisma use `.env` / `.env.local` with `DATABASE_URL` + `DIRECT_URL`
+3. Production VPS must set the same two vars in the systemd/service env (never git)
 
-1. Copy URL + publishable key + DB password into `secrets/supabase.env`
-2. Optional: `npx supabase link --project-ref <ref>`
-3. Do **not** switch production `DATABASE_URL` until an explicit Prisma → Postgres migration
-
-App stays on SQLite (`file:./dev.db`) until that migration task.
+See `docs/supabase-migration.md` for cutover steps.

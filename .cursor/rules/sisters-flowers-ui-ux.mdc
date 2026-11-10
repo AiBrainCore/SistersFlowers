@@ -44,4 +44,4 @@ All design and frontend development must follow these principles.
 Test at 320, 375, 390, 430, 768, 1024, 1440px: alignment, wrapping, touch targets, image ratios, overflow, CLS.
 
 ## Stack constraints
-Keep Prisma + SQLite until an explicit migration task. Do not change production secrets. Prefer Hostinger deploys for review.
+Database: Prisma + Supabase Postgres (`docs/supabase-migration.md`). Keep credentials in gitignored `secrets/` / server env only — never commit. Prefer staging deploys for review.
