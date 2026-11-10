@@ -48,11 +48,11 @@ export function InquiryForm({
     return (
       <div className="rounded-3xl bg-cream/80 px-8 py-12">
         <Image
-          src={BRAND.wordmarkBlack}
+          src={BRAND.wordmarkStackedBlack}
           alt={BRAND.name}
-          width={200}
-          height={35}
-          className="h-7 w-auto"
+          width={160}
+          height={98}
+          className="h-14 w-auto"
         />
         <h2 className="serif mt-4 text-3xl text-forest">
           {dictionary.form.successTitle}

@@ -21,11 +21,11 @@ export default function VoucherPage() {
     >
       <div style={{ maxWidth: 520, margin: "0 auto" }}>
         <Image
-          src={BRAND.wordmarkBlack}
+          src={BRAND.wordmarkStackedBlack}
           alt={BRAND.name}
-          width={200}
-          height={35}
-          style={{ height: 28, width: "auto" }}
+          width={160}
+          height={98}
+          style={{ height: 56, width: "auto" }}
         />
         <h1
           style={{

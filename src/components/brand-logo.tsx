@@ -1,23 +1,46 @@
 import Image from "next/image";
 import Link from "next/link";
-import { BRAND, type BrandTone } from "@/lib/brand";
+import { BRAND, type BrandTone, type BrandVariant } from "@/lib/brand";
 
 type BrandLogoProps = {
   locale: string;
   tone?: BrandTone;
-  /** wordmark = full name; mark = SF monogram only */
-  variant?: "wordmark" | "mark";
+  /** wordmark = 1-line; stacked = 2-line; mark = SF monogram */
+  variant?: BrandVariant;
   className?: string;
   priority?: boolean;
   onClick?: () => void;
 };
 
-function srcFor(tone: BrandTone, variant: "wordmark" | "mark") {
-  if (variant === "mark") {
-    return tone === "onLight" ? BRAND.markBlack : BRAND.markWhite;
+function srcFor(tone: BrandTone, variant: BrandVariant) {
+  const light = tone === "onLight";
+  if (variant === "mark") return light ? BRAND.markBlack : BRAND.markWhite;
+  if (variant === "stacked") {
+    return light ? BRAND.wordmarkStackedBlack : BRAND.wordmarkStackedWhite;
   }
-  return tone === "onLight" ? BRAND.wordmarkBlack : BRAND.wordmarkWhite;
+  return light ? BRAND.wordmarkBlack : BRAND.wordmarkWhite;
 }
+
+const SIZE: Record<
+  BrandVariant,
+  { width: number; height: number; className: string }
+> = {
+  mark: {
+    width: 40,
+    height: 36,
+    className: "h-8 w-auto sm:h-9",
+  },
+  wordmark: {
+    width: 168,
+    height: 29,
+    className: "h-7 w-auto max-w-[9.5rem] sm:h-8 sm:max-w-[11.5rem]",
+  },
+  stacked: {
+    width: 140,
+    height: 86,
+    className: "h-12 w-auto sm:h-14",
+  },
+};
 
 /**
  * Graphic Sisters Flowers logo for header, footer, and confirmation screens.
@@ -32,7 +55,7 @@ export function BrandLogo({
   onClick,
 }: BrandLogoProps) {
   const src = srcFor(tone, variant);
-  const isMark = variant === "mark";
+  const size = SIZE[variant];
 
   return (
     <Link
@@ -44,13 +67,9 @@ export function BrandLogo({
       <Image
         src={src}
         alt={BRAND.name}
-        width={isMark ? 40 : 168}
-        height={isMark ? 36 : 29}
-        className={
-          isMark
-            ? "h-8 w-auto sm:h-9"
-            : "h-7 w-auto max-w-[9.5rem] sm:h-8 sm:max-w-[11.5rem]"
-        }
+        width={size.width}
+        height={size.height}
+        className={size.className}
         priority={priority}
       />
     </Link>

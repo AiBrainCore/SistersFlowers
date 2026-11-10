@@ -34,11 +34,11 @@ export default async function CheckoutSuccessPage({
   return (
     <div className="mx-auto max-w-2xl px-5 py-24 text-center">
       <Image
-        src={BRAND.wordmarkBlack}
+        src={BRAND.wordmarkStackedBlack}
         alt={BRAND.name}
-        width={220}
-        height={38}
-        className="mx-auto h-8 w-auto"
+        width={180}
+        height={110}
+        className="mx-auto h-16 w-auto"
         priority
       />
       <h1 className="serif mt-6 text-5xl text-forest">{t.checkout.successTitle}</h1>

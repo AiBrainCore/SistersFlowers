@@ -9,19 +9,33 @@ export function emailBrandAssets() {
   return {
     wordmarkBlack: siteUrl(BRAND.emailWordmarkBlack),
     wordmarkWhite: siteUrl(BRAND.emailWordmarkWhite),
+    wordmarkStackedBlack: siteUrl(BRAND.emailWordmarkStackedBlack),
+    wordmarkStackedWhite: siteUrl(BRAND.emailWordmarkStackedWhite),
     markBlack: siteUrl(BRAND.emailMarkBlack),
     markCitrus: siteUrl(BRAND.markCitrus),
   };
 }
 
-export function emailBrandHeaderHtml(opts?: { dark?: boolean }) {
+export function emailBrandHeaderHtml(opts?: {
+  dark?: boolean;
+  /** Prefer 2-line stacked mark for confirmation emails */
+  stacked?: boolean;
+}) {
   const assets = emailBrandAssets();
-  const src = opts?.dark ? assets.wordmarkWhite : assets.wordmarkBlack;
+  const stacked = opts?.stacked ?? true;
+  const src = opts?.dark
+    ? stacked
+      ? assets.wordmarkStackedWhite
+      : assets.wordmarkWhite
+    : stacked
+      ? assets.wordmarkStackedBlack
+      : assets.wordmarkBlack;
   const bg = opts?.dark ? "#b0542c" : "#ffffff";
+  const width = stacked ? 160 : 200;
   return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${bg};padding:20px 24px;">
   <tr>
     <td align="center">
-      <img src="${src}" width="200" height="35" alt="${BRAND.name}" style="display:block;border:0;outline:none;text-decoration:none;height:auto;max-width:200px;" />
+      <img src="${src}" width="${width}" alt="${BRAND.name}" style="display:block;border:0;outline:none;text-decoration:none;height:auto;max-width:${width}px;" />
     </td>
   </tr>
 </table>`;

@@ -30,11 +30,11 @@ export function SiteFooter({
             className="inline-flex"
           >
             <Image
-              src={BRAND.wordmarkBlack}
+              src={BRAND.wordmarkStackedBlack}
               alt={BRAND.name}
-              width={220}
-              height={38}
-              className="h-8 w-auto sm:h-9"
+              width={160}
+              height={98}
+              className="h-14 w-auto sm:h-16"
             />
           </Link>
           <p className="serif mt-8 text-2xl text-forest sm:text-3xl">
