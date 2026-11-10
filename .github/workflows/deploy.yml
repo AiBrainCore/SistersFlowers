@@ -1,0 +1,45 @@
+name: Deploy production
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger VPS deploy webhook
+        env:
+          DEPLOY_SECRET: ${{ secrets.DEPLOY_SECRET }}
+          DEPLOY_URL: ${{ secrets.DEPLOY_URL }}
+        run: |
+          set -euo pipefail
+          if [ -z "${DEPLOY_SECRET:-}" ]; then
+            echo "Missing GitHub secret DEPLOY_SECRET"
+            exit 1
+          fi
+          URL="${DEPLOY_URL:-https://sistersflowers.vn/api/deploy}"
+          echo "POST $URL"
+          # App restarts mid-deploy; accept 202 or transient curl failures after trigger
+          curl -sS -o /tmp/deploy-body.txt -w "%{http_code}" \
+            -X POST "$URL" \
+            -H "Authorization: Bearer ${DEPLOY_SECRET}" \
+            -H "Content-Type: application/json" \
+            --max-time 30 \
+            --retry 2 \
+            --retry-delay 3 \
+            | tee /tmp/deploy-code.txt
+          echo
+          cat /tmp/deploy-body.txt || true
+          CODE=$(cat /tmp/deploy-code.txt)
+          if [ "$CODE" = "202" ] || [ "$CODE" = "200" ]; then
+            echo "Deploy triggered (HTTP $CODE)"
+            exit 0
+          fi
+          echo "Unexpected HTTP $CODE"
+          exit 1
