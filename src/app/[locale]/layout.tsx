@@ -10,11 +10,12 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { CartDrawer } from "@/components/cart-drawer";
 import { LocationBanner } from "@/components/location-banner";
+import { LocaleHtmlLang } from "@/components/locale-html-lang";
 import { ShopBotRoot } from "@/components/shop-bot/ShopBotRoot";
 import { WebMcpTools } from "@/components/webmcp-tools";
 
 export function generateStaticParams() {
-  return [{ locale: "en" }, { locale: "vi" }];
+  return [{ locale: "vi" }, { locale: "en" }];
 }
 
 export default async function LocaleLayout({
@@ -32,6 +33,7 @@ export default async function LocaleLayout({
   return (
     <CartProvider>
       <LocationProvider cities={cities} activeCity={activeCity}>
+        <LocaleHtmlLang locale={locale as Locale} />
         <div className="flex min-h-full flex-col">
           <SiteHeader
             locale={locale as Locale}

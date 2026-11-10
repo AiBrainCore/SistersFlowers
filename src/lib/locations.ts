@@ -171,7 +171,10 @@ function mapCity(row: {
   };
 }
 
-export async function ensureNetworkLocations() {
+/** Seed once per process — previously upserted on every request and made city/lang switches feel stuck. */
+let ensurePromise: Promise<void> | null = null;
+
+async function seedNetworkLocations() {
   for (const city of SEED_CITIES) {
     const saved = await prisma.city.upsert({
       where: { slug: city.slug },
@@ -223,7 +226,24 @@ export async function ensureNetworkLocations() {
   }
 }
 
+export async function ensureNetworkLocations() {
+  if (!ensurePromise) {
+    ensurePromise = seedNetworkLocations().catch((error) => {
+      ensurePromise = null;
+      throw error;
+    });
+  }
+  return ensurePromise;
+}
+
+const CITIES_TTL_MS = 60_000;
+let citiesCache: { at: number; data: CityPublic[] } | null = null;
+
 export async function listCities(): Promise<CityPublic[]> {
+  const now = Date.now();
+  if (citiesCache && now - citiesCache.at < CITIES_TTL_MS) {
+    return citiesCache.data;
+  }
   await ensureNetworkLocations();
   const rows = await prisma.city.findMany({
     where: { status: { not: "inactive" } },
@@ -232,12 +252,16 @@ export async function listCities(): Promise<CityPublic[]> {
       branches: { orderBy: { sortOrder: "asc" } },
     },
   });
-  return rows.map(mapCity);
+  const data = rows.map(mapCity);
+  citiesCache = { at: now, data };
+  return data;
 }
 
 export async function getCityBySlug(
   slug: string,
 ): Promise<CityPublic | null> {
+  const cached = citiesCache?.data.find((city) => city.slug === slug);
+  if (cached) return cached;
   await ensureNetworkLocations();
   const row = await prisma.city.findUnique({
     where: { slug },

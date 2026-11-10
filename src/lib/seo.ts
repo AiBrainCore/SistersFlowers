@@ -25,7 +25,7 @@ export function localeAlternates(pathWithoutLocale: string) {
   for (const locale of locales) {
     languages[locale] = siteUrl(`/${locale}${path}`);
   }
-  languages["x-default"] = siteUrl(`/en${path}`);
+  languages["x-default"] = siteUrl(`/vi${path}`);
 
   return {
     canonical: undefined as string | undefined,

@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import type { Locale } from "@/i18n/config";
-import { locales } from "@/i18n/config";
+import { LOCALE_COOKIE, locales } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { IconGlobe } from "@/components/nav-icons";
 
@@ -12,6 +12,10 @@ const LOCALE_LABEL: Record<Locale, keyof Dictionary["language"]> = {
   en: "en",
   vi: "vi",
 };
+
+function rememberLocale(locale: Locale) {
+  document.cookie = `${LOCALE_COOKIE}=${locale};path=/;max-age=31536000;samesite=lax`;
+}
 
 export function LanguageSwitch({
   locale,
@@ -30,6 +34,7 @@ export function LanguageSwitch({
   const rest = pathname.split("/").slice(2).join("/");
   const hrefFor = (item: Locale) => `/${item}${rest ? `/${rest}` : ""}`;
   const t = dictionary.language;
+  const [, startTransition] = useTransition();
 
   if (variant === "panel") {
     return (
@@ -44,6 +49,11 @@ export function LanguageSwitch({
               <Link
                 key={item}
                 href={hrefFor(item)}
+                prefetch
+                onClick={() => {
+                  rememberLocale(item);
+                  startTransition(() => undefined);
+                }}
                 className={`flex min-h-11 items-center justify-between rounded-xl px-3 text-sm transition ${
                   selected
                     ? "bg-citrus/12 text-forest"
@@ -147,7 +157,11 @@ function LanguageDropdown({
                 role="option"
                 aria-selected={selected}
                 href={`/${item}${rest ? `/${rest}` : ""}`}
-                onClick={() => setOpen(false)}
+                prefetch
+                onClick={() => {
+                  rememberLocale(item);
+                  setOpen(false);
+                }}
                 className={`flex min-h-11 items-center justify-between gap-3 rounded-xl px-3 text-sm normal-case tracking-normal transition ${
                   selected
                     ? "bg-citrus/12 text-forest"

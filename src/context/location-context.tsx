@@ -4,10 +4,13 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
+  useState,
   useTransition,
   type ReactNode,
 } from "react";
+import { useRouter } from "next/navigation";
 import type { CityPublic } from "@/lib/locations";
 import { setActiveCityAction } from "@/app/actions/location";
 import { useCart } from "@/context/cart-context";
@@ -32,37 +35,54 @@ export function LocationProvider({
   children: ReactNode;
 }) {
   const cart = useCart();
+  const router = useRouter();
   const [pending, startTransition] = useTransition();
+  const [city, setCityState] = useState(activeCity);
+
+  // Stay in sync when the server tree refreshes after a city change.
+  useEffect(() => {
+    setCityState(activeCity);
+  }, [activeCity]);
 
   const setCity = useCallback(
     async (slug: string) => {
-      if (slug === activeCity.slug) return;
-      const hadCartItems = cart.count > 0;
-      const result = await setActiveCityAction(slug, { hadCartItems });
-      if (!result.ok) return;
+      if (slug === city.slug) return;
+      const next = cities.find((item) => item.slug === slug);
+      if (!next) return;
 
-      // Switching commercial context: clear tray so mixed-city orders cannot linger
+      const previous = city;
+      const hadCartItems = cart.count > 0;
+
+      // Optimistic UI — switcher updates immediately.
+      setCityState(next);
+
+      const result = await setActiveCityAction(slug, { hadCartItems });
+      if (!result.ok) {
+        setCityState(previous);
+        return;
+      }
+
       if (hadCartItems) {
         cart.clear();
       }
 
+      // Soft RSC refresh (no full document reload).
       startTransition(() => {
-        // Server cookie updated; refresh client tree via soft navigation
-        window.location.reload();
+        router.refresh();
       });
     },
-    [activeCity.slug, cart],
+    [cart, cities, city, router],
   );
 
   const value = useMemo(
     () => ({
       cities,
-      activeCity,
-      acceptsOrders: activeCity.acceptsOrders,
+      activeCity: city,
+      acceptsOrders: city.acceptsOrders,
       pending,
       setCity,
     }),
-    [activeCity, cities, pending, setCity],
+    [cities, city, pending, setCity],
   );
 
   return (

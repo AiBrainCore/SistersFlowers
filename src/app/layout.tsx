@@ -44,7 +44,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
-      lang="en"
+      lang="vi"
       className={`${sans.variable} ${serif.variable} h-full antialiased`}
     >
       <body className="min-h-full bg-paper font-sans text-ink">{children}</body>
