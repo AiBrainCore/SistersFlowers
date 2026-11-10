@@ -10,6 +10,7 @@ import { OCCASION_NAV_SLUGS } from "@/lib/category-constants";
 import { useCart } from "@/context/cart-context";
 import { LanguageSwitch } from "@/components/language-switch";
 import { CitySwitcher } from "@/components/city-switcher";
+import { BrandLogo } from "@/components/brand-logo";
 import { IconBag } from "@/components/nav-icons";
 
 type OccasionLink = Pick<
@@ -127,13 +128,13 @@ export function SiteHeader({
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-2.5 sm:px-5 sm:py-3">
         {/* Brand + city (Variant A) */}
         <div className="min-w-0 shrink-0">
-          <Link
-            href={`/${locale}`}
-            className="serif block text-xl leading-none text-white sm:text-2xl"
+          <BrandLogo
+            locale={locale}
+            tone="onBrand"
+            variant="wordmark"
+            priority
             onClick={closeAll}
-          >
-            {dictionary.brand}
-          </Link>
+          />
           {!isHome ? (
             <CitySwitcher
               locale={locale}
@@ -277,7 +278,12 @@ export function SiteHeader({
           className="fixed inset-0 z-[60] bg-paper min-[1200px]:hidden"
         >
           <div className="flex h-14 items-center justify-between border-b border-citrus/15 px-4">
-            <p className="serif text-lg text-citrus">{dictionary.brand}</p>
+            <BrandLogo
+              locale={locale}
+              tone="onLight"
+              variant="wordmark"
+              onClick={closeAll}
+            />
             <button
               type="button"
               className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border border-forest/12 text-[13px] text-forest"

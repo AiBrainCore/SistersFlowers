@@ -1,7 +1,9 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { StudioCard } from "@/components/studio-card";
+import { BRAND } from "@/lib/brand";
 import { STUDIO_CONTACTS, STUDIO_PHONE_DIGITS } from "@/lib/locations";
 
 const BRAND_SINCE = 2020;
@@ -22,7 +24,22 @@ export function SiteFooter({
     <footer className="border-t border-forest/10 bg-cream/55">
       <div className="mx-auto max-w-6xl px-4 py-14 sm:px-5">
         <div className="max-w-xl">
-          <p className="serif text-2xl text-forest sm:text-3xl">{t.studios}</p>
+          <Link
+            href={`/${locale}`}
+            aria-label={BRAND.name}
+            className="inline-flex"
+          >
+            <Image
+              src={BRAND.wordmarkBlack}
+              alt={BRAND.name}
+              width={220}
+              height={38}
+              className="h-8 w-auto sm:h-9"
+            />
+          </Link>
+          <p className="serif mt-8 text-2xl text-forest sm:text-3xl">
+            {t.studios}
+          </p>
           <p className="mt-3 text-sm leading-7 text-moss">{t.line}</p>
         </div>
 

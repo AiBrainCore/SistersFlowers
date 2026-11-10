@@ -1,9 +1,11 @@
 "use client";
 
+import Image from "next/image";
 import { useState, type FormEvent } from "react";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { submitInquiryAction } from "@/app/actions/orders";
 import { useLocation } from "@/context/location-context";
+import { BRAND } from "@/lib/brand";
 
 type Variant = "custom" | "wedding" | "hotel";
 
@@ -45,10 +47,14 @@ export function InquiryForm({
   if (status === "success") {
     return (
       <div className="rounded-3xl bg-cream/80 px-8 py-12">
-        <p className="text-[11px] tracking-[0.22em] text-rose uppercase">
-          Sisters Flowers
-        </p>
-        <h2 className="serif mt-3 text-3xl text-forest">
+        <Image
+          src={BRAND.wordmarkBlack}
+          alt={BRAND.name}
+          width={200}
+          height={35}
+          className="h-7 w-auto"
+        />
+        <h2 className="serif mt-4 text-3xl text-forest">
           {dictionary.form.successTitle}
         </h2>
         <p className="mt-4 max-w-md text-sm leading-7 text-moss">

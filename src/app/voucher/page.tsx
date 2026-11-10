@@ -1,5 +1,7 @@
+import Image from "next/image";
 import Link from "next/link";
 import { VoucherCheckForm } from "@/components/voucher-check-form";
+import { BRAND } from "@/lib/brand";
 
 export const metadata = {
   title: "Check voucher · Sisters Flowers",
@@ -18,23 +20,19 @@ export default function VoucherPage() {
       }}
     >
       <div style={{ maxWidth: 520, margin: "0 auto" }}>
-        <p
-          style={{
-            margin: 0,
-            letterSpacing: "0.28em",
-            textTransform: "uppercase",
-            fontSize: 11,
-            color: "#8b4a4a",
-          }}
-        >
-          Sisters Flowers
-        </p>
+        <Image
+          src={BRAND.wordmarkBlack}
+          alt={BRAND.name}
+          width={200}
+          height={35}
+          style={{ height: 28, width: "auto" }}
+        />
         <h1
           style={{
             fontFamily: "Georgia, serif",
             fontSize: 40,
             fontWeight: 400,
-            margin: "12px 0 8px",
+            margin: "16px 0 8px",
           }}
         >
           Partner voucher check

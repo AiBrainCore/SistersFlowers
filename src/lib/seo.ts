@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { locales, type Locale } from "@/i18n/config";
+import { BRAND } from "@/lib/brand";
 
 /** Public site origin for Hostinger (set in production env). */
 const SITE_URL =
@@ -65,9 +66,17 @@ export function buildPageMetadata({
       title,
       description,
       url,
-      siteName: "Sisters Flowers",
+      siteName: BRAND.name,
       locale: locale === "vi" ? "vi_VN" : "en_US",
       type: "website",
+      images: [
+        {
+          url: siteUrl(BRAND.ogDefault),
+          width: 1024,
+          height: 1024,
+          alt: BRAND.name,
+        },
+      ],
     },
   };
 }
@@ -104,9 +113,9 @@ export function organizationJsonLd(locale: Locale) {
       {
         "@type": "Organization",
         "@id": `${home}#organization`,
-        name: "Sisters Flowers",
+        name: BRAND.name,
         url: home,
-        logo: siteUrl("/favicon.ico"),
+        logo: siteUrl(BRAND.icon512),
         foundingDate: "2020",
         sameAs: [
           "https://wa.me/84327453536",

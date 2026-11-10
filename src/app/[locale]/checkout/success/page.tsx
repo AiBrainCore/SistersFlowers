@@ -1,7 +1,9 @@
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { isLocale } from "@/i18n/config";
 import { getStorefrontDictionary } from "@/lib/storefront";
+import { BRAND } from "@/lib/brand";
 import { formatVnd } from "@/data/products";
 import { prisma } from "@/lib/db";
 
@@ -31,10 +33,15 @@ export default async function CheckoutSuccessPage({
 
   return (
     <div className="mx-auto max-w-2xl px-5 py-24 text-center">
-      <p className="text-[11px] tracking-[0.28em] text-rose uppercase">
-        Sisters Flowers
-      </p>
-      <h1 className="serif mt-4 text-5xl text-forest">{t.checkout.successTitle}</h1>
+      <Image
+        src={BRAND.wordmarkBlack}
+        alt={BRAND.name}
+        width={220}
+        height={38}
+        className="mx-auto h-8 w-auto"
+        priority
+      />
+      <h1 className="serif mt-6 text-5xl text-forest">{t.checkout.successTitle}</h1>
       {reference ? (
         <p className="mt-4 text-sm tracking-[0.12em] text-moss uppercase">
           {t.checkout.reference}: {reference}
