@@ -47,3 +47,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Supabase local CLI artifacts / secrets
+supabase/.temp/
+supabase/.branches/
+*.supabase.env
