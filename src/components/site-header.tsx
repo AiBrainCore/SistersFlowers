@@ -232,8 +232,15 @@ export function SiteHeader({
           </Link>
         </nav>
 
-        {/* Right: language + bag + hamburger (lang always visible — EN/VI tourists on phone) */}
+        {/* Right: account + language + bag + hamburger */}
         <div className="flex shrink-0 items-center gap-1 sm:gap-2">
+          <Link
+            href={`/${locale}/account`}
+            onClick={closeAll}
+            className="hidden min-h-11 items-center rounded-full px-2.5 text-[13px] text-white/90 transition hover:bg-white/12 hover:text-white min-[1200px]:inline-flex"
+          >
+            {dictionary.nav.account}
+          </Link>
           <LanguageSwitch
             locale={locale}
             dictionary={dictionary}
@@ -369,6 +376,13 @@ export function SiteHeader({
               className="flex min-h-12 items-center border-b border-forest/10 text-[15px] text-forest"
             >
               {dictionary.nav.about}
+            </Link>
+            <Link
+              href={`/${locale}/account`}
+              onClick={closeAll}
+              className="flex min-h-12 items-center border-b border-forest/10 text-[15px] text-forest"
+            >
+              {dictionary.nav.account}
             </Link>
           </nav>
         </div>

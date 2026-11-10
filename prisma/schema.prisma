@@ -53,6 +53,25 @@ model ProductCategory {
   @@id([productId, categoryId])
 }
 
+/// Storefront customer profile (Supabase Auth and/or Zalo).
+model Customer {
+  id               String   @id @default(cuid())
+  /// Supabase auth.users id when signed up via email/Google
+  authUserId       String?  @unique
+  email            String?
+  emailVerifiedAt  DateTime?
+  name             String?
+  phone            String?
+  /// Zalo Social user id
+  zaloId           String?  @unique
+  preferredLocale  String   @default("vi")
+  /// email | google | zalo
+  provider         String   @default("email")
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  orders           Order[]
+}
+
 model Order {
   id             String      @id @default(cuid())
   reference      String      @unique
@@ -60,6 +79,8 @@ model Order {
   customerName   String
   phone          String
   email          String?
+  customerId     String?
+  customer       Customer?   @relation(fields: [customerId], references: [id], onDelete: SetNull)
   zone           String
   deliveryKm     Int?
   deliveryFee    Int?

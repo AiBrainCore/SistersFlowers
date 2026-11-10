@@ -11,6 +11,7 @@ Never paste passwords into chat, pull requests, or committed files.
 | --- | --- |
 | `secrets/server.env` | VPS / domain panel / deploy |
 | `secrets/supabase.env` | Supabase URL, keys, DB password |
+| `secrets/mail.env` | SMTP + `info@` / `orders@` mailbox secrets |
 | `.env.local` (repo root) | Local Next.js overrides |
 
 ## Supabase
