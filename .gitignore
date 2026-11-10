@@ -34,6 +34,12 @@ yarn-error.log*
 .env*
 !.env.example
 
+# server / hosting credentials — never commit
+/secrets/**
+!/secrets/README.md
+.server-credentials*
+*.ssh-config.local
+
 # sqlite
 /prisma/*.db
 /prisma/*.db-journal
