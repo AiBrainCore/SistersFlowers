@@ -16,8 +16,8 @@ const TO = (process.env.MAIL_PREVIEW_TO || "felsendorff@gmail.com,butchi0603@gma
   .split(",")
   .map((s) => s.trim())
   .filter(Boolean);
-const FROM_ORDERS = process.env.MAIL_FROM_ORDERS || "orders@sistersflowers.vn";
 const FROM_INFO = process.env.MAIL_FROM_INFO || "info@sistersflowers.vn";
+const FROM_ORDERS = process.env.MAIL_FROM_ORDERS || FROM_INFO;
 
 const COLORS = {
   citrus: "#b0542c",

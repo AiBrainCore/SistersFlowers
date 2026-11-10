@@ -1,9 +1,16 @@
-/** Transactional mail addresses + SMTP (Hostinger / CloudPanel / custom). */
+/** Transactional mail — default is a single studio inbox (info@). */
 
 export const MAILBOX = {
   info: process.env.MAIL_FROM_INFO || "info@sistersflowers.vn",
-  orders: process.env.MAIL_FROM_ORDERS || "orders@sistersflowers.vn",
-  studioInbox: process.env.MAIL_STUDIO_INBOX || "orders@sistersflowers.vn",
+  /** Optional second address; falls back to info@ when unset. */
+  orders:
+    process.env.MAIL_FROM_ORDERS ||
+    process.env.MAIL_FROM_INFO ||
+    "info@sistersflowers.vn",
+  studioInbox:
+    process.env.MAIL_STUDIO_INBOX ||
+    process.env.MAIL_FROM_INFO ||
+    "info@sistersflowers.vn",
 } as const;
 
 export const MAIL_PREVIEW_TO = (

@@ -5,25 +5,28 @@
 - Customer accounts: **email/password** + **Google** (Supabase Auth) + **Zalo** (custom OAuth PKCE)
 - Branded HTML emails with one SF layout (logo, citrus bar, cream card)
 - Order emails: customer (VI/EN by `order.locale`) + studio (`orders@`)
-- Mailboxes target: `info@sistersflowers.vn`, `orders@sistersflowers.vn`
+- Mailbox target (start simple): **one** address `info@sistersflowers.vn` for From + studio inbox  
+  (`orders@` is optional later; app falls back to `info@`)
 
-## Mailboxes (must do in hosting panel)
+## Mailboxes (must buy email hosting — not on the VPS panel)
 
-Domain DNS currently has **no MX** for `sistersflowers.vn`. Until MX + mailboxes exist, SMTP cannot deliver from `@sistersflowers.vn`.
+Superdata / CloudPanel manage the **website VPS only**. They do **not** create `@sistersflowers.vn` inboxes.
 
-1. Create both addresses in CloudPanel / Hostinger / Zoho (same password only in `secrets/mail.env`, never git)
-2. Add MX + SPF + DKIM as the provider shows
-3. Put SMTP into VPS `.env` and `secrets/mail.env`:
+Domain DNS currently has **no MX**. Until email hosting + MX exist, SMTP cannot send as `@sistersflowers.vn`.
+
+1. Order email at P.A Vietnam ([Email Server](https://www.pavietnam.vn/vn/email-server/)) or Zoho / Hostinger
+2. Create **`info@sistersflowers.vn`** (one mailbox is enough)
+3. Add MX + SPF + DKIM as the provider shows
+4. Put SMTP into VPS `.env` and `secrets/mail.env`:
 
 ```bash
-SMTP_HOST=smtp.hostinger.com   # or CloudPanel SMTP host
+SMTP_HOST=smtp.zoho.com   # or P.A Vietnam SMTP host
 SMTP_PORT=465
 SMTP_SECURE=true
-SMTP_USER=orders@sistersflowers.vn
+SMTP_USER=info@sistersflowers.vn
 SMTP_PASS=***
 MAIL_FROM_INFO=info@sistersflowers.vn
-MAIL_FROM_ORDERS=orders@sistersflowers.vn
-MAIL_STUDIO_INBOX=orders@sistersflowers.vn
+MAIL_STUDIO_INBOX=info@sistersflowers.vn
 MAIL_PREVIEW_TO=felsendorff@gmail.com,butchi0603@gmail.com
 ```
 
