@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
@@ -9,9 +8,8 @@ import type { CategoryPublic } from "@/lib/category-constants";
 import { OCCASION_NAV_SLUGS } from "@/lib/category-constants";
 import { useCart } from "@/context/cart-context";
 import { LanguageSwitch } from "@/components/language-switch";
-import { CitySwitcher } from "@/components/city-switcher";
 import { BrandLogo } from "@/components/brand-logo";
-import { IconBag } from "@/components/nav-icons";
+import { IconAccount, IconBag } from "@/components/nav-icons";
 
 type OccasionLink = Pick<
   CategoryPublic,
@@ -42,10 +40,6 @@ export function SiteHeader({
   occasions: OccasionLink[];
 }) {
   const { count, setOpen } = useCart();
-  const pathname = usePathname();
-  /** Homepage already has the large hero city switcher — avoid the tiny duplicate under the logo. */
-  const isHome =
-    pathname === `/${locale}` || pathname === `/${locale}/`;
   const [menuOpen, setMenuOpen] = useState(false);
   const [openGroup, setOpenGroup] = useState<"occasions" | "services" | null>(
     null,
@@ -124,157 +118,151 @@ export function SiteHeader({
 
   return (
     <>
-    <header className="site-header-bar sticky top-0 z-50">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-2.5 sm:px-5 sm:py-3">
-        {/* Brand + city (Variant A) */}
-        <div className="min-w-0 shrink-0">
-          <BrandLogo
-            locale={locale}
-            tone="onBrand"
-            variant="wordmark"
-            priority
-            onClick={closeAll}
-          />
-          {!isHome ? (
-            <CitySwitcher
+      <header className="site-header-bar sticky top-0 z-50">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-2.5 sm:px-5 sm:py-3.5">
+          {/* Brand only — city switching lives on hero / shop delivery bar */}
+          <div className="min-w-0 shrink-0">
+            <BrandLogo
+              locale={locale}
+              tone="onBrand"
+              variant="wordmark"
+              priority
+              onClick={closeAll}
+            />
+          </div>
+
+          {/* Centre nav — from 1200px to avoid cramped mid-widths */}
+          <nav
+            ref={navRef}
+            className="hidden items-center gap-0.5 text-[13px] tracking-normal text-white/90 min-[1200px]:flex"
+          >
+            <Link
+              href={`/${locale}/shop`}
+              className="min-h-11 rounded-full px-2.5 py-2.5 transition hover:bg-white/12 hover:text-white lg:px-3"
+            >
+              {dictionary.nav.shop}
+            </Link>
+
+            <div className="relative">
+              <button
+                type="button"
+                aria-expanded={openGroup === "occasions"}
+                onClick={() =>
+                  setOpenGroup((g) => (g === "occasions" ? null : "occasions"))
+                }
+                className="inline-flex min-h-11 items-center gap-1 rounded-full px-2.5 py-2.5 transition hover:bg-white/12 hover:text-white lg:px-3"
+              >
+                {dictionary.nav.occasions}
+                <span aria-hidden className="text-[9px] text-white/70">
+                  ▾
+                </span>
+              </button>
+              {openGroup === "occasions" ? (
+                <div className={dropdownClass}>
+                  {occasionList.map((item) => (
+                    <Link
+                      key={item.slug}
+                      href={`/${locale}/shop?category=${item.slug}`}
+                      onClick={closeAll}
+                      className="block min-h-11 rounded-xl px-3 py-2.5 normal-case tracking-normal text-forest hover:bg-cream/70"
+                    >
+                      {label(item)}
+                    </Link>
+                  ))}
+                </div>
+              ) : null}
+            </div>
+
+            <Link
+              href={`/${locale}/custom`}
+              className="min-h-11 rounded-full px-2.5 py-2.5 transition hover:bg-white/12 hover:text-white lg:px-3"
+            >
+              {dictionary.nav.custom}
+            </Link>
+
+            <div className="relative">
+              <button
+                type="button"
+                aria-expanded={openGroup === "services"}
+                onClick={() =>
+                  setOpenGroup((g) => (g === "services" ? null : "services"))
+                }
+                className="inline-flex min-h-11 items-center gap-1 rounded-full px-2.5 py-2.5 transition hover:bg-white/12 hover:text-white lg:px-3"
+              >
+                {dictionary.nav.services}
+                <span aria-hidden className="text-[9px] text-white/70">
+                  ▾
+                </span>
+              </button>
+              {openGroup === "services" ? (
+                <div className={`${dropdownClass} min-w-[15rem]`}>
+                  {servicesLinks.map((item) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={closeAll}
+                      className="block min-h-11 rounded-xl px-3 py-2.5 normal-case tracking-normal text-forest hover:bg-cream/70"
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
+              ) : null}
+            </div>
+
+            <Link
+              href={`/${locale}/delivery`}
+              className="min-h-11 rounded-full px-2.5 py-2.5 transition hover:bg-white/12 hover:text-white lg:px-3"
+            >
+              {dictionary.nav.delivery}
+            </Link>
+          </nav>
+
+          {/* Right: account icon + language + bag + hamburger */}
+          <div className="flex shrink-0 items-center gap-1 sm:gap-2">
+            <Link
+              href={`/${locale}/account`}
+              onClick={closeAll}
+              aria-label={dictionary.nav.account}
+              title={dictionary.nav.account}
+              className="relative inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border border-white/35 bg-white/15 text-white transition hover:bg-white/25"
+            >
+              <IconAccount />
+            </Link>
+            <LanguageSwitch
               locale={locale}
               dictionary={dictionary}
-              align="left"
               tone="onBrand"
             />
-          ) : null}
-        </div>
 
-        {/* Centre nav — from 1200px to avoid cramped mid-widths */}
-        <nav
-          ref={navRef}
-          className="hidden items-center gap-0.5 text-[13px] tracking-normal text-white/90 min-[1200px]:flex"
-        >
-          <Link
-            href={`/${locale}/shop`}
-            className="min-h-11 rounded-full px-2.5 py-2.5 transition hover:bg-white/12 hover:text-white lg:px-3"
-          >
-            {dictionary.nav.shop}
-          </Link>
-
-          <div className="relative">
             <button
               type="button"
-              aria-expanded={openGroup === "occasions"}
-              onClick={() =>
-                setOpenGroup((g) => (g === "occasions" ? null : "occasions"))
-              }
-              className="inline-flex min-h-11 items-center gap-1 rounded-full px-2.5 py-2.5 transition hover:bg-white/12 hover:text-white lg:px-3"
+              onClick={() => setOpen(true)}
+              aria-label={dictionary.cart.openAria}
+              title={dictionary.cart.openAria}
+              className="relative inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border border-white/35 bg-white/15 text-white transition hover:bg-white/25"
             >
-              {dictionary.nav.occasions}
-              <span aria-hidden className="text-[9px] text-white/70">
-                ▾
-              </span>
+              <IconBag />
+              {count > 0 ? (
+                <span className="absolute -top-0.5 -right-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-white px-1 text-[10px] font-medium text-citrus">
+                  {count > 99 ? "99+" : count}
+                </span>
+              ) : null}
             </button>
-            {openGroup === "occasions" ? (
-              <div className={dropdownClass}>
-                {occasionList.map((item) => (
-                  <Link
-                    key={item.slug}
-                    href={`/${locale}/shop?category=${item.slug}`}
-                    onClick={closeAll}
-                    className="block min-h-11 rounded-xl px-3 py-2.5 normal-case tracking-normal text-forest hover:bg-cream/70"
-                  >
-                    {label(item)}
-                  </Link>
-                ))}
-              </div>
-            ) : null}
-          </div>
 
-          <Link
-            href={`/${locale}/custom`}
-            className="min-h-11 rounded-full px-2.5 py-2.5 transition hover:bg-white/12 hover:text-white lg:px-3"
-          >
-            {dictionary.nav.custom}
-          </Link>
-
-          <div className="relative">
             <button
               type="button"
-              aria-expanded={openGroup === "services"}
-              onClick={() =>
-                setOpenGroup((g) => (g === "services" ? null : "services"))
-              }
-              className="inline-flex min-h-11 items-center gap-1 rounded-full px-2.5 py-2.5 transition hover:bg-white/12 hover:text-white lg:px-3"
+              className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border border-white/35 bg-white/15 text-[13px] text-white min-[1200px]:hidden"
+              aria-expanded={menuOpen}
+              aria-controls="site-mobile-menu"
+              aria-label={menuOpen ? dictionary.nav.close : dictionary.nav.menu}
+              onClick={() => setMenuOpen((value) => !value)}
             >
-              {dictionary.nav.services}
-              <span aria-hidden className="text-[9px] text-white/70">
-                ▾
-              </span>
+              {menuOpen ? "✕" : "☰"}
             </button>
-            {openGroup === "services" ? (
-              <div className={`${dropdownClass} min-w-[15rem]`}>
-                {servicesLinks.map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    onClick={closeAll}
-                    className="block min-h-11 rounded-xl px-3 py-2.5 normal-case tracking-normal text-forest hover:bg-cream/70"
-                  >
-                    {item.label}
-                  </Link>
-                ))}
-              </div>
-            ) : null}
           </div>
-
-          <Link
-            href={`/${locale}/delivery`}
-            className="min-h-11 rounded-full px-2.5 py-2.5 transition hover:bg-white/12 hover:text-white lg:px-3"
-          >
-            {dictionary.nav.delivery}
-          </Link>
-        </nav>
-
-        {/* Right: account + language + bag + hamburger */}
-        <div className="flex shrink-0 items-center gap-1 sm:gap-2">
-          <Link
-            href={`/${locale}/account`}
-            onClick={closeAll}
-            className="hidden min-h-11 items-center rounded-full px-2.5 text-[13px] text-white/90 transition hover:bg-white/12 hover:text-white min-[1200px]:inline-flex"
-          >
-            {dictionary.nav.account}
-          </Link>
-          <LanguageSwitch
-            locale={locale}
-            dictionary={dictionary}
-            tone="onBrand"
-          />
-
-          <button
-            type="button"
-            onClick={() => setOpen(true)}
-            aria-label={dictionary.cart.openAria}
-            title={dictionary.cart.openAria}
-            className="relative inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border border-white/35 bg-white/15 text-white transition hover:bg-white/25"
-          >
-            <IconBag />
-            {count > 0 ? (
-              <span className="absolute -top-0.5 -right-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-white px-1 text-[10px] font-medium text-citrus">
-                {count > 99 ? "99+" : count}
-              </span>
-            ) : null}
-          </button>
-
-          <button
-            type="button"
-            className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border border-white/35 bg-white/15 text-[13px] text-white min-[1200px]:hidden"
-            aria-expanded={menuOpen}
-            aria-controls="site-mobile-menu"
-            aria-label={menuOpen ? dictionary.nav.close : dictionary.nav.menu}
-            onClick={() => setMenuOpen((value) => !value)}
-          >
-            {menuOpen ? "✕" : "☰"}
-          </button>
         </div>
-      </div>
-    </header>
+      </header>
 
       {/* Outside header: backdrop-filter on <header> otherwise traps position:fixed */}
       {menuOpen ? (
@@ -376,13 +364,6 @@ export function SiteHeader({
               className="flex min-h-12 items-center border-b border-forest/10 text-[15px] text-forest"
             >
               {dictionary.nav.about}
-            </Link>
-            <Link
-              href={`/${locale}/account`}
-              onClick={closeAll}
-              className="flex min-h-12 items-center border-b border-forest/10 text-[15px] text-forest"
-            >
-              {dictionary.nav.account}
             </Link>
           </nav>
         </div>

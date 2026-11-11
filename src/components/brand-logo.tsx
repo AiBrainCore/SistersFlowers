@@ -31,9 +31,9 @@ const SIZE: Record<
     className: "h-8 w-auto sm:h-9",
   },
   wordmark: {
-    width: 168,
-    height: 29,
-    className: "h-7 w-auto max-w-[9.5rem] sm:h-8 sm:max-w-[11.5rem]",
+    width: 200,
+    height: 34,
+    className: "h-9 w-auto max-w-[12rem] sm:h-10 sm:max-w-[14rem]",
   },
   stacked: {
     width: 140,

@@ -268,11 +268,19 @@ export function ImmersiveHero({
 
       <div className="relative mx-auto grid max-w-6xl items-center gap-6 px-4 pt-7 pb-8 sm:gap-8 sm:px-5 sm:pt-12 sm:pb-10 lg:grid-cols-[0.95fr_1.05fr] lg:gap-10 lg:pt-14 lg:pb-12">
         <div className="order-1 max-w-xl">
-          <CitySwitcher
-            locale={locale}
-            dictionary={dictionary}
-            variant="hero"
-          />
+          <p className="text-[11px] tracking-[0.2em] text-citrus uppercase">
+            {dictionary.location.deliveringIn}
+          </p>
+          <p className="mt-1.5 max-w-md text-xs leading-5 text-moss sm:text-sm">
+            {dictionary.location.heroSwitchHint}
+          </p>
+          <div className="mt-3">
+            <CitySwitcher
+              locale={locale}
+              dictionary={dictionary}
+              variant="hero"
+            />
+          </div>
           <h1 className="serif mt-6 text-[2.45rem] leading-[1.02] text-forest sm:mt-7 sm:text-5xl lg:text-[3.6rem]">
             {t.titleBefore}
             <span className="italic text-citrus">{t.titleAccent}</span>

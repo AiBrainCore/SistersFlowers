@@ -11,6 +11,7 @@ import { useCart } from "@/context/cart-context";
 import { useLocation } from "@/context/location-context";
 import { submitOrderAction } from "@/app/actions/orders";
 import { DeliveryCalculator } from "@/components/delivery-calculator";
+import { DeliveryCityBar } from "@/components/delivery-city-bar";
 import type { DeliveryConfig, DeliveryZonePublic } from "@/lib/delivery";
 import {
   clearCheckoutHints,
@@ -131,6 +132,7 @@ export function CheckoutForm({
   return (
     <div className="grid gap-12 lg:grid-cols-[1.1fr_0.9fr]">
       <form onSubmit={onSubmit} className="grid gap-5">
+        <DeliveryCityBar locale={locale} dictionary={dictionary} />
         <Field label={dictionary.checkout.name} name="customerName" required />
         <div className="grid gap-5 sm:grid-cols-2">
           <Field label={dictionary.checkout.phone} name="phone" required />
