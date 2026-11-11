@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
-import { BRAND } from "@/lib/brand";
 import {
   loginWithEmailAction,
   registerWithEmailAction,
@@ -57,17 +56,18 @@ export function AccountAuthForm({
   return (
     <div className="relative mx-auto w-full max-w-[26rem]">
       <div className="overflow-hidden rounded-[1.75rem] border border-forest/10 bg-white shadow-[0_24px_60px_rgba(26,23,20,0.08)]">
-        <div className="px-5 pt-7 sm:px-7">
-          <p className="serif text-center text-xl tracking-wide text-forest">
-            <Link href={`/${locale}`} className="hover:text-citrus">
-              {BRAND.name}
-            </Link>
+        <div className="px-5 pt-7 pb-7 sm:px-7 sm:pb-8">
+          <h1 className="serif text-center text-3xl text-forest">
+            {mode === "login" ? t.loginTitle : t.registerTitle}
+          </h1>
+          <p className="mt-2 text-center text-sm leading-6 text-moss">
+            {mode === "login" ? t.loginSubtitle : t.registerSubtitle}
           </p>
 
           <div
             role="tablist"
             aria-label={t.title}
-            className="mt-5 grid grid-cols-2 gap-1 rounded-full bg-cream/90 p-1"
+            className="mt-6 grid grid-cols-2 gap-1 rounded-full bg-cream/90 p-1"
           >
             <Link
               href={`/${locale}/account/login`}
@@ -94,15 +94,6 @@ export function AccountAuthForm({
               {t.registerLink}
             </Link>
           </div>
-        </div>
-
-        <div className="px-5 pt-6 pb-7 sm:px-7 sm:pb-8">
-          <h1 className="serif text-center text-3xl text-forest">
-            {mode === "login" ? t.loginTitle : t.registerTitle}
-          </h1>
-          <p className="mt-2 text-center text-sm leading-6 text-moss">
-            {mode === "login" ? t.loginSubtitle : t.registerSubtitle}
-          </p>
 
           {done ? (
             <p className="mt-8 rounded-2xl bg-cream px-4 py-4 text-center text-sm leading-6 text-forest">
