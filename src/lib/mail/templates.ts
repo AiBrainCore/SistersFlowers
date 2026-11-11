@@ -3,7 +3,9 @@ import { siteUrl } from "@/lib/seo";
 import {
   authCopy,
   formatVnd,
+  inquiryCopy,
   orderCustomerCopy,
+  orderStatusCopy,
   orderStudioCopy,
 } from "@/lib/mail/copy";
 import {
@@ -30,6 +32,7 @@ export type OrderMailPayload = {
   email?: string | null;
   address: string;
   zone?: string | null;
+  citySlug?: string | null;
   deliveryDate?: string | null;
   deliveryTime?: string | null;
   notes?: string | null;
@@ -37,6 +40,19 @@ export type OrderMailPayload = {
   deliveryFee?: number | null;
   deliveryTotal: number;
   items: OrderMailItem[];
+};
+
+export type InquiryMailPayload = {
+  locale: Locale;
+  variant: string;
+  name: string;
+  email: string;
+  phone?: string | null;
+  message: string;
+  citySlug?: string | null;
+  date?: string | null;
+  hotel?: string | null;
+  venue?: string | null;
 };
 
 function itemsHtml(items: OrderMailItem[], locale: Locale) {
@@ -162,5 +178,72 @@ export function buildVerifyEmail(locale: Locale, verifyUrl: string) {
       bodyHtml: body,
       preheader: c.verifySubject,
     }),
+  };
+}
+
+export function buildOrderStatusEmail(input: {
+  locale: Locale;
+  reference: string;
+  customerName: string;
+  status: string;
+  citySlug?: string | null;
+}) {
+  const c = orderStatusCopy(input.locale, input.status);
+  const rows: Array<[string, string]> = [
+    ["Ref", escapeHtml(input.reference)],
+    ["Status", escapeHtml(input.status)],
+  ];
+  if (input.citySlug) rows.push(["City", escapeHtml(input.citySlug)]);
+  const body = [
+    mailHeading(c.heading),
+    mailParagraph(escapeHtml(c.intro(input.customerName))),
+    mailDetailTable(rows),
+    mailMuted(escapeHtml(c.support)),
+  ].join("\n");
+  return {
+    subject: c.subject(input.reference),
+    html: renderMailLayout({
+      bodyHtml: body,
+      preheader: c.subject(input.reference),
+      footerHtml: escapeHtml(c.footer),
+    }),
+  };
+}
+
+export function buildInquiryStudioEmail(payload: InquiryMailPayload) {
+  const c = inquiryCopy("en");
+  const rows: Array<[string, string]> = [
+    ["Type", escapeHtml(payload.variant)],
+    ["Name", escapeHtml(payload.name)],
+    ["Email", escapeHtml(payload.email)],
+    ["Phone", escapeHtml(payload.phone || "—")],
+    ["City", escapeHtml(payload.citySlug || "—")],
+    ["Date", escapeHtml(payload.date || "—")],
+    ["Hotel", escapeHtml(payload.hotel || "—")],
+    ["Venue", escapeHtml(payload.venue || "—")],
+    ["Message", escapeHtml(payload.message)],
+  ];
+  const body = [
+    mailHeading(c.studioHeading),
+    mailDetailTable(rows),
+    mailButton(siteUrl("/admin/inquiries"), "Open inquiries"),
+  ].join("\n");
+  return {
+    subject: c.studioSubject(payload.variant, payload.name),
+    html: renderMailLayout({ bodyHtml: body, preheader: c.studioHeading }),
+  };
+}
+
+export function buildInquiryAckEmail(payload: InquiryMailPayload) {
+  const c = inquiryCopy(payload.locale);
+  const body = [
+    mailHeading(c.ackHeading),
+    mailParagraph(escapeHtml(c.ackIntro(payload.name))),
+    mailParagraph(escapeHtml(c.ackBody)),
+    mailButton(siteUrl(`/${payload.locale}/shop`), payload.locale === "vi" ? "Xem cửa hàng" : "Browse shop"),
+  ].join("\n");
+  return {
+    subject: c.ackSubject,
+    html: renderMailLayout({ bodyHtml: body, preheader: c.ackSubject }),
   };
 }

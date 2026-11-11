@@ -126,6 +126,74 @@ export function authCopy(locale: Locale) {
   return auth[locale] ?? auth.vi;
 }
 
+const statusLabels: Record<Locale, Record<string, string>> = {
+  en: {
+    accepted: "accepted by the studio",
+    ready: "ready for delivery / pickup",
+    dispatched: "on the way",
+    completed: "completed",
+    cancelled: "cancelled",
+  },
+  vi: {
+    accepted: "đã được studio xác nhận",
+    ready: "đã sẵn sàng giao / nhận",
+    dispatched: "đang trên đường giao",
+    completed: "đã hoàn tất",
+    cancelled: "đã hủy",
+  },
+};
+
+export function orderStatusCopy(locale: Locale, status: string) {
+  const label =
+    statusLabels[locale]?.[status] ||
+    statusLabels.en[status] ||
+    status;
+  if (locale === "en") {
+    return {
+      subject: (ref: string) => `Sisters Flowers — order ${ref} update`,
+      heading: "Order status update",
+      intro: (name: string) =>
+        `Hi ${name || "there"}, your order is now ${label}.`,
+      support: "Questions? Reply to this email or write info@sistersflowers.vn.",
+      footer: "Da Nang & Da Lat · sistersflowers.vn",
+    };
+  }
+  return {
+    subject: (ref: string) => `Sisters Flowers — cập nhật đơn ${ref}`,
+    heading: "Cập nhật trạng thái đơn",
+    intro: (name: string) =>
+      `Xin chào ${name || "bạn"}, đơn hàng của bạn hiện ${label}.`,
+    support: "Cần hỗ trợ? Trả lời email này hoặc liên hệ info@sistersflowers.vn.",
+    footer: "Đà Nẵng & Đà Lạt · sistersflowers.vn",
+  };
+}
+
+export function inquiryCopy(locale: Locale) {
+  if (locale === "en") {
+    return {
+      ackSubject: "We received your Sisters Flowers request",
+      ackHeading: "Thank you for writing",
+      ackIntro: (name: string) =>
+        `Hi ${name || "there"}, we received your request and will reply soon.`,
+      ackBody: "Our studio team reads every message. WhatsApp remains available for urgent arrangements.",
+      studioSubject: (variant: string, name: string) =>
+        `New ${variant} inquiry — ${name}`,
+      studioHeading: "New customer inquiry",
+    };
+  }
+  return {
+    ackSubject: "Sisters Flowers đã nhận yêu cầu của bạn",
+    ackHeading: "Cảm ơn bạn đã liên hệ",
+    ackIntro: (name: string) =>
+      `Xin chào ${name || "bạn"}, chúng tôi đã nhận yêu cầu và sẽ phản hồi sớm.`,
+    ackBody:
+      "Studio đọc mọi tin nhắn. Nếu cần gấp, bạn vẫn có thể nhắn WhatsApp.",
+    studioSubject: (variant: string, name: string) =>
+      `Yêu cầu ${variant} mới — ${name}`,
+    studioHeading: "Yêu cầu khách hàng mới",
+  };
+}
+
 export function formatVnd(amount: number, locale: Locale) {
   try {
     return new Intl.NumberFormat(locale === "vi" ? "vi-VN" : "en-US", {
