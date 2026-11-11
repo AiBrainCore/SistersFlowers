@@ -41,7 +41,8 @@ export const vi = {
     orContinue: "Hoặc tiếp tục với",
     continueGoogle: "Tiếp tục với Google",
     continueZalo: "Tiếp tục với Zalo",
-    zaloSoon: "Đăng nhập Zalo sẽ hiện khi ứng dụng Zalo được kết nối.",
+    zaloSoon:
+      "Đăng nhập bằng số điện thoại qua Zalo sẽ hiện khi cấu hình Zalo App ID + Secret trên máy chủ.",
     noAccount: "Chưa có tài khoản?",
     hasAccount: "Đã có tài khoản?",
     loginLink: "Đăng nhập",

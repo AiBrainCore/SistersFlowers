@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
@@ -58,27 +57,17 @@ export function AccountAuthForm({
   return (
     <div className="relative mx-auto w-full max-w-[26rem]">
       <div className="overflow-hidden rounded-[1.75rem] border border-forest/10 bg-white shadow-[0_24px_60px_rgba(26,23,20,0.08)]">
-        <div className="bg-citrus px-6 py-7 text-center sm:px-8">
-          <Link href={`/${locale}`} className="inline-flex" aria-label={BRAND.name}>
-            <Image
-              src={BRAND.emailWordmarkWhite}
-              alt={BRAND.name}
-              width={200}
-              height={34}
-              className="mx-auto h-9 w-auto"
-              priority
-            />
-          </Link>
-          <p className="mt-4 text-[11px] tracking-[0.2em] text-white/85 uppercase">
-            {t.joinKicker}
+        <div className="px-5 pt-7 sm:px-7">
+          <p className="serif text-center text-xl tracking-wide text-forest">
+            <Link href={`/${locale}`} className="hover:text-citrus">
+              {BRAND.name}
+            </Link>
           </p>
-        </div>
 
-        <div className="px-5 pt-5 sm:px-7">
           <div
             role="tablist"
             aria-label={t.title}
-            className="grid grid-cols-2 gap-1 rounded-full bg-cream/90 p-1"
+            className="mt-5 grid grid-cols-2 gap-1 rounded-full bg-cream/90 p-1"
           >
             <Link
               href={`/${locale}/account/login`}
@@ -226,30 +215,6 @@ export function AccountAuthForm({
               </p>
             )}
           </div>
-
-          <p className="mt-7 text-center text-sm text-moss">
-            {mode === "login" ? (
-              <>
-                {t.noAccount}{" "}
-                <Link
-                  href={`/${locale}/account/register`}
-                  className="font-medium text-citrus underline-offset-2 hover:underline"
-                >
-                  {t.registerLink}
-                </Link>
-              </>
-            ) : (
-              <>
-                {t.hasAccount}{" "}
-                <Link
-                  href={`/${locale}/account/login`}
-                  className="font-medium text-citrus underline-offset-2 hover:underline"
-                >
-                  {t.loginLink}
-                </Link>
-              </>
-            )}
-          </p>
         </div>
       </div>
     </div>
