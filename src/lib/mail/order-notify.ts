@@ -30,6 +30,8 @@ export async function notifyOrderEmails(
         subject: customer.subject,
         html: customer.html,
         replyTo: MAILBOX.replyTo,
+        citySlug: payload.citySlug,
+        transactional: true,
         eventKey: payload.orderId
           ? `order:${payload.orderId}:received:customer`
           : `order-ref:${payload.reference}:received:customer`,
@@ -47,6 +49,8 @@ export async function notifyOrderEmails(
       html: studio.html,
       replyTo: payload.email || MAILBOX.replyTo,
       bcc: process.env.MAIL_BCC_OWNERS === "0" ? undefined : MAIL_PREVIEW_TO,
+      citySlug: payload.citySlug,
+      transactional: true,
       eventKey: payload.orderId
         ? `order:${payload.orderId}:received:studio`
         : `order-ref:${payload.reference}:received:studio`,
@@ -76,6 +80,7 @@ export async function notifyOrderStatusEmail(input: {
     customerName: input.customerName,
     status: input.status,
     citySlug: input.citySlug,
+    email: input.email,
   });
 
   return sendMail({
@@ -84,6 +89,8 @@ export async function notifyOrderStatusEmail(input: {
     subject: mail.subject,
     html: mail.html,
     replyTo: MAILBOX.replyTo,
+    citySlug: input.citySlug,
+    transactional: true,
     eventKey: `order:${input.orderId}:status:${input.status}:customer`,
     relatedType: "order",
     relatedId: input.orderId,
@@ -105,6 +112,8 @@ export async function notifyInquiryEmails(
       html: studio.html,
       replyTo: payload.email || MAILBOX.replyTo,
       bcc: process.env.MAIL_BCC_OWNERS === "0" ? undefined : MAIL_PREVIEW_TO,
+      citySlug: payload.citySlug,
+      transactional: true,
       eventKey: payload.inquiryId
         ? `inquiry:${payload.inquiryId}:received:studio`
         : undefined,
@@ -122,6 +131,8 @@ export async function notifyInquiryEmails(
         subject: ack.subject,
         html: ack.html,
         replyTo: MAILBOX.replyTo,
+        citySlug: payload.citySlug,
+        transactional: false,
         eventKey: payload.inquiryId
           ? `inquiry:${payload.inquiryId}:ack:customer`
           : undefined,

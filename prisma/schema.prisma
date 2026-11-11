@@ -257,3 +257,14 @@ model EmailDeliveryLog {
   @@index([eventKey])
   @@index([createdAt])
 }
+
+/// Addresses that opted out of non-transactional Sisters Flowers email.
+model EmailSuppression {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  source    String   @default("unsubscribe_link")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([createdAt])
+}

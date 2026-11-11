@@ -149,6 +149,7 @@ export async function submitOrderAction(
       email,
       address: payload.address.trim(),
       zone: payload.zone.trim(),
+      citySlug: payload.citySlug?.trim() || null,
       deliveryDate: payload.deliveryDate?.trim() || null,
       deliveryTime: payload.deliveryTime?.trim() || null,
       notes: payload.notes?.trim() || null,
@@ -192,7 +193,7 @@ export async function submitInquiryAction(formData: FormData): Promise<SubmitInq
     return { ok: false, error: "missing fields" };
   }
 
-  await prisma.inquiry.create({
+  const inquiry = await prisma.inquiry.create({
     data: {
       variant,
       name,
@@ -207,6 +208,25 @@ export async function submitInquiryAction(formData: FormData): Promise<SubmitInq
       citySlug,
     },
   });
+
+  try {
+    const { notifyInquiryEmails } = await import("@/lib/mail/order-notify");
+    await notifyInquiryEmails({
+      locale: "vi",
+      variant,
+      name,
+      email,
+      phone,
+      message,
+      citySlug,
+      date,
+      hotel,
+      venue,
+      inquiryId: inquiry.id,
+    });
+  } catch (error) {
+    console.error("[inquiry] email notify failed", error);
+  }
 
   return { ok: true };
 }

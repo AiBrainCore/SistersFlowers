@@ -6,6 +6,8 @@ import {
   mailConfigured,
   type MailIdentity,
 } from "@/lib/mail/config";
+import { mailInlineAttachments } from "@/lib/mail/attachments";
+import { isEmailSuppressed } from "@/lib/mail/unsubscribe";
 import {
   sanitizeEmailList,
   sanitizeHeaderValue,
@@ -25,6 +27,15 @@ export type SendMailInput = {
   eventKey?: string;
   relatedType?: string;
   relatedId?: string;
+  /** City for studio-specific social WhatsApp + CID assets */
+  citySlug?: string | null;
+  /** Skip embedding logo/social CID assets (HTML preview only) */
+  skipInlineAssets?: boolean;
+  /**
+   * When false, honor EmailSuppression (welcome / marketing).
+   * Order receipts and studio alerts should keep the default true.
+   */
+  transactional?: boolean;
 };
 
 export type SendMailResult =
@@ -108,6 +119,25 @@ export async function sendMail(input: SendMailInput): Promise<SendMailResult> {
     }
   }
 
+  const transactional = input.transactional !== false;
+  if (!transactional) {
+    const suppressed: string[] = [];
+    for (const address of to) {
+      if (await isEmailSuppressed(address)) suppressed.push(address);
+    }
+    if (suppressed.length === to.length) {
+      await recordDelivery({
+        eventKey: input.eventKey,
+        relatedType: input.relatedType,
+        relatedId: input.relatedId,
+        to: to.join(","),
+        subject,
+        status: "skipped_unsubscribed",
+      });
+      return { ok: true, skipped: true, reason: "unsubscribed" };
+    }
+  }
+
   if (!emailSendingEnabled()) {
     console.warn("[mail] EMAIL_ENABLED=false — skipping:", subject);
     await recordDelivery({
@@ -146,6 +176,9 @@ export async function sendMail(input: SendMailInput): Promise<SendMailResult> {
   });
 
   const from = resolveFrom(input.from);
+  const attachments = input.skipInlineAssets
+    ? undefined
+    : mailInlineAttachments(input.citySlug);
   try {
     const info = await transporter.sendMail({
       from: `"${sanitizeHeaderValue(from.name, 80)}" <${from.address}>`,
@@ -155,6 +188,7 @@ export async function sendMail(input: SendMailInput): Promise<SendMailResult> {
       subject,
       html: input.html,
       text: input.text || htmlToText(input.html),
+      attachments,
     });
     await recordDelivery({
       eventKey: input.eventKey,

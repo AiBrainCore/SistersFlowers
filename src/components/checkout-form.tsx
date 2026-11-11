@@ -8,6 +8,7 @@ import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { formatVnd } from "@/data/products";
 import { useCart } from "@/context/cart-context";
+import { useLocation } from "@/context/location-context";
 import { submitOrderAction } from "@/app/actions/orders";
 import { DeliveryCalculator } from "@/components/delivery-calculator";
 import type { DeliveryConfig, DeliveryZonePublic } from "@/lib/delivery";
@@ -29,6 +30,7 @@ export function CheckoutForm({
 }) {
   const router = useRouter();
   const { items, subtotal, clear, hydrated } = useCart();
+  const { activeCity } = useLocation();
   const [status, setStatus] = useState<"idle" | "sending" | "error">("idle");
   const [error, setError] = useState("");
   const [deliveryKm, setDeliveryKm] = useState(12);
@@ -78,6 +80,7 @@ export function CheckoutForm({
       customerName: String(form.get("customerName") || ""),
       phone: String(form.get("phone") || ""),
       email: String(form.get("email") || "") || undefined,
+      citySlug: activeCity?.slug,
       zone: deliveryZone || String(form.get("deliveryZone") || ""),
       deliveryKm,
       deliveryFee: deliveryFee ?? undefined,

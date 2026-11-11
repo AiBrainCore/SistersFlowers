@@ -19,6 +19,8 @@ export type CheckoutPayload = {
   customerName: string;
   phone: string;
   email?: string;
+  /** Active shop city slug: danang | dalat */
+  citySlug?: string;
   zone: string;
   deliveryKm?: number;
   deliveryFee?: number;
