@@ -12,10 +12,14 @@ import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import nodemailer from "nodemailer";
 
-const SITE = (process.env.NEXT_PUBLIC_SITE_URL || "https://sistersflowers.vn").replace(
-  /\/$/,
-  "",
-);
+/** Public https origin for logos/CTA — never localhost (email clients can't load it). */
+const SITE = (
+  process.env.MAIL_PUBLIC_SITE_URL ||
+  (process.env.NEXT_PUBLIC_SITE_URL?.includes("localhost")
+    ? ""
+    : process.env.NEXT_PUBLIC_SITE_URL) ||
+  "https://sistersflowers.vn"
+).replace(/\/$/, "");
 const TO = (process.env.MAIL_PREVIEW_TO || "felsendorff@gmail.com,butchi0603@gmail.com")
   .split(",")
   .map((s) => s.trim())

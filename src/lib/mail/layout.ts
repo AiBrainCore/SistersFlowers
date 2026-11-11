@@ -1,6 +1,6 @@
 import { BRAND } from "@/lib/brand";
 import { emailBrandAssets } from "@/lib/email-brand";
-import { siteUrl } from "@/lib/seo";
+import { mailPublicSiteUrl } from "@/lib/mail/config";
 
 const COLORS = {
   citrus: "#b0542c",
@@ -33,7 +33,7 @@ export function renderMailLayout(input: MailLayoutInput): string {
     : "";
   const footer =
     input.footerHtml ||
-    `© ${year} ${BRAND.name} · <a href="${siteUrl("/vi")}" style="color:${COLORS.citrus};text-decoration:none;">sistersflowers.vn</a>`;
+    `© ${year} ${BRAND.name} · <a href="${mailPublicSiteUrl("/vi")}" style="color:${COLORS.citrus};text-decoration:none;">sistersflowers.vn</a>`;
 
   return `<!DOCTYPE html>
 <html lang="und">
@@ -53,7 +53,7 @@ ${preheader}
         </tr>
         <tr>
           <td align="center" style="padding:28px 28px 8px;background:${COLORS.cream};">
-            <a href="${siteUrl("/vi")}" style="text-decoration:none;">
+            <a href="${mailPublicSiteUrl("/vi")}" style="text-decoration:none;">
               <img src="${assets.wordmarkStackedBlack}" width="168" alt="${BRAND.name}" style="display:block;border:0;outline:none;height:auto;max-width:168px;" />
             </a>
           </td>

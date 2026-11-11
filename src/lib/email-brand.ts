@@ -1,5 +1,5 @@
 import { BRAND } from "@/lib/brand";
-import { siteUrl } from "@/lib/seo";
+import { mailPublicSiteUrl } from "@/lib/mail/config";
 
 /**
  * Absolute logo URLs + a tiny HTML snippet for order / inquiry emails.
@@ -7,12 +7,12 @@ import { siteUrl } from "@/lib/seo";
  */
 export function emailBrandAssets() {
   return {
-    wordmarkBlack: siteUrl(BRAND.emailWordmarkBlack),
-    wordmarkWhite: siteUrl(BRAND.emailWordmarkWhite),
-    wordmarkStackedBlack: siteUrl(BRAND.emailWordmarkStackedBlack),
-    wordmarkStackedWhite: siteUrl(BRAND.emailWordmarkStackedWhite),
-    markBlack: siteUrl(BRAND.emailMarkBlack),
-    markCitrus: siteUrl(BRAND.markCitrus),
+    wordmarkBlack: mailPublicSiteUrl(BRAND.emailWordmarkBlack),
+    wordmarkWhite: mailPublicSiteUrl(BRAND.emailWordmarkWhite),
+    wordmarkStackedBlack: mailPublicSiteUrl(BRAND.emailWordmarkStackedBlack),
+    wordmarkStackedWhite: mailPublicSiteUrl(BRAND.emailWordmarkStackedWhite),
+    markBlack: mailPublicSiteUrl(BRAND.emailMarkBlack),
+    markCitrus: mailPublicSiteUrl(BRAND.markCitrus),
   };
 }
 

@@ -1,5 +1,5 @@
 import type { Locale } from "@/i18n/config";
-import { siteUrl } from "@/lib/seo";
+import { mailPublicSiteUrl } from "@/lib/mail/config";
 import {
   authCopy,
   formatVnd,
@@ -95,7 +95,7 @@ export function buildOrderCustomerEmail(payload: OrderMailPayload) {
     mailDetailTable(rows),
     `<p style="margin:16px 0 6px;font-size:13px;color:#6b635c;">${escapeHtml(c.itemsLabel)}</p>`,
     `<table role="presentation" width="100%" cellpadding="0" cellspacing="0">${itemsHtml(payload.items, payload.locale)}</table>`,
-    mailButton(siteUrl(`/${payload.locale}/shop`), c.cta),
+    mailButton(mailPublicSiteUrl(`/${payload.locale}/shop`), c.cta),
   ].join("\n");
 
   return {
@@ -135,7 +135,7 @@ export function buildOrderStudioEmail(payload: OrderMailPayload) {
     mailDetailTable(rows),
     `<p style="margin:16px 0 6px;font-size:13px;color:#6b635c;">Items</p>`,
     `<table role="presentation" width="100%" cellpadding="0" cellspacing="0">${itemsHtml(payload.items, "en")}</table>`,
-    mailButton(siteUrl("/admin/orders"), c.openAdmin),
+    mailButton(mailPublicSiteUrl("/admin/orders"), c.openAdmin),
   ].join("\n");
 
   return {
@@ -153,7 +153,7 @@ export function buildWelcomeEmail(locale: Locale, name?: string) {
     mailHeading(c.welcomeHeading),
     mailParagraph(escapeHtml(c.welcomeIntro(name))),
     mailParagraph(escapeHtml(c.welcomeBody)),
-    mailButton(siteUrl(`/${locale}/account`), locale === "vi" ? "Vào tài khoản" : "Open account"),
+    mailButton(mailPublicSiteUrl(`/${locale}/account`), locale === "vi" ? "Vào tài khoản" : "Open account"),
   ].join("\n");
   return {
     subject: c.welcomeSubject,
@@ -226,7 +226,7 @@ export function buildInquiryStudioEmail(payload: InquiryMailPayload) {
   const body = [
     mailHeading(c.studioHeading),
     mailDetailTable(rows),
-    mailButton(siteUrl("/admin/inquiries"), "Open inquiries"),
+    mailButton(mailPublicSiteUrl("/admin/inquiries"), "Open inquiries"),
   ].join("\n");
   return {
     subject: c.studioSubject(payload.variant, payload.name),
@@ -240,7 +240,7 @@ export function buildInquiryAckEmail(payload: InquiryMailPayload) {
     mailHeading(c.ackHeading),
     mailParagraph(escapeHtml(c.ackIntro(payload.name))),
     mailParagraph(escapeHtml(c.ackBody)),
-    mailButton(siteUrl(`/${payload.locale}/shop`), payload.locale === "vi" ? "Xem cửa hàng" : "Browse shop"),
+    mailButton(mailPublicSiteUrl(`/${payload.locale}/shop`), payload.locale === "vi" ? "Xem cửa hàng" : "Browse shop"),
   ].join("\n");
   return {
     subject: c.ackSubject,

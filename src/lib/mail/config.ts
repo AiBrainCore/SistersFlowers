@@ -1,5 +1,21 @@
 /** Zoho Mail / transactional SMTP — server-side only. */
 
+/**
+ * Public origin used inside HTML emails (logos + CTA links).
+ * Must be a publicly reachable https host — never localhost — so Gmail/Apple Mail can load assets.
+ */
+export function mailPublicSiteUrl(path = "") {
+  const base = (
+    process.env.MAIL_PUBLIC_SITE_URL?.trim() ||
+    (process.env.NEXT_PUBLIC_SITE_URL?.includes("localhost")
+      ? ""
+      : process.env.NEXT_PUBLIC_SITE_URL?.trim()) ||
+    "https://sistersflowers.vn"
+  ).replace(/\/$/, "");
+  const clean = path.startsWith("/") ? path : path ? `/${path}` : "";
+  return `${base}${clean}`;
+}
+
 export const MAILBOX = {
   info:
     process.env.MAIL_FROM?.trim() ||
