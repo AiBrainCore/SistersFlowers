@@ -1,10 +1,12 @@
 import { BRAND } from "@/lib/brand";
-import { mailPublicSiteUrl } from "@/lib/mail/config";
+import { MAILBOX, mailPublicSiteUrl } from "@/lib/mail/config";
 import {
   cityLabel,
   mailSocialLinks,
   studioAddress,
   studioContactForCity,
+  studioMapsLink,
+  studioPhoneLine,
 } from "@/lib/mail/studio";
 import {
   unsubscribeCopy,
@@ -21,6 +23,7 @@ const COLORS = {
   muted: "#6b635c",
   line: "#e8d9cc",
   link: "#2f6fed",
+  white: "#ffffff",
 } as const;
 
 /** Brand founding year for © range; end year always = current calendar year. */
@@ -58,7 +61,7 @@ function socialRow(citySlug?: string | null, useCid = true) {
   const links = mailSocialLinks(citySlug);
   const cells = links
     .map(
-      (item) => `<td align="center" style="padding:0 10px;">
+      (item) => `<td align="center" style="padding:0 8px;">
   <a href="${escapeHtml(item.href)}" style="text-decoration:none;" target="_blank">
     <img src="${assetSrc(item.cid, item.path, useCid)}" width="36" height="36" alt="${escapeHtml(item.label)}" style="display:block;border:0;outline:none;width:36px;height:36px;border-radius:999px;" />
   </a>
@@ -70,14 +73,29 @@ function socialRow(citySlug?: string | null, useCid = true) {
 </table>`;
 }
 
-function copyrightLine(citySlug?: string | null, locale: Locale = "en") {
-  const years = mailCopyrightYears();
+function studioContactBlock(citySlug?: string | null, locale: Locale = "en") {
   const studio = studioContactForCity(citySlug);
-  if (studio) {
-    const address = studioAddress(studio, locale);
-    return `Copyright © ${years} ${BRAND.name}, ${escapeHtml(address)}.`;
+  const info = MAILBOX.info || "info@sistersflowers.vn";
+  if (!studio) {
+    return `<p style="margin:0 0 6px;font-size:12px;line-height:1.55;color:${COLORS.muted};">
+  Da Nang &amp; Da Lat
+</p>
+<p style="margin:0 0 6px;font-size:12px;line-height:1.55;color:${COLORS.muted};">
+  <a href="mailto:${escapeHtml(info)}" style="color:${COLORS.citrus};text-decoration:none;">${escapeHtml(info)}</a>
+</p>`;
   }
-  return `Copyright © ${years} ${BRAND.name} · sistersflowers.vn`;
+  const address = studioAddress(studio, locale);
+  const phones = studioPhoneLine(studio);
+  const maps = studioMapsLink(studio, locale);
+  return `<p style="margin:0 0 6px;font-size:12px;line-height:1.55;color:${COLORS.muted};">
+  <a href="${escapeHtml(maps)}" style="color:${COLORS.muted};text-decoration:underline;">${escapeHtml(address)}</a>
+</p>
+<p style="margin:0 0 6px;font-size:12px;line-height:1.55;color:${COLORS.muted};">
+  ${escapeHtml(phones)}
+</p>
+<p style="margin:0 0 14px;font-size:12px;line-height:1.55;color:${COLORS.muted};">
+  <a href="mailto:${escapeHtml(info)}" style="color:${COLORS.citrus};text-decoration:none;">${escapeHtml(info)}</a>
+</p>`;
 }
 
 function footerLegalBlock(input: {
@@ -86,52 +104,44 @@ function footerLegalBlock(input: {
   toEmail?: string | null;
 }) {
   const locale = input.locale;
-  const other: Locale = locale === "vi" ? "en" : "vi";
-  const primary = unsubscribeCopy[locale];
-  const secondary = unsubscribeCopy[other];
+  const copy = unsubscribeCopy[locale];
   const email = input.toEmail?.trim() || "";
-  const unsubPrimary = email
+  const unsub = email
     ? unsubscribeUrl(email, locale)
     : mailPublicSiteUrl(`/${locale}/unsubscribe`);
-  const unsubSecondary = email
-    ? unsubscribeUrl(email, other)
-    : mailPublicSiteUrl(`/${other}/unsubscribe`);
+  const years = mailCopyrightYears();
 
   const sentLine = email
     ? `<p style="margin:0 0 8px;font-size:12px;line-height:1.55;color:${COLORS.muted};">
-  ${escapeHtml(primary.sentTo("EMAIL_PLACEHOLDER")).replace(
+  ${escapeHtml(copy.sentTo("EMAIL_PLACEHOLDER")).replace(
     "EMAIL_PLACEHOLDER",
     `<a href="mailto:${escapeHtml(email)}" style="color:${COLORS.link};text-decoration:underline;">${escapeHtml(email)}</a>`,
   )}
 </p>`
     : "";
 
-  return `${sentLine}
-<p style="margin:0 0 8px;font-size:12px;line-height:1.55;color:${COLORS.muted};">
-  ${escapeHtml(primary.preferNot)}
-  <a href="${escapeHtml(unsubPrimary)}" style="color:${COLORS.link};text-decoration:underline;">${escapeHtml(primary.link)}</a>.
-  <span style="white-space:nowrap;"> / <a href="${escapeHtml(unsubSecondary)}" style="color:${COLORS.link};text-decoration:underline;">${escapeHtml(secondary.link)}</a></span>
+  return `${studioContactBlock(input.citySlug, locale)}
+${sentLine}
+<p style="margin:0 0 14px;font-size:12px;line-height:1.55;color:${COLORS.muted};">
+  ${escapeHtml(copy.preferNot)}
+  <a href="${escapeHtml(unsub)}" style="color:${COLORS.link};text-decoration:underline;">${escapeHtml(copy.link)}</a>.
 </p>
-<p style="margin:0 0 16px;font-size:12px;line-height:1.55;color:${COLORS.muted};">
-  ${copyrightLine(input.citySlug, locale)}
-</p>
-<p style="margin:0;font-size:12px;line-height:1.55;">
-  <a href="${escapeHtml(unsubPrimary)}" style="color:${COLORS.muted};text-decoration:underline;">${escapeHtml(primary.standalone)}</a>
-  <span style="color:${COLORS.line};"> · </span>
-  <a href="${escapeHtml(unsubSecondary)}" style="color:${COLORS.muted};text-decoration:underline;">${escapeHtml(secondary.standalone)}</a>
+<p style="margin:0;font-size:12px;line-height:1.55;color:${COLORS.muted};">
+  Copyright © ${years} ${BRAND.name}
 </p>`;
 }
 
 /**
- * Single SF transactional layout — horizontal logo, centered CTA,
- * city studio contact, social icons, © 2000–{currentYear}, bilingual unsubscribe.
+ * Single SF transactional layout — orange header + white logo,
+ * city studio contact, social icons, single-locale unsubscribe,
+ * copyright always last.
  */
 export function renderMailLayout(input: MailLayoutInput): string {
   const useCid = input.useCidAssets !== false;
   const locale = input.locale || "en";
   const logoSrc = assetSrc(
     "sf-wordmark",
-    BRAND.emailWordmarkBlack,
+    BRAND.emailWordmarkWhite,
     useCid,
   );
   const preheader = input.preheader
@@ -153,22 +163,19 @@ ${preheader}
     <td align="center">
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:${COLORS.paper};border-radius:16px;overflow:hidden;border:1px solid ${COLORS.line};">
         <tr>
-          <td style="height:4px;background:${COLORS.citrus};font-size:0;line-height:0;">&nbsp;</td>
-        </tr>
-        <tr>
-          <td align="center" style="padding:28px 28px 12px;background:${COLORS.cream};">
+          <td align="center" style="padding:28px 28px 22px;background:${COLORS.citrus};">
             <a href="${mailPublicSiteUrl(`/${locale}`)}" style="text-decoration:none;">
               <img src="${logoSrc}" width="220" alt="${BRAND.name}" style="display:block;border:0;outline:none;height:auto;max-width:220px;margin:0 auto;" />
             </a>
             ${
               city
-                ? `<p style="margin:14px 0 0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:${COLORS.citrus};">${escapeHtml(city)}</p>`
+                ? `<p style="margin:14px 0 0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:${COLORS.white};">${escapeHtml(city)}</p>`
                 : ""
             }
           </td>
         </tr>
         <tr>
-          <td style="padding:8px 28px 28px;background:${COLORS.paper};font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:15px;line-height:1.55;color:${COLORS.forest};">
+          <td style="padding:20px 28px 28px;background:${COLORS.paper};font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:15px;line-height:1.55;color:${COLORS.forest};">
             ${input.bodyHtml}
           </td>
         </tr>

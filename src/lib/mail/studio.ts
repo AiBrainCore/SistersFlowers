@@ -54,7 +54,7 @@ export function studioMapsLink(studio: StudioContact, locale: Locale = "en") {
   return studioMapsUrl(studioAddress(studio, locale));
 }
 
-/** Brand socials — override via env when handles change. */
+/** Brand socials — order: TikTok, Facebook, Instagram, WhatsApp, Zalo. */
 export function mailSocialLinks(citySlug?: string | null) {
   const studio = studioContactForCity(citySlug);
   const whatsapp =
@@ -62,13 +62,13 @@ export function mailSocialLinks(citySlug?: string | null) {
     (studio ? studioWhatsAppUrl(studio) : "https://wa.me/84327453536");
   return [
     {
-      key: "instagram",
-      label: "Instagram",
+      key: "tiktok",
+      label: "TikTok",
       href:
-        process.env.MAIL_SOCIAL_INSTAGRAM?.trim() ||
-        "https://www.instagram.com/sistersflowers.vn/",
-      cid: "sf-social-instagram",
-      path: "/brand/social/instagram.png",
+        process.env.MAIL_SOCIAL_TIKTOK?.trim() ||
+        "https://www.tiktok.com/@sistersflowers.vn",
+      cid: "sf-social-tiktok",
+      path: "/brand/social/tiktok.png",
     },
     {
       key: "facebook",
@@ -78,6 +78,15 @@ export function mailSocialLinks(citySlug?: string | null) {
         "https://www.facebook.com/sistersflowers92",
       cid: "sf-social-facebook",
       path: "/brand/social/facebook.png",
+    },
+    {
+      key: "instagram",
+      label: "Instagram",
+      href:
+        process.env.MAIL_SOCIAL_INSTAGRAM?.trim() ||
+        "https://www.instagram.com/sistersflowers.vn/",
+      cid: "sf-social-instagram",
+      path: "/brand/social/instagram.png",
     },
     {
       key: "whatsapp",

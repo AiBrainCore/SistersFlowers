@@ -218,17 +218,8 @@ export function SiteHeader({
             </Link>
           </nav>
 
-          {/* Right: account icon + language + bag + hamburger */}
+          {/* Right: language + bag + menu, account icon always last (far right) */}
           <div className="flex shrink-0 items-center gap-1 sm:gap-2">
-            <Link
-              href={`/${locale}/account`}
-              onClick={closeAll}
-              aria-label={dictionary.nav.account}
-              title={dictionary.nav.account}
-              className="relative inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border border-white/35 bg-white/15 text-white transition hover:bg-white/25"
-            >
-              <IconAccount />
-            </Link>
             <LanguageSwitch
               locale={locale}
               dictionary={dictionary}
@@ -260,6 +251,17 @@ export function SiteHeader({
             >
               {menuOpen ? "✕" : "☰"}
             </button>
+
+            <Link
+              href={`/${locale}/account`}
+              onClick={closeAll}
+              aria-label={dictionary.nav.account}
+              title={dictionary.nav.account}
+              className="relative inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border border-white/35 bg-white/15 text-white transition hover:bg-white/25"
+            >
+              <IconAccount className="h-5 w-5" />
+              <span className="sr-only">{dictionary.nav.account}</span>
+            </Link>
           </div>
         </div>
       </header>

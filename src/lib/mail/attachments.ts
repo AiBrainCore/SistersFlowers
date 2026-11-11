@@ -16,8 +16,8 @@ export function mailInlineAttachments(
 ): MailInlineAttachment[] {
   const publicDir = path.join(rootDir, "public");
   const logo = {
-    filename: path.basename(BRAND.emailWordmarkBlack),
-    path: path.join(publicDir, BRAND.emailWordmarkBlack.replace(/^\//, "")),
+    filename: path.basename(BRAND.emailWordmarkWhite),
+    path: path.join(publicDir, BRAND.emailWordmarkWhite.replace(/^\//, "")),
     cid: "sf-wordmark",
     contentDisposition: "inline" as const,
   };

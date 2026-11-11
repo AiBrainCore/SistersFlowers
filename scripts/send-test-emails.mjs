@@ -181,9 +181,11 @@ async function main() {
   for (const sample of samples) {
     const mail = sample.build();
     // Previews use https URLs (no CID) so opening HTML files works offline.
-    const previewHtml = mail.html.replace(/cid:sf-wordmark/g, "https://sistersflowers.vn/brand/email-wordmark-black.png")
-      .replace(/cid:sf-social-instagram/g, "https://sistersflowers.vn/brand/social/instagram.png")
+    const previewHtml = mail.html
+      .replace(/cid:sf-wordmark/g, "https://sistersflowers.vn/brand/email-wordmark-white.png")
+      .replace(/cid:sf-social-tiktok/g, "https://sistersflowers.vn/brand/social/tiktok.png")
       .replace(/cid:sf-social-facebook/g, "https://sistersflowers.vn/brand/social/facebook.png")
+      .replace(/cid:sf-social-instagram/g, "https://sistersflowers.vn/brand/social/instagram.png")
       .replace(/cid:sf-social-whatsapp/g, "https://sistersflowers.vn/brand/social/whatsapp.png")
       .replace(/cid:sf-social-zalo/g, "https://sistersflowers.vn/brand/social/zalo.png");
     // Rebuild preview without CID for local artifact viewing
