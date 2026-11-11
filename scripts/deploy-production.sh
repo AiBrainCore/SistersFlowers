@@ -29,12 +29,6 @@ fi
   echo "Updating $LOCAL -> $REMOTE"
   git reset --hard "origin/$BRANCH"
 
-  # Region cutover: point runtime DB at Singapore Supabase (ap-southeast-1).
-  if [ -f scripts/apply-singapore-db-env.mjs ]; then
-    echo "Applying Singapore DATABASE_URL / DIRECT_URL to .env"
-    node scripts/apply-singapore-db-env.mjs
-  fi
-
   npm ci || npm install
   npx prisma generate
   NODE_OPTIONS='--max-old-space-size=2048' npm run build

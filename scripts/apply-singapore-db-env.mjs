@@ -1,21 +1,30 @@
 #!/usr/bin/env node
 /**
- * One-shot production helper: upsert Singapore Supabase URLs into the VPS .env.
- * Called from deploy-production.sh. Repo is private; rotate DB password after cutover
- * and delete the credential literals from this file.
+ * Optional helper: upsert Singapore Supabase URLs into the VPS .env.
+ * Credentials must come from env (never hardcode secrets in git).
+ *
+ *   ENV_FILE=/var/www/sisters-flowers/.env \
+ *   SF_DATABASE_URL='...' SF_DIRECT_URL='...' \
+ *   SF_SUPABASE_URL='...' SF_SUPABASE_ANON_KEY='...' \
+ *   node scripts/apply-singapore-db-env.mjs
  */
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 
 const envPath = process.env.ENV_FILE || "/var/www/sisters-flowers/.env";
 
 const UPDATES = {
-  DATABASE_URL:
-    "postgresql://postgres.vztzjqodazcolxfcljsf:h9S4pHQpN%23UkSM2@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?pgbouncer=true&connection_limit=1",
-  DIRECT_URL:
-    "postgresql://postgres.vztzjqodazcolxfcljsf:h9S4pHQpN%23UkSM2@aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres?sslmode=require",
-  NEXT_PUBLIC_SUPABASE_URL: "https://vztzjqodazcolxfcljsf.supabase.co",
-  NEXT_PUBLIC_SUPABASE_ANON_KEY: "sb_publishable_K6M3oritixBYqPavJvyfjQ_dbSLyL5i",
+  DATABASE_URL: process.env.SF_DATABASE_URL,
+  DIRECT_URL: process.env.SF_DIRECT_URL,
+  NEXT_PUBLIC_SUPABASE_URL: process.env.SF_SUPABASE_URL,
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.SF_SUPABASE_ANON_KEY,
 };
+
+for (const [key, value] of Object.entries(UPDATES)) {
+  if (!value) {
+    console.error(`Missing required env for ${key}`);
+    process.exit(1);
+  }
+}
 
 function upsert(text, key, value) {
   const line = `${key}="${value}"`;
