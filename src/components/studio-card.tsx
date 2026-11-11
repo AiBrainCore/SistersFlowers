@@ -1,7 +1,9 @@
 import Image from "next/image";
 import type { Locale } from "@/i18n/config";
-import type { StudioContact } from "@/lib/locations";
-import { studioMapsUrl } from "@/lib/locations";
+import {
+  studioMapsUrl,
+  type StudioContact,
+} from "@/lib/studio-contacts";
 
 export function StudioCard({
   studio,

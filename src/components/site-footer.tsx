@@ -4,16 +4,20 @@ import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { StudioCard } from "@/components/studio-card";
 import { BRAND } from "@/lib/brand";
-import { STUDIO_CONTACTS, STUDIO_PHONE_DIGITS } from "@/lib/locations";
+import type { StudioContact } from "@/lib/studio-contacts";
 
 const BRAND_SINCE = 2020;
 
 export function SiteFooter({
   locale,
   dictionary,
+  studios,
+  whatsappDigits,
 }: {
   locale: Locale;
   dictionary: Dictionary;
+  studios: StudioContact[];
+  whatsappDigits: string;
 }) {
   const t = dictionary.footer;
   const year = new Date().getFullYear();
@@ -21,7 +25,10 @@ export function SiteFooter({
   const rights = t.rights.replace("{years}", yearsLabel);
 
   return (
-    <footer className="border-t border-forest/10 bg-cream/55">
+    <footer
+      data-sf-site-footer
+      className="border-t border-forest/10 bg-cream/55"
+    >
       <div className="mx-auto max-w-6xl px-4 py-14 sm:px-5">
         <div className="max-w-xl">
           <Link
@@ -44,7 +51,7 @@ export function SiteFooter({
         </div>
 
         <div className="mt-6 grid gap-4 sm:grid-cols-2">
-          {STUDIO_CONTACTS.map((studio) => (
+          {studios.map((studio) => (
             <StudioCard
               key={studio.slug}
               studio={studio}
@@ -105,7 +112,7 @@ export function SiteFooter({
             {dictionary.nav.terms}
           </Link>
           <a
-            href={`https://wa.me/${STUDIO_PHONE_DIGITS}`}
+            href={`https://wa.me/${whatsappDigits}`}
             className="min-h-11 inline-flex items-center hover:text-citrus"
             target="_blank"
             rel="noreferrer"

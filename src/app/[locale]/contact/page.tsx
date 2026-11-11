@@ -5,7 +5,10 @@ import { isLocale, type Locale } from "@/i18n/config";
 import { getStorefrontDictionary } from "@/lib/storefront";
 import { buildPageMetadata } from "@/lib/seo";
 import { StudioCard } from "@/components/studio-card";
-import { STUDIO_CONTACTS, STUDIO_PHONE_DIGITS } from "@/lib/locations";
+import {
+  STUDIO_CONTACTS,
+  STUDIO_PHONE_DIGITS,
+} from "@/lib/studio-contacts";
 
 export const dynamic = "force-dynamic";
 

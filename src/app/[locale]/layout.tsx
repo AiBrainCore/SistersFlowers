@@ -13,6 +13,10 @@ import { LocationBanner } from "@/components/location-banner";
 import { LocaleHtmlLang } from "@/components/locale-html-lang";
 import { ShopBotRoot } from "@/components/shop-bot/ShopBotRoot";
 import { WebMcpTools } from "@/components/webmcp-tools";
+import {
+  STUDIO_CONTACTS,
+  STUDIO_PHONE_DIGITS,
+} from "@/lib/studio-contacts";
 
 export function generateStaticParams() {
   return [{ locale: "vi" }, { locale: "en" }];
@@ -45,7 +49,12 @@ export default async function LocaleLayout({
             dictionary={dictionary}
           />
           <main className="flex-1">{children}</main>
-          <SiteFooter locale={locale as Locale} dictionary={dictionary} />
+          <SiteFooter
+            locale={locale as Locale}
+            dictionary={dictionary}
+            studios={STUDIO_CONTACTS}
+            whatsappDigits={STUDIO_PHONE_DIGITS}
+          />
           <CartDrawer locale={locale as Locale} dictionary={dictionary} />
           <ShopBotRoot locale={locale as Locale} dictionary={dictionary} />
           <WebMcpTools locale={locale as Locale} />

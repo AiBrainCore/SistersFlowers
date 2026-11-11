@@ -3,7 +3,7 @@ import {
   STUDIO_CONTACTS,
   studioMapsUrl,
   type StudioContact,
-} from "@/lib/locations";
+} from "@/lib/studio-contacts";
 
 export type MailCitySlug = "dalat" | "danang";
 

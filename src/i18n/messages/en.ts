@@ -24,10 +24,11 @@ export const en = {
   account: {
     title: "Your account",
     guestBody: "Sign in to see your orders, or create an account in a minute.",
-    loginTitle: "Sign in",
-    loginSubtitle: "Welcome back to Sisters Flowers.",
-    registerTitle: "Create account",
-    registerSubtitle: "Email, Google, or Zalo — your choice.",
+    joinKicker: "Join Sisters Flowers",
+    loginTitle: "Welcome back",
+    loginSubtitle: "Sign in with email, Google, or Zalo.",
+    registerTitle: "Create your account",
+    registerSubtitle: "Email & password, or continue with Google / Zalo.",
     registerCheckEmail:
       "Check your inbox to confirm your email, then sign in.",
     name: "Name",
@@ -36,6 +37,7 @@ export const en = {
     loginSubmit: "Sign in",
     registerSubmit: "Create account",
     working: "Please wait…",
+    orContinue: "Or continue with",
     continueGoogle: "Continue with Google",
     continueZalo: "Continue with Zalo",
     zaloSoon: "Zalo login will appear here once the Zalo app is connected.",
