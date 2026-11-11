@@ -113,13 +113,15 @@ export async function submitOrderAction(
 
   const whatsappUrl = buildWhatsAppUrl(reference, payload, issuedVouchers);
 
+  const email = payload.email?.trim() || null;
+
   await prisma.order.create({
     data: {
       reference,
       locale: payload.locale,
       customerName: payload.customerName.trim(),
       phone: payload.phone.trim(),
-      email: payload.email?.trim() || null,
+      email,
       zone: payload.zone.trim(),
       deliveryKm: payload.deliveryKm ?? null,
       deliveryFee,
@@ -136,6 +138,32 @@ export async function submitOrderAction(
       items: { create: itemsData },
     },
   });
+
+  try {
+    const { notifyOrderEmails } = await import("@/lib/mail/order-notify");
+    await notifyOrderEmails({
+      locale: payload.locale === "en" ? "en" : "vi",
+      reference,
+      customerName: payload.customerName.trim(),
+      phone: payload.phone.trim(),
+      email,
+      address: payload.address.trim(),
+      zone: payload.zone.trim(),
+      deliveryDate: payload.deliveryDate?.trim() || null,
+      deliveryTime: payload.deliveryTime?.trim() || null,
+      notes: payload.notes?.trim() || null,
+      subtotal,
+      deliveryFee,
+      deliveryTotal,
+      items: itemsData.map((item) => ({
+        name: item.name,
+        qty: item.qty,
+        price: item.price,
+      })),
+    });
+  } catch (error) {
+    console.error("[orders] email notify failed", error);
+  }
 
   return { ok: true, reference, whatsappUrl };
 }
