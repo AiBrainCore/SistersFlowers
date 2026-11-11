@@ -29,6 +29,16 @@ fi
   echo "Updating $LOCAL -> $REMOTE"
   git reset --hard "origin/$BRANCH"
 
+  if [ -f scripts/ensure-auth-env.mjs ]; then
+    echo "Ensuring Supabase Auth public env on .env"
+    node scripts/ensure-auth-env.mjs
+  fi
+
+  # Seed + prerender need more than one pooled connection.
+  if [ -f .env ] && grep -q 'connection_limit=1' .env; then
+    sed -i 's/connection_limit=1/connection_limit=5/g' .env
+  fi
+
   npm ci || npm install
   npx prisma generate
   NODE_OPTIONS='--max-old-space-size=2048' npm run build

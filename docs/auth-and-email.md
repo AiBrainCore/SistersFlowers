@@ -3,8 +3,9 @@
 ## What this adds
 
 - Customer accounts: **email/password** + **Google** (Supabase Auth) + **Zalo** (custom OAuth PKCE)
+- Guest checkout stays available (no forced login)
 - Branded HTML emails with one SF layout (logo, citrus bar, cream card)
-- Order emails: customer (VI/EN by `order.locale`) + studio (`orders@`)
+- Order emails: customer (VI/EN by `order.locale`) + studio inbox
 - Mailbox target (start simple): **one** address `info@sistersflowers.vn` for From + studio inbox  
   (`orders@` is optional later; app falls back to `info@`)
 
@@ -38,23 +39,27 @@ node --env-file=secrets/mail.env --env-file=.env.local scripts/send-test-emails.
 
 HTML previews always land in `artifacts/email-previews/`.
 
-## Supabase Auth
+## Supabase Auth (Singapore SF-DB)
 
-In Supabase dashboard (`nxuoqbgxylqhviipqqdt`):
+Project: `vztzjqodazcolxfcljsf` · region `ap-southeast-1`
 
-1. Authentication → Providers → enable **Email** (confirm email ON)
+In Supabase dashboard:
+
+1. Authentication → Providers → enable **Email**
+   - For launch, you may temporarily turn **Confirm email** off so password login works before custom SMTP is ready (Supabase still can send its own confirm mail when ON).
 2. Enable **Google** → paste Google Cloud OAuth client ID/secret
-3. Redirect URLs allowlist:
+3. URL configuration / Redirect URLs allowlist:
    - `https://sistersflowers.vn/auth/callback`
    - `http://localhost:3000/auth/callback`
-4. Optional: Authentication → SMTP → use the same SMTP so verify emails come from `info@`
+4. Optional: Authentication → SMTP → same SMTP so verify emails come from `info@`
 
-App env (VPS + local):
+App env (VPS + local) — deploy also runs `scripts/ensure-auth-env.mjs`:
 
 ```bash
-NEXT_PUBLIC_SUPABASE_URL=https://nxuoqbgxylqhviipqqdt.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=…
-CUSTOMER_SESSION_SECRET=long-random   # Zalo session cookie
+NEXT_PUBLIC_SUPABASE_URL=https://vztzjqodazcolxfcljsf.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_…
+CUSTOMER_SESSION_SECRET=long-random   # Zalo / signed customer cookie
+NEXT_PUBLIC_SITE_URL=https://sistersflowers.vn
 ```
 
 ## Zalo login

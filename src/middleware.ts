@@ -1,3 +1,4 @@
+import { createServerClient } from "@supabase/ssr";
 import { NextRequest, NextResponse } from "next/server";
 import {
   defaultLocale,
@@ -35,15 +36,41 @@ function withLocaleCookie(response: NextResponse, locale: Locale) {
   return response;
 }
 
-export function middleware(request: NextRequest) {
+async function withSupabaseSession(request: NextRequest, response: NextResponse) {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
+  if (!url || !key) return response;
+
+  const supabase = createServerClient(url, key, {
+    cookies: {
+      getAll() {
+        return request.cookies.getAll();
+      },
+      setAll(cookiesToSet) {
+        for (const { name, value } of cookiesToSet) {
+          request.cookies.set(name, value);
+        }
+        for (const { name, value, options } of cookiesToSet) {
+          response.cookies.set(name, value, options);
+        }
+      },
+    },
+  });
+  // Refresh auth cookies on each matched request.
+  await supabase.auth.getUser();
+  return response;
+}
+
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (
     pathname.startsWith("/admin") ||
     pathname.startsWith("/api") ||
+    pathname.startsWith("/auth") ||
     pathname.startsWith("/_next")
   ) {
-    return NextResponse.next();
+    return withSupabaseSession(request, NextResponse.next());
   }
 
   const localeMatch = locales.find(
@@ -76,7 +103,7 @@ export function middleware(request: NextRequest) {
         sameSite: "lax",
       });
     }
-    return response;
+    return withSupabaseSession(request, response);
   }
 
   const locale = preferredLocale(request);
