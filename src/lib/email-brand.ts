@@ -1,5 +1,5 @@
 import { BRAND } from "@/lib/brand";
-import { siteUrl } from "@/lib/seo";
+import { mailPublicSiteUrl } from "@/lib/mail/config";
 
 /**
  * Absolute logo URLs + a tiny HTML snippet for order / inquiry emails.
@@ -7,22 +7,22 @@ import { siteUrl } from "@/lib/seo";
  */
 export function emailBrandAssets() {
   return {
-    wordmarkBlack: siteUrl(BRAND.emailWordmarkBlack),
-    wordmarkWhite: siteUrl(BRAND.emailWordmarkWhite),
-    wordmarkStackedBlack: siteUrl(BRAND.emailWordmarkStackedBlack),
-    wordmarkStackedWhite: siteUrl(BRAND.emailWordmarkStackedWhite),
-    markBlack: siteUrl(BRAND.emailMarkBlack),
-    markCitrus: siteUrl(BRAND.markCitrus),
+    wordmarkBlack: mailPublicSiteUrl(BRAND.emailWordmarkBlack),
+    wordmarkWhite: mailPublicSiteUrl(BRAND.emailWordmarkWhite),
+    wordmarkStackedBlack: mailPublicSiteUrl(BRAND.emailWordmarkStackedBlack),
+    wordmarkStackedWhite: mailPublicSiteUrl(BRAND.emailWordmarkStackedWhite),
+    markBlack: mailPublicSiteUrl(BRAND.emailMarkBlack),
+    markCitrus: mailPublicSiteUrl(BRAND.markCitrus),
   };
 }
 
 export function emailBrandHeaderHtml(opts?: {
   dark?: boolean;
-  /** Prefer 2-line stacked mark for confirmation emails */
+  /** Prefer horizontal wordmark in emails (stacked only when explicitly requested). */
   stacked?: boolean;
 }) {
   const assets = emailBrandAssets();
-  const stacked = opts?.stacked ?? true;
+  const stacked = opts?.stacked ?? false;
   const src = opts?.dark
     ? stacked
       ? assets.wordmarkStackedWhite
@@ -31,7 +31,7 @@ export function emailBrandHeaderHtml(opts?: {
       ? assets.wordmarkStackedBlack
       : assets.wordmarkBlack;
   const bg = opts?.dark ? "#b0542c" : "#ffffff";
-  const width = stacked ? 160 : 200;
+  const width = stacked ? 160 : 220;
   return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${bg};padding:20px 24px;">
   <tr>
     <td align="center">

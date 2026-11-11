@@ -240,3 +240,31 @@ model ProductCityAvailability {
 
   @@unique([productId, cityId])
 }
+
+/// Lightweight delivery audit for transactional email (no SMTP secrets).
+model EmailDeliveryLog {
+  id          String   @id @default(cuid())
+  eventKey    String?
+  relatedType String?
+  relatedId   String?
+  toAddress   String
+  subject     String
+  status      String
+  providerId  String?
+  error       String?
+  createdAt   DateTime @default(now())
+
+  @@index([eventKey])
+  @@index([createdAt])
+}
+
+/// Addresses that opted out of non-transactional Sisters Flowers email.
+model EmailSuppression {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  source    String   @default("unsubscribe_link")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([createdAt])
+}

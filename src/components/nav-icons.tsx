@@ -38,6 +38,25 @@ export function IconGlobe({ className = "h-4 w-4" }: { className?: string }) {
   );
 }
 
+/** Person / account silhouette for header account control. */
+export function IconAccount({ className = "h-5 w-5" }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <circle cx="12" cy="8" r="3.25" />
+      <path d="M5.5 19.5a6.5 6.5 0 0 1 13 0" />
+    </svg>
+  );
+}
+
 export function IconBag({ className = "h-5 w-5" }: { className?: string }) {
   return (
     <svg

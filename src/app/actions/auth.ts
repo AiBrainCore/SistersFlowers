@@ -68,12 +68,13 @@ export async function registerWithEmailAction(formData: FormData): Promise<AuthR
     });
 
     // Branded welcome (Supabase also sends its own verify email when enabled).
-    const welcome = buildWelcomeEmail(locale, name || undefined);
+    const welcome = buildWelcomeEmail(locale, name || undefined, email);
     await sendMail({
       to: email,
       from: "info",
       subject: welcome.subject,
       html: welcome.html,
+      transactional: false,
     });
   }
 

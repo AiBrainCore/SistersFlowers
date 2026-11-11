@@ -10,6 +10,7 @@ import { listActiveCategories } from "@/lib/categories";
 import { listAvailableProductIdsForCity } from "@/lib/locations";
 import { ProductCard } from "@/components/product-card";
 import { CatalogFilters } from "@/components/catalog-filters";
+import { DeliveryCityBar } from "@/components/delivery-city-bar";
 import { buildPageMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
@@ -57,6 +58,8 @@ export default async function ShopPage({
           {t.shop.title}
         </h1>
         <p className="mt-4 max-w-xl text-sm leading-7 text-moss">{t.shop.intro}</p>
+
+        <DeliveryCityBar locale={locale} dictionary={t} />
 
         <CatalogFilters
           locale={locale}

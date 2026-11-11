@@ -8,8 +8,10 @@ import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { formatVnd } from "@/data/products";
 import { useCart } from "@/context/cart-context";
+import { useLocation } from "@/context/location-context";
 import { submitOrderAction } from "@/app/actions/orders";
 import { DeliveryCalculator } from "@/components/delivery-calculator";
+import { DeliveryCityBar } from "@/components/delivery-city-bar";
 import type { DeliveryConfig, DeliveryZonePublic } from "@/lib/delivery";
 import {
   clearCheckoutHints,
@@ -29,6 +31,7 @@ export function CheckoutForm({
 }) {
   const router = useRouter();
   const { items, subtotal, clear, hydrated } = useCart();
+  const { activeCity } = useLocation();
   const [status, setStatus] = useState<"idle" | "sending" | "error">("idle");
   const [error, setError] = useState("");
   const [deliveryKm, setDeliveryKm] = useState(12);
@@ -78,6 +81,7 @@ export function CheckoutForm({
       customerName: String(form.get("customerName") || ""),
       phone: String(form.get("phone") || ""),
       email: String(form.get("email") || "") || undefined,
+      citySlug: activeCity?.slug,
       zone: deliveryZone || String(form.get("deliveryZone") || ""),
       deliveryKm,
       deliveryFee: deliveryFee ?? undefined,
@@ -128,6 +132,7 @@ export function CheckoutForm({
   return (
     <div className="grid gap-12 lg:grid-cols-[1.1fr_0.9fr]">
       <form onSubmit={onSubmit} className="grid gap-5">
+        <DeliveryCityBar locale={locale} dictionary={dictionary} />
         <Field label={dictionary.checkout.name} name="customerName" required />
         <div className="grid gap-5 sm:grid-cols-2">
           <Field label={dictionary.checkout.phone} name="phone" required />
