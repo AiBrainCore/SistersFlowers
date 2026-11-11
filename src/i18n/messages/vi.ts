@@ -25,10 +25,11 @@ export const vi = {
     title: "Tài khoản của bạn",
     guestBody:
       "Đăng nhập để xem đơn hàng, hoặc tạo tài khoản chỉ trong một phút.",
-    loginTitle: "Đăng nhập",
-    loginSubtitle: "Chào mừng trở lại Sisters Flowers.",
+    joinKicker: "Tham gia Sisters Flowers",
+    loginTitle: "Chào mừng trở lại",
+    loginSubtitle: "Đăng nhập bằng email, Google hoặc Zalo.",
     registerTitle: "Tạo tài khoản",
-    registerSubtitle: "Email, Google hoặc Zalo — bạn chọn.",
+    registerSubtitle: "Email & mật khẩu, hoặc tiếp tục với Google / Zalo.",
     registerCheckEmail:
       "Hãy kiểm tra hộp thư để xác nhận email, rồi đăng nhập.",
     name: "Tên",
@@ -37,6 +38,7 @@ export const vi = {
     loginSubmit: "Đăng nhập",
     registerSubmit: "Tạo tài khoản",
     working: "Vui lòng chờ…",
+    orContinue: "Hoặc tiếp tục với",
     continueGoogle: "Tiếp tục với Google",
     continueZalo: "Tiếp tục với Zalo",
     zaloSoon: "Đăng nhập Zalo sẽ hiện khi ứng dụng Zalo được kết nối.",

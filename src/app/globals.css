@@ -104,6 +104,11 @@ body {
   font-family: var(--font-serif), "Times New Roman", serif;
 }
 
+/* Account auth screens: never show the Find us city footer. */
+body:has([data-sf-account]) [data-sf-site-footer] {
+  display: none !important;
+}
+
 .glass {
   background: rgba(255, 247, 241, 0.86);
   border: 1px solid rgba(255, 255, 255, 0.7);

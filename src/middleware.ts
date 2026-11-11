@@ -94,7 +94,11 @@ export async function middleware(request: NextRequest) {
   );
   if (pathLocale) {
     // Keep preference in sync when browsing a locale URL directly.
-    const response = NextResponse.next();
+    const requestHeaders = new Headers(request.headers);
+    requestHeaders.set("x-pathname", pathname);
+    const response = NextResponse.next({
+      request: { headers: requestHeaders },
+    });
     const current = request.cookies.get(LOCALE_COOKIE)?.value;
     if (current !== pathLocale) {
       response.cookies.set(LOCALE_COOKIE, pathLocale, {

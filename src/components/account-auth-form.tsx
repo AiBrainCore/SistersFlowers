@@ -1,10 +1,12 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
+import { BRAND } from "@/lib/brand";
 import {
   loginWithEmailAction,
   registerWithEmailAction,
@@ -54,129 +56,222 @@ export function AccountAuthForm({
   }
 
   return (
-    <div className="mx-auto w-full max-w-md">
-      <h1 className="font-display text-3xl text-forest sm:text-4xl">
-        {mode === "login" ? t.loginTitle : t.registerTitle}
-      </h1>
-      <p className="mt-2 text-sm text-forest/70">
-        {mode === "login" ? t.loginSubtitle : t.registerSubtitle}
-      </p>
-
-      {done ? (
-        <p className="mt-8 rounded-2xl bg-cream px-4 py-3 text-sm text-forest">
-          {t.registerCheckEmail}
-        </p>
-      ) : (
-        <form action={onSubmit} className="mt-8 space-y-4">
-          {mode === "register" ? (
-            <label className="block text-sm">
-              <span className="mb-1.5 block text-forest/80">{t.name}</span>
-              <input
-                name="name"
-                autoComplete="name"
-                className="min-h-11 w-full rounded-xl border border-forest/15 bg-white px-3"
-              />
-            </label>
-          ) : null}
-          <label className="block text-sm">
-            <span className="mb-1.5 block text-forest/80">{t.email}</span>
-            <input
-              name="email"
-              type="email"
-              required
-              autoComplete="email"
-              className="min-h-11 w-full rounded-xl border border-forest/15 bg-white px-3"
+    <div className="relative mx-auto w-full max-w-[26rem]">
+      <div className="overflow-hidden rounded-[1.75rem] border border-forest/10 bg-white shadow-[0_24px_60px_rgba(26,23,20,0.08)]">
+        <div className="bg-citrus px-6 py-7 text-center sm:px-8">
+          <Link href={`/${locale}`} className="inline-flex" aria-label={BRAND.name}>
+            <Image
+              src={BRAND.emailWordmarkWhite}
+              alt={BRAND.name}
+              width={200}
+              height={34}
+              className="mx-auto h-9 w-auto"
+              priority
             />
-          </label>
-          <label className="block text-sm">
-            <span className="mb-1.5 block text-forest/80">{t.password}</span>
-            <input
-              name="password"
-              type="password"
-              required
-              minLength={8}
-              autoComplete={mode === "login" ? "current-password" : "new-password"}
-              className="min-h-11 w-full rounded-xl border border-forest/15 bg-white px-3"
-            />
-          </label>
-          {error ? (
-            <p className="text-sm text-citrus" role="alert">
-              {error}
-            </p>
-          ) : null}
-          <button
-            type="submit"
-            disabled={pending}
-            className="btn-primary min-h-11 w-full justify-center"
-          >
-            {pending
-              ? t.working
-              : mode === "login"
-                ? t.loginSubmit
-                : t.registerSubmit}
-          </button>
-        </form>
-      )}
+          </Link>
+          <p className="mt-4 text-[11px] tracking-[0.2em] text-white/85 uppercase">
+            {t.joinKicker}
+          </p>
+        </div>
 
-      <div className="mt-6 space-y-3">
-        {googleEnabled ? (
-          <button
-            type="button"
-            disabled={pending}
-            onClick={() => {
-              setError(null);
-              startTransition(async () => {
-                const result = await startGoogleOAuthAction(locale);
-                if (!result.ok) {
-                  setError(mapError(result.error, t));
-                  return;
-                }
-                if ("url" in result && result.url) {
-                  window.location.href = result.url;
-                }
-              });
-            }}
-            className="min-h-11 w-full rounded-full border border-forest/15 bg-white px-4 text-sm font-medium text-forest transition hover:bg-cream"
+        <div className="px-5 pt-5 sm:px-7">
+          <div
+            role="tablist"
+            aria-label={t.title}
+            className="grid grid-cols-2 gap-1 rounded-full bg-cream/90 p-1"
           >
-            {t.continueGoogle}
-          </button>
-        ) : null}
-        {zaloEnabled ? (
-          <a
-            href={`/auth/zalo/start?locale=${locale}`}
-            className="flex min-h-11 w-full items-center justify-center rounded-full border border-forest/15 bg-white px-4 text-sm font-medium text-forest transition hover:bg-cream"
-          >
-            {t.continueZalo}
-          </a>
-        ) : (
-          <p className="text-center text-xs text-forest/50">{t.zaloSoon}</p>
-        )}
-      </div>
-
-      <p className="mt-8 text-center text-sm text-forest/70">
-        {mode === "login" ? (
-          <>
-            {t.noAccount}{" "}
-            <Link
-              href={`/${locale}/account/register`}
-              className="text-citrus underline-offset-2 hover:underline"
-            >
-              {t.registerLink}
-            </Link>
-          </>
-        ) : (
-          <>
-            {t.hasAccount}{" "}
             <Link
               href={`/${locale}/account/login`}
-              className="text-citrus underline-offset-2 hover:underline"
+              role="tab"
+              aria-selected={mode === "login"}
+              className={`flex min-h-11 items-center justify-center rounded-full text-sm transition ${
+                mode === "login"
+                  ? "bg-white font-medium text-forest shadow-sm"
+                  : "text-moss hover:text-forest"
+              }`}
             >
               {t.loginLink}
             </Link>
-          </>
-        )}
-      </p>
+            <Link
+              href={`/${locale}/account/register`}
+              role="tab"
+              aria-selected={mode === "register"}
+              className={`flex min-h-11 items-center justify-center rounded-full text-sm transition ${
+                mode === "register"
+                  ? "bg-white font-medium text-forest shadow-sm"
+                  : "text-moss hover:text-forest"
+              }`}
+            >
+              {t.registerLink}
+            </Link>
+          </div>
+        </div>
+
+        <div className="px-5 pt-6 pb-7 sm:px-7 sm:pb-8">
+          <h1 className="serif text-center text-3xl text-forest">
+            {mode === "login" ? t.loginTitle : t.registerTitle}
+          </h1>
+          <p className="mt-2 text-center text-sm leading-6 text-moss">
+            {mode === "login" ? t.loginSubtitle : t.registerSubtitle}
+          </p>
+
+          {done ? (
+            <p className="mt-8 rounded-2xl bg-cream px-4 py-4 text-center text-sm leading-6 text-forest">
+              {t.registerCheckEmail}
+            </p>
+          ) : (
+            <form action={onSubmit} className="mt-7 space-y-3.5">
+              {mode === "register" ? (
+                <label className="block text-sm">
+                  <span className="mb-1.5 block text-[11px] tracking-[0.14em] text-moss uppercase">
+                    {t.name}
+                  </span>
+                  <input
+                    name="name"
+                    autoComplete="name"
+                    className="min-h-12 w-full rounded-2xl border border-forest/12 bg-cream/40 px-4 text-forest outline-none transition focus:border-citrus/50 focus:bg-white"
+                  />
+                </label>
+              ) : null}
+              <label className="block text-sm">
+                <span className="mb-1.5 block text-[11px] tracking-[0.14em] text-moss uppercase">
+                  {t.email}
+                </span>
+                <input
+                  name="email"
+                  type="email"
+                  required
+                  autoComplete="email"
+                  className="min-h-12 w-full rounded-2xl border border-forest/12 bg-cream/40 px-4 text-forest outline-none transition focus:border-citrus/50 focus:bg-white"
+                />
+              </label>
+              <label className="block text-sm">
+                <span className="mb-1.5 block text-[11px] tracking-[0.14em] text-moss uppercase">
+                  {t.password}
+                </span>
+                <input
+                  name="password"
+                  type="password"
+                  required
+                  minLength={8}
+                  autoComplete={
+                    mode === "login" ? "current-password" : "new-password"
+                  }
+                  className="min-h-12 w-full rounded-2xl border border-forest/12 bg-cream/40 px-4 text-forest outline-none transition focus:border-citrus/50 focus:bg-white"
+                />
+              </label>
+              {error ? (
+                <p className="text-sm text-citrus" role="alert">
+                  {error}
+                </p>
+              ) : null}
+              <button
+                type="submit"
+                disabled={pending}
+                className="inline-flex min-h-12 w-full items-center justify-center rounded-full bg-citrus px-5 text-sm font-medium tracking-[0.06em] text-white uppercase transition hover:bg-citrus/90 disabled:opacity-60"
+              >
+                {pending
+                  ? t.working
+                  : mode === "login"
+                    ? t.loginSubmit
+                    : t.registerSubmit}
+              </button>
+            </form>
+          )}
+
+          <div className="my-6 flex items-center gap-3">
+            <div className="h-px flex-1 bg-forest/10" />
+            <span className="text-[11px] tracking-[0.16em] text-moss uppercase">
+              {t.orContinue}
+            </span>
+            <div className="h-px flex-1 bg-forest/10" />
+          </div>
+
+          <div className="space-y-2.5">
+            {googleEnabled ? (
+              <button
+                type="button"
+                disabled={pending}
+                onClick={() => {
+                  setError(null);
+                  startTransition(async () => {
+                    const result = await startGoogleOAuthAction(locale);
+                    if (!result.ok) {
+                      setError(mapError(result.error, t));
+                      return;
+                    }
+                    if ("url" in result && result.url) {
+                      window.location.href = result.url;
+                    }
+                  });
+                }}
+                className="inline-flex min-h-12 w-full items-center justify-center gap-2.5 rounded-full border border-forest/12 bg-white px-4 text-sm font-medium text-forest transition hover:border-citrus/35 hover:bg-cream/60 disabled:opacity-60"
+              >
+                <GoogleMark />
+                {t.continueGoogle}
+              </button>
+            ) : null}
+
+            {zaloEnabled ? (
+              <a
+                href={`/auth/zalo/start?locale=${locale}`}
+                className="inline-flex min-h-12 w-full items-center justify-center gap-2.5 rounded-full border border-[#0068FF]/25 bg-[#0068FF] px-4 text-sm font-medium text-white transition hover:bg-[#0056d6]"
+              >
+                <ZaloMark />
+                {t.continueZalo}
+              </a>
+            ) : (
+              <p className="rounded-2xl bg-cream/70 px-4 py-3 text-center text-xs leading-5 text-moss">
+                {t.zaloSoon}
+              </p>
+            )}
+          </div>
+
+          <p className="mt-7 text-center text-sm text-moss">
+            {mode === "login" ? (
+              <>
+                {t.noAccount}{" "}
+                <Link
+                  href={`/${locale}/account/register`}
+                  className="font-medium text-citrus underline-offset-2 hover:underline"
+                >
+                  {t.registerLink}
+                </Link>
+              </>
+            ) : (
+              <>
+                {t.hasAccount}{" "}
+                <Link
+                  href={`/${locale}/account/login`}
+                  className="font-medium text-citrus underline-offset-2 hover:underline"
+                >
+                  {t.loginLink}
+                </Link>
+              </>
+            )}
+          </p>
+        </div>
+      </div>
     </div>
+  );
+}
+
+function GoogleMark() {
+  return (
+    <svg className="h-5 w-5" viewBox="0 0 24 24" aria-hidden>
+      <path
+        fill="#EA4335"
+        d="M12 10.2v3.6h5.1c-.2 1.2-1.5 3.5-5.1 3.5-3.1 0-5.6-2.5-5.6-5.6S8.9 6.1 12 6.1c1.7 0 2.9.7 3.6 1.4l2.4-2.4C16.7 3.8 14.6 3 12 3 7 3 3 7 3 12s4 9 9 9c5.2 0 8.6-3.6 8.6-8.8 0-.6-.1-1-.2-1.5H12z"
+      />
+    </svg>
+  );
+}
+
+function ZaloMark() {
+  return (
+    <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-white text-[10px] font-bold tracking-tight text-[#0068FF]">
+      Z
+    </span>
   );
 }
 
