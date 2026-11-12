@@ -32,27 +32,29 @@ export default async function CustomPage({
 
   return (
     <div>
-      <section className="relative min-h-[34vh] overflow-hidden sm:min-h-[38vh]">
-        <Image
-          src={image}
-          alt=""
-          fill
-          priority
-          className="object-cover object-[center_35%]"
-          sizes="100vw"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-paper via-paper/55 to-paper/10" />
-        <div className="relative mx-auto flex min-h-[30vh] max-w-6xl flex-col justify-end px-4 pb-8 pt-20 sm:min-h-[34vh] sm:px-5 sm:pb-10">
-          <h1 className="serif max-w-2xl text-3xl text-forest sm:text-5xl lg:text-6xl">
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0">
+          <Image
+            src={image}
+            alt=""
+            fill
+            priority
+            className="object-cover object-[center_40%]"
+            sizes="100vw"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-paper via-paper/70 to-paper/25" />
+        </div>
+        <div className="relative mx-auto max-w-6xl px-4 pb-6 pt-20 sm:px-5 sm:pb-8 sm:pt-24">
+          <h1 className="serif text-3xl text-forest sm:text-4xl lg:text-5xl">
             {t.custom.title}
           </h1>
-          <p className="mt-3 max-w-xl text-sm leading-6 text-moss sm:leading-7">
+          <p className="mt-3 max-w-none text-sm leading-6 text-moss sm:text-[15px] sm:leading-7">
             {t.custom.intro}
           </p>
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 pb-16 pt-6 sm:px-5 sm:pb-20">
+      <section className="mx-auto max-w-6xl px-4 pb-16 pt-4 sm:px-5 sm:pb-20 sm:pt-5">
         <BouquetBuilder
           locale={locale}
           dictionary={t}
