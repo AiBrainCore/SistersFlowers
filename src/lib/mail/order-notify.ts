@@ -1,4 +1,4 @@
-import { MAILBOX, MAIL_PREVIEW_TO, studioInboxForCity } from "@/lib/mail/config";
+import { MAILBOX, studioInboxForCity } from "@/lib/mail/config";
 import { sendMail } from "@/lib/mail/send";
 import {
   buildInquiryAckEmail,
@@ -48,7 +48,6 @@ export async function notifyOrderEmails(
       subject: studio.subject,
       html: studio.html,
       replyTo: payload.email || MAILBOX.replyTo,
-      bcc: process.env.MAIL_BCC_OWNERS === "0" ? undefined : MAIL_PREVIEW_TO,
       citySlug: payload.citySlug,
       transactional: true,
       eventKey: payload.orderId
@@ -111,7 +110,6 @@ export async function notifyInquiryEmails(
       subject: studio.subject,
       html: studio.html,
       replyTo: payload.email || MAILBOX.replyTo,
-      bcc: process.env.MAIL_BCC_OWNERS === "0" ? undefined : MAIL_PREVIEW_TO,
       citySlug: payload.citySlug,
       transactional: true,
       eventKey: payload.inquiryId

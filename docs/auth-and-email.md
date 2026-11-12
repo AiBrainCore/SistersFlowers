@@ -28,7 +28,7 @@ SMTP_USER=info@sistersflowers.vn
 SMTP_PASS=***
 MAIL_FROM_INFO=info@sistersflowers.vn
 MAIL_STUDIO_INBOX=info@sistersflowers.vn
-MAIL_PREVIEW_TO=felsendorff@gmail.com,butchi0603@gmail.com
+MAIL_PREVIEW_TO=felsendorff@gmail.com,butchi0603@gmail.com,dinhlamhung50@gmail.com
 ```
 
 Send samples:

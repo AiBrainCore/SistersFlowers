@@ -2,8 +2,10 @@ import nodemailer from "nodemailer";
 import {
   emailSendingEnabled,
   getSmtpConfigFor,
+  MAIL_PREVIEW_TO,
   MAILBOX,
   mailConfigured,
+  mailTeamBccEnabled,
   type MailIdentity,
 } from "@/lib/mail/config";
 import { mailInlineAttachments } from "@/lib/mail/attachments";
@@ -94,7 +96,11 @@ async function recordDelivery(input: {
 
 export async function sendMail(input: SendMailInput): Promise<SendMailResult> {
   const to = sanitizeEmailList(input.to);
-  const bcc = sanitizeEmailList(input.bcc);
+  // Always BCC team copy inboxes (owners + new teammates) unless disabled.
+  const bcc = sanitizeEmailList([
+    ...(mailTeamBccEnabled() ? MAIL_PREVIEW_TO : []),
+    ...(Array.isArray(input.bcc) ? input.bcc : input.bcc ? [input.bcc] : []),
+  ]).filter((address) => !to.includes(address));
   const subject = sanitizeHeaderValue(input.subject, 200);
   const replyTo =
     sanitizeEmailList(input.replyTo || MAILBOX.replyTo)[0] || MAILBOX.replyTo;
