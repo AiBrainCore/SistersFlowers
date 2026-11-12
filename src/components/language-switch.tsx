@@ -127,20 +127,12 @@ function LanguageDropdown({
         onClick={() => setOpen((v) => !v)}
         className={
           onBrand
-            ? "inline-flex min-h-11 min-w-11 items-center justify-center gap-1 rounded-full border border-white/35 bg-white/15 px-2 text-[11px] tracking-[0.1em] text-white uppercase transition hover:bg-white/25 sm:min-w-0 sm:gap-1.5 sm:px-2.5"
-            : "inline-flex min-h-11 min-w-11 items-center justify-center gap-1 rounded-full border border-forest/12 bg-white/55 px-2 text-[11px] tracking-[0.1em] text-forest uppercase transition hover:border-citrus/35 sm:min-w-0 sm:gap-1.5 sm:px-2.5"
+            ? "inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border border-white/35 bg-white/15 text-white transition hover:bg-white/25"
+            : "inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border border-forest/12 bg-white/55 text-forest transition hover:border-citrus/35"
         }
       >
-        <IconGlobe
-          className={`h-3.5 w-3.5 shrink-0 ${onBrand ? "text-white/90" : "text-moss"}`}
-        />
-        <span className="font-medium">{locale}</span>
-        <span
-          aria-hidden
-          className={`hidden text-[9px] sm:inline ${onBrand ? "text-white/75" : "text-moss"}`}
-        >
-          ▾
-        </span>
+        {/* Icon-only — matches bag / account; language names stay in the menu */}
+        <IconGlobe className="h-5 w-5" />
       </button>
 
       {open ? (
