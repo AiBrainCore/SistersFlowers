@@ -8,6 +8,7 @@ import { CartProvider } from "@/context/cart-context";
 import { LocationProvider } from "@/context/location-context";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { StudiosSection } from "@/components/studios-section";
 import { CartDrawer } from "@/components/cart-drawer";
 import { LocationBanner } from "@/components/location-banner";
 import { LocaleHtmlLang } from "@/components/locale-html-lang";
@@ -49,10 +50,14 @@ export default async function LocaleLayout({
             dictionary={dictionary}
           />
           <main className="flex-1">{children}</main>
-          <SiteFooter
+          <StudiosSection
             locale={locale as Locale}
             dictionary={dictionary}
             studios={STUDIO_CONTACTS}
+          />
+          <SiteFooter
+            locale={locale as Locale}
+            dictionary={dictionary}
             whatsappDigits={STUDIO_PHONE_DIGITS}
           />
           <CartDrawer locale={locale as Locale} dictionary={dictionary} />

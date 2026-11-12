@@ -365,6 +365,15 @@ export const vi = {
     studios: "Ghé thăm",
     directions: "Chỉ đường",
     call: "Gọi",
+    seo: "Sisters Flowers là tiệm hoa thủ công tại Đà Nẵng và Đà Lạt — bó hoa tươi, thiết kế theo yêu cầu, hoa cưới và giao hàng trong ngày.",
+    seoExtra:
+      "Đặt online bằng tiếng Việt hoặc English, rồi nhận tại studio hoặc giao tận nơi ở cả hai thành phố.",
+    colShop: "Cửa hàng",
+    colStudio: "Studio",
+    colLegal: "Pháp lý",
+    legalBlurb:
+      "Đơn trên website được studio xác nhận trước khi thanh toán. Chúng tôi chỉ dùng thông tin của bạn để hoàn thành đơn.",
+    legalContact: "Gửi câu hỏi",
     rights:
       "© {years} Sisters Flowers. Mọi quyền được bảo lưu.",
   },
