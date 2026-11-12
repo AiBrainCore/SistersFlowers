@@ -383,3 +383,237 @@ export async function redeemVoucherAdminAction(formData: FormData) {
   }
   redirect("/admin/vouchers?redeemed=1");
 }
+
+export async function createStudioOrderAction(formData: FormData) {
+  await requireAdmin();
+
+  const {
+    allocateSaleCode,
+    parseStudioLines,
+  } = await import("@/lib/studio-orders");
+  const { makeOrderReference } = await import("@/lib/orders");
+
+  const branchId = String(formData.get("branchId") || "").trim();
+  const customerName = String(formData.get("customerName") || "").trim();
+  const phone = String(formData.get("phone") || "").trim();
+  const recipientName = String(formData.get("recipientName") || "").trim();
+  const recipientPhone = String(formData.get("recipientPhone") || "").trim();
+  const fulfillment =
+    String(formData.get("fulfillment") || "delivery") === "pickup"
+      ? "pickup"
+      : "delivery";
+  const address = String(formData.get("address") || "").trim();
+  const deliveryDate = String(formData.get("deliveryDate") || "").trim();
+  const deliveryTime = String(formData.get("deliveryTime") || "").trim();
+  const cardMessage = String(formData.get("cardMessage") || "").trim();
+  const notes = String(formData.get("notes") || "").trim();
+  const paymentStatusRaw = String(formData.get("paymentStatus") || "unpaid");
+  const paymentStatus = ["unpaid", "deposit", "paid", "cod"].includes(
+    paymentStatusRaw,
+  )
+    ? paymentStatusRaw
+    : "unpaid";
+  const depositAmount = Math.max(
+    0,
+    Math.round(Number(formData.get("depositAmount") || 0) || 0),
+  );
+  const deliveryFee = Math.max(
+    0,
+    Math.round(Number(formData.get("deliveryFee") || 0) || 0),
+  );
+  const lines = parseStudioLines(String(formData.get("lines") || ""));
+
+  const branch = branchId
+    ? await prisma.branch.findUnique({
+        where: { id: branchId },
+        include: { city: true },
+      })
+    : null;
+
+  if (!branch || !customerName || !lines.length) {
+    redirect("/admin/studio-orders/new?error=1");
+  }
+
+  const subtotal = lines.reduce((sum, line) => sum + line.qty * line.price, 0);
+  const fee = fulfillment === "delivery" ? deliveryFee : 0;
+  const deliveryTotal = subtotal + fee;
+  const saleCode = await allocateSaleCode(branch.slug);
+  const reference = makeOrderReference();
+  const zone =
+    fulfillment === "pickup"
+      ? `pickup:${branch.city.slug}`
+      : `studio:${branch.city.slug}`;
+
+  const order = await prisma.order.create({
+    data: {
+      reference,
+      saleCode,
+      source: "studio",
+      branchId: branch.id,
+      locale: "vi",
+      customerName,
+      phone: phone || "—",
+      zone,
+      deliveryFee: fee || null,
+      address:
+        fulfillment === "pickup"
+          ? branch.addressVi || branch.addressEn || "Pickup at studio"
+          : address || "—",
+      deliveryDate: deliveryDate || null,
+      deliveryTime: deliveryTime || null,
+      fulfillment,
+      notes: notes || null,
+      recipientName: recipientName || null,
+      recipientPhone: recipientPhone || null,
+      cardMessage: cardMessage || null,
+      subtotal,
+      deliveryTotal,
+      paymentStatus,
+      depositAmount: paymentStatus === "deposit" ? depositAmount : 0,
+      status: "new",
+      items: {
+        create: lines.map((line, index) => ({
+          slug: `studio-line-${index + 1}`,
+          name: line.name,
+          price: line.price,
+          qty: line.qty,
+          image: "",
+          kind: "studio",
+        })),
+      },
+      statusHistory: {
+        create: {
+          fromStatus: null,
+          toStatus: "new",
+          note: "Studio order created",
+          actor: "admin",
+        },
+      },
+      payments:
+        paymentStatus === "unpaid"
+          ? undefined
+          : {
+              create: {
+                kind:
+                  paymentStatus === "deposit"
+                    ? "deposit"
+                    : paymentStatus === "cod"
+                      ? "cod"
+                      : "full",
+                method: paymentStatus === "cod" ? "cash" : "other",
+                amount:
+                  paymentStatus === "deposit"
+                    ? depositAmount
+                    : paymentStatus === "paid"
+                      ? deliveryTotal
+                      : deliveryTotal,
+                seenAt: new Date(),
+                note: "Recorded at create",
+              },
+            },
+    },
+  });
+
+  revalidatePath("/admin/studio-orders");
+  redirect(`/admin/studio-orders?created=${order.saleCode || order.reference}`);
+}
+
+export async function advanceStudioOrderAction(formData: FormData) {
+  await requireAdmin();
+  const studio = await import("@/lib/studio-orders");
+
+  const id = String(formData.get("id") || "");
+  const day = String(formData.get("day") || "");
+  if (!id) redirect("/admin/studio-orders");
+
+  const order = await prisma.order.findUnique({ where: { id } });
+  if (!order || order.source !== "studio") {
+    redirect("/admin/studio-orders");
+  }
+
+  const current = order.status as (typeof studio.STUDIO_STATUSES)[number];
+  const next = studio.STUDIO_NEXT[current];
+  if (!next) {
+    redirect(day ? `/admin/studio-orders?day=${day}` : "/admin/studio-orders");
+  }
+
+  if (next === "making" && !studio.canStartMaking(order.paymentStatus)) {
+    redirect(
+      day
+        ? `/admin/studio-orders?day=${day}&needPayment=1`
+        : "/admin/studio-orders?needPayment=1",
+    );
+  }
+
+  await prisma.$transaction([
+    prisma.order.update({
+      where: { id },
+      data: { status: next, version: { increment: 1 } },
+    }),
+    prisma.orderStatusHistory.create({
+      data: {
+        orderId: id,
+        fromStatus: current,
+        toStatus: next,
+        actor: "admin",
+      },
+    }),
+  ]);
+
+  revalidatePath("/admin/studio-orders");
+  redirect(day ? `/admin/studio-orders?day=${day}` : "/admin/studio-orders");
+}
+
+export async function markStudioPaymentAction(formData: FormData) {
+  await requireAdmin();
+  const id = String(formData.get("id") || "");
+  const day = String(formData.get("day") || "");
+  const mode = String(formData.get("mode") || "paid");
+  const amount = Math.max(0, Math.round(Number(formData.get("amount") || 0) || 0));
+
+  if (!id) redirect("/admin/studio-orders");
+  const order = await prisma.order.findUnique({ where: { id } });
+  if (!order || order.source !== "studio") {
+    redirect("/admin/studio-orders");
+  }
+
+  const paymentStatus = mode === "deposit" ? "deposit" : "paid";
+  const depositAmount =
+    paymentStatus === "deposit"
+      ? amount || order.depositAmount || Math.round(order.deliveryTotal / 2)
+      : order.depositAmount;
+
+  await prisma.$transaction([
+    prisma.order.update({
+      where: { id },
+      data: {
+        paymentStatus,
+        depositAmount: paymentStatus === "deposit" ? depositAmount : order.depositAmount,
+        version: { increment: 1 },
+      },
+    }),
+    prisma.orderPayment.create({
+      data: {
+        orderId: id,
+        kind: paymentStatus === "deposit" ? "deposit" : "full",
+        method: "other",
+        amount:
+          paymentStatus === "deposit" ? depositAmount : order.deliveryTotal,
+        seenAt: new Date(),
+        note: "Marked by admin",
+      },
+    }),
+    prisma.orderStatusHistory.create({
+      data: {
+        orderId: id,
+        fromStatus: order.status,
+        toStatus: order.status,
+        note: `payment:${paymentStatus}`,
+        actor: "admin",
+      },
+    }),
+  ]);
+
+  revalidatePath("/admin/studio-orders");
+  redirect(day ? `/admin/studio-orders?day=${day}` : "/admin/studio-orders");
+}
