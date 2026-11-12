@@ -51,13 +51,10 @@ export default async function ShopPage({
         className="pointer-events-none absolute inset-x-0 top-0 h-64 bg-[radial-gradient(ellipse_at_top,rgba(176,84,44,0.08),transparent_60%)]"
       />
       <div className="relative mx-auto max-w-6xl px-4 py-10 sm:px-5 sm:py-16">
-        <p className="text-[11px] tracking-[0.28em] text-citrus uppercase">
-          {t.shop.kicker}
-        </p>
-        <h1 className="serif mt-3 max-w-2xl text-4xl text-forest sm:text-5xl">
+        <h1 className="serif max-w-2xl text-4xl text-forest sm:text-5xl">
           {t.shop.title}
         </h1>
-        <p className="mt-4 max-w-xl text-sm leading-7 text-moss">{t.shop.intro}</p>
+        <p className="mt-3 max-w-xl text-sm leading-7 text-moss">{t.shop.intro}</p>
 
         <DeliveryCityBar locale={locale} dictionary={t} />
 

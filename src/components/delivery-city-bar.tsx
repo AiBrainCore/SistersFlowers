@@ -48,20 +48,15 @@ export function DeliveryCityBar({
     : "";
 
   return (
-    <div className="relative mt-6 rounded-2xl border border-forest/10 bg-cream/70 px-4 py-3.5 sm:px-5">
+    <div className="relative mt-5 rounded-2xl border border-forest/10 bg-cream/70 px-4 py-2.5 sm:px-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="min-w-0">
-          <p className="text-[11px] tracking-[0.18em] text-citrus uppercase">
+        <p className="flex min-w-0 items-center gap-2 text-forest">
+          <span className="text-[11px] tracking-[0.16em] text-citrus uppercase">
             {t.deliveringIn}
-          </p>
-          <p className="mt-1 flex items-center gap-1.5 text-sm text-forest">
-            <IconPin className="h-3.5 w-3.5 shrink-0 text-citrus" />
-            <span className="serif text-lg leading-none">{cityName}</span>
-          </p>
-          <p className="mt-1.5 max-w-md text-xs leading-5 text-moss">
-            {t.switchNote}
-          </p>
-        </div>
+          </span>
+          <IconPin className="h-3.5 w-3.5 shrink-0 text-citrus" />
+          <span className="serif text-lg leading-none">{cityName}</span>
+        </p>
         <button
           type="button"
           aria-expanded={open}
