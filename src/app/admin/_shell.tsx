@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
@@ -21,7 +22,15 @@ export async function AdminShell({
   return (
     <div className="admin-shell">
       <aside className="admin-nav">
-        <p className="admin-nav-brand">Sisters</p>
+        <Link href="/admin" className="admin-nav-brand" aria-label="Sisters Flowers">
+          <Image
+            src="/brand/mark-white.png"
+            alt="Sisters Flowers"
+            width={44}
+            height={44}
+            priority
+          />
+        </Link>
         <nav className="admin-nav-links">
           <Link href="/admin">{t.nav.dashboard}</Link>
           <Link href="/admin/products">{t.nav.products}</Link>
@@ -33,17 +42,17 @@ export async function AdminShell({
           <Link href="/admin/inquiries">{t.nav.inquiries}</Link>
         </nav>
         <div className="admin-nav-foot">
-          <Link href={`/${locale}/shop`}>{t.nav.viewShop}</Link>
-          <AdminLangSwitch locale={locale} />
-          <form action={logoutAction}>
-            <button
-              type="submit"
-              className="admin-btn secondary"
-              style={{ color: "#f6f1e8", borderColor: "rgba(246,241,232,0.3)" }}
-            >
-              {t.nav.logout}
-            </button>
-          </form>
+          <Link href={`/${locale}/shop`} className="admin-nav-shop">
+            {t.nav.viewShop}
+          </Link>
+          <div className="admin-nav-tools">
+            <AdminLangSwitch locale={locale} />
+            <form action={logoutAction}>
+              <button type="submit" className="admin-btn secondary admin-logout">
+                {t.nav.logout}
+              </button>
+            </form>
+          </div>
         </div>
       </aside>
       <main className="admin-main">

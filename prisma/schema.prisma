@@ -121,18 +121,21 @@ model Order {
   media          OrderMedia[]
 }
 
-/// Customer reference photos for a studio order (private path under /studio-orders).
+/// Reference photos — preferably per order line item.
 model OrderMedia {
-  id            String   @id @default(cuid())
+  id            String     @id @default(cuid())
   orderId       String
-  order         Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  order         Order      @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderItemId   String?
+  orderItem     OrderItem? @relation(fields: [orderItemId], references: [id], onDelete: SetNull)
   url           String
   mime          String?
-  sortOrder     Int      @default(0)
+  sortOrder     Int        @default(0)
   legacyDriveId String?
-  createdAt     DateTime @default(now())
+  createdAt     DateTime   @default(now())
 
   @@index([orderId, sortOrder])
+  @@index([orderItemId])
 }
 
 /// Append-only status / payment gate events for studio + shop orders.
@@ -190,6 +193,7 @@ model OrderItem {
   redeemedAt         DateTime?
   /// Amount Sisters remits to partner after commission (face value − commission)
   remitAmount        Int?
+  media              OrderMedia[]
 }
 
 model Inquiry {

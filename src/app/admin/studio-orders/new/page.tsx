@@ -34,6 +34,7 @@ export default async function AdminNewStudioOrderPage({
           id: b.id,
           nameEn: b.nameEn,
           nameVi: b.nameVi,
+          slug: b.slug,
         }))}
       />
     </AdminShell>

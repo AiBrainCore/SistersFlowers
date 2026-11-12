@@ -465,36 +465,6 @@ export async function createStudioOrderAction(formData: FormData) {
       ? `pickup:${branch.city.slug}`
       : `studio:${branch.city.slug}`;
 
-  const photoFiles = formData
-    .getAll("photos")
-    .filter((value): value is File => value instanceof File && value.size > 0)
-    .slice(0, 6);
-
-  const mediaUrls: { url: string; mime: string | null; sortOrder: number }[] =
-    [];
-  if (photoFiles.length) {
-    const { mkdir, writeFile } = await import("fs/promises");
-    const path = await import("path");
-    const dir = path.join(process.cwd(), "public", "studio-orders");
-    await mkdir(dir, { recursive: true });
-    for (let i = 0; i < photoFiles.length; i++) {
-      const file = photoFiles[i];
-      if (file.size > 6 * 1024 * 1024) continue;
-      const type = file.type || "";
-      if (!["image/jpeg", "image/png", "image/webp"].includes(type)) continue;
-      const ext =
-        type === "image/png" ? ".png" : type === "image/webp" ? ".webp" : ".jpg";
-      const filename = `${Date.now()}-${i}${ext}`;
-      const bytes = Buffer.from(await file.arrayBuffer());
-      await writeFile(path.join(dir, filename), bytes);
-      mediaUrls.push({
-        url: `/studio-orders/${filename}`,
-        mime: type,
-        sortOrder: i,
-      });
-    }
-  }
-
   const order = await prisma.order.create({
     data: {
       reference,
@@ -522,21 +492,11 @@ export async function createStudioOrderAction(formData: FormData) {
       paymentStatus,
       depositAmount: paymentStatus === "deposit" ? depositAmount : 0,
       status: "new",
-      items: {
-        create: lines.map((line, index) => ({
-          slug: `studio-line-${index + 1}`,
-          name: line.name,
-          price: line.price,
-          qty: line.qty,
-          image: "",
-          kind: "studio",
-        })),
-      },
       statusHistory: {
         create: {
           fromStatus: null,
           toStatus: "new",
-          note: "Studio order created",
+          note: "Order created",
           actor: "admin",
         },
       },
@@ -562,13 +522,76 @@ export async function createStudioOrderAction(formData: FormData) {
                 note: "Recorded at create",
               },
             },
-      media: mediaUrls.length
-        ? {
-            create: mediaUrls,
-          }
-        : undefined,
     },
   });
+
+  const { mkdir, writeFile } = await import("fs/promises");
+  const path = await import("path");
+  const dir = path.join(process.cwd(), "public", "studio-orders");
+  let wroteDir = false;
+
+  for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+    const line = lines[lineIndex];
+    const files = formData
+      .getAll(`linePhotos_${lineIndex}`)
+      .filter((value): value is File => value instanceof File && value.size > 0)
+      .slice(0, 4);
+
+    let primaryImage = "";
+    const mediaCreates: {
+      orderId: string;
+      url: string;
+      mime: string;
+      sortOrder: number;
+    }[] = [];
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      if (file.size > 6 * 1024 * 1024) continue;
+      const type = file.type || "";
+      if (!["image/jpeg", "image/png", "image/webp"].includes(type)) continue;
+      if (!wroteDir) {
+        await mkdir(dir, { recursive: true });
+        wroteDir = true;
+      }
+      const ext =
+        type === "image/png" ? ".png" : type === "image/webp" ? ".webp" : ".jpg";
+      const filename = `${order.id}-${lineIndex}-${i}${ext}`;
+      await writeFile(
+        path.join(dir, filename),
+        Buffer.from(await file.arrayBuffer()),
+      );
+      const url = `/studio-orders/${filename}`;
+      if (!primaryImage) primaryImage = url;
+      mediaCreates.push({
+        orderId: order.id,
+        url,
+        mime: type,
+        sortOrder: i,
+      });
+    }
+
+    const item = await prisma.orderItem.create({
+      data: {
+        orderId: order.id,
+        slug: `studio-line-${lineIndex + 1}`,
+        name: line.name,
+        price: line.price,
+        qty: line.qty,
+        image: primaryImage,
+        kind: "studio",
+      },
+    });
+
+    if (mediaCreates.length) {
+      await prisma.orderMedia.createMany({
+        data: mediaCreates.map((m) => ({
+          ...m,
+          orderItemId: item.id,
+        })),
+      });
+    }
+  }
 
   revalidatePath("/admin/studio-orders");
   redirect(`/admin/studio-orders?created=${order.saleCode || order.reference}`);
