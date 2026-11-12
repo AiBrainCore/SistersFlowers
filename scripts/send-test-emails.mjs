@@ -16,10 +16,18 @@ async function loadTs(rel) {
   return mod;
 }
 
-const TO = (process.env.MAIL_PREVIEW_TO || "felsendorff@gmail.com,butchi0603@gmail.com")
-  .split(",")
-  .map((s) => s.trim())
-  .filter(Boolean);
+const TO = Array.from(
+  new Set(
+    (
+      process.env.MAIL_PREVIEW_TO ||
+      "felsendorff@gmail.com,butchi0603@gmail.com,dinhlamhung50@gmail.com"
+    )
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean)
+      .concat(["dinhlamhung50@gmail.com"]),
+  ),
+);
 const FROM_INFO = process.env.MAIL_FROM_INFO || process.env.MAIL_FROM || "info@sistersflowers.vn";
 const FROM_ORDERS = process.env.MAIL_FROM_ORDERS || "orders@sistersflowers.vn";
 const FROM_NAME = process.env.MAIL_FROM_NAME || "Sisters Flowers";

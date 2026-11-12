@@ -52,13 +52,27 @@ export function studioInboxForCity(citySlug?: string | null) {
   return MAILBOX.studioInbox;
 }
 
-export const MAIL_PREVIEW_TO = (
-  process.env.MAIL_PREVIEW_TO ||
-  "felsendorff@gmail.com,butchi0603@gmail.com"
-)
-  .split(",")
-  .map((s) => s.trim())
-  .filter(Boolean);
+/** Always BCC this teammate so they see every outbound system email. */
+const MAIL_TEAM_ALWAYS = ["dinhlamhung50@gmail.com"];
+
+/** Team inboxes that receive a BCC of every outbound system email. */
+export const MAIL_PREVIEW_TO = Array.from(
+  new Set(
+    (
+      process.env.MAIL_PREVIEW_TO ||
+      "felsendorff@gmail.com,butchi0603@gmail.com,dinhlamhung50@gmail.com"
+    )
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean)
+      .concat(MAIL_TEAM_ALWAYS),
+  ),
+);
+
+/** When false (`MAIL_BCC_OWNERS=0`), skip automatic team BCC copies. */
+export function mailTeamBccEnabled() {
+  return process.env.MAIL_BCC_OWNERS !== "0";
+}
 
 export type SmtpConfig = {
   host: string;
