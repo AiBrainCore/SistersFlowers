@@ -40,7 +40,8 @@ export const en = {
     orContinue: "Or continue with",
     continueGoogle: "Continue with Google",
     continueZalo: "Continue with Zalo",
-    zaloSoon: "Zalo login will appear here once the Zalo app is connected.",
+    zaloSoon:
+      "Phone sign-in via Zalo appears here once Zalo App ID + Secret are set on the server.",
     noAccount: "New here?",
     hasAccount: "Already have an account?",
     loginLink: "Sign in",
