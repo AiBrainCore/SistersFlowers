@@ -110,12 +110,67 @@
   grid-template-columns: 1fr 1fr;
 }
 
+.admin-grid-3 {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 1.4fr 0.7fr 1fr;
+}
+
+.admin-section {
+  margin: 8px 0 18px;
+  padding: 16px;
+  border: 1px solid rgba(31, 42, 36, 0.1);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.admin-section h2 {
+  margin: 0 0 14px;
+  font-family: serif;
+  font-size: 22px;
+  font-weight: 500;
+}
+
+.admin-choice-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+}
+
+.admin-choice {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 8px 12px;
+  border: 1px solid rgba(31, 42, 36, 0.14);
+  border-radius: 999px;
+  background: #fff;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.admin-choice input {
+  width: auto;
+  margin: 0;
+  accent-color: #1f2a24;
+}
+
+.admin-field input:focus,
+.admin-field textarea:focus,
+.admin-field select:focus {
+  outline: none;
+  border-color: rgba(176, 84, 44, 0.55);
+  box-shadow: 0 0 0 3px rgba(176, 84, 44, 0.12);
+}
+
 @media (max-width: 900px) {
   .admin-shell {
     grid-template-columns: 1fr;
   }
 
-  .admin-grid-2 {
+  .admin-grid-2,
+  .admin-grid-3 {
     grid-template-columns: 1fr;
   }
 }

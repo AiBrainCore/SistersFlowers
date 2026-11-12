@@ -421,7 +421,23 @@ export async function createStudioOrderAction(formData: FormData) {
     0,
     Math.round(Number(formData.get("deliveryFee") || 0) || 0),
   );
-  const lines = parseStudioLines(String(formData.get("lines") || ""));
+
+  const structuredNames = formData.getAll("lineName").map((v) => String(v).trim());
+  const structuredQty = formData.getAll("lineQty").map((v) => String(v).trim());
+  const structuredPrice = formData
+    .getAll("linePrice")
+    .map((v) => String(v).trim());
+  const structuredLines: { name: string; qty: number; price: number }[] = [];
+  for (let i = 0; i < structuredNames.length; i++) {
+    const name = structuredNames[i];
+    if (!name) continue;
+    const qty = Math.max(1, Number(structuredQty[i]) || 1);
+    const price = Math.max(0, Math.round(Number(structuredPrice[i]) || 0));
+    if (!price) continue;
+    structuredLines.push({ name, qty, price });
+  }
+  const extraLines = parseStudioLines(String(formData.get("lines") || ""));
+  const lines = [...structuredLines, ...extraLines];
 
   const branch = branchId
     ? await prisma.branch.findUnique({
