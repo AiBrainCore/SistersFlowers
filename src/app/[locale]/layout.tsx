@@ -8,16 +8,12 @@ import { CartProvider } from "@/context/cart-context";
 import { LocationProvider } from "@/context/location-context";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
-import { StudiosSection } from "@/components/studios-section";
 import { CartDrawer } from "@/components/cart-drawer";
 import { LocationBanner } from "@/components/location-banner";
 import { LocaleHtmlLang } from "@/components/locale-html-lang";
 import { ShopBotRoot } from "@/components/shop-bot/ShopBotRoot";
 import { WebMcpTools } from "@/components/webmcp-tools";
-import {
-  STUDIO_CONTACTS,
-  STUDIO_PHONE_DIGITS,
-} from "@/lib/studio-contacts";
+import { STUDIO_PHONE_DIGITS } from "@/lib/studio-contacts";
 
 export function generateStaticParams() {
   return [{ locale: "vi" }, { locale: "en" }];
@@ -50,11 +46,6 @@ export default async function LocaleLayout({
             dictionary={dictionary}
           />
           <main className="flex-1">{children}</main>
-          <StudiosSection
-            locale={locale as Locale}
-            dictionary={dictionary}
-            studios={STUDIO_CONTACTS}
-          />
           <SiteFooter
             locale={locale as Locale}
             dictionary={dictionary}
