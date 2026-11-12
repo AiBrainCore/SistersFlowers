@@ -13,20 +13,20 @@
 }
 
 .admin-nav {
-  background: #1f2a24;
-  color: #f6f1e8;
+  background: #b0542c;
+  color: #fffdf8;
   padding: 28px 20px;
 }
 
 .admin-nav a {
   display: block;
-  color: #f6f1e8;
+  color: #fffdf8;
   text-decoration: none;
   font-size: 13px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   padding: 10px 0;
-  opacity: 0.85;
+  opacity: 0.9;
 }
 
 .admin-nav a:hover {
@@ -62,8 +62,8 @@
   display: inline-block;
   border: 0;
   border-radius: 999px;
-  background: #1f2a24;
-  color: #f6f1e8;
+  background: #b0542c;
+  color: #fffdf8;
   padding: 10px 18px;
   font-size: 12px;
   letter-spacing: 0.12em;
@@ -268,8 +268,8 @@
   margin-top: 16px;
   padding: 12px 14px;
   border-radius: 16px;
-  background: #1f2a24;
-  color: #f6f1e8;
+  background: #b0542c;
+  color: #fffdf8;
 }
 
 .studio-sticky-total {
@@ -284,7 +284,8 @@
 }
 
 .studio-sticky .admin-btn {
-  background: #b0542c;
+  background: #fffdf8;
+  color: #b0542c;
   flex-shrink: 0;
 }
 
@@ -310,12 +311,12 @@
 
 .admin-nav-shop {
   display: block;
-  color: #f6f1e8;
+  color: #fffdf8;
   text-decoration: none;
   font-size: 13px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  opacity: 0.85;
+  opacity: 0.9;
 }
 
 .admin-nav-tools {
@@ -331,25 +332,26 @@
 }
 
 .admin-lang-btn {
-  border: 1px solid rgba(246, 241, 232, 0.3);
+  border: 1px solid rgba(255, 253, 248, 0.45);
   background: transparent;
-  color: #f6f1e8;
+  color: #fffdf8;
   border-radius: 999px;
   padding: 6px 10px;
   font-size: 11px;
   letter-spacing: 0.08em;
   cursor: pointer;
-  opacity: 0.7;
+  opacity: 0.85;
 }
 
 .admin-lang-btn.on {
   opacity: 1;
-  border-color: rgba(246, 241, 232, 0.9);
+  background: rgba(255, 253, 248, 0.18);
+  border-color: #fffdf8;
 }
 
 .admin-logout {
-  color: #f6f1e8 !important;
-  border-color: rgba(246, 241, 232, 0.3) !important;
+  color: #fffdf8 !important;
+  border-color: rgba(255, 253, 248, 0.45) !important;
   padding: 6px 12px !important;
   font-size: 11px !important;
 }
@@ -404,7 +406,7 @@
     padding: 8px 10px;
     white-space: nowrap;
     border-radius: 999px;
-    background: rgba(246, 241, 232, 0.08);
+    background: rgba(255, 253, 248, 0.14);
     font-size: 11px;
   }
 
