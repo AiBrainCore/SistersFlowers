@@ -123,7 +123,7 @@ export function CatalogFilters({
   );
 
   const chipClass = (active: boolean) =>
-    `min-h-11 rounded-full px-4 py-2.5 text-[11px] tracking-[0.12em] uppercase transition ${
+    `min-h-10 rounded-full px-3.5 py-2 text-[11px] tracking-[0.12em] uppercase transition ${
       active
         ? "bg-citrus text-ivory"
         : "border border-forest/15 bg-white/70 text-moss hover:border-citrus/40"
@@ -249,27 +249,59 @@ export function CatalogFilters({
   );
 
   return (
-    <div className="mt-8 space-y-5">
-      <form onSubmit={onSearchSubmit} className="relative">
-        <label className="sr-only" htmlFor="catalog-search">
-          {t.search}
-        </label>
-        <input
-          id="catalog-search"
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder={t.searchPlaceholder}
-          className="w-full min-h-12 rounded-full border border-forest/15 bg-white px-5 pr-28 text-base shadow-[0_8px_30px_rgba(44,58,48,0.06)] outline-none focus:border-citrus sm:text-sm"
-        />
-        <button
-          type="submit"
-          className="absolute top-1/2 right-2 min-h-10 -translate-y-1/2 rounded-full bg-citrus px-4 text-[11px] tracking-[0.14em] text-ivory uppercase"
-        >
-          {t.search}
-        </button>
-      </form>
+    <div className="mt-4 space-y-3">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+        <form onSubmit={onSearchSubmit} className="relative min-w-0 flex-1">
+          <label className="sr-only" htmlFor="catalog-search">
+            {t.search}
+          </label>
+          <input
+            id="catalog-search"
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder={t.searchPlaceholder}
+            className="w-full min-h-11 rounded-full border border-forest/15 bg-white px-4 pr-28 text-sm outline-none focus:border-citrus"
+          />
+          <button
+            type="submit"
+            className="absolute top-1/2 right-1.5 min-h-9 -translate-y-1/2 rounded-full bg-citrus px-3.5 text-[11px] tracking-[0.12em] text-ivory uppercase"
+          >
+            {t.search}
+          </button>
+        </form>
+        <div className="flex shrink-0 flex-wrap items-center gap-2">
+          <label className="inline-flex min-h-11 items-center gap-2 rounded-full border border-forest/15 bg-white px-3 text-[11px] tracking-[0.12em] text-moss uppercase">
+            <span className="sr-only sm:not-sr-only">{t.sort}</span>
+            <select
+              value={sort}
+              onChange={(e) => {
+                const next = e.target.value as typeof sort;
+                setSort(next);
+                apply({ sort: next });
+              }}
+              className="max-w-[10.5rem] bg-transparent py-2.5 text-[11px] tracking-[0.08em] text-forest outline-none normal-case sm:max-w-[12rem]"
+            >
+              <option value="featured">{t.sortFeatured}</option>
+              <option value="newest">{t.sortNewest}</option>
+              <option value="price-asc">{t.sortPriceAsc}</option>
+              <option value="price-desc">{t.sortPriceDesc}</option>
+            </select>
+          </label>
+          <button
+            type="button"
+            onClick={() => setPanelOpen(true)}
+            className={`min-h-11 rounded-full border px-4 text-[11px] tracking-[0.14em] uppercase transition ${
+              initial.minPrice != null || initial.maxPrice != null
+                ? "border-citrus/50 bg-citrus/10 text-citrus"
+                : "border-forest/20 bg-white text-forest hover:border-citrus/40"
+            }`}
+          >
+            {t.filters}
+          </button>
+        </div>
+      </div>
 
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-1.5">
         <button
           type="button"
           onClick={() => {
@@ -295,43 +327,11 @@ export function CatalogFilters({
         ))}
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-sm text-moss">
-          <span className="font-medium text-forest">
-            {t.results.replace("{count}", String(resultCount))}
-          </span>
-        </p>
-        <div className="flex flex-wrap items-center gap-2">
-          <label className="inline-flex min-h-11 items-center gap-2 rounded-full border border-forest/15 bg-white/70 px-3 text-[11px] tracking-[0.12em] text-moss uppercase">
-            <span className="sr-only sm:not-sr-only">{t.sort}</span>
-            <select
-              value={sort}
-              onChange={(e) => {
-                const next = e.target.value as typeof sort;
-                setSort(next);
-                apply({ sort: next });
-              }}
-              className="max-w-[10.5rem] bg-transparent py-2.5 text-[11px] tracking-[0.08em] text-forest outline-none normal-case sm:max-w-[12rem]"
-            >
-              <option value="featured">{t.sortFeatured}</option>
-              <option value="newest">{t.sortNewest}</option>
-              <option value="price-asc">{t.sortPriceAsc}</option>
-              <option value="price-desc">{t.sortPriceDesc}</option>
-            </select>
-          </label>
-          <button
-            type="button"
-            onClick={() => setPanelOpen(true)}
-            className={`min-h-11 rounded-full border px-4 text-[11px] tracking-[0.14em] uppercase transition ${
-              initial.minPrice != null || initial.maxPrice != null
-                ? "border-citrus/50 bg-citrus/10 text-citrus"
-                : "border-forest/20 text-forest hover:border-citrus/40"
-            }`}
-          >
-            {t.filters}
-          </button>
-        </div>
-      </div>
+      <p className="text-sm text-moss">
+        <span className="font-medium text-forest">
+          {t.results.replace("{count}", String(resultCount))}
+        </span>
+      </p>
 
       {tags.length > 0 ? (
         <div className="flex flex-wrap items-center gap-2">
