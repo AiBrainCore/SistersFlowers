@@ -11,12 +11,14 @@ import { ProductCard } from "@/components/product-card";
 import { Reveal } from "@/components/reveal";
 import { ImmersiveHero } from "@/components/immersive-hero";
 import { ShopByOccasion } from "@/components/shop-by-occasion";
+import { StudiosSection } from "@/components/studios-section";
 import {
   buildPageMetadata,
   homepageProductListJsonLd,
   organizationJsonLd,
 } from "@/lib/seo";
 import { HERO_BOUQUETS, type HeroBouquetItem } from "@/lib/hero-bouquets";
+import { STUDIO_CONTACTS } from "@/lib/studio-contacts";
 
 const studioImage = "/bouquets/b-12.jpg";
 const personalImage = "/bouquets/b-08.jpg";
@@ -224,6 +226,12 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
           </div>
         </div>
       </section>
+
+      <StudiosSection
+        locale={locale}
+        dictionary={t}
+        studios={STUDIO_CONTACTS}
+      />
     </div>
   );
 }
