@@ -135,7 +135,7 @@ export function BouquetBuilder({
       <div className="grid gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-start lg:gap-12">
         <div className="space-y-10">
           <Step title={t.steps.size} hint={t.hints.size}>
-            <div className="grid gap-3 sm:grid-cols-3">
+            <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
               {builderSizes.map((option) => (
                 <Choice
                   key={option.id}

@@ -42,14 +42,11 @@ export default async function CustomPage({
           sizes="100vw"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-paper via-paper/55 to-paper/10" />
-        <div className="relative mx-auto flex min-h-[34vh] max-w-6xl flex-col justify-end px-4 pb-10 pt-24 sm:min-h-[38vh] sm:px-5 sm:pb-12">
-          <p className="text-[11px] tracking-[0.28em] text-citrus uppercase">
-            {t.custom.kicker}
-          </p>
-          <h1 className="serif mt-3 max-w-2xl text-4xl text-forest sm:text-5xl lg:text-6xl">
+        <div className="relative mx-auto flex min-h-[30vh] max-w-6xl flex-col justify-end px-4 pb-8 pt-20 sm:min-h-[34vh] sm:px-5 sm:pb-10">
+          <h1 className="serif max-w-2xl text-3xl text-forest sm:text-5xl lg:text-6xl">
             {t.custom.title}
           </h1>
-          <p className="mt-4 max-w-xl text-sm leading-7 text-moss">
+          <p className="mt-3 max-w-xl text-sm leading-6 text-moss sm:leading-7">
             {t.custom.intro}
           </p>
         </div>

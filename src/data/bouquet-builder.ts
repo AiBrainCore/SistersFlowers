@@ -19,6 +19,7 @@ export const builderSizes: BuilderOption[] = [
   { id: "mini", price: 450000, swatch: "#e7c6c4" },
   { id: "classic", price: 750000, swatch: "#e86a2b" },
   { id: "grand", price: 1200000, swatch: "#2f3b32" },
+  { id: "luxury", price: 1800000, swatch: "#7a3b2e" },
 ];
 
 export const builderMoods: BuilderOption[] = [
