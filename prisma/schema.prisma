@@ -75,28 +75,82 @@ model Customer {
 model Order {
   id             String      @id @default(cuid())
   reference      String      @unique
+  /// shop = web checkout; studio = staff phone / walk-in intake
+  source         String      @default("shop")
+  /// Human sale code for studio (e.g. DN-260412-017). Shop keeps reference.
+  saleCode       String?     @unique
+  branchId       String?
+  branch         Branch?     @relation(fields: [branchId], references: [id], onDelete: SetNull)
   locale         String
   customerName   String
   phone          String
   email          String?
   customerId     String?
   customer       Customer?   @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  /// Stable buyer code when known (e.g. SF-C-00042)
+  buyerCode      String?
   zone           String
   deliveryKm     Int?
   deliveryFee    Int?
   address        String
   deliveryDate   String?
   deliveryTime   String?
+  /// delivery | pickup
+  fulfillment    String      @default("delivery")
   notes          String?
   recipientName  String?
+  recipientPhone String?
+  /// Handwritten card text
+  cardMessage    String?
   hotelName      String?
   roomNumber     String?
   subtotal       Int
   deliveryTotal  Int         @default(0)
+  /// unpaid | deposit | paid | cod
+  paymentStatus  String      @default("unpaid")
+  depositAmount  Int         @default(0)
   status         String      @default("new")
   whatsappUrl    String?
+  /// Optimistic concurrency for studio edits
+  version        Int         @default(1)
   createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
   items          OrderItem[]
+  statusHistory  OrderStatusHistory[]
+  payments       OrderPayment[]
+}
+
+/// Append-only status / payment gate events for studio + shop orders.
+model OrderStatusHistory {
+  id        String   @id @default(cuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  fromStatus String?
+  toStatus  String
+  note      String?
+  /// admin | system | staff:<id>
+  actor     String   @default("admin")
+  createdAt DateTime @default(now())
+
+  @@index([orderId, createdAt])
+}
+
+/// Payment records (deposit / full / COD mark). QR provider wiring comes later.
+model OrderPayment {
+  id        String   @id @default(cuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  /// deposit | full | cod | adjustment
+  kind      String
+  /// vietqr | momo | gateway | cash | transfer | other
+  method    String   @default("other")
+  amount    Int
+  note      String?
+  /// When staff confirmed money was seen
+  seenAt    DateTime?
+  createdAt DateTime @default(now())
+
+  @@index([orderId, createdAt])
 }
 
 model OrderItem {
@@ -223,6 +277,7 @@ model Branch {
   sortOrder Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  orders    Order[]
 
   @@unique([cityId, slug])
 }
