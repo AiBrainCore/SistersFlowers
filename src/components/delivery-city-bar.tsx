@@ -8,8 +8,7 @@ import { useLocation } from "@/context/location-context";
 import { IconPin } from "@/components/nav-icons";
 
 /**
- * Explicit delivery-city control — not a nav menu item.
- * Used on shop / checkout so testers understand city = where flowers are delivered.
+ * Compact studio/city switcher — two shops stay visually clear, without a tall empty bar.
  */
 export function DeliveryCityBar({
   locale,
@@ -20,14 +19,11 @@ export function DeliveryCityBar({
 }) {
   const { cities, activeCity, setCity, pending } = useLocation();
   const { count } = useCart();
-  const [open, setOpen] = useState(false);
   const [pendingSlug, setPendingSlug] = useState<string | null>(null);
   const t = dictionary.location;
-  const cityName = locale === "vi" ? activeCity.nameVi : activeCity.nameEn;
 
   async function applyCity(slug: string) {
     setPendingSlug(null);
-    setOpen(false);
     await setCity(slug);
   }
 
@@ -48,30 +44,15 @@ export function DeliveryCityBar({
     : "";
 
   return (
-    <div className="relative mt-5 rounded-2xl border border-forest/10 bg-cream/70 px-4 py-2.5 sm:px-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="flex min-w-0 items-center gap-2 text-forest">
-          <span className="text-[11px] tracking-[0.16em] text-citrus uppercase">
-            {t.deliveringIn}
-          </span>
-          <IconPin className="h-3.5 w-3.5 shrink-0 text-citrus" />
-          <span className="serif text-lg leading-none">{cityName}</span>
-        </p>
-        <button
-          type="button"
-          aria-expanded={open}
-          onClick={() => setOpen((v) => !v)}
-          className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-full border border-forest/15 bg-white px-4 text-[11px] tracking-[0.14em] text-forest uppercase transition hover:border-citrus/40"
-        >
-          {t.chooseCity}
-        </button>
-      </div>
-
-      {open ? (
+    <div className="relative mt-4">
+      <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+        <span className="text-[11px] tracking-[0.16em] text-citrus uppercase">
+          {t.deliveringIn}
+        </span>
         <div
           role="group"
           aria-label={t.chooseCity}
-          className="mt-3 grid gap-2 sm:grid-cols-2"
+          className="inline-flex rounded-full border border-forest/12 bg-white p-1 shadow-[0_6px_20px_rgba(44,58,48,0.05)]"
         >
           {cities.map((city) => {
             const name = locale === "vi" ? city.nameVi : city.nameEn;
@@ -84,27 +65,24 @@ export function DeliveryCityBar({
                 aria-pressed={selected}
                 disabled={disabled}
                 onClick={() => requestCity(city.slug)}
-                className={`flex min-h-12 items-center justify-between rounded-xl px-3.5 text-left text-sm transition disabled:opacity-45 ${
+                className={`inline-flex min-h-10 items-center gap-1.5 rounded-full px-3.5 text-sm transition disabled:opacity-45 ${
                   selected
                     ? "bg-citrus text-white"
-                    : "border border-forest/10 bg-white text-forest hover:border-citrus/35"
+                    : "text-forest hover:bg-cream/90"
                 }`}
               >
-                <span className="inline-flex items-center gap-2">
-                  <IconPin
-                    className={`h-3.5 w-3.5 ${selected ? "text-white" : "text-citrus"}`}
-                  />
-                  {name}
-                </span>
-                {selected ? <span aria-hidden>✓</span> : null}
+                <IconPin
+                  className={`h-3.5 w-3.5 ${selected ? "text-white" : "text-citrus"}`}
+                />
+                <span className={selected ? "font-medium" : ""}>{name}</span>
               </button>
             );
           })}
         </div>
-      ) : null}
+      </div>
 
       {pendingSlug && pendingCity ? (
-        <div className="glass-menu mt-3 rounded-2xl p-3">
+        <div className="glass-menu mt-3 max-w-md rounded-2xl p-3">
           <p className="text-[10px] tracking-[0.16em] text-moss uppercase">
             {t.switchConfirmTitle}
           </p>

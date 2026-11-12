@@ -50,11 +50,11 @@ export default async function ShopPage({
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-0 h-64 bg-[radial-gradient(ellipse_at_top,rgba(176,84,44,0.08),transparent_60%)]"
       />
-      <div className="relative mx-auto max-w-6xl px-4 py-10 sm:px-5 sm:py-16">
-        <h1 className="serif max-w-2xl text-4xl text-forest sm:text-5xl">
+      <div className="relative mx-auto max-w-6xl px-4 py-8 sm:px-5 sm:py-10">
+        <h1 className="serif max-w-2xl text-3xl text-forest sm:text-4xl">
           {t.shop.title}
         </h1>
-        <p className="mt-3 max-w-xl text-sm leading-7 text-moss">{t.shop.intro}</p>
+        <p className="mt-2 max-w-xl text-sm leading-6 text-moss">{t.shop.intro}</p>
 
         <DeliveryCityBar locale={locale} dictionary={t} />
 
@@ -67,9 +67,9 @@ export default async function ShopPage({
         />
 
         {products.length === 0 ? (
-          <p className="mt-12 text-sm text-moss">{t.shop.empty}</p>
+          <p className="mt-8 text-sm text-moss">{t.shop.empty}</p>
         ) : (
-          <div className="mt-8 grid grid-cols-2 gap-x-3 gap-y-7 sm:gap-x-4 sm:gap-y-10 md:grid-cols-3 lg:grid-cols-4">
+          <div className="mt-6 grid grid-cols-2 gap-x-3 gap-y-7 sm:gap-x-4 sm:gap-y-10 md:grid-cols-3 lg:grid-cols-4">
             {products.map((product) => (
               <ProductCard
                 key={product.slug}
