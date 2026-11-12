@@ -59,9 +59,19 @@ export default async function AdminStudioOrdersPage({
         <Link href="/admin/studio-orders/new" className="admin-btn">
           {t.studio.new}
         </Link>
-        <form method="get" style={{ display: "flex", gap: 8, alignItems: "center" }}>
-          <label style={{ fontSize: 13 }}>
-            {t.studio.date}{" "}
+        <form
+          method="get"
+          className="admin-card"
+          style={{
+            display: "flex",
+            gap: 12,
+            alignItems: "end",
+            padding: "12px 14px",
+            margin: 0,
+          }}
+        >
+          <label className="admin-field" style={{ marginBottom: 0, minWidth: 180 }}>
+            <span>{t.studio.date}</span>
             <input type="date" name="day" defaultValue={day} />
           </label>
           <button type="submit" className="admin-btn secondary">
