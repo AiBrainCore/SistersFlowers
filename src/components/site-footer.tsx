@@ -25,10 +25,7 @@ export function SiteFooter({
   const rights = t.rights.replace("{years}", yearsLabel);
 
   return (
-    <footer
-      data-sf-site-footer
-      className="border-t border-forest/10 bg-cream/55"
-    >
+    <footer className="border-t border-forest/10 bg-cream/55">
       <div className="mx-auto max-w-6xl px-4 py-14 sm:px-5">
         <div className="max-w-xl">
           <Link
