@@ -145,7 +145,7 @@ export const en = {
     kicker: "Studio shop",
     title: "Flowers for every moment.",
     intro:
-      "Handcrafted bouquets and gift-ready wraps from our {city} studio — mix, rose, garden and ribbon finishes.",
+      "Handcrafted bouquets from our {city} studio — mix, rose, garden and ribbon finishes.",
     search: "Search flowers",
     searchPlaceholder: "Name, colour, occasion…",
     categories: "Occasion",

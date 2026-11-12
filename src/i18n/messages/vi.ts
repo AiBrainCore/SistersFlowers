@@ -145,7 +145,7 @@ export const vi = {
     kicker: "Cửa hàng studio",
     title: "Hoa cho mọi khoảnh khắc.",
     intro:
-      "Bó hoa thủ công và gói quà từ studio {city} — mix, hồng, garden và nơ.",
+      "Bó hoa thủ công từ studio {city} — mix, hồng, garden và nơ.",
     search: "Tìm hoa",
     searchPlaceholder: "Tên, màu, dịp…",
     categories: "Dịp",
