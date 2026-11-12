@@ -177,7 +177,7 @@ export const vi = {
       mini: "Nhỏ",
       classic: "Vừa",
       grand: "Lớn",
-      luxury: "Luxury",
+      luxury: "Grand",
     },
     accents: {
       blush: "Hồng dịu",
@@ -300,7 +300,7 @@ export const vi = {
       mini: "Nhỏ",
       classic: "Vừa",
       grand: "Lớn",
-      luxury: "Luxury",
+      luxury: "Grand",
       "soft-blush": "Hồng dịu",
       "bold-rose": "Hồng đậm",
       garden: "Màu vườn",
