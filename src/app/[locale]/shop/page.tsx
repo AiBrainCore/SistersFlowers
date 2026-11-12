@@ -37,7 +37,18 @@ export default async function ShopPage({
   if (!isLocale(locale)) notFound();
   const { dictionary: t, activeCity } = await getStorefrontDictionary(locale);
   const raw = await searchParams;
-  const query = parseCatalogSearchParams(raw);
+  const query = parseCatalogSearchParams(
+    raw as {
+      q?: string | string[];
+      category?: string | string[];
+      min?: string | string[];
+      max?: string | string[];
+      sort?: string | string[];
+      accent?: string | string[];
+      style?: string | string[];
+      size?: string | string[];
+    },
+  );
   const cityProductIds = await listAvailableProductIdsForCity(activeCity.id);
   const [products, categories] = await Promise.all([
     listPublishedProducts({ ...query, cityProductIds }),

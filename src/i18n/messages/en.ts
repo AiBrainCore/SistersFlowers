@@ -170,6 +170,30 @@ export const en = {
     price800to1200: "800k–1.2M",
     priceOver1200: "1.2M+",
     showResults: "Show {count}",
+    sizeLabel: "Size",
+    colorMoodLabel: "Colour mood",
+    styleLabel: "Bouquet style",
+    sizes: {
+      mini: "Mini",
+      classic: "Classic",
+      grand: "Grand",
+      luxury: "Luxury",
+    },
+    accents: {
+      blush: "Blush",
+      rose: "Rose",
+      ivory: "Ivory",
+      sage: "Sage",
+    },
+    styles: {
+      rose: "Rose",
+      mix: "Mix",
+      garden: "Garden",
+      ribbon: "Ribbon",
+      wrapped: "Wrapped",
+    },
+    customHint:
+      "Want wrapping, ribbon and gift extras? Build one with us —",
   },
   product: {
     handmade: "Handmade in {city}",
@@ -236,7 +260,7 @@ export const en = {
     kicker: "Custom bouquet",
     title: "Create a bouquet with us.",
     intro:
-      "Choose size, colour mood, wrapping and ribbon — then add gifts if you like. The estimate updates as you build. Our studio confirms the final price from the day’s flowers.",
+      "Pick a size, colour mood, wrapping and ribbon, then add gifts if you like. The price estimate updates as you choose. We confirm the final amount from today’s flowers.",
   },
   builder: {
     preview: "Your bouquet",
@@ -275,6 +299,7 @@ export const en = {
       mini: "Mini",
       classic: "Classic",
       grand: "Grand",
+      luxury: "Luxury",
       "soft-blush": "Soft blush",
       "bold-rose": "Deep rose",
       garden: "Garden colour",

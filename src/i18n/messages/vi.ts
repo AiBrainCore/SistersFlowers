@@ -170,6 +170,30 @@ export const vi = {
     price800to1200: "800k–1.2M",
     priceOver1200: "1.2M+",
     showResults: "Xem {count}",
+    sizeLabel: "Kích cỡ",
+    colorMoodLabel: "Tone màu",
+    styleLabel: "Kiểu bó",
+    sizes: {
+      mini: "Nhỏ",
+      classic: "Vừa",
+      grand: "Lớn",
+      luxury: "Luxury",
+    },
+    accents: {
+      blush: "Hồng dịu",
+      rose: "Hồng đậm",
+      ivory: "Ngà",
+      sage: "Xanh sage",
+    },
+    styles: {
+      rose: "Hồng",
+      mix: "Mix",
+      garden: "Garden",
+      ribbon: "Nơ",
+      wrapped: "Gói giấy",
+    },
+    customHint:
+      "Muốn chọn giấy gói, nơ và quà kèm? Tạo bó cùng chúng tôi —",
   },
   product: {
     handmade: "Làm thủ công tại {city}",
@@ -236,7 +260,7 @@ export const vi = {
     kicker: "Bó theo ý bạn",
     title: "Cùng Sisters tạo bó hoa.",
     intro:
-      "Chọn cỡ bó, tone màu, giấy gói và nơ — rồi thêm quà kèm nếu muốn. Ước tính cập nhật ngay khi bạn chọn. Tiệm sẽ xác nhận giá cuối theo hoa trong ngày.",
+      "Chọn kích cỡ, tone màu, giấy gói và nơ, rồi thêm quà nếu muốn. Giá ước tính đổi theo từng lựa chọn. Tiệm xác nhận giá cuối theo hoa trong ngày.",
   },
   builder: {
     preview: "Bó của bạn",
@@ -276,6 +300,7 @@ export const vi = {
       mini: "Nhỏ",
       classic: "Vừa",
       grand: "Lớn",
+      luxury: "Luxury",
       "soft-blush": "Hồng dịu",
       "bold-rose": "Hồng đậm",
       garden: "Màu vườn",

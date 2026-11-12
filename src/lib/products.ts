@@ -12,14 +12,38 @@ const categoryInclude = {
 
 export type CatalogSort = "newest" | "price-asc" | "price-desc" | "featured";
 
+export type CatalogSizeBand = "mini" | "classic" | "grand" | "luxury";
+export type CatalogStyle = "rose" | "mix" | "garden" | "ribbon" | "wrapped";
+
 export type CatalogQuery = {
   q?: string;
   category?: string;
   minPrice?: number;
   maxPrice?: number;
   sort?: CatalogSort;
+  /** Colour mood from product.accent */
+  accent?: string;
+  /** Bouquet style matched from tags */
+  style?: CatalogStyle;
+  /** Size band approximated from price */
+  size?: CatalogSizeBand;
   /** When set, apply city assortment (null list = all published). */
   cityProductIds?: string[] | null;
+};
+
+const SIZE_BANDS: Record<CatalogSizeBand, { min?: number; max?: number }> = {
+  mini: { max: 549999 },
+  classic: { min: 550000, max: 899999 },
+  grand: { min: 900000, max: 1299999 },
+  luxury: { min: 1300000 },
+};
+
+const STYLE_NEEDLES: Record<CatalogStyle, string[]> = {
+  rose: ["rose"],
+  mix: ["mix"],
+  garden: ["garden"],
+  ribbon: ["ribbon"],
+  wrapped: ["wrap", "wrapped"],
 };
 
 export async function listPublishedProducts(
@@ -37,11 +61,23 @@ export async function listPublishedProducts(
   const and: object[] = [];
   const q = query.q?.trim();
 
-  if (query.minPrice != null && Number.isFinite(query.minPrice)) {
-    and.push({ price: { gte: query.minPrice } });
+  let minPrice = query.minPrice;
+  let maxPrice = query.maxPrice;
+  if (query.size && SIZE_BANDS[query.size]) {
+    const band = SIZE_BANDS[query.size];
+    if (band.min != null) minPrice = band.min;
+    if (band.max != null) maxPrice = band.max;
   }
-  if (query.maxPrice != null && Number.isFinite(query.maxPrice)) {
-    and.push({ price: { lte: query.maxPrice } });
+
+  if (minPrice != null && Number.isFinite(minPrice)) {
+    and.push({ price: { gte: minPrice } });
+  }
+  if (maxPrice != null && Number.isFinite(maxPrice)) {
+    and.push({ price: { lte: maxPrice } });
+  }
+
+  if (query.accent?.trim()) {
+    and.push({ accent: query.accent.trim() });
   }
 
   if (query.category?.trim()) {
@@ -90,6 +126,14 @@ export async function listPublishedProducts(
         ].join(" "),
       );
       return hay.includes(needle);
+    });
+  }
+
+  if (query.style && STYLE_NEEDLES[query.style]) {
+    const needles = STYLE_NEEDLES[query.style];
+    products = products.filter((product) => {
+      const hay = stripDiacritics(`${product.tags.en} ${product.tags.vi}`);
+      return needles.some((n) => hay.includes(n));
     });
   }
 
@@ -149,6 +193,9 @@ export function parseCatalogSearchParams(input: {
   min?: string | string[];
   max?: string | string[];
   sort?: string | string[];
+  accent?: string | string[];
+  style?: string | string[];
+  size?: string | string[];
 }): CatalogQuery {
   const one = (v?: string | string[]) =>
     typeof v === "string" ? v : Array.isArray(v) ? v[0] : undefined;
@@ -158,6 +205,9 @@ export function parseCatalogSearchParams(input: {
   const minRaw = one(input.min);
   const maxRaw = one(input.max);
   const sortRaw = one(input.sort);
+  const accent = one(input.accent)?.trim() || undefined;
+  const styleRaw = one(input.style)?.trim();
+  const sizeRaw = one(input.size)?.trim();
 
   const minPrice = minRaw != null && minRaw !== "" ? Number(minRaw) : undefined;
   const maxPrice = maxRaw != null && maxRaw !== "" ? Number(maxRaw) : undefined;
@@ -170,11 +220,31 @@ export function parseCatalogSearchParams(input: {
       ? sortRaw
       : "featured";
 
+  const style =
+    styleRaw === "rose" ||
+    styleRaw === "mix" ||
+    styleRaw === "garden" ||
+    styleRaw === "ribbon" ||
+    styleRaw === "wrapped"
+      ? styleRaw
+      : undefined;
+
+  const size =
+    sizeRaw === "mini" ||
+    sizeRaw === "classic" ||
+    sizeRaw === "grand" ||
+    sizeRaw === "luxury"
+      ? sizeRaw
+      : undefined;
+
   return {
     q,
     category,
     minPrice: Number.isFinite(minPrice) ? minPrice : undefined,
     maxPrice: Number.isFinite(maxPrice) ? maxPrice : undefined,
     sort,
+    accent,
+    style,
+    size,
   };
 }

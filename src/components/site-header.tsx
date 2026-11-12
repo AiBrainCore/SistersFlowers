@@ -218,24 +218,26 @@ export function SiteHeader({
             </Link>
           </nav>
 
-          {/* Right: language + bag + menu, account icon always last (far right) */}
-          <div className="flex shrink-0 items-center gap-1 sm:gap-2">
-            <LanguageSwitch
-              locale={locale}
-              dictionary={dictionary}
-              tone="onBrand"
-            />
+          {/* Right icons — compact on small phones so they stay inside the bar */}
+          <div className="flex shrink-0 items-center gap-0.5 sm:gap-1.5">
+            <div className="hidden min-[400px]:block">
+              <LanguageSwitch
+                locale={locale}
+                dictionary={dictionary}
+                tone="onBrand"
+              />
+            </div>
 
             <button
               type="button"
               onClick={() => setOpen(true)}
               aria-label={dictionary.cart.openAria}
               title={dictionary.cart.openAria}
-              className="relative inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border border-white/35 bg-white/15 text-white transition hover:bg-white/25"
+              className="relative inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/35 bg-white/15 text-white transition hover:bg-white/25 sm:h-11 sm:w-11"
             >
               <IconBag />
               {count > 0 ? (
-                <span className="absolute -top-0.5 -right-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-white px-1 text-[10px] font-medium text-citrus">
+                <span className="absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-white px-1 text-[9px] font-medium text-citrus sm:h-5 sm:min-w-5 sm:text-[10px]">
                   {count > 99 ? "99+" : count}
                 </span>
               ) : null}
@@ -243,7 +245,7 @@ export function SiteHeader({
 
             <button
               type="button"
-              className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border border-white/35 bg-white/15 text-[13px] text-white min-[1200px]:hidden"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/35 bg-white/15 text-[12px] text-white min-[1200px]:hidden sm:h-11 sm:w-11 sm:text-[13px]"
               aria-expanded={menuOpen}
               aria-controls="site-mobile-menu"
               aria-label={menuOpen ? dictionary.nav.close : dictionary.nav.menu}
@@ -257,9 +259,9 @@ export function SiteHeader({
               onClick={closeAll}
               aria-label={dictionary.nav.account}
               title={dictionary.nav.account}
-              className="relative inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border border-white/35 bg-white/15 text-white transition hover:bg-white/25"
+              className="relative inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/35 bg-white/15 text-white transition hover:bg-white/25 sm:h-11 sm:w-11"
             >
-              <IconAccount className="h-5 w-5" />
+              <IconAccount className="h-4 w-4 sm:h-5 sm:w-5" />
               <span className="sr-only">{dictionary.nav.account}</span>
             </Link>
           </div>
@@ -291,6 +293,13 @@ export function SiteHeader({
             </button>
           </div>
           <nav className="mx-auto flex h-[calc(100dvh-3.5rem)] max-w-6xl flex-col gap-1 overflow-y-auto px-4 py-5 sm:px-5">
+            <div className="mb-3 min-[400px]:hidden">
+              <LanguageSwitch
+                locale={locale}
+                dictionary={dictionary}
+                variant="panel"
+              />
+            </div>
             <Link
               href={`/${locale}/shop`}
               onClick={closeAll}
