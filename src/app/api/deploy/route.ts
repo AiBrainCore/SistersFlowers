@@ -28,11 +28,13 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401 });
   }
 
+  // Always force rebuild on webhook so a corrupted .next (HTML ok, /_next/static 500)
+  // can be recovered even when git HEAD already matches origin/main.
   try {
-    const child = spawn("bash", [DEPLOY_SCRIPT], {
+    const child = spawn("bash", [DEPLOY_SCRIPT, "force"], {
       detached: true,
       stdio: "ignore",
-      env: process.env,
+      env: { ...process.env, FORCE_DEPLOY: "1" },
     });
     child.unref();
   } catch {
@@ -40,7 +42,7 @@ export async function POST(req: Request) {
   }
 
   return NextResponse.json(
-    { ok: true, message: "deploy started" },
+    { ok: true, message: "deploy started (force rebuild)" },
     { status: 202 },
   );
 }

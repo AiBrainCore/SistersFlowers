@@ -64,6 +64,15 @@ async function withSupabaseSession(request: NextRequest, response: NextResponse)
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // Never run auth refresh on compiled assets — a Supabase failure must not 500 CSS/JS.
+  if (
+    pathname.startsWith("/_next/static") ||
+    pathname.startsWith("/_next/image") ||
+    pathname.startsWith("/favicon")
+  ) {
+    return NextResponse.next();
+  }
+
   if (
     pathname.startsWith("/admin") ||
     pathname.startsWith("/api") ||

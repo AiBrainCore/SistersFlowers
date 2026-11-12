@@ -82,6 +82,13 @@ server {
 
   client_max_body_size 20m;
 
+  location /_next/static/ {
+    alias ${APP_DIR}/.next/static/;
+    access_log off;
+    expires 365d;
+    add_header Cache-Control "public, immutable";
+  }
+
   location / {
     proxy_pass http://127.0.0.1:3000;
     proxy_http_version 1.1;
