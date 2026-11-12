@@ -446,7 +446,12 @@ export async function createStudioOrderAction(formData: FormData) {
       })
     : null;
 
-  if (!branch || !customerName || !lines.length) {
+  if (
+    !branch ||
+    !customerName ||
+    !lines.length ||
+    (fulfillment === "delivery" && !address)
+  ) {
     redirect("/admin/studio-orders/new?error=1");
   }
 
@@ -459,6 +464,36 @@ export async function createStudioOrderAction(formData: FormData) {
     fulfillment === "pickup"
       ? `pickup:${branch.city.slug}`
       : `studio:${branch.city.slug}`;
+
+  const photoFiles = formData
+    .getAll("photos")
+    .filter((value): value is File => value instanceof File && value.size > 0)
+    .slice(0, 6);
+
+  const mediaUrls: { url: string; mime: string | null; sortOrder: number }[] =
+    [];
+  if (photoFiles.length) {
+    const { mkdir, writeFile } = await import("fs/promises");
+    const path = await import("path");
+    const dir = path.join(process.cwd(), "public", "studio-orders");
+    await mkdir(dir, { recursive: true });
+    for (let i = 0; i < photoFiles.length; i++) {
+      const file = photoFiles[i];
+      if (file.size > 6 * 1024 * 1024) continue;
+      const type = file.type || "";
+      if (!["image/jpeg", "image/png", "image/webp"].includes(type)) continue;
+      const ext =
+        type === "image/png" ? ".png" : type === "image/webp" ? ".webp" : ".jpg";
+      const filename = `${Date.now()}-${i}${ext}`;
+      const bytes = Buffer.from(await file.arrayBuffer());
+      await writeFile(path.join(dir, filename), bytes);
+      mediaUrls.push({
+        url: `/studio-orders/${filename}`,
+        mime: type,
+        sortOrder: i,
+      });
+    }
+  }
 
   const order = await prisma.order.create({
     data: {
@@ -527,6 +562,11 @@ export async function createStudioOrderAction(formData: FormData) {
                 note: "Recorded at create",
               },
             },
+      media: mediaUrls.length
+        ? {
+            create: mediaUrls,
+          }
+        : undefined,
     },
   });
 

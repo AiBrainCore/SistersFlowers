@@ -38,6 +38,7 @@ export default async function AdminStudioOrdersPage({
     },
     include: {
       items: true,
+      media: { orderBy: { sortOrder: "asc" }, take: 3 },
       branch: { include: { city: true } },
     },
     orderBy: [{ deliveryTime: "asc" }, { createdAt: "asc" }],
@@ -151,6 +152,30 @@ export default async function AdminStudioOrdersPage({
                       {order.cardMessage ? (
                         <div style={{ fontSize: 11, fontStyle: "italic", opacity: 0.7 }}>
                           “{order.cardMessage}”
+                        </div>
+                      ) : null}
+                      {order.media.length ? (
+                        <div
+                          style={{
+                            display: "flex",
+                            gap: 4,
+                            marginTop: 8,
+                          }}
+                        >
+                          {order.media.map((m) => (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              key={m.id}
+                              src={m.url}
+                              alt=""
+                              style={{
+                                width: 40,
+                                height: 40,
+                                objectFit: "cover",
+                                borderRadius: 8,
+                              }}
+                            />
+                          ))}
                         </div>
                       ) : null}
                     </td>

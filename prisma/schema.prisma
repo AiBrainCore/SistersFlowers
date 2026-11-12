@@ -118,6 +118,21 @@ model Order {
   items          OrderItem[]
   statusHistory  OrderStatusHistory[]
   payments       OrderPayment[]
+  media          OrderMedia[]
+}
+
+/// Customer reference photos for a studio order (private path under /studio-orders).
+model OrderMedia {
+  id            String   @id @default(cuid())
+  orderId       String
+  order         Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  url           String
+  mime          String?
+  sortOrder     Int      @default(0)
+  legacyDriveId String?
+  createdAt     DateTime @default(now())
+
+  @@index([orderId, sortOrder])
 }
 
 /// Append-only status / payment gate events for studio + shop orders.
