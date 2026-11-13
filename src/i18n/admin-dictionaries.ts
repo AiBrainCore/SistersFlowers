@@ -84,7 +84,7 @@ const en = {
     cityAvailable: "Sell in this city",
     sameAsBase: "Same as base",
     listPricingHint:
-      "Edit base + city prices here without opening each product. Empty city price = use base.",
+      "Base + city prices in one row. Empty city field = base. “Sell” next to the city name.",
     baseShort: "Base",
     overrideShort: "Override",
     sellShort: "Sell",
@@ -341,7 +341,7 @@ const vi: typeof en = {
     cityAvailable: "Bán ở thành phố này",
     sameAsBase: "Như giá gốc",
     listPricingHint:
-      "Sửa giá gốc + giá thành phố tại đây, không cần mở từng sản phẩm. Để trống = dùng giá gốc.",
+      "Giá gốc + theo thành phố một hàng. Để trống = giá gốc. “Bán” cạnh tên thành phố.",
     baseShort: "Gốc",
     overrideShort: "Riêng",
     sellShort: "Bán",
