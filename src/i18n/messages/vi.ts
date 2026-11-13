@@ -147,8 +147,8 @@ export const vi = {
     title: "Hoa cho mọi khoảnh khắc.",
     intro:
       "Bó hoa thủ công từ studio {city} — mix, hồng, garden và nơ.",
-    search: "Tìm hoa",
-    searchPlaceholder: "Tên, màu, dịp…",
+    search: "Tìm",
+    searchPlaceholder: "Hoa, quà, màu, dịp…",
     categories: "Dịp",
     allCategories: "Tất cả",
     price: "Giá (VND)",
