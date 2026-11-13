@@ -40,6 +40,7 @@ export async function loadDalAtBotCatalog(
   const products = await listPublishedProducts({
     sort: "featured",
     cityProductIds,
+    cityId: city?.id,
   });
 
   return products.map((p) => toBotProduct(p, locale));

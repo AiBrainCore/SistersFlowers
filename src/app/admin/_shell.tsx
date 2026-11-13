@@ -40,6 +40,7 @@ export async function AdminShell({
           <Link href="/admin/studio-orders">{t.nav.studio}</Link>
           <Link href="/admin/orders">{t.nav.orders}</Link>
           <Link href="/admin/inquiries">{t.nav.inquiries}</Link>
+          <Link href="/admin/journal">{t.nav.journal}</Link>
         </nav>
         <div className="admin-nav-foot">
           <Link href={`/${locale}/shop`} className="admin-nav-shop">

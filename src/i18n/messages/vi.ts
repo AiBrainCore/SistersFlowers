@@ -14,6 +14,7 @@ export const vi = {
     hotels: "Khách sạn",
     delivery: "Giao hoa",
     about: "Câu chuyện",
+    journal: "Nhật ký",
     contact: "Liên hệ",
     terms: "Điều khoản",
     menu: "Menu",
@@ -382,6 +383,21 @@ export const vi = {
     successBody:
       "Lời nhắn đã vào hộp thư của tiệm. Chúng tôi sẽ trả lời qua email hoặc điện thoại.",
     another: "Viết thêm một lời",
+  },
+  journal: {
+    kicker: "Nhật ký",
+    title: "Mẹo, câu chuyện & ghi chú từ studio.",
+    intro:
+      "Chăm sóc hoa, giao hàng theo thành phố, hợp tác và tin ngắn từ Sisters Flowers tại Đà Nẵng và Đà Lạt.",
+    empty: "Bài viết mới sẽ sớm có mặt.",
+    read: "Đọc",
+    back: "Tất cả bài",
+    kinds: {
+      tip: "Mẹo",
+      story: "Câu chuyện",
+      news: "Tin tức",
+      partnership: "Hợp tác",
+    },
   },
   footer: {
     line: "Ghé studio nào cũng được — chúng tôi gói, giao và trả lời từ cả hai thành phố.",

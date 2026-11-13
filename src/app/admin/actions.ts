@@ -11,8 +11,28 @@ import {
 } from "@/lib/admin-auth";
 import { slugify } from "@/lib/products";
 import { makeAddonSlug } from "@/lib/addons";
+import {
+  listCitiesForPricing,
+  parseOptionalVnd,
+  upsertProductCityStock,
+} from "@/lib/product-city";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
+
+async function readCityStockFromForm(formData: FormData) {
+  const cities = await listCitiesForPricing();
+  return cities.map((city) => {
+    const available = formData.get(`cityAvailable_${city.slug}`) === "on";
+    const priceOverride = parseOptionalVnd(
+      formData.get(`cityPrice_${city.slug}`),
+    );
+    return {
+      cityId: city.id,
+      available,
+      priceOverride,
+    };
+  });
+}
 
 async function requireAdmin() {
   if (!(await isAdminAuthenticated())) {
@@ -150,6 +170,10 @@ export async function saveProductAction(formData: FormData) {
         data: categoryIds.map((categoryId) => ({ productId, categoryId })),
       });
     }
+    const cityStock = await readCityStockFromForm(formData);
+    if (cityStock.length) {
+      await upsertProductCityStock(productId, cityStock);
+    }
   }
 
   revalidatePath("/");
@@ -158,6 +182,33 @@ export async function saveProductAction(formData: FormData) {
   revalidatePath("/en/shop");
   revalidatePath("/vi/shop");
   redirect("/admin/products");
+}
+
+/** Quick inline save of base + DN/DL prices (and availability) from the list. */
+export async function quickSaveProductCityPricesAction(formData: FormData) {
+  await requireAdmin();
+  const id = String(formData.get("id") || "");
+  if (!id) redirect("/admin/products");
+
+  const price = Number(formData.get("price") || 0);
+  if (!price || !Number.isFinite(price)) {
+    redirect("/admin/products?error=price");
+  }
+
+  await prisma.product.update({
+    where: { id },
+    data: { price: Math.round(price) },
+  });
+
+  const cityStock = await readCityStockFromForm(formData);
+  if (cityStock.length) {
+    await upsertProductCityStock(id, cityStock);
+  }
+
+  revalidatePath("/");
+  revalidatePath("/en/shop");
+  revalidatePath("/vi/shop");
+  redirect("/admin/products?saved=1");
 }
 
 export async function deleteProductAction(formData: FormData) {
@@ -695,4 +746,104 @@ export async function markStudioPaymentAction(formData: FormData) {
 
   revalidatePath("/admin/studio-orders");
   redirect(day ? `/admin/studio-orders?day=${day}` : "/admin/studio-orders");
+}
+
+export async function saveJournalPostAction(formData: FormData) {
+  await requireAdmin();
+  const { makeJournalSlug } = await import("@/lib/journal");
+
+  const id = String(formData.get("id") || "");
+  const titleEn = String(formData.get("titleEn") || "").trim();
+  const titleVi = String(formData.get("titleVi") || "").trim();
+  let slug =
+    String(formData.get("slug") || "").trim() ||
+    makeJournalSlug(titleEn || titleVi);
+  const kind = String(formData.get("kind") || "tip");
+  const cityScope = String(formData.get("cityScope") || "both");
+  const excerptEn = String(formData.get("excerptEn") || "");
+  const excerptVi = String(formData.get("excerptVi") || "");
+  const bodyEn = String(formData.get("bodyEn") || "");
+  const bodyVi = String(formData.get("bodyVi") || "");
+  const sortOrder = Number(formData.get("sortOrder") || 0);
+  const published = formData.get("published") === "on";
+  const existingCover = String(formData.get("existingCover") || "");
+
+  if (!titleEn || !titleVi || !slug) {
+    redirect(id ? `/admin/journal/${id}?error=1` : "/admin/journal/new?error=1");
+  }
+
+  let coverImage: string | null = existingCover || null;
+  const file = formData.get("cover") as File | null;
+  if (file && file.size > 0) {
+    const bytes = Buffer.from(await file.arrayBuffer());
+    const ext = path.extname(file.name || "").toLowerCase() || ".jpg";
+    const safeExt = [".jpg", ".jpeg", ".png", ".webp"].includes(ext)
+      ? ext
+      : ".jpg";
+    const filename = `journal-${slug}-${Date.now()}${safeExt}`;
+    const dir = path.join(process.cwd(), "public", "journal", "uploads");
+    await mkdir(dir, { recursive: true });
+    await writeFile(path.join(dir, filename), bytes);
+    coverImage = `/journal/uploads/${filename}`;
+  }
+
+  const data = {
+    slug,
+    kind,
+    cityScope,
+    titleEn,
+    titleVi,
+    excerptEn,
+    excerptVi,
+    bodyEn,
+    bodyVi,
+    coverImage,
+    sortOrder: Number.isFinite(sortOrder) ? sortOrder : 0,
+    published,
+    publishedAt: published ? new Date() : null,
+  };
+
+  if (id) {
+    const current = await prisma.journalPost.findUnique({ where: { id } });
+    if (!current) redirect("/admin/journal");
+    if (slug !== current.slug) {
+      const clash = await prisma.journalPost.findUnique({ where: { slug } });
+      if (clash) slug = `${slug}-${Date.now().toString(36)}`;
+    }
+    await prisma.journalPost.update({
+      where: { id },
+      data: {
+        ...data,
+        slug,
+        publishedAt:
+          published && !current.publishedAt
+            ? new Date()
+            : published
+              ? current.publishedAt
+              : null,
+      },
+    });
+  } else {
+    const clash = await prisma.journalPost.findUnique({ where: { slug } });
+    if (clash) slug = `${slug}-${Date.now().toString(36)}`;
+    await prisma.journalPost.create({
+      data: { ...data, slug },
+    });
+  }
+
+  revalidatePath("/en/journal");
+  revalidatePath("/vi/journal");
+  revalidatePath("/sitemap.xml");
+  redirect("/admin/journal");
+}
+
+export async function deleteJournalPostAction(formData: FormData) {
+  await requireAdmin();
+  const id = String(formData.get("id") || "");
+  if (id) {
+    await prisma.journalPost.delete({ where: { id } });
+  }
+  revalidatePath("/en/journal");
+  revalidatePath("/vi/journal");
+  redirect("/admin/journal");
 }

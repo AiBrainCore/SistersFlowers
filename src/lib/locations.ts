@@ -250,17 +250,25 @@ export async function getActiveCity(): Promise<CityPublic> {
   return resolveActiveCity(slug);
 }
 
-/** Product IDs available in a city. null = all published (no city assortment rows). */
+/**
+ * Product IDs available in a city.
+ * null = no blocks (all published).
+ * Otherwise = published products minus those with available=false.
+ * Rows with available=true (or price-only overrides) do not hide other products.
+ */
 export async function listAvailableProductIdsForCity(
   cityId: string,
 ): Promise<string[] | null> {
-  const count = await prisma.productCityAvailability.count({
-    where: { cityId },
-  });
-  if (count === 0) return null;
-  const rows = await prisma.productCityAvailability.findMany({
-    where: { cityId, available: true },
+  const blocked = await prisma.productCityAvailability.findMany({
+    where: { cityId, available: false },
     select: { productId: true },
   });
-  return rows.map((r) => r.productId);
+  if (blocked.length === 0) return null;
+
+  const published = await prisma.product.findMany({
+    where: { published: true },
+    select: { id: true },
+  });
+  const blockedSet = new Set(blocked.map((r) => r.productId));
+  return published.map((p) => p.id).filter((id) => !blockedSet.has(id));
 }

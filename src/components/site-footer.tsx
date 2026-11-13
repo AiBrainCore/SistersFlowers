@@ -32,6 +32,7 @@ export function SiteFooter({
 
   const studioLinks = [
     { href: `/${locale}/about`, label: nav.about },
+    { href: `/${locale}/journal`, label: nav.journal },
     { href: `/${locale}/contact`, label: nav.contact },
     { href: `/${locale}/account`, label: nav.account },
     {

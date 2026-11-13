@@ -376,6 +376,13 @@ export function SiteHeader({
             >
               {dictionary.nav.about}
             </Link>
+            <Link
+              href={`/${locale}/journal`}
+              onClick={closeAll}
+              className="flex min-h-12 items-center border-b border-forest/10 text-[15px] text-forest"
+            >
+              {dictionary.nav.journal}
+            </Link>
           </nav>
         </div>
       ) : null}
