@@ -30,6 +30,7 @@ export function ShopSearch({
     const next = q.trim();
     if (next) params.set("q", next);
     if (initial.category) params.set("category", initial.category);
+    if (initial.productType) params.set("type", initial.productType);
     if (initial.sort && initial.sort !== "featured") {
       params.set("sort", initial.sort);
     }

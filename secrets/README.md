@@ -19,5 +19,7 @@ Never paste passwords into chat, pull requests, or committed files.
 1. Keep URL + publishable key + DB password in `secrets/supabase.env`
 2. Local app/Prisma use `.env` / `.env.local` with `DATABASE_URL` + `DIRECT_URL`
 3. Production VPS must set the same two vars in the systemd/service env (never git)
+4. Catalog import needs **service role** in `secrets/supabase-service.env` (gitignored):
+   `SUPABASE_SERVICE_ROLE_KEY=...` — never commit; used only by `npm run catalog:import-buckets`
 
-See `docs/supabase-migration.md` for cutover steps.
+See `docs/supabase-migration.md` and `docs/catalog-import.md`.

@@ -55,6 +55,8 @@ export type CatalogQuery = {
   cityProductIds?: string[] | null;
   /** Apply priceOverride for this city after fetch. */
   cityId?: string;
+  /** Product kind: bouquet | flower-basket | stand-* */
+  productType?: string;
 };
 
 const SIZE_BANDS: Record<CatalogSizeBand, { min?: number; max?: number }> = {
@@ -80,9 +82,14 @@ export async function listPublishedProducts(
   const where: {
     published: boolean;
     id?: { in: string[] };
+    productType?: string;
     AND?: object[];
     categories?: object;
   } = { published: true };
+
+  if (query.productType?.trim()) {
+    where.productType = query.productType.trim();
+  }
 
   const and: object[] = [];
   const q = query.q?.trim();
@@ -248,6 +255,7 @@ export function slugify(input: string) {
 export function parseCatalogSearchParams(input: {
   q?: string | string[];
   category?: string | string[];
+  type?: string | string[];
   min?: string | string[];
   max?: string | string[];
   sort?: string | string[];
@@ -260,6 +268,7 @@ export function parseCatalogSearchParams(input: {
 
   const q = one(input.q)?.trim() || undefined;
   const category = one(input.category)?.trim() || undefined;
+  const productType = one(input.type)?.trim() || undefined;
   const minRaw = one(input.min);
   const maxRaw = one(input.max);
   const sortRaw = one(input.sort);
@@ -298,6 +307,7 @@ export function parseCatalogSearchParams(input: {
   return {
     q,
     category,
+    productType,
     minPrice: Number.isFinite(minPrice) ? minPrice : undefined,
     maxPrice: Number.isFinite(maxPrice) ? maxPrice : undefined,
     sort,

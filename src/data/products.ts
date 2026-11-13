@@ -7,6 +7,9 @@ export type Product = {
   /** Network / default price (VND). City overrides live in cityStock. */
   price: number;
   image: string;
+  /** JPEG (or other) fallback when WebP is unsupported. */
+  imageFallback?: string;
+  productType?: string;
   accent: string;
   names: { en: string; vi: string };
   tags: { en: string; vi: string };
@@ -24,6 +27,8 @@ export type ProductRecord = {
   slug: string;
   price: number;
   image: string;
+  imageFallback?: string | null;
+  productType?: string | null;
   accent: string;
   nameEn: string;
   nameVi: string;
@@ -55,6 +60,8 @@ export function toProduct(record: ProductRecord): Product {
     slug: record.slug,
     price: record.price,
     image: record.image,
+    imageFallback: record.imageFallback || "",
+    productType: record.productType || "bouquet",
     accent: record.accent,
     names: { en: record.nameEn, vi: record.nameVi },
     tags: { en: record.tagEn, vi: record.tagVi },

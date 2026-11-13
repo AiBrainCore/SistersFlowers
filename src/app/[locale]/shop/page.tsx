@@ -42,6 +42,7 @@ export default async function ShopPage({
     raw as {
       q?: string | string[];
       category?: string | string[];
+      type?: string | string[];
       min?: string | string[];
       max?: string | string[];
       sort?: string | string[];

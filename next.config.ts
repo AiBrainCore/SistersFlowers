@@ -8,6 +8,16 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "images.unsplash.com",
       },
+      {
+        protocol: "https",
+        hostname: "*.supabase.co",
+        pathname: "/storage/v1/object/public/**",
+      },
+      {
+        protocol: "https",
+        hostname: "vztzjqodazcolxfcljsf.supabase.co",
+        pathname: "/storage/v1/object/public/**",
+      },
     ],
   },
   // Hostinger Node plans hit OS thread limits with default "N CPU" static workers.

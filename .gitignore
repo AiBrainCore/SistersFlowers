@@ -52,3 +52,8 @@ next-env.d.ts
 supabase/.temp/
 supabase/.branches/
 *.supabase.env
+secrets/supabase-service.env
+
+# Local catalog import dumps (keep folder via .gitkeep)
+/import/buckets/**
+!/import/buckets/.gitkeep

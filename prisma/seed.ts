@@ -66,13 +66,19 @@ const DEFAULT_ZONES = [
 
 async function main() {
   const productCount = await prisma.product.count();
-  if (productCount === 0) {
+  const importedCount = await prisma.product.count({
+    where: { sourceKey: { not: null } },
+  });
+  // Never re-seed mock bouquets once a real catalog import exists.
+  if (productCount === 0 && importedCount === 0) {
     for (const [index, product] of products.entries()) {
       await prisma.product.create({
         data: {
           slug: product.slug,
           price: product.price,
           image: product.image,
+          imageFallback: "",
+          productType: "bouquet",
           accent: product.accent,
           nameEn: product.names.en,
           nameVi: product.names.vi,
