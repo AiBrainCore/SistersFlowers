@@ -13,9 +13,11 @@ import { IconPin } from "@/components/nav-icons";
 export function DeliveryCityBar({
   locale,
   dictionary,
+  className = "",
 }: {
   locale: Locale;
   dictionary: Dictionary;
+  className?: string;
 }) {
   const { cities, activeCity, setCity, pending } = useLocation();
   const { count } = useCart();
@@ -44,9 +46,9 @@ export function DeliveryCityBar({
     : "";
 
   return (
-    <div className="relative mt-4">
+    <div className={`relative ${className}`.trim()}>
       <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-        <span className="text-[11px] tracking-[0.16em] text-citrus uppercase">
+        <span className="shrink-0 text-[11px] tracking-[0.16em] text-citrus uppercase">
           {t.deliveringIn}
         </span>
         <div

@@ -2,12 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import {
-  useMemo,
-  useState,
-  type FormEvent,
-  type ReactNode,
-} from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import {
@@ -106,19 +101,23 @@ export function CatalogFilters({
     setPanelOpen(false);
   }
 
-  function onSearchSubmit(event: FormEvent) {
-    event.preventDefault();
-    apply({ q });
-  }
-
+  /** Badge counts panel filters only — search lives on the shop toolbar. */
   const activeCount = [
-    initial.q,
     initial.category,
     initial.size,
     initial.accent,
     initial.style,
     initial.sort && initial.sort !== "featured" ? initial.sort : "",
   ].filter(Boolean).length;
+
+  const hasActiveChips = Boolean(
+    initial.q ||
+      initial.category ||
+      initial.size ||
+      initial.accent ||
+      initial.style ||
+      (initial.sort && initial.sort !== "featured"),
+  );
 
   const checkClass = (on: boolean) =>
     `inline-flex min-h-10 items-center gap-2 rounded-full border px-3.5 text-sm transition ${
@@ -147,7 +146,7 @@ export function CatalogFilters({
         </button>
       </div>
 
-      {activeCount > 0 ? (
+      {hasActiveChips ? (
         <div className="flex flex-wrap items-center gap-2">
           {initial.q ? (
             <ActiveChip
@@ -233,48 +232,30 @@ export function CatalogFilters({
               </button>
             </div>
 
-            <form onSubmit={onSearchSubmit} className="mt-5">
-              <label className="mb-1.5 block text-[11px] tracking-[0.14em] text-moss uppercase">
-                {t.search}
-              </label>
-              <div className="flex gap-2">
-                <input
-                  value={q}
-                  onChange={(e) => setQ(e.target.value)}
-                  placeholder={t.searchPlaceholder}
-                  className="min-h-11 w-full rounded-full border border-forest/12 bg-white px-4 text-sm outline-none focus:border-citrus"
-                />
-                <button
-                  type="submit"
-                  className="inline-flex min-h-11 shrink-0 items-center rounded-full bg-citrus px-4 text-[11px] tracking-[0.12em] text-ivory uppercase"
-                >
-                  {t.search}
-                </button>
-              </div>
-            </form>
-
-            <FilterGroup title={t.sort}>
-              <div className="flex flex-wrap gap-2">
-                {(
-                  [
-                    ["featured", t.sortFeatured],
-                    ["newest", t.sortNewest],
-                    ["price-asc", t.sortPriceAsc],
-                    ["price-desc", t.sortPriceDesc],
-                  ] as const
-                ).map(([value, label]) => (
-                  <button
-                    key={value}
-                    type="button"
-                    onClick={() => setSort(value)}
-                    className={checkClass(sort === value)}
-                  >
-                    <Mark on={sort === value} />
-                    {label}
-                  </button>
-                ))}
-              </div>
-            </FilterGroup>
+            <div className="mt-5">
+              <FilterGroup title={t.sort} flush>
+                <div className="flex flex-wrap gap-2">
+                  {(
+                    [
+                      ["featured", t.sortFeatured],
+                      ["newest", t.sortNewest],
+                      ["price-asc", t.sortPriceAsc],
+                      ["price-desc", t.sortPriceDesc],
+                    ] as const
+                  ).map(([value, label]) => (
+                    <button
+                      key={value}
+                      type="button"
+                      onClick={() => setSort(value)}
+                      className={checkClass(sort === value)}
+                    >
+                      <Mark on={sort === value} />
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </FilterGroup>
+            </div>
 
             <FilterGroup title={t.categories}>
               <div className="flex flex-wrap gap-2">
@@ -400,12 +381,14 @@ export function CatalogFilters({
 function FilterGroup({
   title,
   children,
+  flush = false,
 }: {
   title: string;
   children: ReactNode;
+  flush?: boolean;
 }) {
   return (
-    <div className="mt-6">
+    <div className={flush ? undefined : "mt-6"}>
       <p className="mb-2.5 text-[11px] tracking-[0.14em] text-moss uppercase">
         {title}
       </p>

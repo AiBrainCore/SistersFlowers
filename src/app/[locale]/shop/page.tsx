@@ -11,6 +11,7 @@ import { listAvailableProductIdsForCity } from "@/lib/locations";
 import { ProductCard } from "@/components/product-card";
 import { CatalogFilters } from "@/components/catalog-filters";
 import { DeliveryCityBar } from "@/components/delivery-city-bar";
+import { ShopSearch } from "@/components/shop-search";
 import { buildPageMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
@@ -65,13 +66,18 @@ export default async function ShopPage({
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-0 h-64 bg-[radial-gradient(ellipse_at_top,rgba(176,84,44,0.08),transparent_60%)]"
       />
-      <div className="relative mx-auto max-w-6xl px-4 py-8 sm:px-5 sm:py-10">
-        <h1 className="serif max-w-2xl text-3xl text-forest sm:text-4xl">
+      <div className="relative mx-auto max-w-6xl px-4 py-6 sm:px-5 sm:py-8">
+        <h1 className="serif text-3xl text-forest sm:text-4xl">
           {t.shop.title}
         </h1>
-        <p className="mt-2 max-w-xl text-sm leading-6 text-moss">{t.shop.intro}</p>
+        <p className="mt-1.5 text-sm leading-5 text-moss whitespace-nowrap overflow-x-auto">
+          {t.shop.intro}
+        </p>
 
-        <DeliveryCityBar locale={locale} dictionary={t} />
+        <div className="mt-3 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between lg:gap-4">
+          <DeliveryCityBar locale={locale} dictionary={t} />
+          <ShopSearch locale={locale} dictionary={t} initial={query} />
+        </div>
 
         <CatalogFilters
           locale={locale}

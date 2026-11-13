@@ -147,8 +147,8 @@ export const en = {
     title: "Flowers for every moment.",
     intro:
       "Handcrafted bouquets from our {city} studio — mix, rose, garden and ribbon finishes.",
-    search: "Search flowers",
-    searchPlaceholder: "Name, colour, occasion…",
+    search: "Search",
+    searchPlaceholder: "Flowers, gifts, colour, occasion…",
     categories: "Occasion",
     allCategories: "All",
     price: "Price (VND)",
