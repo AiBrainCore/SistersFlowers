@@ -14,7 +14,14 @@ model Product {
   id         String            @id @default(cuid())
   slug       String            @unique
   price      Int
+  /// Primary shop image (prefer WebP on Supabase Storage).
   image      String
+  /// JPEG fallback for clients that mishandle WebP (Zalo/FB/mail).
+  imageFallback String         @default("")
+  /// bouquet | flower-basket | stand-tray | stand-congrats | stand-funeral
+  productType String           @default("bouquet")
+  /// Original import filename for re-runs / audit.
+  sourceKey  String?
   accent     String            @default("rose")
   nameEn     String
   nameVi     String
@@ -30,6 +37,9 @@ model Product {
   updatedAt  DateTime          @updatedAt
   categories ProductCategory[]
   cityStock  ProductCityAvailability[]
+
+  @@index([productType, published])
+  @@index([sourceKey])
 }
 
 model Category {

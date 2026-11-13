@@ -37,6 +37,7 @@ yarn-error.log*
 # server / hosting credentials — never commit
 /secrets/**
 !/secrets/README.md
+!/secrets/supabase-service.env.example
 .server-credentials*
 *.ssh-config.local
 
@@ -52,3 +53,8 @@ next-env.d.ts
 supabase/.temp/
 supabase/.branches/
 *.supabase.env
+secrets/supabase-service.env
+
+# Local catalog import dumps (keep folder via .gitkeep)
+/import/buckets/**
+!/import/buckets/.gitkeep

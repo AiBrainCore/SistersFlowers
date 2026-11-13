@@ -1,7 +1,7 @@
-import Image from "next/image";
 import Link from "next/link";
 import type { Locale } from "@/i18n/config";
 import { formatVnd, type Product } from "@/data/products";
+import { ProductImage } from "@/components/product-image";
 
 export function ProductCard({
   product,
@@ -16,8 +16,9 @@ export function ProductCard({
       className="group flex h-full flex-col [perspective:900px]"
     >
       <div className="relative aspect-[3/4] overflow-hidden rounded-2xl bg-white shadow-[0_12px_28px_rgba(44,41,38,0.08)] transition duration-500 ease-out will-change-transform group-hover:-translate-y-1.5 group-hover:shadow-[0_20px_40px_rgba(176,84,44,0.16)] motion-reduce:transition-none motion-reduce:group-hover:translate-y-0">
-        <Image
+        <ProductImage
           src={product.image}
+          fallback={product.imageFallback}
           alt={product.names[locale]}
           fill
           className="object-cover transition duration-700 ease-out group-hover:scale-[1.05] motion-reduce:transition-none motion-reduce:group-hover:scale-100"

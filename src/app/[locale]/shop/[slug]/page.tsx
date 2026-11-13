@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { isLocale, type Locale } from "@/i18n/config";
@@ -8,6 +7,7 @@ import { getProductBySlug, listPublishedProducts } from "@/lib/products";
 import { listActiveAddons } from "@/lib/addons";
 import { ProductPurchase } from "@/components/product-purchase";
 import { ProductCard } from "@/components/product-card";
+import { ProductImage } from "@/components/product-image";
 import { buildPageMetadata, productJsonLd, siteUrl } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
@@ -66,8 +66,9 @@ export default async function ProductPage({
       />
       <section className="grid lg:grid-cols-2">
         <div className="relative min-h-[52vh] overflow-hidden lg:min-h-[calc(100vh-4.5rem)]">
-          <Image
+          <ProductImage
             src={product.image}
+            fallback={product.imageFallback}
             alt={product.names[locale]}
             fill
             className="object-cover object-center transition duration-700 hover:scale-[1.02] motion-reduce:hover:scale-100"

@@ -11,7 +11,8 @@
     "test": "tsx --test src/features/shop-bot/*.test.ts",
     "db:migrate": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.ts",
-    "db:reset": "prisma migrate reset --force"
+    "db:reset": "prisma migrate reset --force",
+    "catalog:import-buckets": "node scripts/import-buckets-catalog.mjs"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
@@ -25,6 +26,7 @@
     "nodemailer": "^10.5.0",
     "react": "19.2.8",
     "react-dom": "19.2.8",
+    "sharp": "^0.34.5",
     "tsx": "^4.23.15"
   },
   "devDependencies": {

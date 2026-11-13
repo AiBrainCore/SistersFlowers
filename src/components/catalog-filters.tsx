@@ -77,6 +77,7 @@ export function CatalogFilters({
     const styleV = next?.style ?? style;
     if (qv.trim()) params.set("q", qv.trim());
     if (cat) params.set("category", cat);
+    if (initial.productType) params.set("type", initial.productType);
     if (sv && sv !== "featured") params.set("sort", sv);
     if (sizeV) params.set("size", sizeV);
     if (accentV) params.set("accent", accentV);
