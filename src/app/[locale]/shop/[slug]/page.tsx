@@ -9,6 +9,7 @@ import { ProductPurchase } from "@/components/product-purchase";
 import { ProductCard } from "@/components/product-card";
 import { ProductImage } from "@/components/product-image";
 import { buildPageMetadata, productJsonLd, siteUrl } from "@/lib/seo";
+import { hasAnySizePrice } from "@/lib/product-sizes";
 
 export const dynamic = "force-dynamic";
 
@@ -18,7 +19,10 @@ export async function generateMetadata({
   const { locale, slug } = await params;
   if (!isLocale(locale)) return {};
   const { activeCity } = await getStorefrontDictionary(locale as Locale);
-  const product = await getProductBySlug(slug, { cityId: activeCity.id });
+  const product = await getProductBySlug(slug, {
+    cityId: activeCity.id,
+    citySlug: activeCity.slug,
+  });
   if (!product) return {};
   const name = product.names[locale];
   const description =
@@ -39,12 +43,16 @@ export default async function ProductPage({
   const { locale, slug } = await params;
   if (!isLocale(locale)) notFound();
   const { dictionary: t, activeCity } = await getStorefrontDictionary(locale);
-  const product = await getProductBySlug(slug, { cityId: activeCity.id });
+  const product = await getProductBySlug(slug, {
+    cityId: activeCity.id,
+    citySlug: activeCity.slug,
+  });
   if (!product) notFound();
   const [others, addons] = await Promise.all([
-    listPublishedProducts({ cityId: activeCity.id }).then((rows) =>
-      rows.filter((item) => item.slug !== slug).slice(0, 8),
-    ),
+    listPublishedProducts({
+      cityId: activeCity.id,
+      citySlug: activeCity.slug,
+    }).then((rows) => rows.filter((item) => item.slug !== slug).slice(0, 8)),
     listActiveAddons(),
   ]);
 
@@ -87,18 +95,21 @@ export default async function ProductPage({
             <p className="mt-3 text-xs tracking-[0.14em] text-moss uppercase">
               {product.tags[locale]}
             </p>
-            <p className="serif mt-6 text-3xl text-citrus">
-              {formatVnd(product.price, locale)}
-            </p>
             <p className="mt-6 max-w-md text-sm leading-7 text-moss">
               {product.story[locale]}
             </p>
             <p className="mt-4 text-xs text-moss">{t.product.deliveryNote}</p>
+            {!hasAnySizePrice(product.sizePrices) ? (
+              <p className="serif mt-6 text-3xl text-citrus">
+                {formatVnd(product.price, locale)}
+              </p>
+            ) : null}
             <ProductPurchase
               product={product}
               locale={locale}
               dictionary={t}
               addons={addons}
+              citySlug={activeCity.slug}
             />
           </div>
         </div>

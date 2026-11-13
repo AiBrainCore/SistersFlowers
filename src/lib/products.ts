@@ -1,10 +1,8 @@
 import { prisma } from "@/lib/db";
 import { toProduct, type Product } from "@/data/products";
 import { seedProductCategoriesIfEmpty } from "@/lib/categories";
-import {
-  applyOverrideMap,
-  getCityPriceOverrideMap,
-} from "@/lib/product-city";
+import { withCityPrice } from "@/lib/product-city";
+import { minOfferedPrice } from "@/lib/product-sizes";
 
 const categoryInclude = {
   categories: {
@@ -53,8 +51,9 @@ export type CatalogQuery = {
   size?: CatalogSizeBand;
   /** When set, apply city assortment (null list = all published). */
   cityProductIds?: string[] | null;
-  /** Apply priceOverride for this city after fetch. */
+  /** Apply city/size prices after fetch. */
   cityId?: string;
+  citySlug?: string;
   /** Product kind: bouquet | flower-basket | stand-* */
   productType?: string;
 };
@@ -145,11 +144,14 @@ export async function listPublishedProducts(
     orderBy,
   });
 
-  const overrides = query.cityId
-    ? await getCityPriceOverrideMap(query.cityId)
-    : null;
-
-  let products = rows.map((row) => applyOverrideMap(toProduct(row), overrides));
+  let products = rows.map((row) => {
+    const product = toProduct(row);
+    if (query.citySlug) return withCityPrice(product, query.citySlug);
+    return {
+      ...product,
+      price: minOfferedPrice(product.sizePrices, undefined, product.price),
+    };
+  });
 
   if (deferPriceFilter) {
     if (minPrice != null && Number.isFinite(minPrice)) {
@@ -228,8 +230,17 @@ export async function getProductBySlug(
       (s) => s.city.id === opts.cityId && !s.available,
     );
     if (blocked) return null;
-    const overrides = await getCityPriceOverrideMap(opts.cityId);
-    product = applyOverrideMap(product, overrides);
+  }
+  if (opts?.citySlug || opts?.cityId) {
+    const slug =
+      opts.citySlug ||
+      row.cityStock?.find((s) => s.city.id === opts.cityId)?.city.slug;
+    product = withCityPrice(product, slug);
+  } else {
+    product = {
+      ...product,
+      price: minOfferedPrice(product.sizePrices, undefined, product.price),
+    };
   }
   return product;
 }

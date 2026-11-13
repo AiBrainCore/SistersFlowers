@@ -1,11 +1,17 @@
 import type { CategoryPublic } from "@/lib/categories";
 import type { CityStockPublic } from "@/lib/product-city";
+import {
+  baseSizePrices,
+  citySizePrices,
+  type SizePriceMap,
+} from "@/lib/product-sizes";
 
 export type Product = {
   id?: string;
   slug: string;
-  /** Network / default price (VND). City overrides live in cityStock. */
+  /** Display / list price (min size or legacy). */
   price: number;
+  sizePrices?: SizePriceMap;
   image: string;
   /** JPEG (or other) fallback when WebP is unsupported. */
   imageFallback?: string;
@@ -26,6 +32,10 @@ export type ProductRecord = {
   id: string;
   slug: string;
   price: number;
+  priceSm?: number | null;
+  priceMd?: number | null;
+  priceLg?: number | null;
+  priceGrand?: number | null;
   image: string;
   imageFallback?: string | null;
   productType?: string | null;
@@ -45,6 +55,10 @@ export type ProductRecord = {
   cityStock?: {
     available: boolean;
     priceOverride: number | null;
+    priceSm?: number | null;
+    priceMd?: number | null;
+    priceLg?: number | null;
+    priceGrand?: number | null;
     city: {
       id: string;
       slug: string;
@@ -59,6 +73,7 @@ export function toProduct(record: ProductRecord): Product {
     id: record.id,
     slug: record.slug,
     price: record.price,
+    sizePrices: baseSizePrices(record),
     image: record.image,
     imageFallback: record.imageFallback || "",
     productType: record.productType || "bouquet",
@@ -78,6 +93,7 @@ export function toProduct(record: ProductRecord): Product {
       cityNameVi: row.city.nameVi,
       available: row.available,
       priceOverride: row.priceOverride,
+      sizePrices: citySizePrices(row),
     })),
   };
 }

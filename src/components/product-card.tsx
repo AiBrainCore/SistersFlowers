@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Locale } from "@/i18n/config";
 import { formatVnd, type Product } from "@/data/products";
 import { ProductImage } from "@/components/product-image";
+import { hasAnySizePrice } from "@/lib/product-sizes";
 
 export function ProductCard({
   product,
@@ -10,6 +11,7 @@ export function ProductCard({
   product: Product;
   locale: Locale;
 }) {
+  const from = hasAnySizePrice(product.sizePrices);
   return (
     <Link
       href={`/${locale}/shop/${product.slug}`}
@@ -31,6 +33,11 @@ export function ProductCard({
           {product.names[locale]}
         </h3>
         <p className="mt-auto text-sm font-medium tracking-wide text-citrus">
+          {from ? (
+            <span className="mr-1 text-[11px] tracking-[0.08em] text-moss uppercase">
+              {locale === "vi" ? "Từ" : "From"}
+            </span>
+          ) : null}
           {formatVnd(product.price, locale)}
         </p>
       </div>

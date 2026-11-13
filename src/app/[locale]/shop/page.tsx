@@ -57,6 +57,7 @@ export default async function ShopPage({
       ...query,
       cityProductIds,
       cityId: activeCity.id,
+      citySlug: activeCity.slug,
     }),
     listActiveCategories(),
   ]);

@@ -22,6 +22,8 @@ export type CartItem = {
   image: string;
   price: number;
   name: string;
+  /** Bouquet size id: sm | md | lg | grand */
+  size?: string;
   note?: string;
   addonKind?: "extra" | "partner";
   partnerName?: string;
@@ -43,7 +45,7 @@ type CartContextValue = {
     product: Product,
     locale: Locale,
     addons?: SelectedAddon[],
-    options?: { openDrawer?: boolean },
+    options?: { openDrawer?: boolean; size?: string; unitPrice?: number },
   ) => void;
   addAddon: (
     addon: AddonPublic,
@@ -58,7 +60,7 @@ type CartContextValue = {
   subtotal: number;
 };
 
-const STORAGE_KEY = "sf-cart-v2";
+const STORAGE_KEY = "sf-cart-v3";
 const CartContext = createContext<CartContextValue | null>(null);
 
 function readStorage(): CartItem[] {
@@ -80,8 +82,13 @@ function readStorage(): CartItem[] {
   }
 }
 
-function lineKey(type: "product" | "addon", slug: string, note?: string) {
-  return `${type}:${slug}:${note?.trim() || ""}`;
+function lineKey(
+  type: "product" | "addon",
+  slug: string,
+  note?: string,
+  size?: string,
+) {
+  return `${type}:${slug}:${size || ""}:${note?.trim() || ""}`;
 }
 
 export function CartProvider({ children }: { children: ReactNode }) {
@@ -116,16 +123,23 @@ export function CartProvider({ children }: { children: ReactNode }) {
       product: Product,
       locale: Locale,
       addons: SelectedAddon[] = [],
-      options?: { openDrawer?: boolean },
+      options?: { openDrawer?: boolean; size?: string; unitPrice?: number },
     ) => {
+      const size = options?.size;
+      const unitPrice =
+        options?.unitPrice != null ? options.unitPrice : product.price;
+      const sizeSuffix = size
+        ? ` · ${size === "sm" ? (locale === "vi" ? "Nhỏ" : "Small") : size === "md" ? (locale === "vi" ? "Vừa" : "Medium") : size === "lg" ? (locale === "vi" ? "Lớn" : "Large") : "Grand"}`
+        : "";
       bumpOrInsert({
-        key: lineKey("product", product.slug),
+        key: lineKey("product", product.slug, undefined, size),
         type: "product",
         slug: product.slug,
         qty: 1,
         image: product.image,
-        price: product.price,
-        name: product.names[locale],
+        price: unitPrice,
+        name: `${product.names[locale]}${sizeSuffix}`,
+        size,
       });
 
       for (const selected of addons) {

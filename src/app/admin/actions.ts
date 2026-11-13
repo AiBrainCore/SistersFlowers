@@ -16,8 +16,18 @@ import {
   parseOptionalVnd,
   upsertProductCityStock,
 } from "@/lib/product-city";
+import { syncListPrice, type SizePriceMap } from "@/lib/product-sizes";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
+
+function readBaseSizePrices(formData: FormData): SizePriceMap {
+  return {
+    sm: parseOptionalVnd(formData.get("priceSm")),
+    md: parseOptionalVnd(formData.get("priceMd")),
+    lg: parseOptionalVnd(formData.get("priceLg")),
+    grand: parseOptionalVnd(formData.get("priceGrand")),
+  };
+}
 
 async function readCityStockFromForm(formData: FormData) {
   const cities = await listCitiesForPricing();
@@ -30,6 +40,12 @@ async function readCityStockFromForm(formData: FormData) {
       cityId: city.id,
       available,
       priceOverride,
+      priceSm: parseOptionalVnd(formData.get(`cityPriceSm_${city.slug}`)),
+      priceMd: parseOptionalVnd(formData.get(`cityPriceMd_${city.slug}`)),
+      priceLg: parseOptionalVnd(formData.get(`cityPriceLg_${city.slug}`)),
+      priceGrand: parseOptionalVnd(
+        formData.get(`cityPriceGrand_${city.slug}`),
+      ),
     };
   });
 }
@@ -76,7 +92,9 @@ export async function saveProductAction(formData: FormData) {
   const id = String(formData.get("id") || "");
   const nameEn = String(formData.get("nameEn") || "").trim();
   const nameVi = String(formData.get("nameVi") || "").trim();
-  const price = Number(formData.get("price") || 0);
+  const sizePrices = readBaseSizePrices(formData);
+  const legacyPrice = Number(formData.get("price") || 0);
+  const price = syncListPrice(sizePrices, legacyPrice);
   let slug = String(formData.get("slug") || "").trim() || slugify(nameEn || nameVi);
   const accent = String(formData.get("accent") || "rose");
   const tagEn = String(formData.get("tagEn") || "Wrapped bouquet");
@@ -92,6 +110,13 @@ export async function saveProductAction(formData: FormData) {
   if (!nameEn || !nameVi || !price || !slug) {
     redirect(id ? `/admin/products/${id}?error=1` : "/admin/products/new?error=1");
   }
+
+  const sizeData = {
+    priceSm: sizePrices.sm,
+    priceMd: sizePrices.md,
+    priceLg: sizePrices.lg,
+    priceGrand: sizePrices.grand,
+  };
 
   let image = existingImage || "/bouquets/shown/w-01.jpg";
   const file = formData.get("image") as File | null;
@@ -125,6 +150,7 @@ export async function saveProductAction(formData: FormData) {
       data: {
         slug,
         price,
+        ...sizeData,
         image,
         accent,
         nameEn,
@@ -146,6 +172,7 @@ export async function saveProductAction(formData: FormData) {
       data: {
         slug,
         price,
+        ...sizeData,
         image,
         accent,
         nameEn,

@@ -13,7 +13,13 @@ datasource db {
 model Product {
   id         String            @id @default(cuid())
   slug       String            @unique
+  /// List/sort price (synced to min size or legacy single price).
   price      Int
+  /// Size matrix (null = size not offered at network level).
+  priceSm    Int?
+  priceMd    Int?
+  priceLg    Int?
+  priceGrand Int?
   /// Primary shop image (prefer WebP on Supabase Storage).
   image      String
   /// JPEG fallback for clients that mishandle WebP (Zalo/FB/mail).
@@ -313,7 +319,8 @@ model Branch {
 
 /// City-level assortment / price override.
 /// available=false hides the product in that city; missing row or true = shown.
-/// priceOverride null = use Product.price.
+/// priceOverride null = use Product.price (legacy single-price).
+/// priceSm/Md/Lg/Grand null = use network size price for that tier.
 model ProductCityAvailability {
   id            String  @id @default(cuid())
   productId     String
@@ -322,6 +329,10 @@ model ProductCityAvailability {
   city          City    @relation(fields: [cityId], references: [id], onDelete: Cascade)
   available     Boolean @default(true)
   priceOverride Int?
+  priceSm       Int?
+  priceMd       Int?
+  priceLg       Int?
+  priceGrand    Int?
 
   @@unique([productId, cityId])
 }
