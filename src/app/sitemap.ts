@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { locales } from "@/i18n/config";
+import { listPublishedJournalPosts } from "@/lib/journal";
 import { listPublishedProducts } from "@/lib/products";
 import { siteUrl } from "@/lib/seo";
 
@@ -11,13 +12,17 @@ const staticPaths = [
   "/hotels",
   "/delivery",
   "/about",
+  "/journal",
   "/contact",
   "/terms",
   "/assistant",
 ] as const;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const products = await listPublishedProducts();
+  const [products, posts] = await Promise.all([
+    listPublishedProducts(),
+    listPublishedJournalPosts(),
+  ]);
   const now = new Date();
 
   const pages: MetadataRoute.Sitemap = [];
@@ -46,6 +51,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         alternates: {
           languages: Object.fromEntries(
             locales.map((l) => [l, siteUrl(`/${l}/shop/${product.slug}`)]),
+          ),
+        },
+      });
+    }
+
+    for (const post of posts) {
+      pages.push({
+        url: siteUrl(`/${locale}/journal/${post.slug}`),
+        lastModified: post.updatedAt || now,
+        changeFrequency: "monthly",
+        priority: 0.65,
+        alternates: {
+          languages: Object.fromEntries(
+            locales.map((l) => [l, siteUrl(`/${l}/journal/${post.slug}`)]),
           ),
         },
       });

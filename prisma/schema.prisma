@@ -301,8 +301,9 @@ model Branch {
   @@unique([cityId, slug])
 }
 
-/// Optional city-level assortment / price override.
-/// If a city has zero rows, all published network products are available there.
+/// City-level assortment / price override.
+/// available=false hides the product in that city; missing row or true = shown.
+/// priceOverride null = use Product.price.
 model ProductCityAvailability {
   id            String  @id @default(cuid())
   productId     String
@@ -313,6 +314,31 @@ model ProductCityAvailability {
   priceOverride Int?
 
   @@unique([productId, cityId])
+}
+
+/// Studio journal: tips, stories, news, partnerships (EN/VI, SEO).
+model JournalPost {
+  id          String    @id @default(cuid())
+  slug        String    @unique
+  /// tip | story | news | partnership
+  kind        String    @default("tip")
+  /// both | danang | dalat
+  cityScope   String    @default("both")
+  titleEn     String
+  titleVi     String
+  excerptEn   String    @default("")
+  excerptVi   String    @default("")
+  bodyEn      String    @default("")
+  bodyVi      String    @default("")
+  coverImage  String?
+  published   Boolean   @default(false)
+  publishedAt DateTime?
+  sortOrder   Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([published, publishedAt])
+  @@index([kind])
 }
 
 /// Lightweight delivery audit for transactional email (no SMTP secrets).

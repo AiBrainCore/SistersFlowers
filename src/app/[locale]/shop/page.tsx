@@ -51,7 +51,11 @@ export default async function ShopPage({
   );
   const cityProductIds = await listAvailableProductIdsForCity(activeCity.id);
   const [products, categories] = await Promise.all([
-    listPublishedProducts({ ...query, cityProductIds }),
+    listPublishedProducts({
+      ...query,
+      cityProductIds,
+      cityId: activeCity.id,
+    }),
     listActiveCategories(),
   ]);
 

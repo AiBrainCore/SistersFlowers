@@ -1,8 +1,10 @@
 import type { CategoryPublic } from "@/lib/categories";
+import type { CityStockPublic } from "@/lib/product-city";
 
 export type Product = {
   id?: string;
   slug: string;
+  /** Network / default price (VND). City overrides live in cityStock. */
   price: number;
   image: string;
   accent: string;
@@ -14,6 +16,7 @@ export type Product = {
   sortOrder?: number;
   createdAt?: Date;
   categories?: CategoryPublic[];
+  cityStock?: CityStockPublic[];
 };
 
 export type ProductRecord = {
@@ -34,6 +37,16 @@ export type ProductRecord = {
   sortOrder: number;
   createdAt?: Date;
   categories?: { category: CategoryPublic }[];
+  cityStock?: {
+    available: boolean;
+    priceOverride: number | null;
+    city: {
+      id: string;
+      slug: string;
+      nameEn: string;
+      nameVi: string;
+    };
+  }[];
 };
 
 export function toProduct(record: ProductRecord): Product {
@@ -51,6 +64,14 @@ export function toProduct(record: ProductRecord): Product {
     sortOrder: record.sortOrder,
     createdAt: record.createdAt,
     categories: record.categories?.map((link) => link.category),
+    cityStock: record.cityStock?.map((row) => ({
+      cityId: row.city.id,
+      citySlug: row.city.slug,
+      cityNameEn: row.city.nameEn,
+      cityNameVi: row.city.nameVi,
+      available: row.available,
+      priceOverride: row.priceOverride,
+    })),
   };
 }
 

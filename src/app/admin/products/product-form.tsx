@@ -3,17 +3,29 @@ import { saveProductAction } from "@/app/admin/actions";
 import type { Product } from "@/data/products";
 import type { AdminDictionary } from "@/i18n/admin-dictionaries";
 import type { CategoryPublic } from "@/lib/categories";
+import type { CityPriceSlug } from "@/lib/product-city";
+
+type PricingCity = {
+  slug: CityPriceSlug | string;
+  nameEn: string;
+  nameVi: string;
+};
 
 export function ProductForm({
   product,
   t,
   categories,
+  cities,
 }: {
   product?: Product;
   t: AdminDictionary;
   categories: CategoryPublic[];
+  cities: PricingCity[];
 }) {
   const selected = new Set((product?.categories || []).map((c) => c.id));
+  const stockBySlug = new Map(
+    (product?.cityStock || []).map((row) => [row.citySlug, row]),
+  );
 
   return (
     <form action={saveProductAction} className="admin-card" encType="multipart/form-data">
@@ -52,6 +64,61 @@ export function ProductForm({
           />
         </label>
       </div>
+      <p style={{ fontSize: 13, opacity: 0.7, marginTop: -6, marginBottom: 14 }}>
+        {t.products.basePriceHint}
+      </p>
+
+      <fieldset className="admin-section" style={{ marginBottom: 16 }}>
+        <legend style={{ fontSize: 12, letterSpacing: "0.08em", textTransform: "uppercase", opacity: 0.7, marginBottom: 8 }}>
+          {t.products.cityPricing}
+        </legend>
+        <p style={{ fontSize: 13, opacity: 0.7, marginTop: 0, marginBottom: 12 }}>
+          {t.products.cityPricingHint}
+        </p>
+        <div className="admin-grid-2">
+          {cities.map((city) => {
+            const stock = stockBySlug.get(city.slug);
+            return (
+              <div
+                key={city.slug}
+                style={{
+                  border: "1px solid rgba(31,42,36,0.1)",
+                  borderRadius: 14,
+                  padding: 14,
+                  background: "#fff",
+                }}
+              >
+                <div style={{ fontWeight: 600, marginBottom: 10 }}>
+                  {city.nameEn} / {city.nameVi}
+                </div>
+                <label className="admin-field">
+                  <span>{t.products.cityPriceOverride}</span>
+                  <input
+                    name={`cityPrice_${city.slug}`}
+                    type="number"
+                    min={0}
+                    step={1000}
+                    placeholder={t.products.sameAsBase}
+                    defaultValue={stock?.priceOverride ?? ""}
+                  />
+                </label>
+                <label
+                  className="admin-field"
+                  style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 0 }}
+                >
+                  <input
+                    type="checkbox"
+                    name={`cityAvailable_${city.slug}`}
+                    defaultChecked={stock?.available ?? true}
+                    style={{ width: "auto" }}
+                  />
+                  <span style={{ margin: 0 }}>{t.products.cityAvailable}</span>
+                </label>
+              </div>
+            );
+          })}
+        </div>
+      </fieldset>
 
       <div className="admin-grid-2">
         <label className="admin-field">

@@ -17,7 +17,8 @@ export async function generateMetadata({
 }: PageProps<"/[locale]/shop/[slug]">): Promise<Metadata> {
   const { locale, slug } = await params;
   if (!isLocale(locale)) return {};
-  const product = await getProductBySlug(slug);
+  const { activeCity } = await getStorefrontDictionary(locale as Locale);
+  const product = await getProductBySlug(slug, { cityId: activeCity.id });
   if (!product) return {};
   const name = product.names[locale];
   const description =
@@ -37,11 +38,11 @@ export default async function ProductPage({
 }: PageProps<"/[locale]/shop/[slug]">) {
   const { locale, slug } = await params;
   if (!isLocale(locale)) notFound();
-  const product = await getProductBySlug(slug);
+  const { dictionary: t, activeCity } = await getStorefrontDictionary(locale);
+  const product = await getProductBySlug(slug, { cityId: activeCity.id });
   if (!product) notFound();
-  const { dictionary: t } = await getStorefrontDictionary(locale);
   const [others, addons] = await Promise.all([
-    listPublishedProducts().then((rows) =>
+    listPublishedProducts({ cityId: activeCity.id }).then((rows) =>
       rows.filter((item) => item.slug !== slug).slice(0, 8),
     ),
     listActiveAddons(),

@@ -14,6 +14,7 @@ export const en = {
     hotels: "Hotels",
     delivery: "Delivery",
     about: "About",
+    journal: "Journal",
     contact: "Contact",
     terms: "Terms",
     menu: "Menu",
@@ -381,6 +382,21 @@ export const en = {
     successBody:
       "Your note is in the studio inbox. We will reply by email or phone.",
     another: "Write another note",
+  },
+  journal: {
+    kicker: "Journal",
+    title: "Tips, stories & studio notes.",
+    intro:
+      "Practical flower care, city delivery notes, partnerships, and quiet news from Sisters Flowers in Da Nang and Da Lat.",
+    empty: "New posts are on the way.",
+    read: "Read",
+    back: "All posts",
+    kinds: {
+      tip: "Tip",
+      story: "Story",
+      news: "News",
+      partnership: "Partnership",
+    },
   },
   footer: {
     line: "Come by either studio — we wrap, deliver, and answer from both cities.",

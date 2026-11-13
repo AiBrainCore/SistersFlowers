@@ -1,6 +1,10 @@
 import { prisma } from "@/lib/db";
 import { toProduct, type Product } from "@/data/products";
 import { seedProductCategoriesIfEmpty } from "@/lib/categories";
+import {
+  applyOverrideMap,
+  getCityPriceOverrideMap,
+} from "@/lib/product-city";
 
 const categoryInclude = {
   categories: {
@@ -8,6 +12,26 @@ const categoryInclude = {
       category: true,
     },
   },
+} as const;
+
+const cityStockInclude = {
+  cityStock: {
+    include: {
+      city: {
+        select: {
+          id: true,
+          slug: true,
+          nameEn: true,
+          nameVi: true,
+        },
+      },
+    },
+  },
+} as const;
+
+const productInclude = {
+  ...categoryInclude,
+  ...cityStockInclude,
 } as const;
 
 export type CatalogSort = "newest" | "price-asc" | "price-desc" | "featured";
@@ -29,6 +53,8 @@ export type CatalogQuery = {
   size?: CatalogSizeBand;
   /** When set, apply city assortment (null list = all published). */
   cityProductIds?: string[] | null;
+  /** Apply priceOverride for this city after fetch. */
+  cityId?: string;
 };
 
 const SIZE_BANDS: Record<CatalogSizeBand, { min?: number; max?: number }> = {
@@ -69,11 +95,15 @@ export async function listPublishedProducts(
     if (band.max != null) maxPrice = band.max;
   }
 
-  if (minPrice != null && Number.isFinite(minPrice)) {
-    and.push({ price: { gte: minPrice } });
-  }
-  if (maxPrice != null && Number.isFinite(maxPrice)) {
-    and.push({ price: { lte: maxPrice } });
+  // Price filters apply after city overrides when cityId is set.
+  const deferPriceFilter = Boolean(query.cityId);
+  if (!deferPriceFilter) {
+    if (minPrice != null && Number.isFinite(minPrice)) {
+      and.push({ price: { gte: minPrice } });
+    }
+    if (maxPrice != null && Number.isFinite(maxPrice)) {
+      and.push({ price: { lte: maxPrice } });
+    }
   }
 
   if (query.accent?.trim()) {
@@ -104,11 +134,24 @@ export async function listPublishedProducts(
 
   const rows = await prisma.product.findMany({
     where,
-    include: categoryInclude,
+    include: productInclude,
     orderBy,
   });
 
-  let products = rows.map(toProduct);
+  const overrides = query.cityId
+    ? await getCityPriceOverrideMap(query.cityId)
+    : null;
+
+  let products = rows.map((row) => applyOverrideMap(toProduct(row), overrides));
+
+  if (deferPriceFilter) {
+    if (minPrice != null && Number.isFinite(minPrice)) {
+      products = products.filter((p) => p.price >= minPrice);
+    }
+    if (maxPrice != null && Number.isFinite(maxPrice)) {
+      products = products.filter((p) => p.price <= maxPrice);
+    }
+  }
 
   // Accent-insensitive EN/VI search (SQLite has no unaccent)
   if (q) {
@@ -137,6 +180,12 @@ export async function listPublishedProducts(
     });
   }
 
+  if (query.cityId && (sort === "price-asc" || sort === "price-desc")) {
+    products = [...products].sort((a, b) =>
+      sort === "price-asc" ? a.price - b.price : b.price - a.price,
+    );
+  }
+
   return products;
 }
 
@@ -150,7 +199,7 @@ export function stripDiacritics(input: string) {
 export async function listAllProducts(): Promise<Product[]> {
   await seedProductCategoriesIfEmpty();
   const rows = await prisma.product.findMany({
-    include: categoryInclude,
+    include: productInclude,
     orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
   });
   return rows.map(toProduct);
@@ -158,21 +207,30 @@ export async function listAllProducts(): Promise<Product[]> {
 
 export async function getProductBySlug(
   slug: string,
-  opts?: { includeDraft?: boolean },
+  opts?: { includeDraft?: boolean; cityId?: string; citySlug?: string },
 ): Promise<Product | null> {
   const row = await prisma.product.findUnique({
     where: { slug },
-    include: categoryInclude,
+    include: productInclude,
   });
   if (!row) return null;
   if (!opts?.includeDraft && !row.published) return null;
-  return toProduct(row);
+  let product = toProduct(row);
+  if (opts?.cityId) {
+    const blocked = row.cityStock?.some(
+      (s) => s.city.id === opts.cityId && !s.available,
+    );
+    if (blocked) return null;
+    const overrides = await getCityPriceOverrideMap(opts.cityId);
+    product = applyOverrideMap(product, overrides);
+  }
+  return product;
 }
 
 export async function getProductById(id: string): Promise<Product | null> {
   const row = await prisma.product.findUnique({
     where: { id },
-    include: categoryInclude,
+    include: productInclude,
   });
   return row ? toProduct(row) : null;
 }
