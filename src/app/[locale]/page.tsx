@@ -45,7 +45,11 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
   const { dictionary: t, activeCity } = await getStorefrontDictionary(locale);
   const cityProductIds = await listAvailableProductIdsForCity(activeCity.id);
   const [products, categories] = await Promise.all([
-    listPublishedProducts({ cityProductIds, cityId: activeCity.id }),
+    listPublishedProducts({
+      cityProductIds,
+      cityId: activeCity.id,
+      citySlug: activeCity.slug,
+    }),
     listActiveCategories(),
   ]);
   const featured = products.slice(0, 8);

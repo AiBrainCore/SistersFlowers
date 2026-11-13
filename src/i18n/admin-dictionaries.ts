@@ -76,11 +76,15 @@ const en = {
     categories: "Categories (occasions)",
     categoriesHint: "A bouquet can belong to several occasions.",
     basePriceHint:
-      "Base network price. Leave a city override blank to use this amount there.",
+      "Fallback list price if no S/M/L/G sizes are filled. Prefer the size grid below.",
     cityPricing: "City prices & availability",
     cityPricingHint:
       "Set Da Nang and Da Lat side by side. Uncheck “Sell here” to hide the bouquet in that city.",
-    cityPriceOverride: "City price (VND)",
+    sizePricing: "Sizes × city prices",
+    sizePricingHint:
+      "Same photo & name. Fill S / M / L / Grand. Empty size = not offered. Empty city cell = use base for that size.",
+    sizeCol: "Size",
+    cityPriceOverride: "Legacy single city price (if no sizes)",
     cityAvailable: "Sell in this city",
     sameAsBase: "Same as base",
     listPricingHint:
@@ -333,11 +337,15 @@ const vi: typeof en = {
     categories: "Danh mục (dịp)",
     categoriesHint: "Một bó có thể thuộc nhiều dịp.",
     basePriceHint:
-      "Giá mạng lưới. Để trống giá thành phố nếu dùng giá này.",
+      "Giá dự phòng nếu chưa điền S/M/L/G. Nên dùng bảng size bên dưới.",
     cityPricing: "Giá & bán theo thành phố",
     cityPricingHint:
       "Đà Nẵng và Đà Lạt cạnh nhau. Bỏ chọn “Bán ở đây” để ẩn bó hoa ở thành phố đó.",
-    cityPriceOverride: "Giá thành phố (VND)",
+    sizePricing: "Giá theo size × thành phố",
+    sizePricingHint:
+      "Cùng ảnh & tên. Điền S / M / L / Grand. Để trống size = không bán size đó. Ô thành phố trống = dùng giá gốc size.",
+    sizeCol: "Size",
+    cityPriceOverride: "Giá thành phố cũ (nếu chưa có size)",
     cityAvailable: "Bán ở thành phố này",
     sameAsBase: "Như giá gốc",
     listPricingHint:

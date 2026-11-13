@@ -7,22 +7,45 @@ import type { Product } from "@/data/products";
 import { formatVnd } from "@/data/products";
 import type { AddonPublic } from "@/lib/addons";
 import { useCart } from "@/context/cart-context";
+import {
+  defaultSize,
+  hasAnySizePrice,
+  offeredSizes,
+  resolveSizePrice,
+  sizeLabel,
+  type ProductSizeId,
+} from "@/lib/product-sizes";
 
 export function ProductPurchase({
   product,
   locale,
   dictionary,
   addons,
+  citySlug,
 }: {
   product: Product;
   locale: Locale;
   dictionary: Dictionary;
   addons: AddonPublic[];
+  citySlug?: string;
 }) {
   const { addProduct } = useCart();
   const [selected, setSelected] = useState<Record<string, boolean>>({});
   const [notes, setNotes] = useState<Record<string, string>>({});
   const [added, setAdded] = useState(false);
+
+  const citySizes = product.cityStock?.find(
+    (s) => s.citySlug === citySlug,
+  )?.sizePrices;
+  const sizes = offeredSizes(product.sizePrices, citySizes);
+  const sized = hasAnySizePrice(product.sizePrices) || Boolean(citySizes && hasAnySizePrice(citySizes));
+  const [size, setSize] = useState<ProductSizeId | null>(
+    defaultSize(product.sizePrices, citySizes),
+  );
+
+  const unitPrice = size
+    ? resolveSizePrice(size, product.sizePrices, citySizes, product.price)
+    : product.price;
 
   const extras = useMemo(
     () => addons.filter((a) => a.kind === "extra"),
@@ -46,7 +69,7 @@ export function ProductPurchase({
     (sum, item) => sum + item.addon.price,
     0,
   );
-  const total = product.price + extrasTotal;
+  const total = unitPrice + extrasTotal;
 
   function toggle(id: string) {
     setSelected((current) => ({ ...current, [id]: !current[id] }));
@@ -129,6 +152,45 @@ export function ProductPurchase({
 
   return (
     <div className="mt-8 space-y-8">
+      {sized && sizes.length ? (
+        <div>
+          <p className="text-[11px] tracking-[0.18em] text-moss uppercase">
+            {dictionary.product.sizeLabel}
+          </p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {sizes.map((id) => {
+              const price = resolveSizePrice(
+                id,
+                product.sizePrices,
+                citySizes,
+                product.price,
+              );
+              const on = size === id;
+              return (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() => setSize(id)}
+                  className={`min-h-11 rounded-full border px-4 text-sm transition ${
+                    on
+                      ? "border-citrus bg-citrus text-ivory"
+                      : "border-forest/15 bg-white text-forest hover:border-citrus/40"
+                  }`}
+                >
+                  {sizeLabel(id, locale)}
+                  <span className={`ml-2 ${on ? "text-ivory/90" : "text-moss"}`}>
+                    {formatVnd(price, locale)}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+          <p className="serif mt-4 text-3xl text-citrus">
+            {formatVnd(unitPrice, locale)}
+          </p>
+        </div>
+      ) : null}
+
       {renderGroup(
         dictionary.product.addonsTitle,
         dictionary.product.addonsHint,
@@ -144,7 +206,10 @@ export function ProductPurchase({
         <button
           type="button"
           onClick={() => {
-            addProduct(product, locale, selectedList);
+            addProduct(product, locale, selectedList, {
+              size: size || undefined,
+              unitPrice,
+            });
             setAdded(true);
             window.setTimeout(() => setAdded(false), 1600);
           }}

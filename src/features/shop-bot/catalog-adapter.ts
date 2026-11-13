@@ -41,6 +41,7 @@ export async function loadDalAtBotCatalog(
     sort: "featured",
     cityProductIds,
     cityId: city?.id,
+    citySlug: city?.slug,
   });
 
   return products.map((p) => toBotProduct(p, locale));

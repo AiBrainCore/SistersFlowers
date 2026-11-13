@@ -4,6 +4,7 @@ import type { Product } from "@/data/products";
 import type { AdminDictionary } from "@/i18n/admin-dictionaries";
 import type { CategoryPublic } from "@/lib/categories";
 import type { CityPriceSlug } from "@/lib/product-city";
+import { PRODUCT_SIZES } from "@/lib/product-sizes";
 
 type PricingCity = {
   slug: CityPriceSlug | string;
@@ -26,6 +27,14 @@ export function ProductForm({
   const stockBySlug = new Map(
     (product?.cityStock || []).map((row) => [row.citySlug, row]),
   );
+  const sizeField = (id: string) =>
+    id === "sm"
+      ? "priceSm"
+      : id === "md"
+        ? "priceMd"
+        : id === "lg"
+          ? "priceLg"
+          : "priceGrand";
 
   return (
     <form action={saveProductAction} className="admin-card" encType="multipart/form-data">
@@ -70,29 +79,93 @@ export function ProductForm({
 
       <fieldset className="admin-section" style={{ marginBottom: 16 }}>
         <legend style={{ fontSize: 12, letterSpacing: "0.08em", textTransform: "uppercase", opacity: 0.7, marginBottom: 8 }}>
-          {t.products.cityPricing}
+          {t.products.sizePricing}
         </legend>
         <p style={{ fontSize: 13, opacity: 0.7, marginTop: 0, marginBottom: 12 }}>
-          {t.products.cityPricingHint}
+          {t.products.sizePricingHint}
         </p>
-        <div className="admin-grid-2">
+        <div style={{ overflowX: "auto" }}>
+          <table className="admin-table" style={{ minWidth: 520 }}>
+            <thead>
+              <tr>
+                <th>{t.products.sizeCol}</th>
+                <th>{t.products.baseShort}</th>
+                {cities.map((city) => (
+                  <th key={city.slug}>{city.nameEn}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {PRODUCT_SIZES.map((size) => {
+                const field = sizeField(size.id);
+                const baseVal =
+                  product?.sizePrices?.[size.id] ?? "";
+                return (
+                  <tr key={size.id}>
+                    <td>
+                      <strong>
+                        {size.short} · {size.labelEn}
+                      </strong>
+                      <div style={{ fontSize: 11, opacity: 0.6 }}>
+                        {size.labelVi}
+                      </div>
+                    </td>
+                    <td>
+                      <input
+                        name={field}
+                        type="number"
+                        min={0}
+                        step={1000}
+                        placeholder="—"
+                        defaultValue={baseVal === null ? "" : baseVal}
+                        style={{ width: "100%", minWidth: 96 }}
+                      />
+                    </td>
+                    {cities.map((city) => {
+                      const stock = stockBySlug.get(city.slug);
+                      const cityVal = stock?.sizePrices?.[size.id] ?? "";
+                      return (
+                        <td key={city.slug}>
+                          <input
+                            name={`cityPrice${size.id === "sm" ? "Sm" : size.id === "md" ? "Md" : size.id === "lg" ? "Lg" : "Grand"}_${city.slug}`}
+                            type="number"
+                            min={0}
+                            step={1000}
+                            placeholder={t.products.sameAsBase}
+                            defaultValue={cityVal === null ? "" : cityVal}
+                            style={{ width: "100%", minWidth: 96 }}
+                          />
+                        </td>
+                      );
+                    })}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="admin-grid-2" style={{ marginTop: 14 }}>
           {cities.map((city) => {
             const stock = stockBySlug.get(city.slug);
             return (
-              <div
-                key={city.slug}
-                style={{
-                  border: "1px solid rgba(31,42,36,0.1)",
-                  borderRadius: 14,
-                  padding: 14,
-                  background: "#fff",
-                }}
-              >
-                <div style={{ fontWeight: 600, marginBottom: 10 }}>
-                  {city.nameEn} / {city.nameVi}
-                </div>
-                <label className="admin-field">
-                  <span>{t.products.cityPriceOverride}</span>
+              <div key={city.slug}>
+                <label
+                  className="admin-field"
+                  style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}
+                >
+                  <input
+                    type="checkbox"
+                    name={`cityAvailable_${city.slug}`}
+                    defaultChecked={stock?.available ?? true}
+                    style={{ width: "auto" }}
+                  />
+                  <span style={{ margin: 0 }}>
+                    {t.products.cityAvailable}: {city.nameEn}
+                  </span>
+                </label>
+                <label className="admin-field" style={{ marginBottom: 0 }}>
+                  <span>{t.products.cityPriceOverride} ({city.nameEn})</span>
                   <input
                     name={`cityPrice_${city.slug}`}
                     type="number"
@@ -101,18 +174,6 @@ export function ProductForm({
                     placeholder={t.products.sameAsBase}
                     defaultValue={stock?.priceOverride ?? ""}
                   />
-                </label>
-                <label
-                  className="admin-field"
-                  style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 0 }}
-                >
-                  <input
-                    type="checkbox"
-                    name={`cityAvailable_${city.slug}`}
-                    defaultChecked={stock?.available ?? true}
-                    style={{ width: "auto" }}
-                  />
-                  <span style={{ margin: 0 }}>{t.products.cityAvailable}</span>
                 </label>
               </div>
             );
