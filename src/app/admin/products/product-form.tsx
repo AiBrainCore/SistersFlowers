@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { saveProductAction } from "@/app/admin/actions";
 import type { Product } from "@/data/products";
-import type { AdminDictionary } from "@/i18n/admin-dictionaries";
+import type { AdminDictionary, AdminLocale } from "@/i18n/admin-dictionaries";
 import type { CategoryPublic } from "@/lib/categories";
 import type { AttributePublic } from "@/lib/catalog-attributes";
 import type { CityPriceSlug } from "@/lib/product-city";
@@ -16,12 +16,14 @@ type PricingCity = {
 export function ProductForm({
   product,
   t,
+  locale,
   categories,
   cities,
   attributes = [],
 }: {
   product?: Product;
   t: AdminDictionary;
+  locale: AdminLocale;
   categories: CategoryPublic[];
   cities: PricingCity[];
   attributes?: AttributePublic[];
@@ -35,6 +37,8 @@ export function ProductForm({
   );
   const sizeField = (id: string) =>
     id === "sm" ? "priceSm" : id === "md" ? "priceMd" : "priceLg";
+  const label = (en: string, vi: string) => (locale === "vi" ? vi : en);
+  const cityLabel = (city: PricingCity) => label(city.nameEn, city.nameVi);
 
   return (
     <form action={saveProductAction} className="admin-card" encType="multipart/form-data">
@@ -106,7 +110,7 @@ export function ProductForm({
                 <th>{t.products.saleShort}</th>
                 <th>{t.products.wasShort}</th>
                 {cities.map((city) => (
-                  <th key={city.slug}>{city.nameEn}</th>
+                  <th key={city.slug}>{cityLabel(city)}</th>
                 ))}
               </tr>
             </thead>
@@ -196,11 +200,13 @@ export function ProductForm({
                     style={{ width: "auto" }}
                   />
                   <span style={{ margin: 0 }}>
-                    {t.products.cityAvailable}: {city.nameEn}
+                    {t.products.cityAvailable}: {cityLabel(city)}
                   </span>
                 </label>
                 <label className="admin-field" style={{ marginBottom: 0 }}>
-                  <span>{t.products.cityPriceOverride} ({city.nameEn})</span>
+                  <span>
+                    {t.products.cityPriceOverride} ({cityLabel(city)})
+                  </span>
                   <input
                     name={`cityPrice_${city.slug}`}
                     type="number"
@@ -275,9 +281,7 @@ export function ProductForm({
                 defaultChecked={selected.has(cat.id)}
                 style={{ width: "auto" }}
               />
-              <span>
-                {cat.nameEn} / {cat.nameVi}
-              </span>
+              <span>{label(cat.nameEn, cat.nameVi)}</span>
             </label>
           ))}
         </div>
@@ -373,7 +377,7 @@ export function ProductForm({
                   style={{ width: "auto" }}
                 />
                 <span>
-                  {attr.kind}: {attr.nameEn} / {attr.nameVi}
+                  {attr.kind}: {label(attr.nameEn, attr.nameVi)}
                 </span>
               </label>
             ))}

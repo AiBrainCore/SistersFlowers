@@ -6,7 +6,7 @@ import { listActiveAttributes } from "@/lib/catalog-attributes";
 import { listCitiesForPricing } from "@/lib/product-city";
 
 export default async function NewProductPage() {
-  const [{ t }, categories, cities, attributes] = await Promise.all([
+  const [{ locale, t }, categories, cities, attributes] = await Promise.all([
     getAdminT(),
     listActiveCategories(),
     listCitiesForPricing(),
@@ -16,6 +16,7 @@ export default async function NewProductPage() {
     <AdminShell title={t.products.newTitle}>
       <ProductForm
         t={t}
+        locale={locale}
         categories={categories}
         cities={cities}
         attributes={attributes}
