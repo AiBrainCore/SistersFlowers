@@ -7,10 +7,12 @@ import type { Product } from "@/data/products";
 import { formatVnd } from "@/data/products";
 import type { AddonPublic } from "@/lib/addons";
 import { useCart } from "@/context/cart-context";
+import { SalePrice } from "@/components/sale-price";
 import {
   defaultSize,
   hasAnySizePrice,
   offeredSizes,
+  resolveCompareAt,
   resolveSizePrice,
   sizeLabel,
   type ProductSizeId,
@@ -46,6 +48,11 @@ export function ProductPurchase({
   const unitPrice = size
     ? resolveSizePrice(size, product.sizePrices, citySizes, product.price)
     : product.price;
+  const unitCompareAt = resolveCompareAt(
+    size,
+    product.compareAtPrices,
+    product.compareAtPrice,
+  );
 
   const extras = useMemo(
     () => addons.filter((a) => a.kind === "extra"),
@@ -185,9 +192,14 @@ export function ProductPurchase({
               );
             })}
           </div>
-          <p className="serif mt-4 text-3xl text-citrus">
-            {formatVnd(unitPrice, locale)}
-          </p>
+          <div className="mt-4">
+            <SalePrice
+              price={unitPrice}
+              compareAt={unitCompareAt}
+              locale={locale}
+              size="lg"
+            />
+          </div>
           {size && product.sizeNotes?.[size]?.[locale]?.trim() ? (
             <p className="mt-2 text-sm text-moss">
               {product.sizeNotes[size]![locale]}

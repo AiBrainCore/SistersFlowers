@@ -1,6 +1,7 @@
 import type { CategoryPublic } from "@/lib/categories";
 import type { CityStockPublic } from "@/lib/product-city";
 import {
+  baseCompareAtPrices,
   baseSizePrices,
   citySizePrices,
   type SizePriceMap,
@@ -20,6 +21,10 @@ export type Product = {
   /** Display / list price (min size or legacy). */
   price: number;
   sizePrices?: SizePriceMap;
+  /** Compare-at (“was”) per size — show strikethrough when higher than sale. */
+  compareAtPrices?: SizePriceMap;
+  /** Legacy single compare-at when no size matrix. */
+  compareAtPrice?: number | null;
   image: string;
   /** JPEG (or other) fallback when WebP is unsupported. */
   imageFallback?: string;
@@ -57,6 +62,11 @@ export type ProductRecord = {
   priceMd?: number | null;
   priceLg?: number | null;
   priceGrand?: number | null;
+  compareAtPrice?: number | null;
+  compareAtSm?: number | null;
+  compareAtMd?: number | null;
+  compareAtLg?: number | null;
+  compareAtGrand?: number | null;
   sizeNoteSmEn?: string | null;
   sizeNoteSmVi?: string | null;
   sizeNoteMdEn?: string | null;
@@ -121,6 +131,8 @@ export function toProduct(record: ProductRecord): Product {
     slug: record.slug,
     price: record.price,
     sizePrices: baseSizePrices(record),
+    compareAtPrices: baseCompareAtPrices(record),
+    compareAtPrice: record.compareAtPrice ?? null,
     image: record.image,
     imageFallback: record.imageFallback || "",
     productType: record.productType || "bouquet",

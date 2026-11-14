@@ -105,6 +105,7 @@ export default async function ShopPage({
                 key={product.slug}
                 product={product}
                 locale={locale}
+                citySlug={activeCity.slug}
               />
             ))}
           </div>

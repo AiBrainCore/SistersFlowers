@@ -2,12 +2,12 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { isLocale, type Locale } from "@/i18n/config";
 import { getStorefrontDictionary } from "@/lib/storefront";
-import { formatVnd } from "@/data/products";
 import { getProductBySlug, listPublishedProducts } from "@/lib/products";
 import { listActiveAddons } from "@/lib/addons";
 import { ProductPurchase } from "@/components/product-purchase";
 import { ProductCard } from "@/components/product-card";
 import { ProductImage } from "@/components/product-image";
+import { SalePrice } from "@/components/sale-price";
 import { buildPageMetadata, productJsonLd, siteUrl } from "@/lib/seo";
 import { hasAnySizePrice } from "@/lib/product-sizes";
 
@@ -118,9 +118,14 @@ export default async function ProductPage({
             </p>
             <p className="mt-4 text-xs text-moss">{t.product.deliveryNote}</p>
             {!hasAnySizePrice(product.sizePrices) ? (
-              <p className="serif mt-6 text-3xl text-citrus">
-                {formatVnd(product.price, locale)}
-              </p>
+              <div className="mt-6">
+                <SalePrice
+                  price={product.price}
+                  compareAt={product.compareAtPrice}
+                  locale={locale}
+                  size="lg"
+                />
+              </div>
             ) : null}
             <ProductPurchase
               product={product}

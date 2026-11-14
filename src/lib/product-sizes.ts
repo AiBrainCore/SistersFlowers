@@ -3,7 +3,7 @@ export const PRODUCT_SIZES = [
   { id: "sm", labelEn: "Small", labelVi: "Nhỏ", short: "S" },
   { id: "md", labelEn: "Medium", labelVi: "Vừa", short: "M" },
   { id: "lg", labelEn: "Large", labelVi: "Lớn", short: "L" },
-  { id: "grand", labelEn: "Grand", labelVi: "Grand", short: "G" },
+  { id: "grand", labelEn: "Grand / XL", labelVi: "Grand / XL", short: "XL" },
 ] as const;
 
 export type ProductSizeId = (typeof PRODUCT_SIZES)[number]["id"];
@@ -112,4 +112,66 @@ export function syncListPrice(
 ): number {
   if (!hasAnySizePrice(base)) return legacyPrice;
   return minOfferedPrice(base, undefined, legacyPrice);
+}
+
+/** Network compare-at (“was”) prices from product columns. */
+export function baseCompareAtPrices(input: {
+  compareAtSm?: number | null;
+  compareAtMd?: number | null;
+  compareAtLg?: number | null;
+  compareAtGrand?: number | null;
+}): SizePriceMap {
+  return {
+    sm: input.compareAtSm ?? null,
+    md: input.compareAtMd ?? null,
+    lg: input.compareAtLg ?? null,
+    grand: input.compareAtGrand ?? null,
+  };
+}
+
+export function resolveCompareAt(
+  size: ProductSizeId | null | undefined,
+  compareAts: SizePriceMap | undefined,
+  fallbackCompareAt?: number | null,
+): number | null {
+  if (size) {
+    const sized = compareAts?.[size];
+    if (sized != null && sized > 0) return sized;
+  }
+  if (fallbackCompareAt != null && fallbackCompareAt > 0) return fallbackCompareAt;
+  return null;
+}
+
+export function isOnSale(price: number, compareAt: number | null | undefined) {
+  return compareAt != null && compareAt > price && price > 0;
+}
+
+/** Compare-at paired with the lowest current size price (for cards). */
+export function minPriceCompareAt(
+  base: SizePriceMap | undefined,
+  city: SizePriceMap | undefined,
+  compareAts: SizePriceMap | undefined,
+  fallbackPrice: number,
+  fallbackCompareAt?: number | null,
+): { price: number; compareAt: number | null } {
+  const sizes = offeredSizes(base, city);
+  if (!sizes.length) {
+    return {
+      price: fallbackPrice,
+      compareAt: resolveCompareAt(null, compareAts, fallbackCompareAt),
+    };
+  }
+  let bestSize = sizes[0]!;
+  let bestPrice = resolveSizePrice(bestSize, base, city, fallbackPrice);
+  for (const size of sizes.slice(1)) {
+    const price = resolveSizePrice(size, base, city, fallbackPrice);
+    if (price < bestPrice) {
+      bestPrice = price;
+      bestSize = size;
+    }
+  }
+  return {
+    price: bestPrice,
+    compareAt: resolveCompareAt(bestSize, compareAts, fallbackCompareAt),
+  };
 }

@@ -29,6 +29,15 @@ function readBaseSizePrices(formData: FormData): SizePriceMap {
   };
 }
 
+function readCompareAtPrices(formData: FormData): SizePriceMap {
+  return {
+    sm: parseOptionalVnd(formData.get("compareAtSm")),
+    md: parseOptionalVnd(formData.get("compareAtMd")),
+    lg: parseOptionalVnd(formData.get("compareAtLg")),
+    grand: parseOptionalVnd(formData.get("compareAtGrand")),
+  };
+}
+
 async function readCityStockFromForm(formData: FormData) {
   const cities = await listCitiesForPricing();
   return cities.map((city) => {
@@ -93,8 +102,10 @@ export async function saveProductAction(formData: FormData) {
   const nameEn = String(formData.get("nameEn") || "").trim();
   const nameVi = String(formData.get("nameVi") || "").trim();
   const sizePrices = readBaseSizePrices(formData);
+  const compareAts = readCompareAtPrices(formData);
   const legacyPrice = Number(formData.get("price") || 0);
   const price = syncListPrice(sizePrices, legacyPrice);
+  const compareAtPrice = parseOptionalVnd(formData.get("compareAtPrice"));
   let slug = String(formData.get("slug") || "").trim() || slugify(nameEn || nameVi);
   const accent = String(formData.get("accent") || "rose");
   const tagEn = String(formData.get("tagEn") || "Wrapped bouquet");
@@ -123,6 +134,11 @@ export async function saveProductAction(formData: FormData) {
     priceMd: sizePrices.md,
     priceLg: sizePrices.lg,
     priceGrand: sizePrices.grand,
+    compareAtPrice,
+    compareAtSm: compareAts.sm,
+    compareAtMd: compareAts.md,
+    compareAtLg: compareAts.lg,
+    compareAtGrand: compareAts.grand,
   };
 
   let image = existingImage || "/bouquets/shown/w-01.jpg";
@@ -245,20 +261,37 @@ export async function saveProductAction(formData: FormData) {
   redirect("/admin/products");
 }
 
-/** Quick inline save of base + DN/DL prices (and availability) from the list. */
+/** Quick inline save of size/sale prices + city sell flags from the list. */
 export async function quickSaveProductCityPricesAction(formData: FormData) {
   await requireAdmin();
   const id = String(formData.get("id") || "");
   if (!id) redirect("/admin/products");
 
-  const price = Number(formData.get("price") || 0);
+  const current = await prisma.product.findUnique({ where: { id } });
+  if (!current) redirect("/admin/products");
+
+  const sizePrices = readBaseSizePrices(formData);
+  const compareAts = readCompareAtPrices(formData);
+  const legacyPrice = Number(formData.get("price") || current.price || 0);
+  const price = syncListPrice(sizePrices, legacyPrice);
   if (!price || !Number.isFinite(price)) {
     redirect("/admin/products?error=price");
   }
 
   await prisma.product.update({
     where: { id },
-    data: { price: Math.round(price) },
+    data: {
+      price: Math.round(price),
+      priceSm: sizePrices.sm,
+      priceMd: sizePrices.md,
+      priceLg: sizePrices.lg,
+      priceGrand: sizePrices.grand,
+      compareAtPrice: parseOptionalVnd(formData.get("compareAtPrice")),
+      compareAtSm: compareAts.sm,
+      compareAtMd: compareAts.md,
+      compareAtLg: compareAts.lg,
+      compareAtGrand: compareAts.grand,
+    },
   });
 
   const cityStock = await readCityStockFromForm(formData);
@@ -266,10 +299,16 @@ export async function quickSaveProductCityPricesAction(formData: FormData) {
     await upsertProductCityStock(id, cityStock);
   }
 
+  const q = String(formData.get("returnQ") || "").trim();
+  const status = String(formData.get("returnStatus") || "").trim();
+  const params = new URLSearchParams({ saved: "1" });
+  if (q) params.set("q", q);
+  if (status && status !== "all") params.set("status", status);
+
   revalidatePath("/");
   revalidatePath("/en/shop");
   revalidatePath("/vi/shop");
-  redirect("/admin/products?saved=1");
+  redirect(`/admin/products?${params.toString()}`);
 }
 
 export async function deleteProductAction(formData: FormData) {

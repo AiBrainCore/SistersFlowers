@@ -79,6 +79,20 @@ export function ProductForm({
           />
         </label>
       </div>
+      <div className="admin-grid-2" style={{ marginTop: -4 }}>
+        <label className="admin-field">
+          <span>{t.products.compareAtLegacy}</span>
+          <input
+            name="compareAtPrice"
+            type="number"
+            min={0}
+            step={1000}
+            placeholder="—"
+            defaultValue={product?.compareAtPrice ?? ""}
+            className="admin-input-was"
+          />
+        </label>
+      </div>
       <p style={{ fontSize: 13, opacity: 0.7, marginTop: -6, marginBottom: 14 }}>
         {t.products.basePriceHint}
       </p>
@@ -91,11 +105,12 @@ export function ProductForm({
           {t.products.sizePricingHint}
         </p>
         <div style={{ overflowX: "auto" }}>
-          <table className="admin-table" style={{ minWidth: 520 }}>
+          <table className="admin-table" style={{ minWidth: 640 }}>
             <thead>
               <tr>
                 <th>{t.products.sizeCol}</th>
-                <th>{t.products.baseShort}</th>
+                <th>{t.products.saleShort}</th>
+                <th>{t.products.wasShort}</th>
                 {cities.map((city) => (
                   <th key={city.slug}>{city.nameEn}</th>
                 ))}
@@ -104,8 +119,16 @@ export function ProductForm({
             <tbody>
               {PRODUCT_SIZES.map((size) => {
                 const field = sizeField(size.id);
-                const baseVal =
-                  product?.sizePrices?.[size.id] ?? "";
+                const compareField =
+                  size.id === "sm"
+                    ? "compareAtSm"
+                    : size.id === "md"
+                      ? "compareAtMd"
+                      : size.id === "lg"
+                        ? "compareAtLg"
+                        : "compareAtGrand";
+                const baseVal = product?.sizePrices?.[size.id] ?? "";
+                const wasVal = product?.compareAtPrices?.[size.id] ?? "";
                 return (
                   <tr key={size.id}>
                     <td>
@@ -125,6 +148,18 @@ export function ProductForm({
                         placeholder="—"
                         defaultValue={baseVal === null ? "" : baseVal}
                         style={{ width: "100%", minWidth: 96 }}
+                      />
+                    </td>
+                    <td>
+                      <input
+                        name={compareField}
+                        type="number"
+                        min={0}
+                        step={1000}
+                        placeholder="—"
+                        defaultValue={wasVal === null ? "" : wasVal}
+                        style={{ width: "100%", minWidth: 96 }}
+                        className="admin-input-was"
                       />
                     </td>
                     {cities.map((city) => {

@@ -146,7 +146,12 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
         </Reveal>
         <div className="grid grid-cols-2 gap-x-3 gap-y-7 sm:gap-x-4 sm:gap-y-10 md:grid-cols-3 lg:grid-cols-4">
           {featured.map((product) => (
-            <ProductCard key={product.slug} product={product} locale={locale} />
+            <ProductCard
+              key={product.slug}
+              product={product}
+              locale={locale}
+              citySlug={activeCity.slug}
+            />
           ))}
         </div>
       </section>

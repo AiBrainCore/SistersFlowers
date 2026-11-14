@@ -20,6 +20,12 @@ model Product {
   priceMd    Int?
   priceLg    Int?
   priceGrand Int?
+  /// Compare-at / “was” prices (strikethrough when higher than sale price).
+  compareAtPrice Int?
+  compareAtSm    Int?
+  compareAtMd    Int?
+  compareAtLg    Int?
+  compareAtGrand Int?
   /// Optional qualitative size notes (never invent stem counts).
   sizeNoteSmEn    String @default("")
   sizeNoteSmVi    String @default("")
