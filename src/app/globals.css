@@ -149,6 +149,17 @@ body {
   margin: 0.35rem 0;
 }
 
+.journal-article-body img,
+.journal-editor-prose img {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  margin: 1.25rem 0;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
 .glass {
   background: rgba(255, 247, 241, 0.86);
   border: 1px solid rgba(255, 255, 255, 0.7);
