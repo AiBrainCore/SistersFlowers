@@ -1,17 +1,30 @@
 import Link from "next/link";
 import type { Locale } from "@/i18n/config";
-import { formatVnd, type Product } from "@/data/products";
+import type { Product } from "@/data/products";
 import { ProductImage } from "@/components/product-image";
-import { hasAnySizePrice } from "@/lib/product-sizes";
+import { SalePrice } from "@/components/sale-price";
+import { hasAnySizePrice, minPriceCompareAt } from "@/lib/product-sizes";
 
 export function ProductCard({
   product,
   locale,
+  citySlug,
 }: {
   product: Product;
   locale: Locale;
+  citySlug?: string;
 }) {
   const from = hasAnySizePrice(product.sizePrices);
+  const citySizes = citySlug
+    ? product.cityStock?.find((row) => row.citySlug === citySlug)?.sizePrices
+    : undefined;
+  const priced = minPriceCompareAt(
+    product.sizePrices,
+    citySizes,
+    product.compareAtPrices,
+    product.price,
+    product.compareAtPrice,
+  );
   return (
     <Link
       href={`/${locale}/shop/${product.slug}`}
@@ -32,13 +45,14 @@ export function ProductCard({
         <h3 className="serif line-clamp-2 text-lg leading-snug text-forest sm:text-xl">
           {product.names[locale]}
         </h3>
-        <p className="mt-auto text-sm font-medium tracking-wide text-citrus">
-          {from ? (
-            <span className="mr-1 text-[11px] tracking-[0.08em] text-moss uppercase">
-              {locale === "vi" ? "Từ" : "From"}
-            </span>
-          ) : null}
-          {formatVnd(product.price, locale)}
+        <p className="mt-auto">
+          <SalePrice
+            price={priced.price}
+            compareAt={priced.compareAt}
+            locale={locale}
+            from={from}
+            fromLabel={locale === "vi" ? "Từ" : "From"}
+          />
         </p>
       </div>
     </Link>

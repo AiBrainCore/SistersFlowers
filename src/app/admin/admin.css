@@ -101,8 +101,62 @@
   font-size: 12px;
   opacity: 0.65;
   margin: 0 0 12px;
-  max-width: 640px;
+  max-width: 720px;
   line-height: 1.4;
+}
+
+.admin-products-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: end;
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  border: 1px solid rgba(31, 42, 36, 0.08);
+  border-radius: 12px;
+  background: rgba(255, 253, 248, 0.7);
+}
+
+.admin-filter-field {
+  display: grid;
+  gap: 4px;
+  min-width: 160px;
+  flex: 1 1 160px;
+  margin: 0;
+}
+
+.admin-filter-field > span {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.65;
+}
+
+.admin-filter-field input,
+.admin-filter-field select {
+  min-height: 36px;
+  border: 1px solid rgba(31, 42, 36, 0.15);
+  border-radius: 8px;
+  padding: 7px 10px;
+  font: inherit;
+  font-size: 13px;
+  background: white;
+}
+
+.admin-products-count {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #b0542c;
+  margin-left: auto;
+  align-self: center;
+}
+
+.admin-products-empty {
+  margin: 0;
+  padding: 18px 12px;
+  font-size: 13px;
+  opacity: 0.7;
 }
 
 .admin-products-list {
@@ -164,12 +218,104 @@
 
 .admin-product-prices {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
-  gap: 8px;
-  align-items: end;
+  gap: 10px;
   margin-top: 8px;
   padding-top: 8px;
   border-top: 1px solid rgba(31, 42, 36, 0.06);
+}
+
+.admin-size-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.admin-size-cell {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.admin-size-sub {
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  opacity: 0.75;
+}
+
+.admin-size-inputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+}
+
+.admin-size-inputs label {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  min-width: 0;
+}
+
+.admin-size-inputs label > span {
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+
+.admin-size-inputs input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid rgba(31, 42, 36, 0.15);
+  border-radius: 8px;
+  padding: 6px 7px;
+  font: inherit;
+  font-size: 13px;
+  background: white;
+  min-height: 34px;
+}
+
+.admin-input-was {
+  color: #8a857c;
+}
+
+.admin-city-sell-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  align-items: center;
+}
+
+.admin-sell-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.admin-sell-chip input {
+  width: 14px;
+  height: 14px;
+  margin: 0;
+  accent-color: #b0542c;
+}
+
+.admin-city-edit-hint {
+  margin: 0;
+  font-size: 11px;
+  opacity: 0.6;
+}
+
+.admin-city-edit-hint a {
+  color: #b0542c;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.admin-product-prices > .admin-btn {
+  justify-self: start;
 }
 
 .admin-price-cell {
@@ -598,12 +744,16 @@
     justify-content: flex-start;
   }
 
-  .admin-product-prices {
+  .admin-size-grid {
     grid-template-columns: 1fr 1fr;
   }
 
-  .admin-product-prices .admin-btn {
-    grid-column: 1 / -1;
+  .admin-products-count {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .admin-product-prices > .admin-btn {
     justify-self: stretch;
     text-align: center;
   }
