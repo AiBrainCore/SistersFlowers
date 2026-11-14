@@ -86,13 +86,13 @@ const en = {
     categories: "Categories (occasions)",
     categoriesHint: "A bouquet can belong to several occasions.",
     basePriceHint:
-      "Fallback list price if no S / M / L sizes are filled. Prefer the size grid below. “Regular” = crossed-out price before discount. Custom size → Custom bouquet page.",
+      "Prices live in the size grid below (Sale / Regular × city). List price is synced from the lowest Sale on save. Custom size → Custom bouquet page.",
     cityPricing: "City prices & availability",
     cityPricingHint:
-      "Set Da Nang and Da Lat side by side. Uncheck “Sell here” to hide the bouquet in that city.",
+      "Tick Sell to show the bouquet in that city. To charge a different amount there, fill the city column in the size grid (empty = same as Sale).",
     sizePricing: "Sizes × sale / regular × city",
     sizePricingHint:
-      "Same photo & name. Sale = price customers pay (rose when discounted). Regular = higher full price (strikethrough). Empty size = not offered. Empty city cell = use sale for that size.",
+      "Sale = what customers pay. Regular = optional full price before discount (strikethrough). Empty size = not sold. Empty Da Nang / Da Lat cell = same as Sale.",
     sizeCol: "Size",
     cityPriceOverride: "Legacy single city price (if no sizes)",
     cityAvailable: "Sell in this city",
@@ -392,13 +392,13 @@ const vi: typeof en = {
     categories: "Danh mục (dịp)",
     categoriesHint: "Một bó có thể thuộc nhiều dịp.",
     basePriceHint:
-      "Giá dự phòng nếu chưa điền S / M / L. Nên dùng bảng size. “Giá gốc” = giá trước giảm (gạch ngang). Custom → trang bó theo ý.",
+      "Giá nằm ở bảng size bên dưới (Giá bán / Giá gốc × thành phố). Giá danh sách tự lấy từ Giá bán thấp nhất khi lưu. Custom → trang bó theo ý.",
     cityPricing: "Giá & bán theo thành phố",
     cityPricingHint:
-      "Đà Nẵng và Đà Lạt cạnh nhau. Bỏ chọn “Bán ở đây” để ẩn bó hoa ở thành phố đó.",
+      "Tick Bán để hiện bó ở thành phố đó. Giá khác theo thành phố → điền cột thành phố trong bảng size (trống = như Giá bán).",
     sizePricing: "Size × giá bán / giá gốc × thành phố",
     sizePricingHint:
-      "Cùng ảnh & tên. Giá bán = khách trả (hồng khi giảm). Giá gốc = cao hơn, gạch ngang. Để trống size = không bán. Ô thành phố trống = dùng giá bán.",
+      "Giá bán = khách trả. Giá gốc = tùy chọn, trước giảm (gạch ngang). Size trống = không bán. Ô Đà Nẵng / Đà Lạt trống = như Giá bán.",
     sizeCol: "Size",
     cityPriceOverride: "Giá thành phố cũ (nếu chưa có size)",
     cityAvailable: "Bán ở thành phố này",
