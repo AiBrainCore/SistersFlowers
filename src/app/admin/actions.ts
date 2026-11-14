@@ -823,8 +823,15 @@ export async function saveJournalPostAction(formData: FormData) {
   const cityScope = String(formData.get("cityScope") || "both");
   const excerptEn = String(formData.get("excerptEn") || "");
   const excerptVi = String(formData.get("excerptVi") || "");
-  const bodyEn = String(formData.get("bodyEn") || "");
-  const bodyVi = String(formData.get("bodyVi") || "");
+  const { sanitizeJournalHtml } = await import("@/lib/journal-html");
+  const bodyEn = sanitizeJournalHtml(String(formData.get("bodyEn") || ""));
+  const bodyVi = sanitizeJournalHtml(String(formData.get("bodyVi") || ""));
+  const seoTitleEn = String(formData.get("seoTitleEn") || "");
+  const seoTitleVi = String(formData.get("seoTitleVi") || "");
+  const seoDescriptionEn = String(formData.get("seoDescriptionEn") || "");
+  const seoDescriptionVi = String(formData.get("seoDescriptionVi") || "");
+  const coverAltEn = String(formData.get("coverAltEn") || "");
+  const coverAltVi = String(formData.get("coverAltVi") || "");
   const sortOrder = Number(formData.get("sortOrder") || 0);
   const published = formData.get("published") === "on";
   const existingCover = String(formData.get("existingCover") || "");
@@ -859,6 +866,12 @@ export async function saveJournalPostAction(formData: FormData) {
     bodyEn,
     bodyVi,
     coverImage,
+    coverAltEn,
+    coverAltVi,
+    seoTitleEn,
+    seoTitleVi,
+    seoDescriptionEn,
+    seoDescriptionVi,
     sortOrder: Number.isFinite(sortOrder) ? sortOrder : 0,
     published,
     publishedAt: published ? new Date() : null,
@@ -870,6 +883,36 @@ export async function saveJournalPostAction(formData: FormData) {
     if (slug !== current.slug) {
       const clash = await prisma.journalPost.findUnique({ where: { slug } });
       if (clash) slug = `${slug}-${Date.now().toString(36)}`;
+    }
+    await prisma.journalPostRevision.create({
+      data: {
+        postId: id,
+        note: "autosave",
+        snapshot: {
+          titleEn: current.titleEn,
+          titleVi: current.titleVi,
+          excerptEn: current.excerptEn,
+          excerptVi: current.excerptVi,
+          bodyEn: current.bodyEn,
+          bodyVi: current.bodyVi,
+          seoTitleEn: current.seoTitleEn,
+          seoTitleVi: current.seoTitleVi,
+          seoDescriptionEn: current.seoDescriptionEn,
+          seoDescriptionVi: current.seoDescriptionVi,
+          coverImage: current.coverImage,
+        },
+      },
+    });
+    const oldRevs = await prisma.journalPostRevision.findMany({
+      where: { postId: id },
+      orderBy: { createdAt: "desc" },
+      skip: 20,
+      select: { id: true },
+    });
+    if (oldRevs.length) {
+      await prisma.journalPostRevision.deleteMany({
+        where: { id: { in: oldRevs.map((r) => r.id) } },
+      });
     }
     await prisma.journalPost.update({
       where: { id },

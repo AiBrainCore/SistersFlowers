@@ -73,7 +73,11 @@ export default async function JournalIndexPage({
                       <div className="relative mb-4 aspect-[16/9] overflow-hidden">
                         <Image
                           src={post.coverImage}
-                          alt=""
+                          alt={
+                            (locale === "vi"
+                              ? post.coverAltVi
+                              : post.coverAltEn) || title
+                          }
                           fill
                           className="object-cover transition duration-500 group-hover:scale-[1.02] motion-reduce:group-hover:scale-100"
                           sizes="(min-width: 768px) 48rem, 100vw"
