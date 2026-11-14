@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import type { Product } from "@/data/products";
@@ -205,6 +206,15 @@ export function ProductPurchase({
               {product.sizeNotes[size]![locale]}
             </p>
           ) : null}
+          <p className="mt-4 text-sm text-moss">
+            {dictionary.product.customSizeHint}{" "}
+            <Link
+              href={`/${locale}/custom`}
+              className="text-citrus underline-offset-2 hover:underline"
+            >
+              {dictionary.product.customSizeCta}
+            </Link>
+          </p>
         </div>
       ) : null}
 

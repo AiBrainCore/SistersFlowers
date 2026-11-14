@@ -17,6 +17,14 @@ import {
   upsertProductCityStock,
 } from "@/lib/product-city";
 import { syncListPrice, type SizePriceMap } from "@/lib/product-sizes";
+import {
+  bulkApplyDefaultLadder,
+  bulkApplyDiscountPercent,
+  bulkApplyMarkupPercent,
+  bulkClearDiscounts,
+  bulkSetAbsoluteSizePrices,
+  type BulkPriceScope,
+} from "@/lib/bulk-pricing";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 
@@ -25,7 +33,7 @@ function readBaseSizePrices(formData: FormData): SizePriceMap {
     sm: parseOptionalVnd(formData.get("priceSm")),
     md: parseOptionalVnd(formData.get("priceMd")),
     lg: parseOptionalVnd(formData.get("priceLg")),
-    grand: parseOptionalVnd(formData.get("priceGrand")),
+    grand: null,
   };
 }
 
@@ -34,8 +42,23 @@ function readCompareAtPrices(formData: FormData): SizePriceMap {
     sm: parseOptionalVnd(formData.get("compareAtSm")),
     md: parseOptionalVnd(formData.get("compareAtMd")),
     lg: parseOptionalVnd(formData.get("compareAtLg")),
-    grand: parseOptionalVnd(formData.get("compareAtGrand")),
+    grand: null,
   };
+}
+
+function readBulkScope(formData: FormData): BulkPriceScope {
+  const raw = String(formData.get("scope") || "all");
+  if (raw === "published" || raw === "hidden") return raw;
+  return "all";
+}
+
+function bulkRedirect(formData: FormData, extra: Record<string, string> = {}) {
+  const q = String(formData.get("returnQ") || "").trim();
+  const status = String(formData.get("returnStatus") || "").trim();
+  const params = new URLSearchParams(extra);
+  if (q) params.set("q", q);
+  if (status && status !== "all") params.set("status", status);
+  redirect(`/admin/products?${params.toString()}`);
 }
 
 async function readCityStockFromForm(formData: FormData) {
@@ -52,9 +75,7 @@ async function readCityStockFromForm(formData: FormData) {
       priceSm: parseOptionalVnd(formData.get(`cityPriceSm_${city.slug}`)),
       priceMd: parseOptionalVnd(formData.get(`cityPriceMd_${city.slug}`)),
       priceLg: parseOptionalVnd(formData.get(`cityPriceLg_${city.slug}`)),
-      priceGrand: parseOptionalVnd(
-        formData.get(`cityPriceGrand_${city.slug}`),
-      ),
+      priceGrand: null,
     };
   });
 }
@@ -133,12 +154,12 @@ export async function saveProductAction(formData: FormData) {
     priceSm: sizePrices.sm,
     priceMd: sizePrices.md,
     priceLg: sizePrices.lg,
-    priceGrand: sizePrices.grand,
+    priceGrand: null as number | null,
     compareAtPrice,
     compareAtSm: compareAts.sm,
     compareAtMd: compareAts.md,
     compareAtLg: compareAts.lg,
-    compareAtGrand: compareAts.grand,
+    compareAtGrand: null as number | null,
   };
 
   let image = existingImage || "/bouquets/shown/w-01.jpg";
@@ -285,30 +306,98 @@ export async function quickSaveProductCityPricesAction(formData: FormData) {
       priceSm: sizePrices.sm,
       priceMd: sizePrices.md,
       priceLg: sizePrices.lg,
-      priceGrand: sizePrices.grand,
+      priceGrand: null,
       compareAtPrice: parseOptionalVnd(formData.get("compareAtPrice")),
       compareAtSm: compareAts.sm,
       compareAtMd: compareAts.md,
       compareAtLg: compareAts.lg,
-      compareAtGrand: compareAts.grand,
+      compareAtGrand: null,
     },
   });
 
   const cityStock = await readCityStockFromForm(formData);
   if (cityStock.length) {
-    await upsertProductCityStock(id, cityStock);
+    await upsertProductCityStock(
+      id,
+      cityStock.map((row) => ({ ...row, priceGrand: null })),
+    );
   }
-
-  const q = String(formData.get("returnQ") || "").trim();
-  const status = String(formData.get("returnStatus") || "").trim();
-  const params = new URLSearchParams({ saved: "1" });
-  if (q) params.set("q", q);
-  if (status && status !== "all") params.set("status", status);
 
   revalidatePath("/");
   revalidatePath("/en/shop");
   revalidatePath("/vi/shop");
-  redirect(`/admin/products?${params.toString()}`);
+  bulkRedirect(formData, { saved: "1" });
+}
+
+export async function bulkSetDefaultSizeLadderAction(formData: FormData) {
+  await requireAdmin();
+  const scope = readBulkScope(formData);
+  const count = await bulkApplyDefaultLadder(scope);
+  revalidatePath("/");
+  revalidatePath("/en/shop");
+  revalidatePath("/vi/shop");
+  bulkRedirect(formData, { bulk: "ladder", n: String(count) });
+}
+
+export async function bulkSetAbsolutePricesAction(formData: FormData) {
+  await requireAdmin();
+  const scope = readBulkScope(formData);
+  const sm = Number(formData.get("bulkSm") || 0);
+  const md = Number(formData.get("bulkMd") || 0);
+  const lg = Number(formData.get("bulkLg") || 0);
+  if (![sm, md, lg].every((v) => v > 0 && Number.isFinite(v))) {
+    bulkRedirect(formData, { error: "bulk" });
+  }
+  const count = await bulkSetAbsoluteSizePrices({
+    sm,
+    md,
+    lg,
+    scope,
+    clearWas: formData.get("clearWas") === "on",
+    clearCitySizeOverrides: formData.get("clearCityOverrides") !== "off",
+  });
+  revalidatePath("/");
+  revalidatePath("/en/shop");
+  revalidatePath("/vi/shop");
+  bulkRedirect(formData, { bulk: "absolute", n: String(count) });
+}
+
+export async function bulkMarkupPricesAction(formData: FormData) {
+  await requireAdmin();
+  const scope = readBulkScope(formData);
+  const percent = Number(formData.get("markupPercent") || 0);
+  if (!Number.isFinite(percent) || percent === 0) {
+    bulkRedirect(formData, { error: "bulk" });
+  }
+  const count = await bulkApplyMarkupPercent({ percent, scope });
+  revalidatePath("/");
+  revalidatePath("/en/shop");
+  revalidatePath("/vi/shop");
+  bulkRedirect(formData, { bulk: "markup", n: String(count) });
+}
+
+export async function bulkDiscountPricesAction(formData: FormData) {
+  await requireAdmin();
+  const scope = readBulkScope(formData);
+  const percent = Number(formData.get("discountPercent") || 0);
+  if (!Number.isFinite(percent) || percent <= 0 || percent >= 100) {
+    bulkRedirect(formData, { error: "bulk" });
+  }
+  const count = await bulkApplyDiscountPercent({ percent, scope });
+  revalidatePath("/");
+  revalidatePath("/en/shop");
+  revalidatePath("/vi/shop");
+  bulkRedirect(formData, { bulk: "discount", n: String(count) });
+}
+
+export async function bulkClearDiscountsAction(formData: FormData) {
+  await requireAdmin();
+  const scope = readBulkScope(formData);
+  const count = await bulkClearDiscounts({ scope });
+  revalidatePath("/");
+  revalidatePath("/en/shop");
+  revalidatePath("/vi/shop");
+  bulkRedirect(formData, { bulk: "clear", n: String(count) });
 }
 
 export async function deleteProductAction(formData: FormData) {

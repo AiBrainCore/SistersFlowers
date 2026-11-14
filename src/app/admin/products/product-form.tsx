@@ -34,13 +34,7 @@ export function ProductForm({
     (product?.cityStock || []).map((row) => [row.citySlug, row]),
   );
   const sizeField = (id: string) =>
-    id === "sm"
-      ? "priceSm"
-      : id === "md"
-        ? "priceMd"
-        : id === "lg"
-          ? "priceLg"
-          : "priceGrand";
+    id === "sm" ? "priceSm" : id === "md" ? "priceMd" : "priceLg";
 
   return (
     <form action={saveProductAction} className="admin-card" encType="multipart/form-data">
@@ -124,11 +118,11 @@ export function ProductForm({
                     ? "compareAtSm"
                     : size.id === "md"
                       ? "compareAtMd"
-                      : size.id === "lg"
-                        ? "compareAtLg"
-                        : "compareAtGrand";
+                      : "compareAtLg";
                 const baseVal = product?.sizePrices?.[size.id] ?? "";
                 const wasVal = product?.compareAtPrices?.[size.id] ?? "";
+                const cityKey =
+                  size.id === "sm" ? "Sm" : size.id === "md" ? "Md" : "Lg";
                 return (
                   <tr key={size.id}>
                     <td>
@@ -168,7 +162,7 @@ export function ProductForm({
                       return (
                         <td key={city.slug}>
                           <input
-                            name={`cityPrice${size.id === "sm" ? "Sm" : size.id === "md" ? "Md" : size.id === "lg" ? "Lg" : "Grand"}_${city.slug}`}
+                            name={`cityPrice${cityKey}_${city.slug}`}
                             type="number"
                             min={0}
                             step={1000}

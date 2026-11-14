@@ -1,23 +1,33 @@
-/** Bouquet size tiers (same photo/name, different price). */
+/** Bouquet size tiers sold in the shop (same photo/name, different price). */
 export const PRODUCT_SIZES = [
   { id: "sm", labelEn: "Small", labelVi: "Nhỏ", short: "S" },
   { id: "md", labelEn: "Medium", labelVi: "Vừa", short: "M" },
   { id: "lg", labelEn: "Large", labelVi: "Lớn", short: "L" },
-  { id: "grand", labelEn: "Grand / XL", labelVi: "Grand / XL", short: "XL" },
 ] as const;
+
+/** Default studio size ladder (VND). */
+export const DEFAULT_SIZE_PRICES = {
+  sm: 450_000,
+  md: 600_000,
+  lg: 850_000,
+} as const;
 
 export type ProductSizeId = (typeof PRODUCT_SIZES)[number]["id"];
 
-export type SizePriceMap = Partial<Record<ProductSizeId, number | null>>;
+/** Includes legacy `grand` (XL) for DB reads; not offered in shop. */
+export type SizePriceMap = Partial<
+  Record<ProductSizeId | "grand", number | null>
+>;
 
 export function isProductSizeId(value: string): value is ProductSizeId {
   return PRODUCT_SIZES.some((s) => s.id === value);
 }
 
 export function sizeLabel(
-  size: ProductSizeId,
+  size: ProductSizeId | "grand",
   locale: "en" | "vi",
 ): string {
+  if (size === "grand") return locale === "vi" ? "Grand / XL" : "Grand / XL";
   const row = PRODUCT_SIZES.find((s) => s.id === size);
   if (!row) return size;
   return locale === "vi" ? row.labelVi : row.labelEn;
@@ -55,7 +65,7 @@ export function hasAnySizePrice(map: SizePriceMap | undefined): boolean {
   });
 }
 
-/** Offered sizes for a city (city override wins; else base). */
+/** Offered sizes for a city (city override wins; else base). XL/grand never offered. */
 export function offeredSizes(
   base: SizePriceMap | undefined,
   city: SizePriceMap | undefined,
@@ -102,7 +112,7 @@ export function defaultSize(
   const sizes = offeredSizes(base, city);
   if (!sizes.length) return null;
   if (sizes.includes("md")) return "md";
-  return sizes[0];
+  return sizes[0] ?? null;
 }
 
 /** Sync Product.price for sorting/filters when size matrix is set. */
@@ -138,7 +148,9 @@ export function resolveCompareAt(
     const sized = compareAts?.[size];
     if (sized != null && sized > 0) return sized;
   }
-  if (fallbackCompareAt != null && fallbackCompareAt > 0) return fallbackCompareAt;
+  if (fallbackCompareAt != null && fallbackCompareAt > 0) {
+    return fallbackCompareAt;
+  }
   return null;
 }
 
@@ -174,4 +186,10 @@ export function minPriceCompareAt(
     price: bestPrice,
     compareAt: resolveCompareAt(bestSize, compareAts, fallbackCompareAt),
   };
+}
+
+/** Round VND amounts to nearest 1 000. */
+export function roundVnd(amount: number) {
+  if (!Number.isFinite(amount) || amount <= 0) return 0;
+  return Math.max(1000, Math.round(amount / 1000) * 1000);
 }
