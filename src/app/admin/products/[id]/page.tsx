@@ -4,6 +4,7 @@ import { ProductForm } from "@/app/admin/products/product-form";
 import { getProductById } from "@/lib/products";
 import { getAdminT } from "@/lib/admin-locale";
 import { listActiveCategories } from "@/lib/categories";
+import { listActiveAttributes } from "@/lib/catalog-attributes";
 import { listCitiesForPricing } from "@/lib/product-city";
 
 export default async function EditProductPage({
@@ -12,11 +13,12 @@ export default async function EditProductPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const [product, { t }, categories, cities] = await Promise.all([
+  const [product, { t }, categories, cities, attributes] = await Promise.all([
     getProductById(id),
     getAdminT(),
     listActiveCategories(),
     listCitiesForPricing(),
+    listActiveAttributes(),
   ]);
   if (!product) notFound();
 
@@ -27,6 +29,7 @@ export default async function EditProductPage({
         t={t}
         categories={categories}
         cities={cities}
+        attributes={attributes}
       />
     </AdminShell>
   );

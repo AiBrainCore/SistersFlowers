@@ -103,6 +103,13 @@ export async function saveProductAction(formData: FormData) {
   const blurbVi = String(formData.get("blurbVi") || "");
   const storyEn = String(formData.get("storyEn") || "");
   const storyVi = String(formData.get("storyVi") || "");
+  const seoTitleEn = String(formData.get("seoTitleEn") || "");
+  const seoTitleVi = String(formData.get("seoTitleVi") || "");
+  const seoDescriptionEn = String(formData.get("seoDescriptionEn") || "");
+  const seoDescriptionVi = String(formData.get("seoDescriptionVi") || "");
+  const imageAltEn = String(formData.get("imageAltEn") || "");
+  const imageAltVi = String(formData.get("imageAltVi") || "");
+  const contentLocked = formData.get("contentLocked") === "on";
   const sortOrder = Number(formData.get("sortOrder") || 0);
   const published = formData.get("published") === "on";
   const existingImage = String(formData.get("existingImage") || "");
@@ -135,6 +142,21 @@ export async function saveProductAction(formData: FormData) {
     .getAll("categoryIds")
     .map((value) => String(value).trim())
     .filter(Boolean);
+  const attributeIds = formData
+    .getAll("attributeIds")
+    .map((value) => String(value).trim())
+    .filter(Boolean);
+
+  const seoData = {
+    seoTitleEn,
+    seoTitleVi,
+    seoDescriptionEn,
+    seoDescriptionVi,
+    imageAltEn,
+    imageAltVi,
+    contentLocked,
+    contentSource: "manual" as const,
+  };
 
   let productId = id;
 
@@ -161,6 +183,7 @@ export async function saveProductAction(formData: FormData) {
         blurbVi,
         storyEn,
         storyVi,
+        ...seoData,
         sortOrder,
         published,
       },
@@ -183,6 +206,7 @@ export async function saveProductAction(formData: FormData) {
         blurbVi,
         storyEn,
         storyVi,
+        ...seoData,
         sortOrder,
         published,
       },
@@ -195,6 +219,16 @@ export async function saveProductAction(formData: FormData) {
     if (categoryIds.length) {
       await prisma.productCategory.createMany({
         data: categoryIds.map((categoryId) => ({ productId, categoryId })),
+      });
+    }
+    await prisma.productAttribute.deleteMany({ where: { productId } });
+    if (attributeIds.length) {
+      await prisma.productAttribute.createMany({
+        data: attributeIds.map((attributeId) => ({
+          productId,
+          attributeId,
+          confidence: 1,
+        })),
       });
     }
     const cityStock = await readCityStockFromForm(formData);

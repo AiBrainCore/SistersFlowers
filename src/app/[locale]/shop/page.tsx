@@ -7,6 +7,7 @@ import {
   parseCatalogSearchParams,
 } from "@/lib/products";
 import { listActiveCategories } from "@/lib/categories";
+import { listAttributesForFilterChips } from "@/lib/catalog-attributes";
 import { listAvailableProductIdsForCity } from "@/lib/locations";
 import { ProductCard } from "@/components/product-card";
 import { CatalogFilters } from "@/components/catalog-filters";
@@ -49,10 +50,12 @@ export default async function ShopPage({
       accent?: string | string[];
       style?: string | string[];
       size?: string | string[];
+      flower?: string | string[];
+      color?: string | string[];
     },
   );
   const cityProductIds = await listAvailableProductIdsForCity(activeCity.id);
-  const [products, categories] = await Promise.all([
+  const [products, categories, flowerAttrs, colorAttrs] = await Promise.all([
     listPublishedProducts({
       ...query,
       cityProductIds,
@@ -60,6 +63,8 @@ export default async function ShopPage({
       citySlug: activeCity.slug,
     }),
     listActiveCategories(),
+    listAttributesForFilterChips("flower"),
+    listAttributesForFilterChips("color"),
   ]);
 
   return (
@@ -85,6 +90,8 @@ export default async function ShopPage({
           locale={locale}
           dictionary={t}
           categories={categories}
+          flowerAttrs={flowerAttrs}
+          colorAttrs={colorAttrs}
           initial={query}
           resultCount={products.length}
         />

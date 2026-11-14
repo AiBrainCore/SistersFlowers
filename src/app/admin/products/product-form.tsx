@@ -3,6 +3,7 @@ import { saveProductAction } from "@/app/admin/actions";
 import type { Product } from "@/data/products";
 import type { AdminDictionary } from "@/i18n/admin-dictionaries";
 import type { CategoryPublic } from "@/lib/categories";
+import type { AttributePublic } from "@/lib/catalog-attributes";
 import type { CityPriceSlug } from "@/lib/product-city";
 import { PRODUCT_SIZES } from "@/lib/product-sizes";
 
@@ -17,13 +18,18 @@ export function ProductForm({
   t,
   categories,
   cities,
+  attributes = [],
 }: {
   product?: Product;
   t: AdminDictionary;
   categories: CategoryPublic[];
   cities: PricingCity[];
+  attributes?: AttributePublic[];
 }) {
   const selected = new Set((product?.categories || []).map((c) => c.id));
+  const selectedAttrs = new Set(
+    (product?.attributes || []).map((a) => a.slug),
+  );
   const stockBySlug = new Map(
     (product?.cityStock || []).map((row) => [row.citySlug, row]),
   );
@@ -198,6 +204,7 @@ export function ProductForm({
           <select name="accent" defaultValue={product?.accent ?? "rose"}>
             <option value="rose">rose</option>
             <option value="blush">blush</option>
+            <option value="ivory">ivory</option>
             <option value="sage">sage</option>
           </select>
         </label>
@@ -262,6 +269,97 @@ export function ProductForm({
       <label className="admin-field">
         <span>{t.products.storyVi}</span>
         <textarea name="storyVi" rows={4} defaultValue={product?.story.vi} />
+      </label>
+
+      <fieldset style={{ marginBottom: 16, border: "none", padding: 0 }}>
+        <legend style={{ fontSize: 12, letterSpacing: "0.08em", textTransform: "uppercase", opacity: 0.7, marginBottom: 8 }}>
+          SEO
+        </legend>
+        <div className="admin-grid-2">
+          <label className="admin-field">
+            <span>{t.products.seoTitleEn}</span>
+            <input name="seoTitleEn" defaultValue={product?.seoTitle?.en || ""} />
+          </label>
+          <label className="admin-field">
+            <span>{t.products.seoTitleVi}</span>
+            <input name="seoTitleVi" defaultValue={product?.seoTitle?.vi || ""} />
+          </label>
+        </div>
+        <label className="admin-field">
+          <span>{t.products.seoDescriptionEn}</span>
+          <textarea
+            name="seoDescriptionEn"
+            rows={2}
+            defaultValue={product?.seoDescription?.en || ""}
+          />
+        </label>
+        <label className="admin-field">
+          <span>{t.products.seoDescriptionVi}</span>
+          <textarea
+            name="seoDescriptionVi"
+            rows={2}
+            defaultValue={product?.seoDescription?.vi || ""}
+          />
+        </label>
+        <div className="admin-grid-2">
+          <label className="admin-field">
+            <span>{t.products.imageAltEn}</span>
+            <input name="imageAltEn" defaultValue={product?.imageAlt?.en || ""} />
+          </label>
+          <label className="admin-field">
+            <span>{t.products.imageAltVi}</span>
+            <input name="imageAltVi" defaultValue={product?.imageAlt?.vi || ""} />
+          </label>
+        </div>
+      </fieldset>
+
+      {attributes.length ? (
+        <fieldset style={{ marginBottom: 16, border: "none", padding: 0 }}>
+          <legend style={{ fontSize: 12, letterSpacing: "0.08em", textTransform: "uppercase", opacity: 0.7, marginBottom: 8 }}>
+            {t.products.attributes}
+          </legend>
+          <p style={{ fontSize: 13, opacity: 0.7, marginTop: 0, marginBottom: 10 }}>
+            {t.products.attributesHint}
+            {product?.aiStatus ? ` · ${t.products.aiStatus}: ${product.aiStatus}` : ""}
+          </p>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+            {attributes.map((attr) => (
+              <label
+                key={attr.id}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  fontSize: 13,
+                  border: "1px solid rgba(45,58,40,0.15)",
+                  borderRadius: 999,
+                  padding: "6px 12px",
+                }}
+              >
+                <input
+                  type="checkbox"
+                  name="attributeIds"
+                  value={attr.id}
+                  defaultChecked={selectedAttrs.has(attr.slug)}
+                  style={{ width: "auto" }}
+                />
+                <span>
+                  {attr.kind}: {attr.nameEn} / {attr.nameVi}
+                </span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+      ) : null}
+
+      <label className="admin-field" style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <input
+          type="checkbox"
+          name="contentLocked"
+          defaultChecked={product?.contentLocked}
+          style={{ width: "auto" }}
+        />
+        <span style={{ margin: 0 }}>{t.products.contentLocked}</span>
       </label>
 
       <label className="admin-field">

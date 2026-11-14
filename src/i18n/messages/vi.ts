@@ -172,6 +172,8 @@ export const vi = {
     priceOver1200: "1.2M+",
     showResults: "Xem {count}",
     sizeLabel: "Kích cỡ",
+    flowerLabel: "Loại hoa",
+    colorLabel: "Màu",
     colorMoodLabel: "Tone màu",
     styleLabel: "Kiểu bó",
     sizes: {

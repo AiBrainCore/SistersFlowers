@@ -20,6 +20,15 @@ model Product {
   priceMd    Int?
   priceLg    Int?
   priceGrand Int?
+  /// Optional qualitative size notes (never invent stem counts).
+  sizeNoteSmEn    String @default("")
+  sizeNoteSmVi    String @default("")
+  sizeNoteMdEn    String @default("")
+  sizeNoteMdVi    String @default("")
+  sizeNoteLgEn    String @default("")
+  sizeNoteLgVi    String @default("")
+  sizeNoteGrandEn String @default("")
+  sizeNoteGrandVi String @default("")
   /// Primary shop image (prefer WebP on Supabase Storage).
   image      String
   /// JPEG fallback for clients that mishandle WebP (Zalo/FB/mail).
@@ -37,15 +46,102 @@ model Product {
   blurbVi    String
   storyEn    String
   storyVi    String
+  /// SEO (falls back to name/blurb when empty).
+  seoTitleEn       String @default("")
+  seoTitleVi       String @default("")
+  seoDescriptionEn String @default("")
+  seoDescriptionVi String @default("")
+  imageAltEn       String @default("")
+  imageAltVi       String @default("")
+  /// import | ai | manual — manual never overwritten by enrichment.
+  contentSource String  @default("import")
+  contentLocked Boolean @default(false)
+  /// pending | processing | ready | applied | error | needs_review | skipped
+  aiStatus      String    @default("pending")
+  aiError       String?
+  aiProcessedAt DateTime?
+  /// SHA-256 of analyzed image bytes — skip re-vision when unchanged.
+  imageHash     String?
   published  Boolean           @default(true)
   sortOrder  Int               @default(0)
   createdAt  DateTime          @default(now())
   updatedAt  DateTime          @updatedAt
   categories ProductCategory[]
   cityStock  ProductCityAvailability[]
+  attributes ProductAttribute[]
+  analysis   ProductAnalysis?
 
   @@index([productType, published])
   @@index([sourceKey])
+  @@index([aiStatus])
+  @@index([contentSource])
+}
+
+/// Shared taxonomy for filters (flower, color, style, arrangement).
+model CatalogAttribute {
+  id        String             @id @default(cuid())
+  /// flower | color | style | arrangement
+  kind      String
+  slug      String             @unique
+  nameEn    String
+  nameVi    String
+  sortOrder Int                @default(0)
+  active    Boolean            @default(true)
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+  products  ProductAttribute[]
+
+  @@index([kind, active])
+}
+
+model ProductAttribute {
+  productId   String
+  attributeId String
+  /// 0–1 confidence from vision; 1 = staff-set
+  confidence  Float   @default(1)
+  product     Product          @relation(fields: [productId], references: [id], onDelete: Cascade)
+  attribute   CatalogAttribute @relation(fields: [attributeId], references: [id], onDelete: Cascade)
+
+  @@id([productId, attributeId])
+  @@index([attributeId])
+}
+
+/// One vision analysis per product (reused for SEO/names/filters).
+model ProductAnalysis {
+  id               String   @id @default(cuid())
+  productId        String   @unique
+  product          Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  imageHash        String
+  /// Full structured vision JSON
+  rawJson          Json
+  mainFlowers      String[] @default([])
+  secondaryFlowers String[] @default([])
+  colors           String[] @default([])
+  styles           String[] @default([])
+  occasions        String[] @default([])
+  arrangementType  String   @default("bouquet")
+  wrapping         String   @default("")
+  confidence       Float    @default(0)
+  warnings         String[] @default([])
+  model            String   @default("")
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+/// Batch enrichment job progress (admin / scripts).
+model CatalogEnrichmentJob {
+  id          String    @id @default(cuid())
+  /// running | completed | failed | cancelled
+  status      String    @default("running")
+  total       Int       @default(0)
+  done        Int       @default(0)
+  failed      Int       @default(0)
+  skipped     Int       @default(0)
+  applyWrites Boolean   @default(false)
+  costUsd     Float?
+  log         String    @default("")
+  startedAt   DateTime  @default(now())
+  finishedAt  DateTime?
 }
 
 model Category {

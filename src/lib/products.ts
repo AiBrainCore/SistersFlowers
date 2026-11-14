@@ -27,9 +27,18 @@ const cityStockInclude = {
   },
 } as const;
 
+const attributeInclude = {
+  attributes: {
+    include: {
+      attribute: true,
+    },
+  },
+} as const;
+
 const productInclude = {
   ...categoryInclude,
   ...cityStockInclude,
+  ...attributeInclude,
 } as const;
 
 export type CatalogSort = "newest" | "price-asc" | "price-desc" | "featured";
@@ -49,6 +58,12 @@ export type CatalogQuery = {
   style?: CatalogStyle;
   /** Size band approximated from price */
   size?: CatalogSizeBand;
+  /** CatalogAttribute slug (flower) */
+  flower?: string;
+  /** CatalogAttribute slug (color) */
+  color?: string;
+  /** CatalogAttribute slug (style) — preferred over tag style when set */
+  attrStyle?: string;
   /** When set, apply city assortment (null list = all published). */
   cityProductIds?: string[] | null;
   /** Apply city/size prices after fetch. */
@@ -120,6 +135,28 @@ export async function listPublishedProducts(
     where.categories = {
       some: { category: { slug: query.category.trim(), active: true } },
     };
+  }
+
+  if (query.flower?.trim()) {
+    and.push({
+      attributes: {
+        some: { attribute: { slug: query.flower.trim(), kind: "flower" } },
+      },
+    });
+  }
+  if (query.color?.trim()) {
+    and.push({
+      attributes: {
+        some: { attribute: { slug: query.color.trim(), kind: "color" } },
+      },
+    });
+  }
+  if (query.attrStyle?.trim()) {
+    and.push({
+      attributes: {
+        some: { attribute: { slug: query.attrStyle.trim(), kind: "style" } },
+      },
+    });
   }
 
   if (query.cityProductIds) {
@@ -273,6 +310,9 @@ export function parseCatalogSearchParams(input: {
   accent?: string | string[];
   style?: string | string[];
   size?: string | string[];
+  flower?: string | string[];
+  color?: string | string[];
+  attrStyle?: string | string[];
 }): CatalogQuery {
   const one = (v?: string | string[]) =>
     typeof v === "string" ? v : Array.isArray(v) ? v[0] : undefined;
@@ -286,6 +326,9 @@ export function parseCatalogSearchParams(input: {
   const accent = one(input.accent)?.trim() || undefined;
   const styleRaw = one(input.style)?.trim();
   const sizeRaw = one(input.size)?.trim();
+  const flower = one(input.flower)?.trim() || undefined;
+  const color = one(input.color)?.trim() || undefined;
+  const attrStyle = one(input.attrStyle)?.trim() || undefined;
 
   const minPrice = minRaw != null && minRaw !== "" ? Number(minRaw) : undefined;
   const maxPrice = maxRaw != null && maxRaw !== "" ? Number(maxRaw) : undefined;
@@ -325,5 +368,8 @@ export function parseCatalogSearchParams(input: {
     accent,
     style,
     size,
+    flower,
+    color,
+    attrStyle,
   };
 }

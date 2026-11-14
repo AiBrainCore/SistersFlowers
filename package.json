@@ -13,7 +13,9 @@
     "db:seed": "tsx prisma/seed.ts",
     "db:reset": "prisma migrate reset --force",
     "catalog:import-buckets": "node scripts/import-buckets-catalog.mjs",
-    "catalog:upright-orient": "node scripts/upright-bouquet-orient.mjs"
+    "catalog:upright-orient": "node scripts/upright-bouquet-orient.mjs",
+    "catalog:seed-attributes": "node scripts/seed-catalog-attributes.mjs",
+    "catalog:enrich-ai": "node scripts/enrich-catalog-ai.mjs"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

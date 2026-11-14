@@ -172,6 +172,8 @@ export const en = {
     priceOver1200: "1.2M+",
     showResults: "Show {count}",
     sizeLabel: "Size",
+    flowerLabel: "Flower",
+    colorLabel: "Colour",
     colorMoodLabel: "Colour mood",
     styleLabel: "Bouquet style",
     sizes: {
