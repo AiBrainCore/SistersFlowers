@@ -18,7 +18,6 @@ import {
 } from "@/lib/product-city";
 import { syncListPrice, type SizePriceMap } from "@/lib/product-sizes";
 import {
-  bulkApplyDefaultLadder,
   bulkApplyDiscountPercent,
   bulkApplyMarkupPercent,
   bulkClearDiscounts,
@@ -327,16 +326,6 @@ export async function quickSaveProductCityPricesAction(formData: FormData) {
   revalidatePath("/en/shop");
   revalidatePath("/vi/shop");
   bulkRedirect(formData, { saved: "1" });
-}
-
-export async function bulkSetDefaultSizeLadderAction(formData: FormData) {
-  await requireAdmin();
-  const scope = readBulkScope(formData);
-  const count = await bulkApplyDefaultLadder(scope);
-  revalidatePath("/");
-  revalidatePath("/en/shop");
-  revalidatePath("/vi/shop");
-  bulkRedirect(formData, { bulk: "ladder", n: String(count) });
 }
 
 export async function bulkSetAbsolutePricesAction(formData: FormData) {

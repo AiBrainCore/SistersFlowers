@@ -4,7 +4,6 @@ import {
   bulkDiscountPricesAction,
   bulkMarkupPricesAction,
   bulkSetAbsolutePricesAction,
-  bulkSetDefaultSizeLadderAction,
 } from "@/app/admin/actions";
 import { DEFAULT_SIZE_PRICES } from "@/lib/product-sizes";
 
@@ -33,27 +32,6 @@ export function ProductsBulkPricing({
       {notice ? <p className="admin-products-saved">{notice}</p> : null}
 
       <div className="admin-bulk-grid">
-        <form action={bulkSetDefaultSizeLadderAction} className="admin-bulk-card">
-          {hidden}
-          <h3>{t.products.bulkLadderTitle}</h3>
-          <p>
-            S {DEFAULT_SIZE_PRICES.sm.toLocaleString("en-US")} · M{" "}
-            {DEFAULT_SIZE_PRICES.md.toLocaleString("en-US")} · L{" "}
-            {DEFAULT_SIZE_PRICES.lg.toLocaleString("en-US")} — {t.products.bulkLadderBody}
-          </p>
-          <label className="admin-filter-field">
-            <span>{t.products.bulkScope}</span>
-            <select name="scope" defaultValue="all">
-              <option value="all">{t.products.filterAll}</option>
-              <option value="published">{t.common.published}</option>
-              <option value="hidden">{t.common.hidden}</option>
-            </select>
-          </label>
-          <button type="submit" className="admin-btn admin-btn-sm">
-            {t.products.bulkLadderCta}
-          </button>
-        </form>
-
         <form action={bulkSetAbsolutePricesAction} className="admin-bulk-card">
           {hidden}
           <h3>{t.products.bulkAbsoluteTitle}</h3>
