@@ -5,6 +5,7 @@ import {
   deleteProductAction,
   quickSaveProductCityPricesAction,
 } from "@/app/admin/actions";
+import { ProductsBulkPricing } from "@/components/admin/products-bulk-pricing";
 import { listAllProducts } from "@/lib/products";
 import { listCitiesForPricing } from "@/lib/product-city";
 import { getAdminT } from "@/lib/admin-locale";
@@ -25,6 +26,8 @@ export default async function AdminProductsPage({
     q?: string;
     status?: string;
     error?: string;
+    bulk?: string;
+    n?: string;
   }>;
 }) {
   const [products, cities, { locale, t }] = await Promise.all([
@@ -36,6 +39,14 @@ export default async function AdminProductsPage({
   const q = (sp.q || "").trim();
   const status = (sp.status || "all").trim() || "all";
   const qFold = fold(q);
+  const bulkNotice =
+    sp.bulk && sp.n
+      ? t.products.bulkDone
+          .replace("{action}", sp.bulk)
+          .replace("{n}", sp.n)
+      : sp.error === "bulk"
+        ? t.products.bulkError
+        : null;
 
   const filtered = products.filter((product) => {
     if (status === "published" && !product.published) return false;
@@ -99,6 +110,13 @@ export default async function AdminProductsPage({
         ) : null}
         <p className="admin-products-count">{countLabel}</p>
       </form>
+
+      <ProductsBulkPricing
+        t={t}
+        returnQ={q}
+        returnStatus={status}
+        notice={bulkNotice}
+      />
 
       <p className="admin-products-hint">{t.products.listPricingHint}</p>
 
@@ -169,26 +187,20 @@ export default async function AdminProductsPage({
 
                 <div className="admin-size-grid">
                   {PRODUCT_SIZES.map((size) => {
-                    const sale =
-                      product.sizePrices?.[size.id] ??
-                      (size.id === "md" ? product.price : null);
+                    const sale = product.sizePrices?.[size.id] ?? "";
                     const was = product.compareAtPrices?.[size.id] ?? "";
                     const saleName =
                       size.id === "sm"
                         ? "priceSm"
                         : size.id === "md"
                           ? "priceMd"
-                          : size.id === "lg"
-                            ? "priceLg"
-                            : "priceGrand";
+                          : "priceLg";
                     const wasName =
                       size.id === "sm"
                         ? "compareAtSm"
                         : size.id === "md"
                           ? "compareAtMd"
-                          : size.id === "lg"
-                            ? "compareAtLg"
-                            : "compareAtGrand";
+                          : "compareAtLg";
                     return (
                       <div key={size.id} className="admin-size-cell">
                         <div className="admin-price-label">

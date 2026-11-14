@@ -16,7 +16,7 @@ import type {
 } from "@/lib/products";
 import type { AttributePublic } from "@/lib/catalog-attributes";
 
-const SIZE_OPTIONS: CatalogSizeBand[] = ["mini", "classic", "grand", "luxury"];
+const SIZE_OPTIONS: CatalogSizeBand[] = ["mini", "classic", "grand"];
 const STYLE_OPTIONS: CatalogStyle[] = [
   "rose",
   "mix",

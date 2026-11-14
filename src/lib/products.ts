@@ -43,7 +43,8 @@ const productInclude = {
 
 export type CatalogSort = "newest" | "price-asc" | "price-desc" | "featured";
 
-export type CatalogSizeBand = "mini" | "classic" | "grand" | "luxury";
+/** Shop filter bands aligned to S / M / L ladder (~450 / 600 / 850k). */
+export type CatalogSizeBand = "mini" | "classic" | "grand";
 export type CatalogStyle = "rose" | "mix" | "garden" | "ribbon" | "wrapped";
 
 export type CatalogQuery = {
@@ -74,10 +75,9 @@ export type CatalogQuery = {
 };
 
 const SIZE_BANDS: Record<CatalogSizeBand, { min?: number; max?: number }> = {
-  mini: { max: 549999 },
-  classic: { min: 550000, max: 899999 },
-  grand: { min: 900000, max: 1299999 },
-  luxury: { min: 1300000 },
+  mini: { max: 524999 },
+  classic: { min: 525000, max: 724999 },
+  grand: { min: 725000 },
 };
 
 const STYLE_NEEDLES: Record<CatalogStyle, string[]> = {
@@ -351,10 +351,7 @@ export function parseCatalogSearchParams(input: {
       : undefined;
 
   const size =
-    sizeRaw === "mini" ||
-    sizeRaw === "classic" ||
-    sizeRaw === "grand" ||
-    sizeRaw === "luxury"
+    sizeRaw === "mini" || sizeRaw === "classic" || sizeRaw === "grand"
       ? sizeRaw
       : undefined;
 

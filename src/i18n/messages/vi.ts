@@ -206,7 +206,6 @@ export const vi = {
       mini: "Nhỏ",
       classic: "Vừa",
       grand: "Lớn",
-      luxury: "Grand",
     },
     accents: {
       blush: "Hồng dịu",
@@ -233,6 +232,8 @@ export const vi = {
     sizeLabel: "Kích thước",
     fromPrice: "Từ",
     fromPriceHint: "từ",
+    customSizeHint: "Cần bó lớn hơn hoặc hoàn toàn theo ý?",
+    customSizeCta: "Tạo bó theo yêu cầu",
     addonsTitle: "Thêm quà kèm",
     addonsHint: "Thiệp, gấu, chocolate — mọi thứ admin thêm sẽ hiện ở đây.",
     partnersTitle: "Phiếu tiền đối tác",

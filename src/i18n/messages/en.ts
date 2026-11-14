@@ -206,7 +206,6 @@ export const en = {
       mini: "Small",
       classic: "Medium",
       grand: "Large",
-      luxury: "Grand",
     },
     accents: {
       blush: "Blush",
@@ -233,6 +232,8 @@ export const en = {
     sizeLabel: "Size",
     fromPrice: "From",
     fromPriceHint: "from",
+    customSizeHint: "Need something larger or fully custom?",
+    customSizeCta: "Build a custom bouquet",
     addonsTitle: "Add extras",
     addonsHint: "Card, teddy, chocolate — anything you add in admin appears here.",
     partnersTitle: "Partner money vouchers",
