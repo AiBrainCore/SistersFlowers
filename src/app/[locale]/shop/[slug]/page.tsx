@@ -25,16 +25,34 @@ export async function generateMetadata({
   });
   if (!product) return {};
   const name = product.names[locale];
-  const description =
+  const seoTitle = product.seoTitle?.[locale]?.trim() || name;
+  const description = (
+    product.seoDescription?.[locale]?.trim() ||
     product.blurb?.[locale] ||
     product.story?.[locale] ||
-    `${name} · Sisters Flowers Da Lat`;
-  return buildPageMetadata({
+    `${name} · Sisters Flowers`
+  ).slice(0, 160);
+  const meta = buildPageMetadata({
     locale: locale as Locale,
-    title: name,
-    description: description.slice(0, 160),
+    title: seoTitle,
+    description,
     pathWithoutLocale: `/shop/${slug}`,
   });
+  const alt = product.imageAlt?.[locale]?.trim() || name;
+  if (product.image) {
+    meta.openGraph = {
+      ...meta.openGraph,
+      images: [
+        {
+          url: product.image.startsWith("http")
+            ? product.image
+            : siteUrl(product.image),
+          alt,
+        },
+      ],
+    };
+  }
+  return meta;
 }
 
 export default async function ProductPage({

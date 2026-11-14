@@ -188,6 +188,11 @@ export function ProductPurchase({
           <p className="serif mt-4 text-3xl text-citrus">
             {formatVnd(unitPrice, locale)}
           </p>
+          {size && product.sizeNotes?.[size]?.[locale]?.trim() ? (
+            <p className="mt-2 text-sm text-moss">
+              {product.sizeNotes[size]![locale]}
+            </p>
+          ) : null}
         </div>
       ) : null}
 

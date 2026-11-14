@@ -14,6 +14,7 @@ import type {
   CatalogSizeBand,
   CatalogStyle,
 } from "@/lib/products";
+import type { AttributePublic } from "@/lib/catalog-attributes";
 
 const SIZE_OPTIONS: CatalogSizeBand[] = ["mini", "classic", "grand", "luxury"];
 const STYLE_OPTIONS: CatalogStyle[] = [
@@ -34,12 +35,16 @@ export function CatalogFilters({
   locale,
   dictionary,
   categories,
+  flowerAttrs = [],
+  colorAttrs = [],
   initial,
   resultCount,
 }: {
   locale: Locale;
   dictionary: Dictionary;
   categories: CategoryPublic[];
+  flowerAttrs?: AttributePublic[];
+  colorAttrs?: AttributePublic[];
   initial: CatalogQuery;
   resultCount: number;
 }) {
@@ -52,6 +57,8 @@ export function CatalogFilters({
   const [size, setSize] = useState(initial.size || "");
   const [accent, setAccent] = useState(initial.accent || "");
   const [style, setStyle] = useState(initial.style || "");
+  const [flower, setFlower] = useState(initial.flower || "");
+  const [color, setColor] = useState(initial.color || "");
 
   const chipOccasions = useMemo(() => {
     const bySlug = new Map(categories.map((c) => [c.slug, c]));
@@ -67,6 +74,8 @@ export function CatalogFilters({
     size?: string;
     accent?: string;
     style?: string;
+    flower?: string;
+    color?: string;
   }) {
     const params = new URLSearchParams();
     const qv = next?.q ?? q;
@@ -75,6 +84,8 @@ export function CatalogFilters({
     const sizeV = next?.size ?? size;
     const accentV = next?.accent ?? accent;
     const styleV = next?.style ?? style;
+    const flowerV = next?.flower ?? flower;
+    const colorV = next?.color ?? color;
     if (qv.trim()) params.set("q", qv.trim());
     if (cat) params.set("category", cat);
     if (initial.productType) params.set("type", initial.productType);
@@ -82,6 +93,8 @@ export function CatalogFilters({
     if (sizeV) params.set("size", sizeV);
     if (accentV) params.set("accent", accentV);
     if (styleV) params.set("style", styleV);
+    if (flowerV) params.set("flower", flowerV);
+    if (colorV) params.set("color", colorV);
     const qs = params.toString();
     return `/${locale}/shop${qs ? `?${qs}` : ""}`;
   }
@@ -98,6 +111,8 @@ export function CatalogFilters({
     setSize("");
     setAccent("");
     setStyle("");
+    setFlower("");
+    setColor("");
     router.push(`/${locale}/shop`);
     setPanelOpen(false);
   }
@@ -108,6 +123,8 @@ export function CatalogFilters({
     initial.size,
     initial.accent,
     initial.style,
+    initial.flower,
+    initial.color,
     initial.sort && initial.sort !== "featured" ? initial.sort : "",
   ].filter(Boolean).length;
 
@@ -117,6 +134,8 @@ export function CatalogFilters({
       initial.size ||
       initial.accent ||
       initial.style ||
+      initial.flower ||
+      initial.color ||
       (initial.sort && initial.sort !== "featured"),
   );
 
@@ -202,6 +221,36 @@ export function CatalogFilters({
               }}
             />
           ) : null}
+          {initial.flower ? (
+            <ActiveChip
+              label={
+                flowerAttrs.find((a) => a.slug === initial.flower)
+                  ? locale === "vi"
+                    ? flowerAttrs.find((a) => a.slug === initial.flower)!.nameVi
+                    : flowerAttrs.find((a) => a.slug === initial.flower)!.nameEn
+                  : initial.flower
+              }
+              onClear={() => {
+                setFlower("");
+                apply({ flower: "" });
+              }}
+            />
+          ) : null}
+          {initial.color ? (
+            <ActiveChip
+              label={
+                colorAttrs.find((a) => a.slug === initial.color)
+                  ? locale === "vi"
+                    ? colorAttrs.find((a) => a.slug === initial.color)!.nameVi
+                    : colorAttrs.find((a) => a.slug === initial.color)!.nameEn
+                  : initial.color
+              }
+              onClear={() => {
+                setColor("");
+                apply({ color: "" });
+              }}
+            />
+          ) : null}
           <button
             type="button"
             onClick={clearAll}
@@ -284,6 +333,48 @@ export function CatalogFilters({
                 })}
               </div>
             </FilterGroup>
+
+            {flowerAttrs.length ? (
+              <FilterGroup title={t.flowerLabel}>
+                <div className="flex flex-wrap gap-2">
+                  {flowerAttrs.map((attr) => {
+                    const on = flower === attr.slug;
+                    return (
+                      <button
+                        key={attr.id}
+                        type="button"
+                        onClick={() => setFlower(on ? "" : attr.slug)}
+                        className={checkClass(on)}
+                      >
+                        <Mark on={on} />
+                        {locale === "vi" ? attr.nameVi : attr.nameEn}
+                      </button>
+                    );
+                  })}
+                </div>
+              </FilterGroup>
+            ) : null}
+
+            {colorAttrs.length ? (
+              <FilterGroup title={t.colorLabel}>
+                <div className="flex flex-wrap gap-2">
+                  {colorAttrs.map((attr) => {
+                    const on = color === attr.slug;
+                    return (
+                      <button
+                        key={attr.id}
+                        type="button"
+                        onClick={() => setColor(on ? "" : attr.slug)}
+                        className={checkClass(on)}
+                      >
+                        <Mark on={on} />
+                        {locale === "vi" ? attr.nameVi : attr.nameEn}
+                      </button>
+                    );
+                  })}
+                </div>
+              </FilterGroup>
+            ) : null}
 
             <FilterGroup title={t.sizeLabel}>
               <div className="flex flex-wrap gap-2">
