@@ -9,9 +9,11 @@
  *   ENRICH_APPLY=1 node scripts/enrich-catalog-ai.mjs
  *   ENRICH_DRY_RUN=1 ENRICH_LIMIT=3 node scripts/enrich-catalog-ai.mjs
  *   ENRICH_FORCE=1 …   # re-analyze even if imageHash matches
+ *   ENRICH_PRODUCT_TYPE=flower-basket   # optional; default bouquet
+ *   ENRICH_PRODUCT_TYPE=all             # every published type
  *
  * Never overwrites contentLocked or contentSource=manual products' copy.
- * Placeholder names (Bouquet NNN) are eligible for apply when ENRICH_APPLY=1.
+ * Placeholder names (Bouquet/Flower basket/… NNN) are eligible when ENRICH_APPLY=1.
  */
 import { createHash } from "crypto";
 import { promises as fs } from "fs";
@@ -30,6 +32,7 @@ const LIMIT = process.env.ENRICH_LIMIT
 const MODEL_VISION = process.env.ENRICH_VISION_MODEL || "gpt-4o-mini";
 const MODEL_COPY = process.env.ENRICH_COPY_MODEL || "gpt-4o-mini";
 const CONCURRENCY = Number(process.env.ENRICH_CONCURRENCY || 2);
+const PRODUCT_TYPE = (process.env.ENRICH_PRODUCT_TYPE || "bouquet").trim();
 
 async function loadEnvFile(filePath) {
   try {
@@ -65,7 +68,9 @@ function stripQuery(url) {
 }
 
 function isPlaceholderName(nameEn) {
-  return /^Bouquet\s+\d+$/i.test((nameEn || "").trim());
+  return /^(Bouquet|Flower basket|Congratulatory stand|Stand \/ tray|Condolence stand|Basket|Stand)\s+\d+$/i.test(
+    (nameEn || "").trim(),
+  );
 }
 
 function canApplyCopy(product) {
@@ -238,8 +243,13 @@ async function main() {
   }
   const attrBySlug = new Map(attrs.map((a) => [a.slug, a]));
 
+  const typeWhere =
+    PRODUCT_TYPE === "all" || PRODUCT_TYPE === "*"
+      ? {}
+      : { productType: PRODUCT_TYPE };
+
   let products = await prisma.product.findMany({
-    where: { published: true, productType: "bouquet" },
+    where: { published: true, ...typeWhere },
     orderBy: { nameEn: "asc" },
     include: { analysis: true },
   });
@@ -256,7 +266,7 @@ async function main() {
       });
 
   console.log(
-    `Enrich ${products.length} products (apply=${APPLY} dry=${DRY_RUN} force=${FORCE})`,
+    `Enrich ${products.length} products (type=${PRODUCT_TYPE} apply=${APPLY} dry=${DRY_RUN} force=${FORCE})`,
   );
 
   const usageAccum = { prompt_tokens: 0, completion_tokens: 0 };

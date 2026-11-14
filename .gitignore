@@ -59,3 +59,9 @@ secrets/supabase-service.env
 # Local catalog import dumps (keep folder via .gitkeep)
 /import/buckets/**
 !/import/buckets/.gitkeep
+/import/basket/**
+!/import/basket/.gitkeep
+/import/stand for congrats/**
+!/import/stand for congrats/.gitkeep
+/import/stand-congrats/**
+!/import/stand-congrats/.gitkeep
