@@ -77,9 +77,9 @@ export const en = {
     imageAlt: "Handcrafted bouquet from Sisters Flowers Vietnam",
     selectBouquet: "Show bouquet",
     openBouquet: "View this bouquet",
-    featureDelivery: "Fast Delivery",
-    featureFresh: "Fresh Flowers",
-    featureHandcrafted: "Handmade with love",
+    featureDelivery: "Same-day windows",
+    featureFresh: "Photo before delivery",
+    featureHandcrafted: "WhatsApp confirm",
   },
   heroPreview: {
     badge: "Finished by hand",
@@ -127,11 +127,37 @@ export const en = {
     personalBody: "Card, gift, or a wrap composed just for them.",
     personalCta: "Build a custom wrap",
     deliveryTitle: "Delivery to the door.",
-    deliveryBody: "Priced by distance in {city} — confirmed before you pay.",
+    deliveryBody:
+      "Same-day windows in {city} when flowers are ready. Fee by distance — confirmed on WhatsApp before you pay. We send a photo of the finished bouquet before most deliveries.",
     hotelTitle: "Hotels & business",
     hotelBody: "Welcome flowers for the room.",
     weddingTitle: "Weddings & events",
     weddingBody: "Ceremony and quiet details.",
+    promisePhotoTitle: "Photo before delivery",
+    promisePhotoBody:
+      "For most orders we share a photo of the finished wrap before it leaves the studio.",
+    promiseSameDayTitle: "Same-day when we can",
+    promiseSameDayBody:
+      "Order earlier in the day for {city}. Exact timing is confirmed with the studio on WhatsApp.",
+    promiseOverseasTitle: "Order from anywhere",
+    promiseOverseasBody:
+      "English & Vietnamese support. Browse online, then confirm details and payment on WhatsApp — PayPal, Wise or bank transfer as agreed.",
+    reviewsKicker: "From guests",
+    reviewsTitle: "Trusted for local delivery.",
+    reviewsBody:
+      "Short notes from people who ordered for hotels, homes and celebrations in Vietnam.",
+    review1Quote:
+      "Ordered from abroad for a hotel surprise in Da Nang. Clear English replies, photo before delivery, and it arrived on time.",
+    review1Name: "Emma",
+    review1Meta: "Hotel delivery · Da Nang",
+    review2Quote:
+      "Beautiful handcrafted bouquet. The studio confirmed the address and time on WhatsApp — easy from start to finish.",
+    review2Name: "Minh",
+    review2Meta: "Birthday · Da Lat",
+    review3Quote:
+      "We needed flowers for a guest arrival. Reception coordination was smooth and the wrap looked exactly like the photo.",
+    review3Name: "James",
+    review3Meta: "Hotel welcome · Da Nang",
     // Names kept for footer studio cards
     dalatName: "Da Lat",
     dalatStatus: "Open now",
@@ -233,28 +259,35 @@ export const en = {
     kicker: "Checkout",
     title: "Where should the bouquet go?",
     intro:
-      "No online payment yet — leave your details and confirm with the studio on WhatsApp.",
+      "Browse and place the order here. Confirm availability, timing and payment on WhatsApp — including overseas guests. For most orders we send a photo of the finished bouquet before delivery.",
     name: "Your name",
-    phone: "Phone",
+    phone: "Phone / WhatsApp",
     email: "Email (optional)",
     zone: "Delivery zone",
     address: "Address / hotel / venue",
     date: "Delivery date",
     time: "Preferred time",
-    recipient: "Recipient name (optional)",
-    hotel: "Hotel name (optional)",
-    room: "Room number (optional)",
-    notes: "Notes for the studio",
+    recipient: "Recipient name",
+    hotel: "Hotel name",
+    room: "Room / reservation",
+    hotelHint:
+      "For hotel delivery, add hotel name and room (or reservation name) so we can coordinate with reception.",
+    notes: "Greeting card & notes",
+    notesPlaceholder: "Card message, gate codes, surprise instructions…",
     summary: "Order summary",
     submit: "Place order",
     sending: "Sending…",
-    payNote: "Payment is arranged after the studio confirms availability and delivery.",
+    payNote:
+      "No card checkout on the site yet. After WhatsApp confirm we arrange PayPal, Wise or bank transfer. Delivery fee and final total are confirmed before you pay.",
+    promisePhoto: "Photo before delivery",
+    promiseSameDay: "Same-day windows when capacity allows",
+    promisePay: "Pay after WhatsApp confirm",
     backShop: "Back to bouquets",
     redirecting: "Opening the shop…",
     grandTotal: "Estimated total",
     successTitle: "Order received.",
     successBody:
-      "The studio has your order in the dashboard. Open WhatsApp to confirm details and delivery timing.",
+      "The studio has your order. Open WhatsApp to confirm details, timing and payment. Ask for a photo of the finished bouquet before delivery if you would like one.",
     reference: "Reference",
     openWhatsapp: "Confirm on WhatsApp",
     vouchersTitle: "Your voucher codes",
@@ -336,13 +369,16 @@ export const en = {
     kicker: "Hotel delivery",
     title: "A bouquet waiting behind the door.",
     intro:
-      "For guests arriving in {city}, or already in the room. We coordinate with reception when needed.",
+      "For guests arriving in {city}, or already in the room. Share hotel name, room or reservation name, and recipient phone — we coordinate with reception when needed.",
+    pointPhoto: "Photo of the finished wrap before delivery for most hotel orders.",
+    pointReception: "Reception-friendly handover when room access needs a call first.",
+    pointOverseas: "Easy for overseas senders — confirm in English on WhatsApp.",
   },
   delivery: {
     kicker: "Distance-based delivery",
     title: "Pick your area. See the fee.",
     intro:
-      "You do not need to know the kilometres. Choose a {city} area near the recipient — we estimate from the studio.",
+      "Choose a {city} area near the recipient — we estimate from the studio. Same-day windows when flowers and capacity allow; exact timing confirmed on WhatsApp.",
     calculatorKicker: "Delivery areas",
     calculatorTitle: "Where should the bouquet go?",
     calculatorBody:
@@ -353,13 +389,23 @@ export const en = {
     feeLabel: "Delivery fee",
     quoted: "Quoted",
     maxHint: "standard range",
-    feeNote: "Estimate only — the studio confirms after seeing the exact address.",
+    feeNote:
+      "Estimate only — the studio confirms after seeing the exact address. Photo before delivery for most orders.",
     beyondNote:
       "We will confirm the fee after the exact address. No need to guess kilometres.",
     noZones: "Delivery areas are being prepared.",
-    guideNear: "Same-day windows when flowers are ready.",
-    guideMid: "Homes, villas, and garden venues around the city.",
-    guideFar: "Timed drops for events and countryside tables.",
+    guideNear: "Same-day windows when flowers are ready — confirm earlier for best timing.",
+    guideMid: "Homes, villas, hotels and garden venues around the city.",
+    guideFar: "Timed drops for events and countryside tables — plan ahead.",
+    promisePhotoTitle: "Photo before delivery",
+    promisePhotoBody:
+      "We usually send a photo of the finished bouquet on WhatsApp before it leaves the studio.",
+    promiseSlaTitle: "Clear timing",
+    promiseSlaBody:
+      "Pick a date and preferred window. We confirm what is possible for that day in {city}.",
+    promisePayTitle: "Confirm, then pay",
+    promisePayBody:
+      "No surprise fees. Final total and payment method are agreed on WhatsApp before you pay.",
     shopCta: "Browse bouquets",
     checkoutCta: "Go to checkout",
   },

@@ -102,6 +102,8 @@ export function buildWhatsAppUrl(
       payload.locale,
     )}`,
     payload.notes ? `Notes: ${payload.notes}` : null,
+    "",
+    "Please send a photo of the finished bouquet before delivery when possible.",
   ].filter(Boolean) as string[];
 
   if (vouchers.length) {

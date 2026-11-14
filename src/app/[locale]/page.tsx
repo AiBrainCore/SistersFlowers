@@ -12,6 +12,11 @@ import { Reveal } from "@/components/reveal";
 import { ImmersiveHero } from "@/components/immersive-hero";
 import { ShopByOccasion } from "@/components/shop-by-occasion";
 import { StudiosSection } from "@/components/studios-section";
+import { HomeReviews } from "@/components/home-reviews";
+import {
+  LaunchPromises,
+  homeLaunchPromises,
+} from "@/components/launch-promises";
 import {
   buildPageMetadata,
   homepageProductListJsonLd,
@@ -96,6 +101,10 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
         dictionary={t}
         categories={categories}
       />
+
+      <section className="mx-auto max-w-6xl px-4 py-14 sm:px-5 sm:py-16">
+        <LaunchPromises items={homeLaunchPromises(t)} />
+      </section>
 
       <section className="relative overflow-hidden">
         <div className="grid items-stretch lg:grid-cols-2">
@@ -230,6 +239,8 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
           </div>
         </div>
       </section>
+
+      <HomeReviews dictionary={t} />
 
       <StudiosSection
         locale={locale}
