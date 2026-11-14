@@ -65,31 +65,12 @@ export function ProductForm({
             placeholder={t.products.slugPlaceholder}
           />
         </label>
-        <label className="admin-field">
-          <span>{t.products.priceVnd}</span>
-          <input
-            name="price"
-            type="number"
-            min={0}
-            step={1000}
-            required
-            defaultValue={product?.price ?? 500000}
-          />
-        </label>
-      </div>
-      <div className="admin-grid-2" style={{ marginTop: -4 }}>
-        <label className="admin-field">
-          <span>{t.products.compareAtLegacy}</span>
-          <input
-            name="compareAtPrice"
-            type="number"
-            min={0}
-            step={1000}
-            placeholder="—"
-            defaultValue={product?.compareAtPrice ?? ""}
-            className="admin-input-was"
-          />
-        </label>
+        {/* List/sort price — auto-synced from min S/M/L on save. */}
+        <input
+          type="hidden"
+          name="price"
+          defaultValue={product?.price ?? 450000}
+        />
       </div>
       <p style={{ fontSize: 13, opacity: 0.7, marginTop: -6, marginBottom: 14 }}>
         {t.products.basePriceHint}
@@ -131,11 +112,9 @@ export function ProductForm({
                   <tr key={size.id}>
                     <td>
                       <strong>
-                        {size.short} · {size.labelEn}
+                        {size.short} ·{" "}
+                        {locale === "vi" ? size.labelVi : size.labelEn}
                       </strong>
-                      <div style={{ fontSize: 11, opacity: 0.6 }}>
-                        {size.labelVi}
-                      </div>
                     </td>
                     <td>
                       <input
@@ -184,42 +163,43 @@ export function ProductForm({
           </table>
         </div>
 
-        <div className="admin-grid-2" style={{ marginTop: 14 }}>
+        <div
+          style={{
+            marginTop: 14,
+            display: "flex",
+            flexWrap: "wrap",
+            gap: 16,
+          }}
+        >
           {cities.map((city) => {
             const stock = stockBySlug.get(city.slug);
             return (
-              <div key={city.slug}>
-                <label
-                  className="admin-field"
-                  style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}
-                >
-                  <input
-                    type="checkbox"
-                    name={`cityAvailable_${city.slug}`}
-                    defaultChecked={stock?.available ?? true}
-                    style={{ width: "auto" }}
-                  />
-                  <span style={{ margin: 0 }}>
-                    {t.products.cityAvailable}: {cityLabel(city)}
-                  </span>
-                </label>
-                <label className="admin-field" style={{ marginBottom: 0 }}>
-                  <span>
-                    {t.products.cityPriceOverride} ({cityLabel(city)})
-                  </span>
-                  <input
-                    name={`cityPrice_${city.slug}`}
-                    type="number"
-                    min={0}
-                    step={1000}
-                    placeholder={t.products.sameAsBase}
-                    defaultValue={stock?.priceOverride ?? ""}
-                  />
-                </label>
-              </div>
+              <label
+                key={city.slug}
+                className="admin-field"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  marginBottom: 0,
+                }}
+              >
+                <input
+                  type="checkbox"
+                  name={`cityAvailable_${city.slug}`}
+                  defaultChecked={stock?.available ?? true}
+                  style={{ width: "auto" }}
+                />
+                <span style={{ margin: 0 }}>
+                  {t.products.cityAvailable}: {cityLabel(city)}
+                </span>
+              </label>
             );
           })}
         </div>
+        <p style={{ fontSize: 12, opacity: 0.65, marginTop: 10, marginBottom: 0 }}>
+          {t.products.cityPricingHint}
+        </p>
       </fieldset>
 
       <div className="admin-grid-2">
