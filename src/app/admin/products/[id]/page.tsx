@@ -13,13 +13,14 @@ export default async function EditProductPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const [product, { t }, categories, cities, attributes] = await Promise.all([
-    getProductById(id),
-    getAdminT(),
-    listActiveCategories(),
-    listCitiesForPricing(),
-    listActiveAttributes(),
-  ]);
+  const [product, { locale, t }, categories, cities, attributes] =
+    await Promise.all([
+      getProductById(id),
+      getAdminT(),
+      listActiveCategories(),
+      listCitiesForPricing(),
+      listActiveAttributes(),
+    ]);
   if (!product) notFound();
 
   return (
@@ -27,6 +28,7 @@ export default async function EditProductPage({
       <ProductForm
         product={product}
         t={t}
+        locale={locale}
         categories={categories}
         cities={cities}
         attributes={attributes}
