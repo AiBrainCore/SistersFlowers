@@ -13,6 +13,7 @@ import {
   defaultSize,
   hasAnySizePrice,
   offeredSizes,
+  productUsesSizeLadder,
   resolveCompareAt,
   resolveSizePrice,
   sizeLabel,
@@ -40,10 +41,16 @@ export function ProductPurchase({
   const citySizes = product.cityStock?.find(
     (s) => s.citySlug === citySlug,
   )?.sizePrices;
-  const sizes = offeredSizes(product.sizePrices, citySizes);
-  const sized = hasAnySizePrice(product.sizePrices) || Boolean(citySizes && hasAnySizePrice(citySizes));
+  const allowLadder = productUsesSizeLadder(product.productType);
+  const sizes = allowLadder
+    ? offeredSizes(product.sizePrices, citySizes)
+    : [];
+  const sized =
+    allowLadder &&
+    (hasAnySizePrice(product.sizePrices) ||
+      Boolean(citySizes && hasAnySizePrice(citySizes)));
   const [size, setSize] = useState<ProductSizeId | null>(
-    defaultSize(product.sizePrices, citySizes),
+    allowLadder ? defaultSize(product.sizePrices, citySizes) : null,
   );
 
   const unitPrice = size

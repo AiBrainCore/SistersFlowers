@@ -387,13 +387,19 @@ async function main() {
           finalSlug = existingBySource.slug;
         }
 
+        const usesSizeLadder = productType === "bouquet";
         const data = {
           slug: finalSlug,
           price: DEFAULT_PRICE,
-          priceSm: DEFAULT_SM,
-          priceMd: DEFAULT_MD,
-          priceLg: DEFAULT_LG,
+          // Baskets / stands = one fixed size; only bouquets get S/M/L.
+          priceSm: usesSizeLadder ? DEFAULT_SM : null,
+          priceMd: usesSizeLadder ? DEFAULT_MD : null,
+          priceLg: usesSizeLadder ? DEFAULT_LG : null,
           priceGrand: null,
+          compareAtSm: null,
+          compareAtMd: null,
+          compareAtLg: null,
+          compareAtGrand: null,
           image: imageUrl,
           imageFallback: fallbackUrl,
           productType,
