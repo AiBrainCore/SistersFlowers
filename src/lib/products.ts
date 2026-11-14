@@ -251,6 +251,69 @@ export async function listAllProducts(): Promise<Product[]> {
   return rows.map(toProduct);
 }
 
+/**
+ * Admin product list only — skips categories/attributes/SEO/story blobs so
+ * bulk pricing redirects do not OOM or time out rebuilding the page.
+ */
+export async function listAdminProducts(): Promise<Product[]> {
+  await seedProductCategoriesIfEmpty();
+  const rows = await prisma.product.findMany({
+    select: {
+      id: true,
+      slug: true,
+      price: true,
+      priceSm: true,
+      priceMd: true,
+      priceLg: true,
+      priceGrand: true,
+      compareAtPrice: true,
+      compareAtSm: true,
+      compareAtMd: true,
+      compareAtLg: true,
+      compareAtGrand: true,
+      image: true,
+      imageFallback: true,
+      productType: true,
+      accent: true,
+      nameEn: true,
+      nameVi: true,
+      tagEn: true,
+      tagVi: true,
+      published: true,
+      sortOrder: true,
+      createdAt: true,
+      cityStock: {
+        select: {
+          available: true,
+          priceOverride: true,
+          priceSm: true,
+          priceMd: true,
+          priceLg: true,
+          priceGrand: true,
+          city: {
+            select: {
+              id: true,
+              slug: true,
+              nameEn: true,
+              nameVi: true,
+            },
+          },
+        },
+      },
+    },
+    orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+  });
+  return rows.map((row) =>
+    toProduct({
+      ...row,
+      blurbEn: "",
+      blurbVi: "",
+      storyEn: "",
+      storyVi: "",
+    }),
+  );
+}
+
 export async function getProductBySlug(
   slug: string,
   opts?: { includeDraft?: boolean; cityId?: string; citySlug?: string },

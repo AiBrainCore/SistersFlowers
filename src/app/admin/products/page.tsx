@@ -6,7 +6,7 @@ import {
   quickSaveProductCityPricesAction,
 } from "@/app/admin/actions";
 import { ProductsBulkPricing } from "@/components/admin/products-bulk-pricing";
-import { listAllProducts } from "@/lib/products";
+import { listAdminProducts } from "@/lib/products";
 import { listCitiesForPricing } from "@/lib/product-city";
 import { getAdminT } from "@/lib/admin-locale";
 import { PRODUCT_SIZES } from "@/lib/product-sizes";
@@ -31,7 +31,7 @@ export default async function AdminProductsPage({
   }>;
 }) {
   const [products, cities, { locale, t }] = await Promise.all([
-    listAllProducts(),
+    listAdminProducts(),
     listCitiesForPricing(),
     getAdminT(),
   ]);
