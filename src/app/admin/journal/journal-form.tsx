@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { saveJournalPostAction } from "@/app/admin/actions";
 import type { AdminDictionary } from "@/i18n/admin-dictionaries";
 import type { JournalPostPublic } from "@/lib/journal";
@@ -22,9 +22,18 @@ export function JournalForm({
 }) {
   const [lang, setLang] = useState<"en" | "vi">("en");
   const [preview, setPreview] = useState(false);
+  const [coverPreview, setCoverPreview] = useState<string | null>(null);
+  const [clearCover, setClearCover] = useState(false);
 
   const bodyEn = asEditorHtml(post?.bodyEn);
   const bodyVi = asEditorHtml(post?.bodyVi);
+  const slugHint = post?.slug || "draft";
+
+  const shownCover = useMemo(() => {
+    if (clearCover) return null;
+    if (coverPreview) return coverPreview;
+    return post?.coverImage || null;
+  }, [clearCover, coverPreview, post?.coverImage]);
 
   return (
     <form
@@ -33,7 +42,12 @@ export function JournalForm({
       encType="multipart/form-data"
     >
       {post?.id ? <input type="hidden" name="id" value={post.id} /> : null}
-      <input type="hidden" name="existingCover" value={post?.coverImage || ""} />
+      <input
+        type="hidden"
+        name="existingCover"
+        value={clearCover ? "" : post?.coverImage || ""}
+      />
+      <input type="hidden" name="clearCover" value={clearCover ? "1" : ""} />
 
       <div className="admin-grid-2">
         <label className="admin-field">
@@ -85,6 +99,99 @@ export function JournalForm({
         </label>
       </div>
 
+      <fieldset
+        style={{
+          border: "1px solid rgba(45,58,40,0.12)",
+          borderRadius: 12,
+          padding: 14,
+          marginBottom: 16,
+          background: "#fffaf5",
+        }}
+      >
+        <legend
+          style={{
+            fontSize: 12,
+            letterSpacing: "0.08em",
+            textTransform: "uppercase",
+            opacity: 0.75,
+            padding: "0 6px",
+          }}
+        >
+          {t.journal.cover}
+        </legend>
+        <p style={{ fontSize: 13, opacity: 0.7, marginTop: 0 }}>
+          {t.journal.coverHint}
+        </p>
+        {shownCover ? (
+          <div
+            style={{
+              position: "relative",
+              width: "100%",
+              maxWidth: 420,
+              aspectRatio: "16 / 9",
+              marginBottom: 12,
+              borderRadius: 12,
+              overflow: "hidden",
+              background: "#eee",
+            }}
+          >
+            <Image
+              src={shownCover}
+              alt={post?.coverAltEn || ""}
+              fill
+              className="object-cover"
+              unoptimized
+            />
+          </div>
+        ) : (
+          <p style={{ fontSize: 13, opacity: 0.55 }}>{t.journal.coverEmpty}</p>
+        )}
+        <label className="admin-field">
+          <span>{t.journal.coverChange}</span>
+          <input
+            name="cover"
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/heic"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (!file) {
+                setCoverPreview(null);
+                return;
+              }
+              setClearCover(false);
+              setCoverPreview(URL.createObjectURL(file));
+            }}
+          />
+        </label>
+        <div className="admin-grid-2">
+          <label className="admin-field">
+            <span>Cover alt EN</span>
+            <input name="coverAltEn" defaultValue={post?.coverAltEn || ""} />
+          </label>
+          <label className="admin-field">
+            <span>Cover alt VI</span>
+            <input name="coverAltVi" defaultValue={post?.coverAltVi || ""} />
+          </label>
+        </div>
+        {post?.coverImage || coverPreview ? (
+          <label
+            className="admin-field"
+            style={{ display: "flex", alignItems: "center", gap: 8 }}
+          >
+            <input
+              type="checkbox"
+              checked={clearCover}
+              onChange={(e) => {
+                setClearCover(e.target.checked);
+                if (e.target.checked) setCoverPreview(null);
+              }}
+              style={{ width: "auto" }}
+            />
+            <span style={{ margin: 0 }}>{t.journal.coverRemove}</span>
+          </label>
+        ) : null}
+      </fieldset>
+
       <label className="admin-field">
         <span>{t.journal.excerptEn}</span>
         <textarea name="excerptEn" rows={2} defaultValue={post?.excerptEn} />
@@ -126,6 +233,7 @@ export function JournalForm({
         >
           {preview ? "Edit" : "Preview"}
         </button>
+        <span style={{ fontSize: 12, opacity: 0.65 }}>{t.journal.imageTip}</span>
       </div>
 
       <div style={{ display: lang === "en" && !preview ? "block" : "none" }}>
@@ -137,6 +245,7 @@ export function JournalForm({
           locale="en"
           initialHtml={bodyEn}
           placeholder="English article body…"
+          postSlug={slugHint}
         />
       </div>
       <div style={{ display: lang === "vi" && !preview ? "block" : "none" }}>
@@ -148,19 +257,23 @@ export function JournalForm({
           locale="vi"
           initialHtml={bodyVi}
           placeholder="Nội dung bài tiếng Việt…"
+          postSlug={slugHint}
         />
       </div>
-
-      {/* Keep inactive language field submitted when tab hidden:
-          TipTap always mounts both via display:none; when preview, still need values.
-          Extra hidden fallbacks if editors unmounted — both editors stay mounted. */}
 
       {preview ? (
         <div
           className="admin-card"
           style={{ background: "#fffaf5", marginBottom: 16 }}
         >
-          <p style={{ fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", opacity: 0.6 }}>
+          <p
+            style={{
+              fontSize: 11,
+              letterSpacing: "0.12em",
+              textTransform: "uppercase",
+              opacity: 0.6,
+            }}
+          >
             Preview · {lang.toUpperCase()}
           </p>
           <div
@@ -214,39 +327,6 @@ export function JournalForm({
           />
         </label>
       </fieldset>
-
-      <label className="admin-field">
-        <span>{t.journal.cover}</span>
-        <input name="cover" type="file" accept="image/jpeg,image/png,image/webp" />
-      </label>
-      <div className="admin-grid-2">
-        <label className="admin-field">
-          <span>Cover alt EN</span>
-          <input name="coverAltEn" defaultValue={post?.coverAltEn || ""} />
-        </label>
-        <label className="admin-field">
-          <span>Cover alt VI</span>
-          <input name="coverAltVi" defaultValue={post?.coverAltVi || ""} />
-        </label>
-      </div>
-      {post?.coverImage ? (
-        <div
-          style={{
-            position: "relative",
-            width: 240,
-            height: 135,
-            marginBottom: 16,
-          }}
-        >
-          <Image
-            src={post.coverImage}
-            alt={post.coverAltEn || ""}
-            fill
-            className="object-cover"
-            unoptimized
-          />
-        </div>
-      ) : null}
 
       <label
         className="admin-field"

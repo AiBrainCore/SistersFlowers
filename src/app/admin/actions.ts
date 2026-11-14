@@ -951,7 +951,10 @@ export async function saveJournalPostAction(formData: FormData) {
   const coverAltVi = String(formData.get("coverAltVi") || "");
   const sortOrder = Number(formData.get("sortOrder") || 0);
   const published = formData.get("published") === "on";
-  const existingCover = String(formData.get("existingCover") || "");
+  const clearCover = formData.get("clearCover") === "1";
+  const existingCover = clearCover
+    ? ""
+    : String(formData.get("existingCover") || "");
 
   if (!titleEn || !titleVi || !slug) {
     redirect(id ? `/admin/journal/${id}?error=1` : "/admin/journal/new?error=1");
@@ -960,16 +963,16 @@ export async function saveJournalPostAction(formData: FormData) {
   let coverImage: string | null = existingCover || null;
   const file = formData.get("cover") as File | null;
   if (file && file.size > 0) {
+    const { uploadJournalImage } = await import("@/lib/journal-upload");
     const bytes = Buffer.from(await file.arrayBuffer());
-    const ext = path.extname(file.name || "").toLowerCase() || ".jpg";
-    const safeExt = [".jpg", ".jpeg", ".png", ".webp"].includes(ext)
-      ? ext
-      : ".jpg";
-    const filename = `journal-${slug}-${Date.now()}${safeExt}`;
-    const dir = path.join(process.cwd(), "public", "journal", "uploads");
-    await mkdir(dir, { recursive: true });
-    await writeFile(path.join(dir, filename), bytes);
-    coverImage = `/journal/uploads/${filename}`;
+    coverImage = await uploadJournalImage({
+      bytes,
+      filenameHint: file.name,
+      postSlug: slug,
+      kind: "cover",
+    });
+  } else if (clearCover) {
+    coverImage = null;
   }
 
   const data = {

@@ -27,6 +27,9 @@ const ALLOWED_ATTR = [
   "alt",
   "title",
   "class",
+  "width",
+  "height",
+  "loading",
 ];
 
 /** Sanitize TipTap / pasted HTML before save or public render. */

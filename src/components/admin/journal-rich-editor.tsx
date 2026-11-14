@@ -3,8 +3,9 @@
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
+import Image from "@tiptap/extension-image";
 import Placeholder from "@tiptap/extension-placeholder";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   JOURNAL_INTERNAL_LINKS,
   localePath,
@@ -17,14 +18,18 @@ export function JournalRichEditor({
   locale,
   initialHtml,
   placeholder,
+  postSlug,
 }: {
   name: string;
   locale: Lang;
   initialHtml: string;
   placeholder?: string;
+  postSlug?: string;
 }) {
   const [html, setHtml] = useState(initialHtml || "");
   const [linkOpen, setLinkOpen] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   const editor = useEditor({
     extensions: [
@@ -34,6 +39,13 @@ export function JournalRichEditor({
       Link.configure({
         openOnClick: false,
         HTMLAttributes: { rel: "noopener noreferrer" },
+      }),
+      Image.configure({
+        inline: false,
+        allowBase64: false,
+        HTMLAttributes: {
+          class: "journal-inline-image",
+        },
       }),
       Placeholder.configure({
         placeholder: placeholder || "Write the article…",
@@ -94,8 +106,43 @@ export function JournalRichEditor({
       editor!.chain().focus().extendMarkRange("link").unsetLink().run();
       return;
     }
-    const safe = href.startsWith("http") || href.startsWith("/") ? href : `https://${href}`;
+    const safe =
+      href.startsWith("http") || href.startsWith("/") ? href : `https://${href}`;
     editor!.chain().focus().extendMarkRange("link").setLink({ href: safe }).run();
+  }
+
+  async function onPickImage(file: File | null) {
+    if (!file) return;
+    setUploading(true);
+    try {
+      const body = new FormData();
+      body.set("file", file);
+      body.set("kind", "inline");
+      body.set("slug", postSlug || "draft");
+      const res = await fetch("/api/admin/journal-image", {
+        method: "POST",
+        body,
+      });
+      const data = (await res.json()) as { url?: string; error?: string };
+      if (!res.ok || !data.url) {
+        throw new Error(data.error || "Upload failed");
+      }
+      const alt =
+        window.prompt(
+          locale === "vi" ? "Mô tả ảnh (alt)" : "Image alt text",
+          "",
+        ) || "";
+      editor!
+        .chain()
+        .focus()
+        .setImage({ src: data.url, alt })
+        .run();
+    } catch (err) {
+      window.alert(err instanceof Error ? err.message : "Upload failed");
+    } finally {
+      setUploading(false);
+      if (fileRef.current) fileRef.current.value = "";
+    }
   }
 
   const btn = (active: boolean) =>
@@ -111,6 +158,13 @@ export function JournalRichEditor({
   return (
     <div style={{ marginBottom: 16 }}>
       <input type="hidden" name={name} value={html} />
+      <input
+        ref={fileRef}
+        type="file"
+        accept="image/jpeg,image/png,image/webp,image/heic"
+        style={{ display: "none" }}
+        onChange={(e) => onPickImage(e.target.files?.[0] || null)}
+      />
       <div
         style={{
           display: "flex",
@@ -181,6 +235,20 @@ export function JournalRichEditor({
           onClick={() => editor.chain().focus().unsetLink().run()}
         >
           Unlink
+        </button>
+        <button
+          type="button"
+          style={btn(uploading)}
+          disabled={uploading}
+          onClick={() => fileRef.current?.click()}
+        >
+          {uploading
+            ? locale === "vi"
+              ? "Đang tải…"
+              : "Uploading…"
+            : locale === "vi"
+              ? "+ Ảnh"
+              : "+ Image"}
         </button>
         <button
           type="button"
