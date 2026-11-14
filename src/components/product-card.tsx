@@ -3,7 +3,12 @@ import type { Locale } from "@/i18n/config";
 import type { Product } from "@/data/products";
 import { ProductImage } from "@/components/product-image";
 import { SalePrice } from "@/components/sale-price";
-import { hasAnySizePrice, minPriceCompareAt } from "@/lib/product-sizes";
+import {
+  hasAnySizePrice,
+  minPriceCompareAt,
+  productUsesSizeLadder,
+} from "@/lib/product-sizes";
+import { getProductType } from "@/lib/product-types";
 
 export function ProductCard({
   product,
@@ -14,7 +19,8 @@ export function ProductCard({
   locale: Locale;
   citySlug?: string;
 }) {
-  const from = hasAnySizePrice(product.sizePrices);
+  const usesLadder = productUsesSizeLadder(product.productType);
+  const from = usesLadder && hasAnySizePrice(product.sizePrices);
   const citySizes = citySlug
     ? product.cityStock?.find((row) => row.citySlug === citySlug)?.sizePrices
     : undefined;
@@ -25,6 +31,8 @@ export function ProductCard({
     product.price,
     product.compareAtPrice,
   );
+  const typeMeta = getProductType(product.productType || "bouquet");
+  const typeLabel = locale === "vi" ? typeMeta.nameVi : typeMeta.nameEn;
   return (
     <Link
       href={`/${locale}/shop/${product.slug}`}
@@ -39,6 +47,11 @@ export function ProductCard({
           className="object-cover transition duration-700 ease-out group-hover:scale-[1.05] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
           sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
         />
+        {product.productType && product.productType !== "bouquet" ? (
+          <span className="absolute left-2 top-2 rounded-full bg-cream/95 px-2.5 py-1 text-[10px] tracking-[0.12em] text-forest uppercase shadow-sm">
+            {typeLabel}
+          </span>
+        ) : null}
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-forest/25 to-transparent opacity-0 transition duration-500 group-hover:opacity-100 motion-reduce:hidden" />
       </div>
       <div className="mt-3 flex min-h-[4.5rem] flex-1 flex-col gap-1 px-0.5">

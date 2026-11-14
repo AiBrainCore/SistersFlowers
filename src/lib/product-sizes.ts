@@ -5,6 +5,14 @@ export const PRODUCT_SIZES = [
   { id: "lg", labelEn: "Large", labelVi: "Lớn", short: "L" },
 ] as const;
 
+/**
+ * Only wrapped bouquets use the S/M/L ladder today.
+ * Baskets / stands are sold as a single fixed size+price.
+ */
+export function productUsesSizeLadder(productType?: string | null) {
+  return (productType || "bouquet") === "bouquet";
+}
+
 /** Default studio size ladder (VND). */
 export const DEFAULT_SIZE_PRICES = {
   sm: 450_000,

@@ -85,8 +85,12 @@ const en = {
     slugPlaceholder: "auto from EN name",
     categories: "Categories (occasions)",
     categoriesHint: "A bouquet can belong to several occasions.",
+    productType: "Product type",
+    singlePrice: "Fixed price",
+    singlePriceHint:
+      "Baskets and stands are one size only — set a single Sale price (and optional Regular). No S/M/L ladder.",
     basePriceHint:
-      "Prices live in the size grid below (Sale / Regular × city). List price is synced from the lowest Sale on save. Custom size → Custom bouquet page.",
+      "Bouquets use the size grid below (Sale / Regular × city). List price is synced from the lowest Sale on save. Custom size → Custom bouquet page.",
     cityPricing: "City prices & availability",
     cityPricingHint:
       "Tick Sell to show the bouquet in that city. To charge a different amount there, fill the city column in the size grid (empty = same as Sale).",
@@ -117,7 +121,7 @@ const en = {
     priceError: "Could not save — check sale prices.",
     bulkTitle: "Bulk pricing",
     bulkHint:
-      "Set S/M/L for many bouquets at once, raise sale prices by supplier % (markup), or run a discount day (Regular + lower Sale). Scope: all / published / hidden.",
+      "Absolute S/M/L = bouquets only. Markup / discount / clear also hit baskets & stands (single price). Scope: all / published / hidden.",
     bulkDone: "Bulk {action}: updated {n} products.",
     bulkError: "Bulk pricing failed — check the numbers.",
     bulkScope: "Apply to",
@@ -396,8 +400,12 @@ const vi: typeof en = {
     slugPlaceholder: "tự tạo từ tên EN",
     categories: "Danh mục (dịp)",
     categoriesHint: "Một bó có thể thuộc nhiều dịp.",
+    productType: "Loại sản phẩm",
+    singlePrice: "Giá cố định",
+    singlePriceHint:
+      "Giỏ hoa và kệ chỉ một size — nhập một Giá bán (và Giá gốc tùy chọn). Không có S/M/L.",
     basePriceHint:
-      "Giá nằm ở bảng size bên dưới (Giá bán / Giá gốc × thành phố). Giá danh sách tự lấy từ Giá bán thấp nhất khi lưu. Custom → trang bó theo ý.",
+      "Bó hoa dùng bảng size bên dưới (Giá bán / Giá gốc × thành phố). Giá danh sách tự lấy từ Giá bán thấp nhất khi lưu. Custom → trang bó theo ý.",
     cityPricing: "Giá & bán theo thành phố",
     cityPricingHint:
       "Tick Bán để hiện bó ở thành phố đó. Giá khác theo thành phố → điền cột thành phố trong bảng size (trống = như Giá bán).",
@@ -428,7 +436,7 @@ const vi: typeof en = {
     priceError: "Không lưu được — kiểm tra giá bán.",
     bulkTitle: "Giá hàng loạt",
     bulkHint:
-      "Đặt S/M/L cho nhiều bó, tăng % khi nhà cung cấp / lễ, hoặc ngày giảm giá (Giá gốc + Giá bán thấp hơn). Phạm vi: tất cả / đang bán / ẩn.",
+      "S/M/L tuyệt đối = chỉ bó hoa. Markup / giảm giá / xóa giảm cũng áp dụng giỏ & kệ (một giá). Phạm vi: tất cả / đang bán / ẩn.",
     bulkDone: "Hàng loạt {action}: đã cập nhật {n} sản phẩm.",
     bulkError: "Lỗi giá hàng loạt — kiểm tra số liệu.",
     bulkScope: "Áp dụng cho",

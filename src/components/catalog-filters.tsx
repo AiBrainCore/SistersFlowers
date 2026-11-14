@@ -15,6 +15,8 @@ import type {
   CatalogStyle,
 } from "@/lib/products";
 import type { AttributePublic } from "@/lib/catalog-attributes";
+import { PRODUCT_TYPES } from "@/lib/product-types";
+import { productUsesSizeLadder } from "@/lib/product-sizes";
 
 const SIZE_OPTIONS: CatalogSizeBand[] = ["mini", "classic", "grand"];
 const STYLE_OPTIONS: CatalogStyle[] = [
@@ -24,6 +26,10 @@ const STYLE_OPTIONS: CatalogStyle[] = [
   "ribbon",
   "wrapped",
 ];
+/** Shop type chips — bouquet, basket, congrats stand (hide empty funeral/tray for now). */
+const TYPE_CHIPS = PRODUCT_TYPES.filter((t) =>
+  ["bouquet", "flower-basket", "stand-congrats"].includes(t.slug),
+);
 const ACCENT_OPTIONS = [
   { id: "blush", swatch: "#f0d5d2" },
   { id: "rose", swatch: "#9b3d45" },
@@ -53,6 +59,7 @@ export function CatalogFilters({
   const [panelOpen, setPanelOpen] = useState(false);
   const [q, setQ] = useState(initial.q || "");
   const [category, setCategory] = useState(initial.category || "");
+  const [productType, setProductType] = useState(initial.productType || "");
   const [sort, setSort] = useState(initial.sort || "featured");
   const [size, setSize] = useState(initial.size || "");
   const [accent, setAccent] = useState(initial.accent || "");
@@ -67,9 +74,12 @@ export function CatalogFilters({
     ) as CategoryPublic[];
   }, [categories]);
 
+  const showSizeFilter = productUsesSizeLadder(productType || "bouquet");
+
   function buildUrl(next?: {
     q?: string;
     category?: string;
+    productType?: string;
     sort?: string;
     size?: string;
     accent?: string;
@@ -80,6 +90,7 @@ export function CatalogFilters({
     const params = new URLSearchParams();
     const qv = next?.q ?? q;
     const cat = next?.category ?? category;
+    const typeV = next?.productType ?? productType;
     const sv = next?.sort ?? sort;
     const sizeV = next?.size ?? size;
     const accentV = next?.accent ?? accent;
@@ -88,9 +99,11 @@ export function CatalogFilters({
     const colorV = next?.color ?? color;
     if (qv.trim()) params.set("q", qv.trim());
     if (cat) params.set("category", cat);
-    if (initial.productType) params.set("type", initial.productType);
+    if (typeV) params.set("type", typeV);
     if (sv && sv !== "featured") params.set("sort", sv);
-    if (sizeV) params.set("size", sizeV);
+    if (sizeV && productUsesSizeLadder(typeV || "bouquet")) {
+      params.set("size", sizeV);
+    }
     if (accentV) params.set("accent", accentV);
     if (styleV) params.set("style", styleV);
     if (flowerV) params.set("flower", flowerV);
@@ -107,6 +120,7 @@ export function CatalogFilters({
   function clearAll() {
     setQ("");
     setCategory("");
+    setProductType("");
     setSort("featured");
     setSize("");
     setAccent("");
@@ -120,6 +134,7 @@ export function CatalogFilters({
   /** Badge counts panel filters only — search lives on the shop toolbar. */
   const activeCount = [
     initial.category,
+    initial.productType,
     initial.size,
     initial.accent,
     initial.style,
@@ -131,6 +146,7 @@ export function CatalogFilters({
   const hasActiveChips = Boolean(
     initial.q ||
       initial.category ||
+      initial.productType ||
       initial.size ||
       initial.accent ||
       initial.style ||
@@ -148,6 +164,41 @@ export function CatalogFilters({
 
   return (
     <div className="mt-4 space-y-3">
+      <div className="flex flex-wrap gap-2">
+        <button
+          type="button"
+          onClick={() => {
+            setProductType("");
+            setSize("");
+            apply({ productType: "", size: "" });
+          }}
+          className={checkClass(!productType)}
+        >
+          {t.typeAll}
+        </button>
+        {TYPE_CHIPS.map((row) => {
+          const on = productType === row.slug;
+          return (
+            <button
+              key={row.slug}
+              type="button"
+              onClick={() => {
+                const next = on ? "" : row.slug;
+                setProductType(next);
+                if (!productUsesSizeLadder(next || "bouquet")) setSize("");
+                apply({
+                  productType: next,
+                  size: productUsesSizeLadder(next || "bouquet") ? size : "",
+                });
+              }}
+              className={checkClass(on)}
+            >
+              {locale === "vi" ? row.nameVi : row.nameEn}
+            </button>
+          );
+        })}
+      </div>
+
       <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="text-sm font-medium text-forest">
           {t.results.replace("{count}", String(resultCount))}
@@ -191,6 +242,23 @@ export function CatalogFilters({
               onClear={() => {
                 setCategory("");
                 apply({ category: "" });
+              }}
+            />
+          ) : null}
+          {initial.productType ? (
+            <ActiveChip
+              label={
+                TYPE_CHIPS.find((r) => r.slug === initial.productType)
+                  ? locale === "vi"
+                    ? TYPE_CHIPS.find((r) => r.slug === initial.productType)!
+                        .nameVi
+                    : TYPE_CHIPS.find((r) => r.slug === initial.productType)!
+                        .nameEn
+                  : initial.productType
+              }
+              onClear={() => {
+                setProductType("");
+                apply({ productType: "" });
               }}
             />
           ) : null}
@@ -376,6 +444,7 @@ export function CatalogFilters({
               </FilterGroup>
             ) : null}
 
+            {showSizeFilter ? (
             <FilterGroup title={t.sizeLabel}>
               <div className="flex flex-wrap gap-2">
                 {SIZE_OPTIONS.map((id) => {
@@ -394,6 +463,7 @@ export function CatalogFilters({
                 })}
               </div>
             </FilterGroup>
+            ) : null}
 
             <FilterGroup title={t.colorMoodLabel}>
               <div className="flex flex-wrap gap-2">

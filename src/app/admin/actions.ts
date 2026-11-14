@@ -16,7 +16,12 @@ import {
   parseOptionalVnd,
   upsertProductCityStock,
 } from "@/lib/product-city";
-import { syncListPrice, type SizePriceMap } from "@/lib/product-sizes";
+import {
+  productUsesSizeLadder,
+  syncListPrice,
+  type SizePriceMap,
+} from "@/lib/product-sizes";
+import { isProductTypeSlug } from "@/lib/product-types";
 import {
   bulkApplyDiscountPercent,
   bulkApplyMarkupPercent,
@@ -121,11 +126,24 @@ export async function saveProductAction(formData: FormData) {
   const id = String(formData.get("id") || "");
   const nameEn = String(formData.get("nameEn") || "").trim();
   const nameVi = String(formData.get("nameVi") || "").trim();
-  const sizePrices = readBaseSizePrices(formData);
-  const compareAts = readCompareAtPrices(formData);
+  const productTypeRaw = String(formData.get("productType") || "bouquet").trim();
+  const productType = isProductTypeSlug(productTypeRaw)
+    ? productTypeRaw
+    : "bouquet";
+  const usesLadder = productUsesSizeLadder(productType);
+  const sizePrices = usesLadder
+    ? readBaseSizePrices(formData)
+    : { sm: null, md: null, lg: null, grand: null };
+  const compareAts = usesLadder
+    ? readCompareAtPrices(formData)
+    : { sm: null, md: null, lg: null, grand: null };
   const legacyPrice = Number(formData.get("price") || 0);
-  const price = syncListPrice(sizePrices, legacyPrice);
-  const compareAtPrice = parseOptionalVnd(formData.get("compareAtPrice"));
+  const price = usesLadder
+    ? syncListPrice(sizePrices, legacyPrice)
+    : Math.round(legacyPrice);
+  const compareAtPrice = usesLadder
+    ? parseOptionalVnd(formData.get("compareAtPrice"))
+    : parseOptionalVnd(formData.get("compareAtPrice"));
   let slug = String(formData.get("slug") || "").trim() || slugify(nameEn || nameVi);
   const accent = String(formData.get("accent") || "rose");
   const tagEn = String(formData.get("tagEn") || "Wrapped bouquet");
@@ -208,6 +226,7 @@ export async function saveProductAction(formData: FormData) {
       data: {
         slug,
         price,
+        productType,
         ...sizeData,
         image,
         accent,
@@ -231,6 +250,7 @@ export async function saveProductAction(formData: FormData) {
       data: {
         slug,
         price,
+        productType,
         ...sizeData,
         image,
         accent,
@@ -290,10 +310,17 @@ export async function quickSaveProductCityPricesAction(formData: FormData) {
   const current = await prisma.product.findUnique({ where: { id } });
   if (!current) redirect("/admin/products");
 
-  const sizePrices = readBaseSizePrices(formData);
-  const compareAts = readCompareAtPrices(formData);
+  const usesLadder = productUsesSizeLadder(current.productType);
+  const sizePrices = usesLadder
+    ? readBaseSizePrices(formData)
+    : { sm: null, md: null, lg: null, grand: null };
+  const compareAts = usesLadder
+    ? readCompareAtPrices(formData)
+    : { sm: null, md: null, lg: null, grand: null };
   const legacyPrice = Number(formData.get("price") || current.price || 0);
-  const price = syncListPrice(sizePrices, legacyPrice);
+  const price = usesLadder
+    ? syncListPrice(sizePrices, legacyPrice)
+    : Math.round(legacyPrice);
   if (!price || !Number.isFinite(price)) {
     redirect("/admin/products?error=price");
   }

@@ -1,11 +1,15 @@
+"use client";
+
 import Image from "next/image";
+import { useState } from "react";
 import { saveProductAction } from "@/app/admin/actions";
 import type { Product } from "@/data/products";
 import type { AdminDictionary, AdminLocale } from "@/i18n/admin-dictionaries";
 import type { CategoryPublic } from "@/lib/categories";
 import type { AttributePublic } from "@/lib/catalog-attributes";
 import type { CityPriceSlug } from "@/lib/product-city";
-import { PRODUCT_SIZES } from "@/lib/product-sizes";
+import { PRODUCT_SIZES, productUsesSizeLadder } from "@/lib/product-sizes";
+import { PRODUCT_TYPES } from "@/lib/product-types";
 
 type PricingCity = {
   slug: CityPriceSlug | string;
@@ -28,6 +32,10 @@ export function ProductForm({
   cities: PricingCity[];
   attributes?: AttributePublic[];
 }) {
+  const [productType, setProductType] = useState(
+    product?.productType || "bouquet",
+  );
+  const usesLadder = productUsesSizeLadder(productType);
   const selected = new Set((product?.categories || []).map((c) => c.id));
   const selectedAttrs = new Set(
     (product?.attributes || []).map((a) => a.slug),
@@ -65,17 +73,26 @@ export function ProductForm({
             placeholder={t.products.slugPlaceholder}
           />
         </label>
-        {/* List/sort price — auto-synced from min S/M/L on save. */}
-        <input
-          type="hidden"
-          name="price"
-          defaultValue={product?.price ?? 450000}
-        />
+        <label className="admin-field">
+          <span>{t.products.productType}</span>
+          <select
+            name="productType"
+            value={productType}
+            onChange={(e) => setProductType(e.target.value)}
+          >
+            {PRODUCT_TYPES.map((row) => (
+              <option key={row.slug} value={row.slug}>
+                {locale === "vi" ? row.nameVi : row.nameEn}
+              </option>
+            ))}
+          </select>
+        </label>
       </div>
       <p style={{ fontSize: 13, opacity: 0.7, marginTop: -6, marginBottom: 14 }}>
-        {t.products.basePriceHint}
+        {usesLadder ? t.products.basePriceHint : t.products.singlePriceHint}
       </p>
 
+      {usesLadder ? (
       <fieldset className="admin-section" style={{ marginBottom: 16 }}>
         <legend style={{ fontSize: 12, letterSpacing: "0.08em", textTransform: "uppercase", opacity: 0.7, marginBottom: 8 }}>
           {t.products.sizePricing}
@@ -83,6 +100,11 @@ export function ProductForm({
         <p style={{ fontSize: 13, opacity: 0.7, marginTop: 0, marginBottom: 12 }}>
           {t.products.sizePricingHint}
         </p>
+        <input
+          type="hidden"
+          name="price"
+          defaultValue={product?.price ?? 450000}
+        />
         <div style={{ overflowX: "auto" }}>
           <table className="admin-table" style={{ minWidth: 640 }}>
             <thead>
@@ -201,6 +223,75 @@ export function ProductForm({
           {t.products.cityPricingHint}
         </p>
       </fieldset>
+      ) : (
+      <fieldset className="admin-section" style={{ marginBottom: 16 }}>
+        <legend style={{ fontSize: 12, letterSpacing: "0.08em", textTransform: "uppercase", opacity: 0.7, marginBottom: 8 }}>
+          {t.products.singlePrice}
+        </legend>
+        <p style={{ fontSize: 13, opacity: 0.7, marginTop: 0, marginBottom: 12 }}>
+          {t.products.singlePriceHint}
+        </p>
+        <div className="admin-grid-2">
+          <label className="admin-field">
+            <span>{t.products.saleShort}</span>
+            <input
+              name="price"
+              type="number"
+              min={0}
+              step={1000}
+              required
+              defaultValue={product?.price ?? 600000}
+            />
+          </label>
+          <label className="admin-field">
+            <span>{t.products.wasShort}</span>
+            <input
+              name="compareAtPrice"
+              type="number"
+              min={0}
+              step={1000}
+              placeholder="—"
+              defaultValue={product?.compareAtPrice ?? ""}
+              className="admin-input-was"
+            />
+          </label>
+        </div>
+        <div
+          style={{
+            marginTop: 14,
+            display: "flex",
+            flexWrap: "wrap",
+            gap: 16,
+          }}
+        >
+          {cities.map((city) => {
+            const stock = stockBySlug.get(city.slug);
+            return (
+              <label
+                key={city.slug}
+                className="admin-field"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  marginBottom: 0,
+                }}
+              >
+                <input
+                  type="checkbox"
+                  name={`cityAvailable_${city.slug}`}
+                  defaultChecked={stock?.available ?? true}
+                  style={{ width: "auto" }}
+                />
+                <span style={{ margin: 0 }}>
+                  {t.products.cityAvailable}: {cityLabel(city)}
+                </span>
+              </label>
+            );
+          })}
+        </div>
+      </fieldset>
+      )}
 
       <div className="admin-grid-2">
         <label className="admin-field">

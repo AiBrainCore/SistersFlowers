@@ -65,8 +65,9 @@ export async function bulkSetAbsoluteSizePrices(opts: {
   const lg = roundVnd(opts.lg);
   const listPrice = syncListPrice({ sm, md, lg }, sm);
 
+  // Absolute S/M/L ladder is bouquet-only — never overwrite single-size baskets/stands.
   const result = await prisma.product.updateMany({
-    where: scopeWhere(opts.scope),
+    where: { ...scopeWhere(opts.scope), productType: "bouquet" },
     data: {
       price: listPrice,
       priceSm: sm,

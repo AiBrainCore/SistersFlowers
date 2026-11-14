@@ -9,7 +9,8 @@ import { ProductsBulkPricing } from "@/components/admin/products-bulk-pricing";
 import { listAdminProducts } from "@/lib/products";
 import { listCitiesForPricing } from "@/lib/product-city";
 import { getAdminT } from "@/lib/admin-locale";
-import { PRODUCT_SIZES } from "@/lib/product-sizes";
+import { PRODUCT_SIZES, productUsesSizeLadder } from "@/lib/product-sizes";
+import { getProductType } from "@/lib/product-types";
 
 function fold(value: string) {
   return value
@@ -150,6 +151,11 @@ export default async function AdminProductsPage({
                     {locale === "vi" ? product.names.en : product.names.vi}
                   </span>
                   <span className="admin-product-slug">
+                    {(() => {
+                      const typeMeta = getProductType(product.productType || "bouquet");
+                      return locale === "vi" ? typeMeta.nameVi : typeMeta.nameEn;
+                    })()}
+                    {" · "}
                     {product.slug}
                     {" · "}
                     {product.published
@@ -183,8 +189,10 @@ export default async function AdminProductsPage({
                 <input type="hidden" name="id" value={product.id} />
                 <input type="hidden" name="returnQ" value={q} />
                 <input type="hidden" name="returnStatus" value={status} />
-                <input type="hidden" name="price" value={product.price} />
 
+                {productUsesSizeLadder(product.productType) ? (
+                <>
+                <input type="hidden" name="price" value={product.price} />
                 <div className="admin-size-grid">
                   {PRODUCT_SIZES.map((size) => {
                     const sale = product.sizePrices?.[size.id] ?? "";
@@ -241,6 +249,40 @@ export default async function AdminProductsPage({
                     );
                   })}
                 </div>
+                </>
+                ) : (
+                <div className="admin-size-grid">
+                  <div className="admin-size-cell">
+                    <div className="admin-price-label">
+                      <span>{t.products.singlePrice}</span>
+                    </div>
+                    <div className="admin-size-inputs">
+                      <label>
+                        <span>{t.products.saleShort}</span>
+                        <input
+                          name="price"
+                          type="number"
+                          min={0}
+                          step={1000}
+                          defaultValue={product.price}
+                        />
+                      </label>
+                      <label>
+                        <span>{t.products.wasShort}</span>
+                        <input
+                          name="compareAtPrice"
+                          type="number"
+                          min={0}
+                          step={1000}
+                          placeholder="—"
+                          defaultValue={product.compareAtPrice ?? ""}
+                          className="admin-input-was"
+                        />
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                )}
 
                 <div className="admin-city-sell-row">
                   {cities.map((city) => {
