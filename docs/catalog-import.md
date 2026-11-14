@@ -62,3 +62,18 @@ IMPORT_LIMIT=50
 - Legacy mock products with `/bouquets/...` images are **unpublished**
 - Re-running is safe: matches on `sourceKey` (original filename) and upserts
 - Admin can rename / set DN–DL prices later
+- Landscape phone shots are rotated **90° CW** on import so flower heads point up
+
+## Fix orientation on already-imported bouquets
+
+```bash
+node scripts/upright-bouquet-orient.mjs
+```
+
+Dry-run / limit:
+
+```bash
+ORIENT_DRY_RUN=1 ORIENT_LIMIT=5 node scripts/upright-bouquet-orient.mjs
+```
+
+Updates Storage `main.webp` / `main.jpg` in place and cache-busts `Product.image` URLs (`?v=upright1`).

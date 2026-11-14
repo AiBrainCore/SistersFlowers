@@ -125,24 +125,35 @@ async function listImages(dir) {
 }
 
 async function encodePair(inputPath) {
-  const base = sharp(inputPath, { failOn: "none" }).rotate();
-  const meta = await base.metadata();
+  // Phone studio shots are often landscape with blooms on the left —
+  // rotate 90° CW so flower heads point up in the catalog.
+  const oriented = sharp(inputPath, { failOn: "none" }).rotate();
+  const exifMeta = await oriented.metadata();
+  const uprightDeg =
+    (exifMeta.width || 0) > (exifMeta.height || 0) ? 90 : 0;
+
+  const afterOrient = sharp(inputPath, { failOn: "none" })
+    .rotate()
+    .rotate(uprightDeg || 0);
+  const meta = await afterOrient.metadata();
   const width = meta.width || MAX_EDGE;
   const height = meta.height || MAX_EDGE;
   const scale = Math.min(1, MAX_EDGE / Math.max(width, height));
   const targetW = Math.max(1, Math.round(width * scale));
 
+  async function source() {
+    let p = sharp(inputPath, { failOn: "none" }).rotate();
+    if (uprightDeg) p = p.rotate(uprightDeg);
+    return p.resize({ width: targetW, withoutEnlargement: true });
+  }
+
   async function encodeWebp(quality) {
-    return sharp(inputPath, { failOn: "none" })
-      .rotate()
-      .resize({ width: targetW, withoutEnlargement: true })
+    return (await source())
       .webp({ quality, effort: 4 })
       .toBuffer({ resolveWithObject: true });
   }
   async function encodeJpeg(quality) {
-    return sharp(inputPath, { failOn: "none" })
-      .rotate()
-      .resize({ width: targetW, withoutEnlargement: true })
+    return (await source())
       .jpeg({ quality, mozjpeg: true })
       .toBuffer({ resolveWithObject: true });
   }
