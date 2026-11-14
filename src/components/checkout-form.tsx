@@ -164,6 +164,9 @@ export function CheckoutForm({
           />
           <Field label={dictionary.checkout.room} name="roomNumber" />
         </div>
+        <p className="text-xs leading-6 text-moss">
+          {dictionary.checkout.hotelHint}
+        </p>
         <label className="block">
           <span className="text-[11px] tracking-[0.16em] text-moss uppercase">
             {dictionary.checkout.notes}
@@ -172,6 +175,7 @@ export function CheckoutForm({
             name="notes"
             rows={4}
             defaultValue={hints.notes}
+            placeholder={dictionary.checkout.notesPlaceholder}
             className="mt-2 w-full rounded-2xl border border-forest/15 bg-white/70 px-4 py-3 text-sm outline-none focus:border-rose"
           />
         </label>

@@ -21,6 +21,15 @@ export default async function HotelsPage({
         </p>
         <h1 className="serif mt-3 text-5xl text-forest">{t.hotels.title}</h1>
         <p className="mt-5 max-w-md text-sm leading-7 text-moss">{t.hotels.intro}</p>
+        <ul className="mt-8 max-w-md space-y-3 text-sm leading-6 text-moss">
+          <li className="border-l-2 border-citrus/50 pl-3">{t.hotels.pointPhoto}</li>
+          <li className="border-l-2 border-citrus/50 pl-3">
+            {t.hotels.pointReception}
+          </li>
+          <li className="border-l-2 border-citrus/50 pl-3">
+            {t.hotels.pointOverseas}
+          </li>
+        </ul>
         <div className="relative mt-10 h-80 overflow-hidden rounded-[2.5rem]">
           <Image src={image} alt="" fill className="object-cover" sizes="50vw" />
         </div>

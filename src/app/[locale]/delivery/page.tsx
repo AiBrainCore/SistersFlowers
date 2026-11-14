@@ -4,6 +4,10 @@ import { isLocale } from "@/i18n/config";
 import { getStorefrontDictionary } from "@/lib/storefront";
 import { DeliveryCalculator } from "@/components/delivery-calculator";
 import {
+  LaunchPromises,
+  deliveryLaunchPromises,
+} from "@/components/launch-promises";
+import {
   getDeliveryConfig,
   listActiveDeliveryZones,
 } from "@/lib/delivery-settings";
@@ -70,6 +74,11 @@ export default async function DeliveryPage({
           </div>
         ))}
       </div>
+
+      <LaunchPromises
+        className="mt-14"
+        items={deliveryLaunchPromises(t)}
+      />
 
       <div className="mt-12 flex flex-wrap gap-4">
         <Link
