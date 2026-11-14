@@ -104,6 +104,51 @@ body {
   font-family: var(--font-serif), "Times New Roman", serif;
 }
 
+.journal-article-body h2 {
+  font-family: var(--font-serif), "Times New Roman", serif;
+  font-size: 1.45rem;
+  line-height: 1.3;
+  color: var(--ink, #2d3a28);
+  margin: 1.75rem 0 0.75rem;
+}
+
+.journal-article-body h3 {
+  font-size: 1.05rem;
+  color: var(--ink, #2d3a28);
+  margin: 1.35rem 0 0.55rem;
+}
+
+.journal-article-body p {
+  margin: 0.85rem 0;
+}
+
+.journal-article-body a {
+  color: var(--citrus, #c24712);
+  text-underline-offset: 3px;
+}
+
+.journal-article-body a:hover {
+  text-decoration: underline;
+}
+
+.journal-article-body ul,
+.journal-article-body ol {
+  margin: 0.75rem 0;
+  padding-left: 1.25rem;
+}
+
+.journal-article-body ul {
+  list-style: disc;
+}
+
+.journal-article-body ol {
+  list-style: decimal;
+}
+
+.journal-article-body li {
+  margin: 0.35rem 0;
+}
+
 .glass {
   background: rgba(255, 247, 241, 0.86);
   border: 1px solid rgba(255, 255, 255, 0.7);

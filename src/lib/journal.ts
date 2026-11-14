@@ -24,6 +24,12 @@ export type JournalPostPublic = {
   bodyEn: string;
   bodyVi: string;
   coverImage: string | null;
+  coverAltEn: string;
+  coverAltVi: string;
+  seoTitleEn: string;
+  seoTitleVi: string;
+  seoDescriptionEn: string;
+  seoDescriptionVi: string;
   published: boolean;
   publishedAt: Date | null;
   sortOrder: number;
@@ -54,6 +60,12 @@ function toPublic(row: {
   bodyEn: string;
   bodyVi: string;
   coverImage: string | null;
+  coverAltEn?: string | null;
+  coverAltVi?: string | null;
+  seoTitleEn?: string | null;
+  seoTitleVi?: string | null;
+  seoDescriptionEn?: string | null;
+  seoDescriptionVi?: string | null;
   published: boolean;
   publishedAt: Date | null;
   sortOrder: number;
@@ -71,6 +83,12 @@ function toPublic(row: {
     bodyEn: row.bodyEn,
     bodyVi: row.bodyVi,
     coverImage: row.coverImage,
+    coverAltEn: row.coverAltEn || "",
+    coverAltVi: row.coverAltVi || "",
+    seoTitleEn: row.seoTitleEn || "",
+    seoTitleVi: row.seoTitleVi || "",
+    seoDescriptionEn: row.seoDescriptionEn || "",
+    seoDescriptionVi: row.seoDescriptionVi || "",
     published: row.published,
     publishedAt: row.publishedAt,
     sortOrder: row.sortOrder,

@@ -445,17 +445,37 @@ model JournalPost {
   titleVi     String
   excerptEn   String    @default("")
   excerptVi   String    @default("")
+  /// HTML from TipTap (sanitized on save)
   bodyEn      String    @default("")
   bodyVi      String    @default("")
   coverImage  String?
+  coverAltEn  String    @default("")
+  coverAltVi  String    @default("")
+  seoTitleEn  String    @default("")
+  seoTitleVi  String    @default("")
+  seoDescriptionEn String @default("")
+  seoDescriptionVi String @default("")
   published   Boolean   @default(false)
   publishedAt DateTime?
   sortOrder   Int       @default(0)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+  revisions   JournalPostRevision[]
 
   @@index([published, publishedAt])
   @@index([kind])
+}
+
+/// Lightweight revision snapshots for recovery (last N kept by app).
+model JournalPostRevision {
+  id        String   @id @default(cuid())
+  postId    String
+  post      JournalPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  snapshot  Json
+  note      String   @default("")
+  createdAt DateTime @default(now())
+
+  @@index([postId, createdAt])
 }
 
 /// Lightweight delivery audit for transactional email (no SMTP secrets).
