@@ -1,3 +1,9 @@
+/**
+ * @deprecated Demo bouquets only — used by prisma/seed.ts when the DB is empty.
+ * Real catalog is bouquet-img-* from Supabase import. Do not re-add these demos
+ * once a catalog exists (seed already skips). Prefer deleting demos via
+ * scripts/delete-demo-products.mjs.
+ */
 export type Product = {
   slug: string;
   price: number;
