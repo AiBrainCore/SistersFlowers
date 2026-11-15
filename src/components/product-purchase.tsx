@@ -118,11 +118,8 @@ export function ProductPurchase({
                   <span>
                     <span className="block text-sm text-forest">{name}</span>
                     {addon.kind === "partner" && addon.partnerName ? (
-                      <span className="mt-1 block text-[11px] tracking-[0.08em] text-rose uppercase">
+                      <span className="mt-1 block text-[11px] text-moss">
                         {addon.partnerName}
-                        {addon.partnerCategory
-                          ? ` · ${addon.partnerCategory}`
-                          : ""}
                       </span>
                     ) : null}
                     {description ? (

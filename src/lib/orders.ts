@@ -107,17 +107,16 @@ export function buildWhatsAppUrl(
   ].filter(Boolean) as string[];
 
   if (vouchers.length) {
-    lines.push("", "Voucher codes (show at partner):");
+    lines.push("", "Treat codes (show when you arrive):");
     for (const voucher of vouchers) {
       const expiry = voucher.expiresAt
-        ? ` · valid until ${voucher.expiresAt.toISOString().slice(0, 10)}`
+        ? ` · enjoy until ${voucher.expiresAt.toISOString().slice(0, 10)}`
         : "";
-      const partner = voucher.partnerName ? ` @ ${voucher.partnerName}` : "";
+      const partner = voucher.partnerName ? ` · ${voucher.partnerName}` : "";
       lines.push(
         `- ${voucher.code}: ${formatVnd(voucher.faceValue, payload.locale)}${partner}${expiry}`,
       );
     }
-    lines.push("Partner checks code at /voucher");
   }
 
   const text = encodeURIComponent(lines.join("\n"));
