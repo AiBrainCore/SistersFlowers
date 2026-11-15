@@ -7,7 +7,7 @@ import type { Dictionary } from "@/i18n/dictionaries";
 import {
   catalogQueryToSearchParams,
   type CatalogQuery,
-} from "@/lib/products";
+} from "@/lib/catalog-query";
 
 /** Inline shop search — keeps other catalog filters when submitting. */
 export function ShopSearch({
