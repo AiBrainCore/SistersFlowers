@@ -64,6 +64,7 @@ export default async function ContactPage({
                 messenger: c.messenger,
                 tiktok: c.tiktok,
                 whatsapp: c.whatsapp,
+                zalo: c.zalo,
               }}
             />
           ))}

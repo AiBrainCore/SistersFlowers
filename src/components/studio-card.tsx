@@ -2,7 +2,9 @@ import Image from "next/image";
 import type { Locale } from "@/i18n/config";
 import {
   studioMapsUrl,
+  studioPrimaryPhone,
   studioWhatsAppDigits,
+  studioZaloUrl,
   type StudioContact,
 } from "@/lib/studio-contacts";
 
@@ -13,6 +15,7 @@ type SocialLabels = {
   messenger: string;
   tiktok: string;
   whatsapp: string;
+  zalo: string;
 };
 
 export function StudioCard({
@@ -33,7 +36,7 @@ export function StudioCard({
 }) {
   const name = locale === "vi" ? studio.nameVi : studio.nameEn;
   const address = locale === "vi" ? studio.addressVi : studio.addressEn;
-  const primaryPhone = studio.phones[0]!;
+  const primaryPhone = studioPrimaryPhone(studio);
   const mapsHref = studioMapsUrl(address);
   const waDigits = studioWhatsAppDigits(studio);
 
@@ -57,6 +60,11 @@ export function StudioCard({
       key: "whatsapp",
       href: `https://wa.me/${waDigits}`,
       label: socialLabels?.whatsapp || "WhatsApp",
+    },
+    {
+      key: "zalo",
+      href: studioZaloUrl(studio),
+      label: socialLabels?.zalo || "Zalo",
     },
   ];
 

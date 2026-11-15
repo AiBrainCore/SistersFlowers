@@ -46,7 +46,7 @@ export function studioPhoneLine(studio: StudioContact) {
 }
 
 export function studioWhatsAppUrl(studio: StudioContact) {
-  const digits = studio.phones[0]?.digits || studio.phones[1]?.digits;
+  const digits = studio.primaryDigits || studio.phones[0]?.digits;
   return digits ? `https://wa.me/${digits}` : "https://wa.me/84327453536";
 }
 
