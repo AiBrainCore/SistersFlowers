@@ -461,9 +461,9 @@ export const vi = {
     studios: "Ghé thăm",
     directions: "Chỉ đường",
     call: "Gọi",
-    seo: "Sisters Flowers là tiệm hoa thủ công tại Đà Nẵng và Đà Lạt — bó hoa tươi, thiết kế theo yêu cầu, hoa cưới và giao hàng trong ngày.",
+    seo: "Chúng tôi là Sisters Flowers — studio nhỏ gói hoa tươi tại Đà Nẵng và Đà Lạt. Bó hoa cho niềm vui thường ngày, đám cưới, và những khoảnh khắc ở giữa.",
     seoExtra:
-      "Đặt online bằng tiếng Việt hoặc English, rồi nhận tại studio hoặc giao tận nơi ở cả hai thành phố.",
+      "Xem bằng tiếng Việt hoặc English, rồi nhận tại studio hoặc chúng tôi mang hoa đến cho bạn.",
     colShop: "Cửa hàng",
     colStudio: "Studio",
     colLegal: "Pháp lý",

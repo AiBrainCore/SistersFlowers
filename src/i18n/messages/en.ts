@@ -460,9 +460,9 @@ export const en = {
     studios: "Find us",
     directions: "Directions",
     call: "Call",
-    seo: "Sisters Flowers is a handcrafted florist in Da Nang and Da Lat, Vietnam — fresh bouquets, custom arrangements, wedding flowers, and same-day local delivery.",
+    seo: "We’re Sisters Flowers — a small studio wrapping fresh blooms in Da Nang and Da Lat. Bouquets for everyday joy, weddings, and the moments in between.",
     seoExtra:
-      "Order online in English or Vietnamese, then pick up in studio or have blooms delivered across both cities.",
+      "Browse in English or Vietnamese, then collect from the studio or we’ll bring the flowers to you.",
     colShop: "Shop",
     colStudio: "Studio",
     colLegal: "Legal",
