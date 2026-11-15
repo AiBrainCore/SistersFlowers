@@ -482,7 +482,13 @@ export const vi = {
     kicker: "Liên hệ",
     title: "Nhắn studio.",
     intro:
-      "Hai studio Sisters Flowers tại Đà Nẵng và Đà Lạt. Gọi, WhatsApp hoặc đến trực tiếp — English và tiếng Việt đều được chào đón.",
+      "Hai studio Sisters Flowers tại Đà Nẵng và Đà Lạt — gọi điện, nhắn Messenger hoặc WhatsApp, theo dõi Facebook và TikTok. English và tiếng Việt đều được chào đón.",
+    phonesLabel: "Điện thoại",
+    socialLabel: "Mạng xã hội",
+    facebook: "Facebook",
+    messenger: "Messenger",
+    tiktok: "TikTok",
+    whatsapp: "WhatsApp",
   },
   terms: {
     kicker: "Pháp lý",

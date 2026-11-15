@@ -54,7 +54,7 @@ export function studioMapsLink(studio: StudioContact, locale: Locale = "en") {
   return studioMapsUrl(studioAddress(studio, locale));
 }
 
-/** Brand socials — order: TikTok, Facebook, Instagram, WhatsApp, Zalo. */
+/** Brand socials — city-aware TikTok/Facebook when studio is known. */
 export function mailSocialLinks(citySlug?: string | null) {
   const studio = studioContactForCity(citySlug);
   const whatsapp =
@@ -66,7 +66,8 @@ export function mailSocialLinks(citySlug?: string | null) {
       label: "TikTok",
       href:
         process.env.MAIL_SOCIAL_TIKTOK?.trim() ||
-        "https://www.tiktok.com/@sistersflowers.vn",
+        studio?.socials.tiktok ||
+        "https://www.tiktok.com/@sisterflowerdanang",
       cid: "sf-social-tiktok",
       path: "/brand/social/tiktok.png",
     },
@@ -75,7 +76,8 @@ export function mailSocialLinks(citySlug?: string | null) {
       label: "Facebook",
       href:
         process.env.MAIL_SOCIAL_FACEBOOK?.trim() ||
-        "https://www.facebook.com/sistersflowers92",
+        studio?.socials.facebook ||
+        "https://www.facebook.com/sistersflowers.Danang",
       cid: "sf-social-facebook",
       path: "/brand/social/facebook.png",
     },

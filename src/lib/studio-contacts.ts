@@ -11,6 +11,13 @@ export type StudioPhone = {
   digits: string;
 };
 
+export type StudioSocials = {
+  facebook: string;
+  /** Facebook Messenger deep link for the page */
+  messenger: string;
+  tiktok: string;
+};
+
 export type StudioContact = {
   slug: "danang" | "dalat";
   nameEn: string;
@@ -20,9 +27,10 @@ export type StudioContact = {
   /** Studio atmosphere photo for footer / contact cards */
   image: string;
   phones: StudioPhone[];
+  socials: StudioSocials;
 };
 
-/** Public contact cards for the footer — one block per shop. */
+/** Public contact cards — one block per shop. */
 export const STUDIO_CONTACTS: StudioContact[] = [
   {
     slug: "danang",
@@ -35,6 +43,11 @@ export const STUDIO_CONTACTS: StudioContact[] = [
       { display: "0904 985 761", digits: "84904985761" },
       { display: "032 745 3536", digits: "84327453536" },
     ],
+    socials: {
+      facebook: "https://www.facebook.com/sistersflowers.Danang",
+      messenger: "https://m.me/sistersflowers.Danang",
+      tiktok: "https://www.tiktok.com/@sisterflowerdanang",
+    },
   },
   {
     slug: "dalat",
@@ -47,10 +60,23 @@ export const STUDIO_CONTACTS: StudioContact[] = [
       { display: "0904 985 761", digits: "84904985761" },
       { display: "0964 889 329", digits: "84964889329" },
     ],
+    socials: {
+      facebook: "https://www.facebook.com/Sistersflowers.DaLat",
+      messenger: "https://m.me/Sistersflowers.DaLat",
+      tiktok: "https://www.tiktok.com/@cogaibanbong94",
+    },
   },
 ];
 
 /** Google Maps search URL for a studio address (opens exact place search). */
 export function studioMapsUrl(address: string) {
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+}
+
+export function studioWhatsAppDigits(studio: StudioContact) {
+  // Prefer the second line when it is the local WhatsApp (Da Nang 032…).
+  const wa =
+    studio.phones.find((p) => p.digits === STUDIO_PHONE_DIGITS) ||
+    studio.phones[0];
+  return wa?.digits || STUDIO_PHONE_DIGITS;
 }
