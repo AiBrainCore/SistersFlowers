@@ -9,6 +9,10 @@ import {
 } from "@/i18n/config";
 import { homeMarkdown } from "@/lib/home-markdown";
 
+/** Keep in sync with `CITY_COOKIE` in `@/lib/locations`. */
+const CITY_COOKIE = "sf_city";
+const CITY_QUERY_SLUGS = new Set(["danang", "dalat"]);
+
 function prefersMarkdown(accept: string | null) {
   if (!accept) return false;
   const parts = accept.split(",").map((part) => part.trim().toLowerCase());
@@ -111,6 +115,19 @@ export async function middleware(request: NextRequest) {
     const current = request.cookies.get(LOCALE_COOKIE)?.value;
     if (current !== pathLocale) {
       response.cookies.set(LOCALE_COOKIE, pathLocale, {
+        path: "/",
+        maxAge: 60 * 60 * 24 * 365,
+        sameSite: "lax",
+      });
+    }
+    // Footer / SEO city links: /shop?city=danang switches the active studio.
+    const cityQuery = request.nextUrl.searchParams
+      .get("city")
+      ?.trim()
+      .toLowerCase();
+    if (cityQuery && CITY_QUERY_SLUGS.has(cityQuery)) {
+      request.cookies.set(CITY_COOKIE, cityQuery);
+      response.cookies.set(CITY_COOKIE, cityQuery, {
         path: "/",
         maxAge: 60 * 60 * 24 * 365,
         sameSite: "lax",
