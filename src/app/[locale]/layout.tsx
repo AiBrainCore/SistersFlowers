@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import type { Locale } from "@/i18n/config";
 import { isLocale } from "@/i18n/config";
@@ -11,6 +12,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { CartDrawer } from "@/components/cart-drawer";
 import { LocationBanner } from "@/components/location-banner";
 import { LocaleHtmlLang } from "@/components/locale-html-lang";
+import { CityQuerySync } from "@/components/city-query-sync";
 import { ShopBotRoot } from "@/components/shop-bot/ShopBotRoot";
 import { WebMcpTools } from "@/components/webmcp-tools";
 import { STUDIO_PHONE_DIGITS } from "@/lib/studio-contacts";
@@ -34,6 +36,9 @@ export default async function LocaleLayout({
   return (
     <CartProvider>
       <LocationProvider cities={cities} activeCity={activeCity}>
+        <Suspense fallback={null}>
+          <CityQuerySync />
+        </Suspense>
         <LocaleHtmlLang locale={locale as Locale} />
         <div className="flex min-h-full flex-col">
           <SiteHeader

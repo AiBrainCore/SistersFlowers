@@ -1,4 +1,4 @@
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { prisma } from "@/lib/db";
 export {
   STUDIO_CONTACTS,
@@ -9,10 +9,19 @@ export {
   type StudioContact,
   type StudioPhone,
 } from "@/lib/studio-contacts";
-
-export const CITY_COOKIE = "sf_city";
-/** Da Nang is the primary / first studio in the network UI. */
-export const DEFAULT_CITY_SLUG = "danang";
+export {
+  CITY_COOKIE,
+  CITY_HEADER,
+  CITY_QUERY_SLUGS,
+  DEFAULT_CITY_SLUG,
+  isCityQuerySlug,
+} from "@/lib/city-slugs";
+import {
+  CITY_COOKIE,
+  CITY_HEADER,
+  DEFAULT_CITY_SLUG,
+  isCityQuerySlug,
+} from "@/lib/city-slugs";
 
 export type CityStatus = "open" | "coming_soon" | "inactive";
 
@@ -246,7 +255,11 @@ export async function readCitySlugFromCookie(): Promise<string | null> {
 }
 
 export async function getActiveCity(): Promise<CityPublic> {
-  const slug = await readCitySlugFromCookie();
+  const headerStore = await headers();
+  const fromHeader = headerStore.get(CITY_HEADER)?.trim().toLowerCase() || null;
+  const slug = isCityQuerySlug(fromHeader)
+    ? fromHeader
+    : await readCitySlugFromCookie();
   return resolveActiveCity(slug);
 }
 

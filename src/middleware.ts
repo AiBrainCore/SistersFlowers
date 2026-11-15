@@ -9,9 +9,11 @@ import {
 } from "@/i18n/config";
 import { homeMarkdown } from "@/lib/home-markdown";
 
-/** Keep in sync with `CITY_COOKIE` in `@/lib/locations`. */
-const CITY_COOKIE = "sf_city";
-const CITY_QUERY_SLUGS = new Set(["danang", "dalat"]);
+import {
+  CITY_COOKIE,
+  CITY_HEADER,
+  isCityQuerySlug,
+} from "@/lib/city-slugs";
 
 function prefersMarkdown(accept: string | null) {
   if (!accept) return false;
@@ -109,6 +111,15 @@ export async function middleware(request: NextRequest) {
     // Keep preference in sync when browsing a locale URL directly.
     const requestHeaders = new Headers(request.headers);
     requestHeaders.set("x-pathname", pathname);
+    // Footer / SEO city links: /shop?city=danang switches the active studio.
+    const cityQuery = request.nextUrl.searchParams
+      .get("city")
+      ?.trim()
+      .toLowerCase();
+    if (isCityQuerySlug(cityQuery)) {
+      requestHeaders.set(CITY_HEADER, cityQuery);
+      request.cookies.set(CITY_COOKIE, cityQuery);
+    }
     const response = NextResponse.next({
       request: { headers: requestHeaders },
     });
@@ -120,13 +131,7 @@ export async function middleware(request: NextRequest) {
         sameSite: "lax",
       });
     }
-    // Footer / SEO city links: /shop?city=danang switches the active studio.
-    const cityQuery = request.nextUrl.searchParams
-      .get("city")
-      ?.trim()
-      .toLowerCase();
-    if (cityQuery && CITY_QUERY_SLUGS.has(cityQuery)) {
-      request.cookies.set(CITY_COOKIE, cityQuery);
+    if (isCityQuerySlug(cityQuery)) {
       response.cookies.set(CITY_COOKIE, cityQuery, {
         path: "/",
         maxAge: 60 * 60 * 24 * 365,
