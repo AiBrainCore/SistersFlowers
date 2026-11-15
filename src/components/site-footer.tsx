@@ -47,6 +47,25 @@ export function SiteFooter({
     { href: `/${locale}/contact`, label: t.legalContact },
   ];
 
+  const localSeoLinks = [
+    {
+      href: `/${locale}/shop?city=danang`,
+      label: t.flowerShopDanang,
+    },
+    {
+      href: `/${locale}/delivery?city=danang`,
+      label: t.flowerDeliveryDanang,
+    },
+    {
+      href: `/${locale}/shop?city=dalat`,
+      label: t.flowerShopDalat,
+    },
+    {
+      href: `/${locale}/delivery?city=dalat`,
+      label: t.flowerDeliveryDalat,
+    },
+  ];
+
   return (
     <footer className="border-t border-forest/10 bg-[#f7efe6]">
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-5 sm:py-14">
@@ -106,6 +125,26 @@ export function SiteFooter({
             ))}
           </FooterColumn>
         </div>
+      </div>
+
+      <div className="border-t border-forest/10 px-4 py-5 sm:px-5">
+        <p className="text-center text-[10px] tracking-[0.14em] text-citrus uppercase">
+          {t.localSeoTitle}
+        </p>
+        <nav
+          aria-label={t.localSeoTitle}
+          className="mx-auto mt-3 flex max-w-4xl flex-wrap items-center justify-center gap-x-4 gap-y-2"
+        >
+          {localSeoLinks.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="min-h-10 inline-flex items-center text-sm text-forest/75 transition hover:text-citrus"
+            >
+              {item.label}
+            </Link>
+          ))}
+        </nav>
       </div>
 
       <p className="border-t border-forest/10 px-5 py-4 text-center text-[11px] leading-5 tracking-[0.08em] text-moss">
