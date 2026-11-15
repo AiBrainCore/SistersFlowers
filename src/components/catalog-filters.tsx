@@ -2,17 +2,24 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useMemo, useState, type ReactNode } from "react";
+import {
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import {
   SHOP_OCCASION_CHIP_SLUGS,
   type CategoryPublic,
 } from "@/lib/category-constants";
-import type {
-  CatalogQuery,
-  CatalogSizeBand,
-  CatalogStyle,
+import {
+  catalogQueryToSearchParams,
+  type CatalogQuery,
+  type CatalogSizeBand,
+  type CatalogStyle,
+  type CatalogSort,
 } from "@/lib/products";
 import type { AttributePublic } from "@/lib/catalog-attributes";
 import { PRODUCT_TYPES } from "@/lib/product-types";
@@ -26,7 +33,6 @@ const STYLE_OPTIONS: CatalogStyle[] = [
   "ribbon",
   "wrapped",
 ];
-/** Shop type chips — bouquet, basket, congrats stand (hide empty funeral/tray for now). */
 const TYPE_CHIPS = PRODUCT_TYPES.filter((t) =>
   ["bouquet", "flower-basket", "stand-congrats"].includes(t.slug),
 );
@@ -37,6 +43,56 @@ const ACCENT_OPTIONS = [
   { id: "sage", swatch: "#8b9a7d" },
 ] as const;
 
+function toggleIn(list: string[], slug: string) {
+  return list.includes(slug)
+    ? list.filter((item) => item !== slug)
+    : [...list, slug];
+}
+
+type Draft = {
+  categories: string[];
+  productType: string;
+  sort: CatalogSort;
+  sizes: CatalogSizeBand[];
+  accents: string[];
+  styles: CatalogStyle[];
+  flowers: string[];
+  colors: string[];
+};
+
+function draftFromQuery(initial: CatalogQuery): Draft {
+  return {
+    categories: initial.categories ? [...initial.categories] : [],
+    productType: initial.productType || "",
+    sort: initial.sort || "featured",
+    sizes: initial.sizes ? [...initial.sizes] : [],
+    accents: initial.accents ? [...initial.accents] : [],
+    styles: initial.styles ? [...initial.styles] : [],
+    flowers: initial.flowers ? [...initial.flowers] : [],
+    colors: initial.colors ? [...initial.colors] : [],
+  };
+}
+
+function draftToQuery(draft: Draft, q?: string): CatalogQuery {
+  return {
+    q: q?.trim() || undefined,
+    categories: draft.categories.length ? draft.categories : undefined,
+    productType: draft.productType || undefined,
+    sort: draft.sort,
+    sizes:
+      draft.sizes.length && productUsesSizeLadder(draft.productType || "bouquet")
+        ? draft.sizes
+        : undefined,
+    accents: draft.accents.length ? draft.accents : undefined,
+    styles:
+      draft.styles.length && productUsesSizeLadder(draft.productType || "bouquet")
+        ? draft.styles
+        : undefined,
+    flowers: draft.flowers.length ? draft.flowers : undefined,
+    colors: draft.colors.length ? draft.colors : undefined,
+  };
+}
+
 export function CatalogFilters({
   locale,
   dictionary,
@@ -45,6 +101,7 @@ export function CatalogFilters({
   colorAttrs = [],
   initial,
   resultCount,
+  children,
 }: {
   locale: Locale;
   dictionary: Dictionary;
@@ -53,19 +110,19 @@ export function CatalogFilters({
   colorAttrs?: AttributePublic[];
   initial: CatalogQuery;
   resultCount: number;
+  children?: ReactNode;
 }) {
   const router = useRouter();
   const t = dictionary.shop;
   const [panelOpen, setPanelOpen] = useState(false);
-  const [q, setQ] = useState(initial.q || "");
-  const [category, setCategory] = useState(initial.category || "");
-  const [productType, setProductType] = useState(initial.productType || "");
-  const [sort, setSort] = useState(initial.sort || "featured");
-  const [size, setSize] = useState(initial.size || "");
-  const [accent, setAccent] = useState(initial.accent || "");
-  const [style, setStyle] = useState(initial.style || "");
-  const [flower, setFlower] = useState(initial.flower || "");
-  const [color, setColor] = useState(initial.color || "");
+  const [draft, setDraft] = useState<Draft>(() => draftFromQuery(initial));
+  const [previewCount, setPreviewCount] = useState(resultCount);
+  const [previewLoading, setPreviewLoading] = useState(false);
+
+  useEffect(() => {
+    setDraft(draftFromQuery(initial));
+    setPreviewCount(resultCount);
+  }, [initial, resultCount]);
 
   const chipOccasions = useMemo(() => {
     const bySlug = new Map(categories.map((c) => [c.slug, c]));
@@ -74,93 +131,342 @@ export function CatalogFilters({
     ) as CategoryPublic[];
   }, [categories]);
 
-  const showSizeFilter = productUsesSizeLadder(productType || "bouquet");
+  const showBouquetFilters = productUsesSizeLadder(
+    draft.productType || "bouquet",
+  );
 
-  function buildUrl(next?: {
-    q?: string;
-    category?: string;
-    productType?: string;
-    sort?: string;
-    size?: string;
-    accent?: string;
-    style?: string;
-    flower?: string;
-    color?: string;
-  }) {
-    const params = new URLSearchParams();
-    const qv = next?.q ?? q;
-    const cat = next?.category ?? category;
-    const typeV = next?.productType ?? productType;
-    const sv = next?.sort ?? sort;
-    const sizeV = next?.size ?? size;
-    const accentV = next?.accent ?? accent;
-    const styleV = next?.style ?? style;
-    const flowerV = next?.flower ?? flower;
-    const colorV = next?.color ?? color;
-    if (qv.trim()) params.set("q", qv.trim());
-    if (cat) params.set("category", cat);
-    if (typeV) params.set("type", typeV);
-    if (sv && sv !== "featured") params.set("sort", sv);
-    if (sizeV && productUsesSizeLadder(typeV || "bouquet")) {
-      params.set("size", sizeV);
-    }
-    if (accentV) params.set("accent", accentV);
-    if (styleV) params.set("style", styleV);
-    if (flowerV) params.set("flower", flowerV);
-    if (colorV) params.set("color", colorV);
-    const qs = params.toString();
-    return `/${locale}/shop${qs ? `?${qs}` : ""}`;
+  function pushQuery(next: CatalogQuery) {
+    const qs = catalogQueryToSearchParams(next).toString();
+    router.push(`/${locale}/shop${qs ? `?${qs}` : ""}`);
   }
 
-  function apply(next?: Parameters<typeof buildUrl>[0]) {
-    router.push(buildUrl(next));
+  function applyDraft(nextDraft: Draft = draft) {
+    pushQuery(draftToQuery(nextDraft, initial.q));
     setPanelOpen(false);
   }
 
   function clearAll() {
-    setQ("");
-    setCategory("");
-    setProductType("");
-    setSort("featured");
-    setSize("");
-    setAccent("");
-    setStyle("");
-    setFlower("");
-    setColor("");
-    router.push(`/${locale}/shop`);
+    const empty: Draft = {
+      categories: [],
+      productType: "",
+      sort: "featured",
+      sizes: [],
+      accents: [],
+      styles: [],
+      flowers: [],
+      colors: [],
+    };
+    setDraft(empty);
+    pushQuery({ q: initial.q, sort: "featured" });
     setPanelOpen(false);
   }
 
-  /** Badge counts panel filters only — search lives on the shop toolbar. */
+  /** Desktop: apply immediately. Mobile drawer: update draft only. */
+  function patchDraft(
+    patch: Partial<Draft> | ((current: Draft) => Draft),
+    opts?: { immediate?: boolean },
+  ) {
+    setDraft((current) => {
+      const next =
+        typeof patch === "function" ? patch(current) : { ...current, ...patch };
+      if (!productUsesSizeLadder(next.productType || "bouquet")) {
+        next.sizes = [];
+        next.styles = [];
+      }
+      if (opts?.immediate) {
+        queueMicrotask(() => applyDraft(next));
+      }
+      return next;
+    });
+  }
+
+  // Live preview count while the mobile drawer draft changes.
+  useEffect(() => {
+    if (!panelOpen) return;
+    const params = catalogQueryToSearchParams(
+      draftToQuery(draft, initial.q),
+    );
+    const controller = new AbortController();
+    const timer = window.setTimeout(async () => {
+      setPreviewLoading(true);
+      try {
+        const res = await fetch(`/api/shop/count?${params.toString()}`, {
+          signal: controller.signal,
+        });
+        if (!res.ok) return;
+        const data = (await res.json()) as { count?: number };
+        if (typeof data.count === "number") setPreviewCount(data.count);
+      } catch {
+        /* aborted or network — keep last count */
+      } finally {
+        setPreviewLoading(false);
+      }
+    }, 220);
+    return () => {
+      controller.abort();
+      window.clearTimeout(timer);
+    };
+  }, [draft, panelOpen, initial.q]);
+
   const activeCount = [
-    initial.category,
+    ...(initial.categories || []),
     initial.productType,
-    initial.size,
-    initial.accent,
-    initial.style,
-    initial.flower,
-    initial.color,
+    ...(initial.sizes || []),
+    ...(initial.accents || []),
+    ...(initial.styles || []),
+    ...(initial.flowers || []),
+    ...(initial.colors || []),
     initial.sort && initial.sort !== "featured" ? initial.sort : "",
   ].filter(Boolean).length;
 
   const hasActiveChips = Boolean(
     initial.q ||
-      initial.category ||
+      initial.categories?.length ||
       initial.productType ||
-      initial.size ||
-      initial.accent ||
-      initial.style ||
-      initial.flower ||
-      initial.color ||
+      initial.sizes?.length ||
+      initial.accents?.length ||
+      initial.styles?.length ||
+      initial.flowers?.length ||
+      initial.colors?.length ||
       (initial.sort && initial.sort !== "featured"),
   );
 
   const checkClass = (on: boolean) =>
+    `inline-flex min-h-10 w-full items-center gap-2 rounded-xl border px-3 text-left text-sm transition lg:min-h-9 ${
+      on
+        ? "border-citrus/45 bg-citrus/10 text-forest"
+        : "border-forest/12 bg-white text-moss hover:border-citrus/30"
+    }`;
+
+  const chipClass = (on: boolean) =>
     `inline-flex min-h-10 items-center gap-2 rounded-full border px-3.5 text-sm transition ${
       on
         ? "border-citrus/45 bg-citrus/10 text-forest"
         : "border-forest/12 bg-white text-moss hover:border-citrus/30"
     }`;
+
+  const filterBody = (mode: "sidebar" | "drawer") => {
+    const immediate = mode === "sidebar";
+    return (
+      <>
+        <FilterGroup title={t.sort} flush>
+          <div className="flex flex-col gap-1.5">
+            {(
+              [
+                ["featured", t.sortFeatured],
+                ["newest", t.sortNewest],
+                ["price-asc", t.sortPriceAsc],
+                ["price-desc", t.sortPriceDesc],
+              ] as const
+            ).map(([value, label]) => (
+              <button
+                key={value}
+                type="button"
+                onClick={() =>
+                  patchDraft({ sort: value }, { immediate })
+                }
+                className={checkClass(draft.sort === value)}
+              >
+                <Mark on={draft.sort === value} radio />
+                {label}
+              </button>
+            ))}
+          </div>
+        </FilterGroup>
+
+        <FilterGroup title={t.categories}>
+          <div className="flex flex-col gap-1.5">
+            {chipOccasions.map((cat) => {
+              const on = draft.categories.includes(cat.slug);
+              return (
+                <button
+                  key={cat.id}
+                  type="button"
+                  onClick={() =>
+                    patchDraft(
+                      (current) => ({
+                        ...current,
+                        categories: toggleIn(current.categories, cat.slug),
+                      }),
+                      { immediate },
+                    )
+                  }
+                  className={checkClass(on)}
+                >
+                  <Mark on={on} />
+                  {locale === "vi" ? cat.nameVi : cat.nameEn}
+                </button>
+              );
+            })}
+          </div>
+        </FilterGroup>
+
+        {flowerAttrs.length ? (
+          <FilterGroup title={t.flowerLabel}>
+            <div className="flex flex-col gap-1.5">
+              {flowerAttrs.map((attr) => {
+                const on = draft.flowers.includes(attr.slug);
+                return (
+                  <button
+                    key={attr.id}
+                    type="button"
+                    onClick={() =>
+                      patchDraft(
+                        (current) => ({
+                          ...current,
+                          flowers: toggleIn(current.flowers, attr.slug),
+                        }),
+                        { immediate },
+                      )
+                    }
+                    className={checkClass(on)}
+                  >
+                    <Mark on={on} />
+                    {locale === "vi" ? attr.nameVi : attr.nameEn}
+                  </button>
+                );
+              })}
+            </div>
+          </FilterGroup>
+        ) : null}
+
+        {colorAttrs.length ? (
+          <FilterGroup title={t.colorLabel}>
+            <div className="flex flex-col gap-1.5">
+              {colorAttrs.map((attr) => {
+                const on = draft.colors.includes(attr.slug);
+                return (
+                  <button
+                    key={attr.id}
+                    type="button"
+                    onClick={() =>
+                      patchDraft(
+                        (current) => ({
+                          ...current,
+                          colors: toggleIn(current.colors, attr.slug),
+                        }),
+                        { immediate },
+                      )
+                    }
+                    className={checkClass(on)}
+                  >
+                    <Mark on={on} />
+                    {locale === "vi" ? attr.nameVi : attr.nameEn}
+                  </button>
+                );
+              })}
+            </div>
+          </FilterGroup>
+        ) : null}
+
+        <FilterGroup title={t.colorMoodLabel}>
+          <div className="flex flex-col gap-1.5">
+            {ACCENT_OPTIONS.map((item) => {
+              const on = draft.accents.includes(item.id);
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() =>
+                    patchDraft(
+                      (current) => ({
+                        ...current,
+                        accents: toggleIn(current.accents, item.id),
+                      }),
+                      { immediate },
+                    )
+                  }
+                  className={checkClass(on)}
+                >
+                  <Mark on={on} />
+                  <span
+                    className="h-3.5 w-3.5 shrink-0 rounded-full border border-forest/10"
+                    style={{ background: item.swatch }}
+                  />
+                  {t.accents[item.id]}
+                </button>
+              );
+            })}
+          </div>
+        </FilterGroup>
+
+        {showBouquetFilters ? (
+          <FilterGroup title={t.sizeLabel}>
+            <div className="flex flex-col gap-1.5">
+              {SIZE_OPTIONS.map((id) => {
+                const on = draft.sizes.includes(id);
+                return (
+                  <button
+                    key={id}
+                    type="button"
+                    onClick={() =>
+                      patchDraft(
+                        (current) => ({
+                          ...current,
+                          sizes: toggleIn(
+                            current.sizes,
+                            id,
+                          ) as CatalogSizeBand[],
+                        }),
+                        { immediate },
+                      )
+                    }
+                    className={checkClass(on)}
+                  >
+                    <Mark on={on} />
+                    {t.sizes[id]}
+                  </button>
+                );
+              })}
+            </div>
+          </FilterGroup>
+        ) : null}
+
+        {showBouquetFilters ? (
+          <FilterGroup title={t.styleLabel}>
+            <div className="flex flex-col gap-1.5">
+              {STYLE_OPTIONS.map((id) => {
+                const on = draft.styles.includes(id);
+                return (
+                  <button
+                    key={id}
+                    type="button"
+                    onClick={() =>
+                      patchDraft(
+                        (current) => ({
+                          ...current,
+                          styles: toggleIn(
+                            current.styles,
+                            id,
+                          ) as CatalogStyle[],
+                        }),
+                        { immediate },
+                      )
+                    }
+                    className={checkClass(on)}
+                  >
+                    <Mark on={on} />
+                    {t.styles[id]}
+                  </button>
+                );
+              })}
+            </div>
+          </FilterGroup>
+        ) : null}
+
+        <p className="mt-6 rounded-2xl bg-cream/80 px-4 py-3 text-sm leading-6 text-moss">
+          {t.customHint}{" "}
+          <Link
+            href={`/${locale}/custom`}
+            className="font-medium text-citrus underline-offset-2 hover:underline"
+            onClick={() => setPanelOpen(false)}
+          >
+            {dictionary.nav.custom}
+          </Link>
+        </p>
+      </>
+    );
+  };
 
   return (
     <div className="mt-4 space-y-3">
@@ -168,30 +474,41 @@ export function CatalogFilters({
         <button
           type="button"
           onClick={() => {
-            setProductType("");
-            setSize("");
-            apply({ productType: "", size: "" });
+            const next = {
+              ...draftFromQuery(initial),
+              productType: "",
+              sizes: [] as CatalogSizeBand[],
+              styles: [] as CatalogStyle[],
+            };
+            setDraft(next);
+            applyDraft(next);
           }}
-          className={checkClass(!productType)}
+          className={chipClass(!initial.productType)}
         >
           {t.typeAll}
         </button>
         {TYPE_CHIPS.map((row) => {
-          const on = productType === row.slug;
+          const on = initial.productType === row.slug;
           return (
             <button
               key={row.slug}
               type="button"
               onClick={() => {
-                const next = on ? "" : row.slug;
-                setProductType(next);
-                if (!productUsesSizeLadder(next || "bouquet")) setSize("");
-                apply({
-                  productType: next,
-                  size: productUsesSizeLadder(next || "bouquet") ? size : "",
-                });
+                const nextType = on ? "" : row.slug;
+                const next = {
+                  ...draftFromQuery(initial),
+                  productType: nextType,
+                  sizes: productUsesSizeLadder(nextType || "bouquet")
+                    ? draftFromQuery(initial).sizes
+                    : [],
+                  styles: productUsesSizeLadder(nextType || "bouquet")
+                    ? draftFromQuery(initial).styles
+                    : [],
+                };
+                setDraft(next);
+                applyDraft(next);
               }}
-              className={checkClass(on)}
+              className={chipClass(on)}
             >
               {locale === "vi" ? row.nameVi : row.nameEn}
             </button>
@@ -199,147 +516,198 @@ export function CatalogFilters({
         })}
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <p className="text-sm font-medium text-forest">
-          {t.results.replace("{count}", String(resultCount))}
-        </p>
-        <button
-          type="button"
-          onClick={() => setPanelOpen(true)}
-          className={`inline-flex min-h-11 items-center rounded-full border px-4 text-[11px] tracking-[0.14em] uppercase transition ${
-            activeCount
-              ? "border-citrus/50 bg-citrus/10 text-citrus"
-              : "border-forest/15 bg-white text-forest hover:border-citrus/35"
-          }`}
-        >
-          {t.filters}
-          {activeCount ? ` · ${activeCount}` : ""}
-        </button>
+      <div className="lg:grid lg:grid-cols-[15.5rem_minmax(0,1fr)] lg:items-start lg:gap-8">
+        <aside className="sticky top-24 hidden max-h-[calc(100vh-7rem)] overflow-y-auto rounded-2xl border border-forest/10 bg-white/70 p-4 lg:block">
+          <div className="flex items-center justify-between gap-2">
+            <h2 className="serif text-xl text-forest">{t.filters}</h2>
+            {activeCount ? (
+              <button
+                type="button"
+                onClick={clearAll}
+                className="text-[11px] tracking-[0.12em] text-citrus uppercase"
+              >
+                {t.clear}
+              </button>
+            ) : null}
+          </div>
+          <p className="mt-2 text-xs leading-5 text-moss">{t.filtersHint}</p>
+          <div className="mt-4">{filterBody("sidebar")}</div>
+        </aside>
+
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="text-sm font-medium text-forest">
+              {t.results.replace("{count}", String(resultCount))}
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                setDraft(draftFromQuery(initial));
+                setPreviewCount(resultCount);
+                setPanelOpen(true);
+              }}
+              className={`inline-flex min-h-11 items-center rounded-full border px-4 text-[11px] tracking-[0.14em] uppercase transition lg:hidden ${
+                activeCount
+                  ? "border-citrus/50 bg-citrus/10 text-citrus"
+                  : "border-forest/15 bg-white text-forest hover:border-citrus/35"
+              }`}
+            >
+              {t.filters}
+              {activeCount ? ` · ${activeCount}` : ""}
+            </button>
+          </div>
+
+          {hasActiveChips ? (
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              {initial.q ? (
+                <ActiveChip
+                  label={`“${initial.q}”`}
+                  onClear={() =>
+                    pushQuery({ ...initial, q: undefined })
+                  }
+                />
+              ) : null}
+              {(initial.categories || []).map((slug) => (
+                <ActiveChip
+                  key={`cat-${slug}`}
+                  label={
+                    chipOccasions.find((c) => c.slug === slug)
+                      ? locale === "vi"
+                        ? chipOccasions.find((c) => c.slug === slug)!.nameVi
+                        : chipOccasions.find((c) => c.slug === slug)!.nameEn
+                      : slug
+                  }
+                  onClear={() =>
+                    pushQuery({
+                      ...initial,
+                      categories: (initial.categories || []).filter(
+                        (s) => s !== slug,
+                      ),
+                    })
+                  }
+                />
+              ))}
+              {initial.productType ? (
+                <ActiveChip
+                  label={
+                    TYPE_CHIPS.find((r) => r.slug === initial.productType)
+                      ? locale === "vi"
+                        ? TYPE_CHIPS.find(
+                            (r) => r.slug === initial.productType,
+                          )!.nameVi
+                        : TYPE_CHIPS.find(
+                            (r) => r.slug === initial.productType,
+                          )!.nameEn
+                      : initial.productType
+                  }
+                  onClear={() =>
+                    pushQuery({
+                      ...initial,
+                      productType: undefined,
+                      sizes: undefined,
+                      styles: undefined,
+                    })
+                  }
+                />
+              ) : null}
+              {(initial.sizes || []).map((id) => (
+                <ActiveChip
+                  key={`size-${id}`}
+                  label={t.sizes[id]}
+                  onClear={() =>
+                    pushQuery({
+                      ...initial,
+                      sizes: (initial.sizes || []).filter((s) => s !== id),
+                    })
+                  }
+                />
+              ))}
+              {(initial.accents || []).map((id) => (
+                <ActiveChip
+                  key={`accent-${id}`}
+                  label={
+                    t.accents[id as keyof typeof t.accents] || id
+                  }
+                  onClear={() =>
+                    pushQuery({
+                      ...initial,
+                      accents: (initial.accents || []).filter((s) => s !== id),
+                    })
+                  }
+                />
+              ))}
+              {(initial.styles || []).map((id) => (
+                <ActiveChip
+                  key={`style-${id}`}
+                  label={t.styles[id]}
+                  onClear={() =>
+                    pushQuery({
+                      ...initial,
+                      styles: (initial.styles || []).filter((s) => s !== id),
+                    })
+                  }
+                />
+              ))}
+              {(initial.flowers || []).map((slug) => (
+                <ActiveChip
+                  key={`flower-${slug}`}
+                  label={
+                    flowerAttrs.find((a) => a.slug === slug)
+                      ? locale === "vi"
+                        ? flowerAttrs.find((a) => a.slug === slug)!.nameVi
+                        : flowerAttrs.find((a) => a.slug === slug)!.nameEn
+                      : slug
+                  }
+                  onClear={() =>
+                    pushQuery({
+                      ...initial,
+                      flowers: (initial.flowers || []).filter((s) => s !== slug),
+                    })
+                  }
+                />
+              ))}
+              {(initial.colors || []).map((slug) => (
+                <ActiveChip
+                  key={`color-${slug}`}
+                  label={
+                    colorAttrs.find((a) => a.slug === slug)
+                      ? locale === "vi"
+                        ? colorAttrs.find((a) => a.slug === slug)!.nameVi
+                        : colorAttrs.find((a) => a.slug === slug)!.nameEn
+                      : slug
+                  }
+                  onClear={() =>
+                    pushQuery({
+                      ...initial,
+                      colors: (initial.colors || []).filter((s) => s !== slug),
+                    })
+                  }
+                />
+              ))}
+              <button
+                type="button"
+                onClick={clearAll}
+                className="min-h-9 px-2 text-[11px] tracking-[0.12em] text-citrus uppercase"
+              >
+                {t.clear}
+              </button>
+            </div>
+          ) : null}
+
+          {children}
+        </div>
       </div>
 
-      {hasActiveChips ? (
-        <div className="flex flex-wrap items-center gap-2">
-          {initial.q ? (
-            <ActiveChip
-              label={`“${initial.q}”`}
-              onClear={() => {
-                setQ("");
-                apply({ q: "" });
-              }}
-            />
-          ) : null}
-          {initial.category ? (
-            <ActiveChip
-              label={
-                chipOccasions.find((c) => c.slug === initial.category)
-                  ? locale === "vi"
-                    ? chipOccasions.find((c) => c.slug === initial.category)!
-                        .nameVi
-                    : chipOccasions.find((c) => c.slug === initial.category)!
-                        .nameEn
-                  : initial.category
-              }
-              onClear={() => {
-                setCategory("");
-                apply({ category: "" });
-              }}
-            />
-          ) : null}
-          {initial.productType ? (
-            <ActiveChip
-              label={
-                TYPE_CHIPS.find((r) => r.slug === initial.productType)
-                  ? locale === "vi"
-                    ? TYPE_CHIPS.find((r) => r.slug === initial.productType)!
-                        .nameVi
-                    : TYPE_CHIPS.find((r) => r.slug === initial.productType)!
-                        .nameEn
-                  : initial.productType
-              }
-              onClear={() => {
-                setProductType("");
-                apply({ productType: "" });
-              }}
-            />
-          ) : null}
-          {initial.size ? (
-            <ActiveChip
-              label={t.sizes[initial.size]}
-              onClear={() => {
-                setSize("");
-                apply({ size: "" });
-              }}
-            />
-          ) : null}
-          {initial.accent ? (
-            <ActiveChip
-              label={t.accents[initial.accent as keyof typeof t.accents] || initial.accent}
-              onClear={() => {
-                setAccent("");
-                apply({ accent: "" });
-              }}
-            />
-          ) : null}
-          {initial.style ? (
-            <ActiveChip
-              label={t.styles[initial.style]}
-              onClear={() => {
-                setStyle("");
-                apply({ style: "" });
-              }}
-            />
-          ) : null}
-          {initial.flower ? (
-            <ActiveChip
-              label={
-                flowerAttrs.find((a) => a.slug === initial.flower)
-                  ? locale === "vi"
-                    ? flowerAttrs.find((a) => a.slug === initial.flower)!.nameVi
-                    : flowerAttrs.find((a) => a.slug === initial.flower)!.nameEn
-                  : initial.flower
-              }
-              onClear={() => {
-                setFlower("");
-                apply({ flower: "" });
-              }}
-            />
-          ) : null}
-          {initial.color ? (
-            <ActiveChip
-              label={
-                colorAttrs.find((a) => a.slug === initial.color)
-                  ? locale === "vi"
-                    ? colorAttrs.find((a) => a.slug === initial.color)!.nameVi
-                    : colorAttrs.find((a) => a.slug === initial.color)!.nameEn
-                  : initial.color
-              }
-              onClear={() => {
-                setColor("");
-                apply({ color: "" });
-              }}
-            />
-          ) : null}
-          <button
-            type="button"
-            onClick={clearAll}
-            className="min-h-9 px-2 text-[11px] tracking-[0.12em] text-citrus uppercase"
-          >
-            {t.clear}
-          </button>
-        </div>
-      ) : null}
-
       {panelOpen ? (
-        <div className="fixed inset-0 z-50">
+        <div className="fixed inset-0 z-50 lg:hidden">
           <button
             type="button"
             aria-label="Close"
             className="absolute inset-0 bg-forest/35"
             onClick={() => setPanelOpen(false)}
           />
-          <div className="absolute inset-x-0 bottom-0 max-h-[90vh] overflow-y-auto rounded-t-[1.75rem] bg-paper p-5 shadow-2xl md:inset-auto md:top-1/2 md:left-1/2 md:w-full md:max-w-lg md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-[1.75rem]">
-            <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-forest/20 md:hidden" />
-            <div className="flex items-center justify-between gap-3">
+          <div className="absolute inset-y-0 left-0 flex w-[min(22rem,88vw)] flex-col bg-paper shadow-2xl">
+            <div className="flex items-center justify-between gap-3 border-b border-forest/10 px-4 py-4">
               <h2 className="serif text-2xl text-forest">{t.filters}</h2>
               <button
                 type="button"
@@ -349,175 +717,10 @@ export function CatalogFilters({
                 ✕
               </button>
             </div>
-
-            <div className="mt-5">
-              <FilterGroup title={t.sort} flush>
-                <div className="flex flex-wrap gap-2">
-                  {(
-                    [
-                      ["featured", t.sortFeatured],
-                      ["newest", t.sortNewest],
-                      ["price-asc", t.sortPriceAsc],
-                      ["price-desc", t.sortPriceDesc],
-                    ] as const
-                  ).map(([value, label]) => (
-                    <button
-                      key={value}
-                      type="button"
-                      onClick={() => setSort(value)}
-                      className={checkClass(sort === value)}
-                    >
-                      <Mark on={sort === value} />
-                      {label}
-                    </button>
-                  ))}
-                </div>
-              </FilterGroup>
+            <div className="flex-1 overflow-y-auto px-4 py-4">
+              {filterBody("drawer")}
             </div>
-
-            <FilterGroup title={t.categories}>
-              <div className="flex flex-wrap gap-2">
-                <button
-                  type="button"
-                  onClick={() => setCategory("")}
-                  className={checkClass(!category)}
-                >
-                  <Mark on={!category} />
-                  {t.allCategories}
-                </button>
-                {chipOccasions.map((cat) => {
-                  const on = category === cat.slug;
-                  return (
-                    <button
-                      key={cat.id}
-                      type="button"
-                      onClick={() => setCategory(on ? "" : cat.slug)}
-                      className={checkClass(on)}
-                    >
-                      <Mark on={on} />
-                      {locale === "vi" ? cat.nameVi : cat.nameEn}
-                    </button>
-                  );
-                })}
-              </div>
-            </FilterGroup>
-
-            {flowerAttrs.length ? (
-              <FilterGroup title={t.flowerLabel}>
-                <div className="flex flex-wrap gap-2">
-                  {flowerAttrs.map((attr) => {
-                    const on = flower === attr.slug;
-                    return (
-                      <button
-                        key={attr.id}
-                        type="button"
-                        onClick={() => setFlower(on ? "" : attr.slug)}
-                        className={checkClass(on)}
-                      >
-                        <Mark on={on} />
-                        {locale === "vi" ? attr.nameVi : attr.nameEn}
-                      </button>
-                    );
-                  })}
-                </div>
-              </FilterGroup>
-            ) : null}
-
-            {colorAttrs.length ? (
-              <FilterGroup title={t.colorLabel}>
-                <div className="flex flex-wrap gap-2">
-                  {colorAttrs.map((attr) => {
-                    const on = color === attr.slug;
-                    return (
-                      <button
-                        key={attr.id}
-                        type="button"
-                        onClick={() => setColor(on ? "" : attr.slug)}
-                        className={checkClass(on)}
-                      >
-                        <Mark on={on} />
-                        {locale === "vi" ? attr.nameVi : attr.nameEn}
-                      </button>
-                    );
-                  })}
-                </div>
-              </FilterGroup>
-            ) : null}
-
-            {showSizeFilter ? (
-            <FilterGroup title={t.sizeLabel}>
-              <div className="flex flex-wrap gap-2">
-                {SIZE_OPTIONS.map((id) => {
-                  const on = size === id;
-                  return (
-                    <button
-                      key={id}
-                      type="button"
-                      onClick={() => setSize(on ? "" : id)}
-                      className={checkClass(on)}
-                    >
-                      <Mark on={on} />
-                      {t.sizes[id]}
-                    </button>
-                  );
-                })}
-              </div>
-            </FilterGroup>
-            ) : null}
-
-            <FilterGroup title={t.colorMoodLabel}>
-              <div className="flex flex-wrap gap-2">
-                {ACCENT_OPTIONS.map((item) => {
-                  const on = accent === item.id;
-                  return (
-                    <button
-                      key={item.id}
-                      type="button"
-                      onClick={() => setAccent(on ? "" : item.id)}
-                      className={checkClass(on)}
-                    >
-                      <span
-                        className="h-3.5 w-3.5 rounded-full border border-forest/10"
-                        style={{ background: item.swatch }}
-                      />
-                      {t.accents[item.id]}
-                    </button>
-                  );
-                })}
-              </div>
-            </FilterGroup>
-
-            <FilterGroup title={t.styleLabel}>
-              <div className="flex flex-wrap gap-2">
-                {STYLE_OPTIONS.map((id) => {
-                  const on = style === id;
-                  return (
-                    <button
-                      key={id}
-                      type="button"
-                      onClick={() => setStyle(on ? "" : id)}
-                      className={checkClass(on)}
-                    >
-                      <Mark on={on} />
-                      {t.styles[id]}
-                    </button>
-                  );
-                })}
-              </div>
-            </FilterGroup>
-
-            <p className="mt-6 rounded-2xl bg-cream/80 px-4 py-3 text-sm leading-6 text-moss">
-              {t.customHint}{" "}
-              <Link
-                href={`/${locale}/custom`}
-                className="font-medium text-citrus underline-offset-2 hover:underline"
-                onClick={() => setPanelOpen(false)}
-              >
-                {dictionary.nav.custom}
-              </Link>
-            </p>
-
-            <div className="mt-6 grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-2 border-t border-forest/10 p-4">
               <button
                 type="button"
                 onClick={clearAll}
@@ -527,10 +730,11 @@ export function CatalogFilters({
               </button>
               <button
                 type="button"
-                onClick={() => apply()}
-                className="min-h-12 rounded-full bg-citrus text-[11px] tracking-[0.14em] text-ivory uppercase"
+                onClick={() => applyDraft()}
+                className="min-h-12 rounded-full bg-citrus text-[11px] tracking-[0.14em] text-ivory uppercase disabled:opacity-70"
+                disabled={previewLoading}
               >
-                {t.showResults.replace("{count}", String(resultCount))}
+                {t.showResults.replace("{count}", String(previewCount))}
               </button>
             </div>
           </div>
@@ -559,11 +763,13 @@ function FilterGroup({
   );
 }
 
-function Mark({ on }: { on: boolean }) {
+function Mark({ on, radio = false }: { on: boolean; radio?: boolean }) {
   return (
     <span
       aria-hidden
-      className={`grid h-4 w-4 place-items-center rounded border text-[10px] ${
+      className={`grid h-4 w-4 shrink-0 place-items-center border text-[10px] ${
+        radio ? "rounded-full" : "rounded"
+      } ${
         on
           ? "border-citrus bg-citrus text-white"
           : "border-forest/20 bg-white text-transparent"
