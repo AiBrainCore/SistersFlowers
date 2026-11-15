@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Be_Vietnam_Pro, Source_Serif_4 } from "next/font/google";
-import { GoogleTagManager } from "@/components/google-tag-manager";
+import {
+  GoogleTagManagerBody,
+  GoogleTagManagerHead,
+} from "@/components/google-tag-manager";
 import "./globals.css";
 
 const sans = Be_Vietnam_Pro({
@@ -48,8 +51,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="vi"
       className={`${sans.variable} ${serif.variable} h-full antialiased`}
     >
+      <head>
+        <GoogleTagManagerHead />
+      </head>
       <body className="min-h-full bg-paper font-sans text-ink">
-        <GoogleTagManager />
+        <GoogleTagManagerBody />
         {children}
       </body>
     </html>
