@@ -245,25 +245,53 @@ export function ImmersiveHero({
         aria-hidden
         className="hero-petal -left-8 top-16 h-28 w-28 opacity-40 sm:left-2 sm:h-36 sm:w-36"
       >
-        <Image src="/bouquets/shown/w-06.jpg" alt="" fill sizes="160px" />
+        <Image
+          src="/bouquets/shown/w-06.jpg"
+          alt=""
+          fill
+          sizes="160px"
+          quality={50}
+          loading="lazy"
+        />
       </div>
       <div
         aria-hidden
         className="hero-petal -right-6 top-28 h-24 w-24 rotate-12 opacity-45 sm:right-4 sm:h-32 sm:w-32"
       >
-        <Image src="/bouquets/shown/w-01.jpg" alt="" fill sizes="140px" />
+        <Image
+          src="/bouquets/shown/w-01.jpg"
+          alt=""
+          fill
+          sizes="140px"
+          quality={50}
+          loading="lazy"
+        />
       </div>
       <div
         aria-hidden
         className="hero-petal bottom-28 -left-10 hidden h-32 w-32 -rotate-6 opacity-35 sm:block"
       >
-        <Image src="/bouquets/shown/w-08.jpg" alt="" fill sizes="140px" />
+        <Image
+          src="/bouquets/shown/w-08.jpg"
+          alt=""
+          fill
+          sizes="140px"
+          quality={50}
+          loading="lazy"
+        />
       </div>
       <div
         aria-hidden
         className="hero-petal right-[8%] bottom-40 hidden h-20 w-20 rotate-[-10deg] opacity-40 lg:block"
       >
-        <Image src="/bouquets/shown/w-03.jpg" alt="" fill sizes="100px" />
+        <Image
+          src="/bouquets/shown/w-03.jpg"
+          alt=""
+          fill
+          sizes="100px"
+          quality={50}
+          loading="lazy"
+        />
       </div>
 
       <div className="relative mx-auto grid max-w-6xl items-center gap-6 px-4 pt-7 pb-8 sm:gap-8 sm:px-5 sm:pt-12 sm:pb-10 lg:grid-cols-[0.95fr_1.05fr] lg:gap-10 lg:pt-14 lg:pb-12">
@@ -350,8 +378,10 @@ export function ImmersiveHero({
                 alt={active.name}
                 fill
                 priority={index === 0}
+                fetchPriority={index === 0 ? "high" : "auto"}
                 className="object-cover object-[center_22%]"
                 sizes="(min-width: 1024px) 42vw, 85vw"
+                quality={75}
               />
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-forest/20 via-transparent to-white/10" />
               <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-white/40" />
@@ -404,6 +434,8 @@ export function ImmersiveHero({
                       fill
                       className="object-cover object-[center_25%]"
                       sizes="56px"
+                      quality={55}
+                      loading="lazy"
                     />
                   </button>
                 );

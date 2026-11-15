@@ -115,6 +115,8 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
               fill
               className="object-cover"
               sizes="(min-width: 1024px) 50vw, 100vw"
+              quality={70}
+              loading="lazy"
             />
           </div>
           <div className="brand-band relative flex flex-col justify-center px-6 py-14 sm:px-12 sm:py-20">
@@ -164,6 +166,8 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
             fill
             className="object-cover"
             sizes="100vw"
+            quality={70}
+            loading="lazy"
           />
           <div className="absolute inset-0 bg-forest/45" />
         </div>
@@ -229,6 +233,8 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
                     fill
                     className="object-cover transition duration-700 group-hover:scale-105"
                     sizes="40vw"
+                    quality={65}
+                    loading="lazy"
                   />
                 </div>
                 <div className="bg-cream/90 p-5">

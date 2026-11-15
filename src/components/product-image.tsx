@@ -10,8 +10,9 @@ export function ProductImage({
   alt,
   fill,
   className,
-  sizes,
+  sizes = "(min-width: 1024px) 25vw, 50vw",
   priority,
+  quality = 72,
   unoptimized,
 }: {
   src: string;
@@ -21,6 +22,7 @@ export function ProductImage({
   className?: string;
   sizes?: string;
   priority?: boolean;
+  quality?: number;
   unoptimized?: boolean;
 }) {
   const jpeg = fallback && fallback !== src ? fallback : null;
@@ -36,6 +38,7 @@ export function ProductImage({
           className={className}
           sizes={sizes}
           priority={priority}
+          quality={quality}
           unoptimized={unoptimized}
         />
       </picture>
@@ -50,6 +53,7 @@ export function ProductImage({
       className={className}
       sizes={sizes}
       priority={priority}
+      quality={quality}
       unoptimized={unoptimized}
     />
   );

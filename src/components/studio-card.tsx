@@ -30,6 +30,8 @@ export function StudioCard({
           fill
           className="object-cover object-center"
           sizes="(min-width: 640px) 40vw, 92vw"
+          quality={70}
+          loading="lazy"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-paper/90 via-paper/10 to-transparent" />
         <h3 className="serif absolute bottom-3 left-4 text-2xl text-citrus sm:text-3xl">
