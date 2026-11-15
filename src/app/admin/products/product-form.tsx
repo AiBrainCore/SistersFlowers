@@ -256,40 +256,53 @@ export function ProductForm({
             />
           </label>
         </div>
-        <div
-          style={{
-            marginTop: 14,
-            display: "flex",
-            flexWrap: "wrap",
-            gap: 16,
-          }}
-        >
-          {cities.map((city) => {
-            const stock = stockBySlug.get(city.slug);
-            return (
-              <label
-                key={city.slug}
-                className="admin-field"
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 8,
-                  marginBottom: 0,
-                }}
-              >
-                <input
-                  type="checkbox"
-                  name={`cityAvailable_${city.slug}`}
-                  defaultChecked={stock?.available ?? true}
-                  style={{ width: "auto" }}
-                />
-                <span style={{ margin: 0 }}>
-                  {t.products.cityAvailable}: {cityLabel(city)}
-                </span>
-              </label>
-            );
-          })}
+        <div style={{ overflowX: "auto", marginTop: 14 }}>
+          <table className="admin-table" style={{ minWidth: 420 }}>
+            <thead>
+              <tr>
+                <th>{t.products.cityPricing}</th>
+                <th>{t.products.saleShort}</th>
+                <th>{t.products.sellShort}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {cities.map((city) => {
+                const stock = stockBySlug.get(city.slug);
+                return (
+                  <tr key={city.slug}>
+                    <td>
+                      <strong>{cityLabel(city)}</strong>
+                    </td>
+                    <td>
+                      <input
+                        name={`cityPrice_${city.slug}`}
+                        type="number"
+                        min={0}
+                        step={1000}
+                        placeholder={t.products.sameAsBase}
+                        defaultValue={stock?.priceOverride ?? ""}
+                        style={{ width: "100%", minWidth: 96 }}
+                      />
+                    </td>
+                    <td>
+                      <label className="admin-sell-chip">
+                        <input
+                          type="checkbox"
+                          name={`cityAvailable_${city.slug}`}
+                          defaultChecked={stock?.available ?? true}
+                        />
+                        <span>{t.products.sellShort}</span>
+                      </label>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
+        <p style={{ fontSize: 12, opacity: 0.65, marginTop: 10, marginBottom: 0 }}>
+          {t.products.cityFixedHint}
+        </p>
       </fieldset>
       )}
 
