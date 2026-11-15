@@ -81,6 +81,8 @@ export function ShopByOccasion({
                   alt=""
                   fill
                   sizes="(min-width: 768px) 18vw, 42vw"
+                  quality={70}
+                  loading="lazy"
                   className={`object-cover transition duration-700 ease-out ${
                     calm
                       ? "motion-safe:group-hover:scale-[1.03]"
