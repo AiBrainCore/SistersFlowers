@@ -17,6 +17,7 @@ export const en = {
     journal: "Journal",
     contact: "Contact",
     terms: "Terms",
+    returnPolicy: "Return policy",
     menu: "Menu",
     close: "Close",
     language: "Language",
@@ -498,6 +499,28 @@ export const en = {
     privacyTitle: "Privacy",
     privacyBody:
       "We use your contact details only to fulfil and confirm your order. We do not sell personal data.",
+  },
+  returnPolicy: {
+    kicker: "Policy",
+    title: "Return policy.",
+    intro:
+      "Sisters Flowers makes fresh, perishable arrangements in Da Nang and Da Lat. Because blooms fade quickly, we do not accept returns, exchanges, or refunds once an order is confirmed.",
+    noReturnsTitle: "No returns or exchanges",
+    noReturnsBody:
+      "We do not take flowers back and we do not replace a finished bouquet for a change of mind. Fresh flowers cannot be restocked like clothing or electronics — after cutting, arranging, and leaving the studio they are no longer sellable.",
+    confirmTitle: "Photo confirmation before delivery",
+    confirmBody:
+      "Before we send or hand over your arrangement, we share a photo of the finished piece for your approval when the order flow allows it. Once you confirm that bouquet, the order is final.",
+    perishableTitle: "Why flowers cannot be returned",
+    perishableBody:
+      "Cut flowers last only a short time. A bouquet returned after one or two days is wilted and unsafe to resell. For that reason our policy is clear: no returns and no refunds for delivered or confirmed fresh flowers.",
+    studioErrorTitle: "If something goes wrong on our side",
+    studioErrorBody:
+      "If the studio delivers the wrong arrangement, or the flowers arrive clearly damaged because of packing or handling on our part, contact us as soon as you receive them with photos. We will review the case and offer a fair studio remedy — that is not a standard return window, and it does not cover wilting after normal delivery or buyer’s remorse.",
+    contactTitle: "Questions",
+    contactBody:
+      "Write or call the studio that fulfilled your order. We are happy to explain timing, care tips, and what was confirmed before delivery.",
+    contactCta: "Contact Sisters Flowers",
   },
   location: {
     deliveringIn: "Delivering in",

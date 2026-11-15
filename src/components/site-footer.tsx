@@ -44,6 +44,7 @@ export function SiteFooter({
 
   const legalLinks = [
     { href: `/${locale}/terms`, label: nav.terms },
+    { href: `/${locale}/return-policy`, label: nav.returnPolicy },
     { href: `/${locale}/contact`, label: t.legalContact },
   ];
 
