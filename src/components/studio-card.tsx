@@ -2,28 +2,75 @@ import Image from "next/image";
 import type { Locale } from "@/i18n/config";
 import {
   studioMapsUrl,
+  studioWhatsAppDigits,
   type StudioContact,
 } from "@/lib/studio-contacts";
+
+type SocialLabels = {
+  phones: string;
+  social: string;
+  facebook: string;
+  messenger: string;
+  tiktok: string;
+  whatsapp: string;
+};
 
 export function StudioCard({
   studio,
   locale,
   directionsLabel,
   callLabel,
+  socialLabels,
+  emphasize = false,
 }: {
   studio: StudioContact;
   locale: Locale;
   directionsLabel: string;
   callLabel: string;
+  /** When set, show phone list heading + social chips (contact page). */
+  socialLabels?: SocialLabels;
+  emphasize?: boolean;
 }) {
   const name = locale === "vi" ? studio.nameVi : studio.nameEn;
   const address = locale === "vi" ? studio.addressVi : studio.addressEn;
   const primaryPhone = studio.phones[0]!;
   const mapsHref = studioMapsUrl(address);
+  const waDigits = studioWhatsAppDigits(studio);
+
+  const socialLinks = [
+    {
+      key: "facebook",
+      href: studio.socials.facebook,
+      label: socialLabels?.facebook || "Facebook",
+    },
+    {
+      key: "messenger",
+      href: studio.socials.messenger,
+      label: socialLabels?.messenger || "Messenger",
+    },
+    {
+      key: "tiktok",
+      href: studio.socials.tiktok,
+      label: socialLabels?.tiktok || "TikTok",
+    },
+    {
+      key: "whatsapp",
+      href: `https://wa.me/${waDigits}`,
+      label: socialLabels?.whatsapp || "WhatsApp",
+    },
+  ];
 
   return (
-    <article className="overflow-hidden rounded-2xl border border-citrus/15 bg-white/70">
-      <div className="relative aspect-[16/10] overflow-hidden">
+    <article
+      className={`overflow-hidden rounded-2xl border border-citrus/15 bg-white/80 ${
+        emphasize ? "shadow-[0_16px_40px_rgba(44,41,38,0.08)]" : ""
+      }`}
+    >
+      <div
+        className={`relative overflow-hidden ${
+          emphasize ? "aspect-[16/9] sm:aspect-[16/10]" : "aspect-[16/10]"
+        }`}
+      >
         <Image
           src={studio.image}
           alt=""
@@ -33,13 +80,13 @@ export function StudioCard({
           quality={70}
           loading="lazy"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-paper/90 via-paper/10 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-paper/95 via-paper/15 to-transparent" />
         <h3 className="serif absolute bottom-3 left-4 text-2xl text-citrus sm:text-3xl">
           {name}
         </h3>
       </div>
 
-      <div className="px-5 pt-4 pb-5">
+      <div className={`px-5 pb-5 ${emphasize ? "pt-5" : "pt-4"}`}>
         <a
           href={mapsHref}
           target="_blank"
@@ -48,12 +95,18 @@ export function StudioCard({
         >
           {address}
         </a>
-        <ul className="mt-3 space-y-0.5">
+
+        {socialLabels ? (
+          <p className="mt-5 text-[10px] tracking-[0.16em] text-citrus uppercase">
+            {socialLabels.phones}
+          </p>
+        ) : null}
+        <ul className={`${socialLabels ? "mt-2" : "mt-3"} space-y-0.5`}>
           {studio.phones.map((phone) => (
             <li key={phone.digits}>
               <a
                 href={`tel:+${phone.digits}`}
-                className="inline-flex min-h-10 items-center text-sm font-medium text-forest hover:text-citrus"
+                className="inline-flex min-h-11 items-center text-base font-medium tabular-nums tracking-wide text-forest hover:text-citrus sm:text-[1.05rem]"
               >
                 {phone.display}
               </a>
@@ -61,7 +114,28 @@ export function StudioCard({
           ))}
         </ul>
 
-        <div className="mt-4 flex flex-wrap gap-2">
+        {socialLabels ? (
+          <div className="mt-5">
+            <p className="text-[10px] tracking-[0.16em] text-citrus uppercase">
+              {socialLabels.social}
+            </p>
+            <div className="mt-2.5 flex flex-wrap gap-2">
+              {socialLinks.map((item) => (
+                <a
+                  key={item.key}
+                  href={item.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex min-h-10 items-center rounded-full border border-forest/15 bg-cream/70 px-3.5 text-[11px] tracking-[0.1em] text-forest uppercase transition hover:border-citrus/45 hover:text-citrus"
+                >
+                  {item.label}
+                </a>
+              ))}
+            </div>
+          </div>
+        ) : null}
+
+        <div className="mt-5 flex flex-wrap gap-2">
           <a
             href={mapsHref}
             target="_blank"
