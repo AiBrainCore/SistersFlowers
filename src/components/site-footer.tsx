@@ -118,7 +118,6 @@ export function SiteFooter({
           </FooterColumn>
 
           <FooterColumn title={t.colLegal}>
-            <p className="mb-3 text-sm leading-6 text-moss">{t.legalBlurb}</p>
             {legalLinks.map((item) => (
               <FooterLink key={`${item.href}-${item.label}`} href={item.href}>
                 {item.label}
