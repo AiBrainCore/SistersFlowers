@@ -474,8 +474,6 @@ export const vi = {
     colShop: "Cửa hàng",
     colStudio: "Studio",
     colLegal: "Pháp lý",
-    legalBlurb:
-      "Đơn trên website được studio xác nhận trước khi thanh toán. Chúng tôi chỉ dùng thông tin của bạn để hoàn thành đơn.",
     legalContact: "Gửi câu hỏi",
     rights:
       "© {years} Sisters Flowers. Mọi quyền được bảo lưu.",

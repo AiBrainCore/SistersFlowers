@@ -473,8 +473,6 @@ export const en = {
     colShop: "Shop",
     colStudio: "Studio",
     colLegal: "Legal",
-    legalBlurb:
-      "Website requests are confirmed by the studio before payment. We keep your details only to fulfil your order.",
     legalContact: "Ask a question",
     rights:
       "© {years} Sisters Flowers. All rights reserved.",
