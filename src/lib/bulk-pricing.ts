@@ -1,14 +1,29 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import {
+  DEFAULT_FIXED_PRICES,
   DEFAULT_SIZE_PRICES,
   PRODUCT_SIZES,
+  productUsesSizeLadder,
   roundVnd,
   syncListPrice,
   type ProductSizeId,
 } from "@/lib/product-sizes";
+import {
+  isProductTypeSlug,
+  type ProductTypeSlug,
+} from "@/lib/product-types";
 
 export type BulkPriceScope = "all" | "published" | "hidden";
+/** Which product types a bulk op touches — never mix by accident. */
+export type BulkTypeScope = ProductTypeSlug | "all";
+
+export function parseBulkTypeScope(raw: string | null | undefined): BulkTypeScope {
+  const value = String(raw || "all").trim();
+  if (value === "all") return "all";
+  if (isProductTypeSlug(value)) return value;
+  return "all";
+}
 
 function scopeWhere(scope: BulkPriceScope) {
   if (scope === "published") return { published: true };
@@ -16,10 +31,28 @@ function scopeWhere(scope: BulkPriceScope) {
   return {};
 }
 
+function typeWhere(type: BulkTypeScope) {
+  if (type === "all") return {};
+  return { productType: type };
+}
+
+function productWhere(scope: BulkPriceScope, type: BulkTypeScope) {
+  return { ...scopeWhere(scope), ...typeWhere(type) };
+}
+
 function scopeSql(scope: BulkPriceScope): Prisma.Sql {
   if (scope === "published") return Prisma.sql`"published" = true`;
   if (scope === "hidden") return Prisma.sql`"published" = false`;
   return Prisma.sql`TRUE`;
+}
+
+function typeSql(type: BulkTypeScope): Prisma.Sql {
+  if (type === "all") return Prisma.sql`TRUE`;
+  return Prisma.sql`"productType" = ${type}`;
+}
+
+function whereSql(scope: BulkPriceScope, type: BulkTypeScope): Prisma.Sql {
+  return Prisma.sql`(${scopeSql(scope)}) AND (${typeSql(type)})`;
 }
 
 /** Round VND bump: GREATEST(1000, ROUND(col * factor / 1000) * 1000). */
@@ -51,12 +84,45 @@ function listPriceSql(
   )`;
 }
 
-/** Set absolute S/M/L ladder; clear XL/grand and optional Was. */
+async function clearCityOverridesForProducts(
+  productWhereClause: { published?: boolean; productType?: string },
+  opts: { clearAll: boolean },
+) {
+  const products = await prisma.product.findMany({
+    where: productWhereClause,
+    select: { id: true },
+  });
+  const ids = products.map((p) => p.id);
+  if (!ids.length) return;
+
+  if (opts.clearAll) {
+    await prisma.productCityAvailability.updateMany({
+      where: { productId: { in: ids } },
+      data: {
+        priceSm: null,
+        priceMd: null,
+        priceLg: null,
+        priceGrand: null,
+        priceOverride: null,
+      },
+    });
+    return;
+  }
+
+  await prisma.productCityAvailability.updateMany({
+    where: { productId: { in: ids } },
+    data: { priceGrand: null },
+  });
+}
+
+/** Set absolute S/M/L ladder; clear XL/grand and optional Was. Bouquet-only. */
 export async function bulkSetAbsoluteSizePrices(opts: {
   sm: number;
   md: number;
   lg: number;
   scope: BulkPriceScope;
+  /** Ignored for ladder — always bouquets. Kept for call-site symmetry. */
+  productType?: BulkTypeScope;
   clearWas?: boolean;
   clearCitySizeOverrides?: boolean;
 }) {
@@ -64,10 +130,10 @@ export async function bulkSetAbsoluteSizePrices(opts: {
   const md = roundVnd(opts.md);
   const lg = roundVnd(opts.lg);
   const listPrice = syncListPrice({ sm, md, lg }, sm);
+  const where = productWhere(opts.scope, "bouquet");
 
-  // Absolute S/M/L ladder is bouquet-only — never overwrite single-size baskets/stands.
   const result = await prisma.product.updateMany({
-    where: { ...scopeWhere(opts.scope), productType: "bouquet" },
+    where,
     data: {
       price: listPrice,
       priceSm: sm,
@@ -86,21 +152,59 @@ export async function bulkSetAbsoluteSizePrices(opts: {
     },
   });
 
-  if (opts.clearCitySizeOverrides !== false) {
-    await prisma.productCityAvailability.updateMany({
-      data: {
-        priceSm: null,
-        priceMd: null,
-        priceLg: null,
-        priceGrand: null,
-        priceOverride: null,
-      },
-    });
-  } else {
-    await prisma.productCityAvailability.updateMany({
-      data: { priceGrand: null },
-    });
+  await clearCityOverridesForProducts(where, {
+    clearAll: opts.clearCitySizeOverrides !== false,
+  });
+
+  return result.count;
+}
+
+/**
+ * Set one fixed sale price for a single-size product type (basket / stands).
+ * Refuses bouquet — use bulkSetAbsoluteSizePrices instead.
+ */
+export async function bulkSetAbsoluteFixedPrice(opts: {
+  price: number;
+  scope: BulkPriceScope;
+  productType: ProductTypeSlug;
+  clearWas?: boolean;
+  clearCityOverrides?: boolean;
+}) {
+  if (productUsesSizeLadder(opts.productType)) {
+    throw new Error("Fixed absolute price is for non-bouquet types only");
   }
+  const price = roundVnd(opts.price);
+  if (price <= 0) return 0;
+
+  const where = productWhere(opts.scope, opts.productType);
+  const result = await prisma.product.updateMany({
+    where,
+    data: {
+      price,
+      priceSm: null,
+      priceMd: null,
+      priceLg: null,
+      priceGrand: null,
+      ...(opts.clearWas
+        ? {
+            compareAtPrice: null,
+            compareAtSm: null,
+            compareAtMd: null,
+            compareAtLg: null,
+            compareAtGrand: null,
+          }
+        : {
+            compareAtSm: null,
+            compareAtMd: null,
+            compareAtLg: null,
+            compareAtGrand: null,
+          }),
+    },
+  });
+
+  await clearCityOverridesForProducts(where, {
+    clearAll: opts.clearCityOverrides !== false,
+  });
 
   return result.count;
 }
@@ -112,11 +216,13 @@ export async function bulkSetAbsoluteSizePrices(opts: {
 export async function bulkApplyMarkupPercent(opts: {
   percent: number;
   scope: BulkPriceScope;
+  productType?: BulkTypeScope;
   sizes?: ProductSizeId[];
 }) {
   const percent = opts.percent;
   if (!Number.isFinite(percent) || percent === 0) return 0;
   const factor = 1 + percent / 100;
+  const type = opts.productType ?? "all";
   const sizes = opts.sizes?.length
     ? opts.sizes
     : PRODUCT_SIZES.map((s) => s.id);
@@ -124,10 +230,15 @@ export async function bulkApplyMarkupPercent(opts: {
     sizes.includes("sm") && sizes.includes("md") && sizes.includes("lg");
 
   if (!allSizes) {
-    return bulkApplyMarkupPercentChunked({ percent, scope: opts.scope, sizes });
+    return bulkApplyMarkupPercentChunked({
+      percent,
+      scope: opts.scope,
+      productType: type,
+      sizes,
+    });
   }
 
-  const where = scopeSql(opts.scope);
+  const where = whereSql(opts.scope, type);
   const count = await prisma.$executeRaw`
     WITH src AS (
       SELECT
@@ -171,6 +282,7 @@ export async function bulkApplyMarkupPercent(opts: {
 async function bulkApplyMarkupPercentChunked(opts: {
   percent: number;
   scope: BulkPriceScope;
+  productType: BulkTypeScope;
   sizes: ProductSizeId[];
 }) {
   const factor = 1 + opts.percent / 100;
@@ -179,7 +291,7 @@ async function bulkApplyMarkupPercentChunked(opts: {
     return roundVnd(value * factor);
   };
   const rows = await prisma.product.findMany({
-    where: scopeWhere(opts.scope),
+    where: productWhere(opts.scope, opts.productType),
     select: {
       id: true,
       price: true,
@@ -239,11 +351,12 @@ async function bulkApplyMarkupPercentChunked(opts: {
 export async function bulkApplyDiscountPercent(opts: {
   percent: number;
   scope: BulkPriceScope;
+  productType?: BulkTypeScope;
 }) {
   const percent = opts.percent;
   if (!Number.isFinite(percent) || percent <= 0 || percent >= 100) return 0;
   const factor = 1 - percent / 100;
-  const where = scopeSql(opts.scope);
+  const where = whereSql(opts.scope, opts.productType ?? "all");
 
   const count = await prisma.$executeRaw`
     WITH src AS (
@@ -321,8 +434,11 @@ export async function bulkApplyDiscountPercent(opts: {
 }
 
 /** End discount day: restore Sale from Was, clear Was. Single SQL UPDATE. */
-export async function bulkClearDiscounts(opts: { scope: BulkPriceScope }) {
-  const where = scopeSql(opts.scope);
+export async function bulkClearDiscounts(opts: {
+  scope: BulkPriceScope;
+  productType?: BulkTypeScope;
+}) {
+  const where = whereSql(opts.scope, opts.productType ?? "all");
 
   const count = await prisma.$executeRaw`
     WITH src AS (
@@ -377,7 +493,24 @@ export async function bulkApplyDefaultLadder(scope: BulkPriceScope = "all") {
     md: DEFAULT_SIZE_PRICES.md,
     lg: DEFAULT_SIZE_PRICES.lg,
     scope,
+    productType: "bouquet",
     clearWas: true,
     clearCitySizeOverrides: true,
+  });
+}
+
+export async function bulkApplyDefaultFixedPrice(
+  productType: ProductTypeSlug,
+  scope: BulkPriceScope = "all",
+) {
+  const price =
+    DEFAULT_FIXED_PRICES[productType as keyof typeof DEFAULT_FIXED_PRICES];
+  if (price == null) return 0;
+  return bulkSetAbsoluteFixedPrice({
+    price,
+    scope,
+    productType,
+    clearWas: true,
+    clearCityOverrides: true,
   });
 }

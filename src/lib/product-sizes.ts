@@ -13,12 +13,25 @@ export function productUsesSizeLadder(productType?: string | null) {
   return (productType || "bouquet") === "bouquet";
 }
 
-/** Default studio size ladder (VND). */
+/** Default studio size ladder (VND) — bouquets only. */
 export const DEFAULT_SIZE_PRICES = {
   sm: 450_000,
   md: 600_000,
   lg: 850_000,
 } as const;
+
+/** Default fixed list prices (VND) for single-size product types. */
+export const DEFAULT_FIXED_PRICES = {
+  "flower-basket": 600_000,
+  "stand-tray": 800_000,
+  "stand-congrats": 800_000,
+  "stand-funeral": 800_000,
+} as const;
+
+export function defaultFixedPriceForType(productType?: string | null) {
+  const key = (productType || "") as keyof typeof DEFAULT_FIXED_PRICES;
+  return DEFAULT_FIXED_PRICES[key] ?? 600_000;
+}
 
 export type ProductSizeId = (typeof PRODUCT_SIZES)[number]["id"];
 

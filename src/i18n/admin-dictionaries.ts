@@ -88,12 +88,15 @@ const en = {
     productType: "Product type",
     singlePrice: "Fixed price",
     singlePriceHint:
-      "Baskets and stands are one size only — set a single Sale price (and optional Regular). No S/M/L ladder.",
+      "Baskets and stands are one size only — set a single Sale price (and optional Regular). No S/M/L ladder. Optional city override below.",
     basePriceHint:
       "Bouquets use the size grid below (Sale / Regular × city). List price is synced from the lowest Sale on save. Custom size → Custom bouquet page.",
     cityPricing: "City prices & availability",
     cityPricingHint:
       "Tick Sell to show the bouquet in that city. To charge a different amount there, fill the city column in the size grid (empty = same as Sale).",
+    cityFixedHint:
+      "Optional city Sale override (empty = network fixed price). Tick Sell to show in that city.",
+    filterType: "Type",
     sizePricing: "Sizes × sale / regular × city",
     sizePricingHint:
       "Sale = what customers pay. Regular = optional full price before discount (strikethrough). Empty size = not sold. Empty Da Nang / Da Lat cell = same as Sale.",
@@ -121,24 +124,32 @@ const en = {
     priceError: "Could not save — check sale prices.",
     bulkTitle: "Bulk pricing",
     bulkHint:
-      "Absolute S/M/L = bouquets only. Markup / discount / clear also hit baskets & stands (single price). Scope: all / published / hidden.",
+      "Pick a product type on every bulk action so bouquets, baskets, and stands never mix. S/M/L absolute = bouquets only; fixed absolute = one non-bouquet type.",
     bulkDone: "Bulk {action}: updated {n} products.",
     bulkError: "Bulk pricing failed — check the numbers.",
-    bulkScope: "Apply to",
+    bulkScope: "Publish status",
+    bulkType: "Product type",
+    bulkTypeAll: "All types",
+    bulkBouquetOnly: "Bouquets only (S / M / L). Baskets & stands are not changed.",
     bulkAbsoluteTitle: "Set absolute S / M / L",
-    bulkAbsoluteBody: "Overwrite sale prices with these VND amounts.",
-    bulkAbsoluteCta: "Set absolute prices",
+    bulkAbsoluteBody: "Overwrite bouquet sale prices with these VND amounts.",
+    bulkAbsoluteCta: "Set bouquet prices",
+    bulkFixedTitle: "Set fixed price (one type)",
+    bulkFixedBody:
+      "Overwrite the single Sale price for one non-bouquet type (basket or stand).",
+    bulkFixedCta: "Set fixed prices",
     bulkClearWas: "Also clear Regular / discounts",
     bulkMarkupTitle: "Supplier / holiday markup %",
     bulkMarkupBody:
-      "Increase every sale (and Regular if set) by this percent. Example: 15 → ×1.15.",
+      "Increase every sale (and Regular if set) by this percent — only for the selected type. Example: 15 → ×1.15.",
     bulkMarkupCta: "Apply markup",
     bulkDiscountTitle: "Discount day %",
     bulkDiscountBody:
-      "Move current Sale → Regular, then reduce Sale by this percent. Shop shows ~~Regular~~ rose Sale.",
+      "Move current Sale → Regular, then reduce Sale by this percent — only for the selected type.",
     bulkDiscountCta: "Apply discount",
     bulkClearTitle: "End discount day",
-    bulkClearBody: "Restore Sale from Regular and clear Regular fields.",
+    bulkClearBody:
+      "Restore Sale from Regular and clear Regular fields — only for the selected type.",
     bulkClearCta: "Clear discounts",
     bulkPercent: "Percent",
   },
@@ -403,12 +414,15 @@ const vi: typeof en = {
     productType: "Loại sản phẩm",
     singlePrice: "Giá cố định",
     singlePriceHint:
-      "Giỏ hoa và kệ chỉ một size — nhập một Giá bán (và Giá gốc tùy chọn). Không có S/M/L.",
+      "Giỏ hoa và kệ chỉ một size — nhập một Giá bán (và Giá gốc tùy chọn). Không có S/M/L. Có thể ghi đè theo thành phố bên dưới.",
     basePriceHint:
       "Bó hoa dùng bảng size bên dưới (Giá bán / Giá gốc × thành phố). Giá danh sách tự lấy từ Giá bán thấp nhất khi lưu. Custom → trang bó theo ý.",
     cityPricing: "Giá & bán theo thành phố",
     cityPricingHint:
       "Tick Bán để hiện bó ở thành phố đó. Giá khác theo thành phố → điền cột thành phố trong bảng size (trống = như Giá bán).",
+    cityFixedHint:
+      "Giá bán riêng theo thành phố (trống = giá cố định mạng). Tick Bán để hiện ở thành phố đó.",
+    filterType: "Loại",
     sizePricing: "Size × giá bán / giá gốc × thành phố",
     sizePricingHint:
       "Giá bán = khách trả. Giá gốc = tùy chọn, trước giảm (gạch ngang). Size trống = không bán. Ô Đà Nẵng / Đà Lạt trống = như Giá bán.",
@@ -436,24 +450,32 @@ const vi: typeof en = {
     priceError: "Không lưu được — kiểm tra giá bán.",
     bulkTitle: "Giá hàng loạt",
     bulkHint:
-      "S/M/L tuyệt đối = chỉ bó hoa. Markup / giảm giá / xóa giảm cũng áp dụng giỏ & kệ (một giá). Phạm vi: tất cả / đang bán / ẩn.",
+      "Mỗi thao tác hàng loạt chọn loại sản phẩm — bó / giỏ / kệ không lẫn. S/M/L tuyệt đối = chỉ bó; giá cố định = một loại không phải bó.",
     bulkDone: "Hàng loạt {action}: đã cập nhật {n} sản phẩm.",
     bulkError: "Lỗi giá hàng loạt — kiểm tra số liệu.",
-    bulkScope: "Áp dụng cho",
+    bulkScope: "Trạng thái đăng",
+    bulkType: "Loại sản phẩm",
+    bulkTypeAll: "Tất cả loại",
+    bulkBouquetOnly: "Chỉ bó hoa (S / M / L). Giỏ & kệ không đổi.",
     bulkAbsoluteTitle: "Đặt tuyệt đối S / M / L",
-    bulkAbsoluteBody: "Ghi đè giá bán bằng các số VND này.",
-    bulkAbsoluteCta: "Đặt giá tuyệt đối",
+    bulkAbsoluteBody: "Ghi đè giá bán bó hoa bằng các số VND này.",
+    bulkAbsoluteCta: "Đặt giá bó hoa",
+    bulkFixedTitle: "Đặt giá cố định (một loại)",
+    bulkFixedBody:
+      "Ghi đè một Giá bán cho một loại không phải bó (giỏ hoặc kệ).",
+    bulkFixedCta: "Đặt giá cố định",
     bulkClearWas: "Đồng thời xóa Giá gốc / giảm giá",
     bulkMarkupTitle: "Tăng % (nhà cung cấp / lễ)",
     bulkMarkupBody:
-      "Tăng mọi giá bán (và Giá gốc nếu có) theo %. Ví dụ: 15 → ×1.15.",
+      "Tăng mọi giá bán (và Giá gốc nếu có) theo % — chỉ loại đã chọn. Ví dụ: 15 → ×1.15.",
     bulkMarkupCta: "Áp dụng tăng giá",
     bulkDiscountTitle: "Ngày giảm giá %",
     bulkDiscountBody:
-      "Giá bán hiện tại → Giá gốc, rồi giảm Giá bán theo %. Shop hiện ~~Giá gốc~~ Giá bán hồng.",
+      "Giá bán hiện tại → Giá gốc, rồi giảm Giá bán theo % — chỉ loại đã chọn.",
     bulkDiscountCta: "Áp dụng giảm giá",
     bulkClearTitle: "Kết thúc giảm giá",
-    bulkClearBody: "Khôi phục Giá bán từ Giá gốc và xóa Giá gốc.",
+    bulkClearBody:
+      "Khôi phục Giá bán từ Giá gốc và xóa Giá gốc — chỉ loại đã chọn.",
     bulkClearCta: "Xóa giảm giá",
     bulkPercent: "Phần trăm",
   },

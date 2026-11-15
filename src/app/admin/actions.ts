@@ -26,8 +26,11 @@ import {
   bulkApplyDiscountPercent,
   bulkApplyMarkupPercent,
   bulkClearDiscounts,
+  bulkSetAbsoluteFixedPrice,
   bulkSetAbsoluteSizePrices,
+  parseBulkTypeScope,
   type BulkPriceScope,
+  type BulkTypeScope,
 } from "@/lib/bulk-pricing";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
@@ -56,12 +59,18 @@ function readBulkScope(formData: FormData): BulkPriceScope {
   return "all";
 }
 
+function readBulkTypeScope(formData: FormData): BulkTypeScope {
+  return parseBulkTypeScope(String(formData.get("productType") || "all"));
+}
+
 function bulkRedirect(formData: FormData, extra: Record<string, string> = {}) {
   const q = String(formData.get("returnQ") || "").trim();
   const status = String(formData.get("returnStatus") || "").trim();
+  const type = String(formData.get("returnType") || "").trim();
   const params = new URLSearchParams(extra);
   if (q) params.set("q", q);
   if (status && status !== "all") params.set("status", status);
+  if (type && type !== "all") params.set("type", type);
   redirect(`/admin/products?${params.toString()}`);
 }
 
@@ -364,11 +373,13 @@ export async function bulkSetAbsolutePricesAction(formData: FormData) {
   if (![sm, md, lg].every((v) => v > 0 && Number.isFinite(v))) {
     bulkRedirect(formData, { error: "bulk" });
   }
+  // Always bouquets — S/M/L must never touch baskets/stands.
   const count = await bulkSetAbsoluteSizePrices({
     sm,
     md,
     lg,
     scope,
+    productType: "bouquet",
     clearWas: formData.get("clearWas") === "on",
     clearCitySizeOverrides: formData.get("clearCityOverrides") !== "off",
   });
@@ -378,14 +389,42 @@ export async function bulkSetAbsolutePricesAction(formData: FormData) {
   bulkRedirect(formData, { bulk: "absolute", n: String(count) });
 }
 
+export async function bulkSetFixedPriceAction(formData: FormData) {
+  await requireAdmin();
+  const scope = readBulkScope(formData);
+  const productType = readBulkTypeScope(formData);
+  const price = Number(formData.get("bulkFixedPrice") || 0);
+  if (
+    productType === "all" ||
+    productUsesSizeLadder(productType) ||
+    !(price > 0 && Number.isFinite(price))
+  ) {
+    bulkRedirect(formData, { error: "bulk" });
+  }
+  // Narrowed: not "all" and not ladder type after the guard above.
+  const fixedType = productType as Exclude<BulkTypeScope, "all">;
+  const count = await bulkSetAbsoluteFixedPrice({
+    price,
+    scope,
+    productType: fixedType,
+    clearWas: formData.get("clearWas") === "on",
+    clearCityOverrides: formData.get("clearCityOverrides") !== "off",
+  });
+  revalidatePath("/");
+  revalidatePath("/en/shop");
+  revalidatePath("/vi/shop");
+  bulkRedirect(formData, { bulk: "fixed", n: String(count) });
+}
+
 export async function bulkMarkupPricesAction(formData: FormData) {
   await requireAdmin();
   const scope = readBulkScope(formData);
+  const productType = readBulkTypeScope(formData);
   const percent = Number(formData.get("markupPercent") || 0);
   if (!Number.isFinite(percent) || percent === 0) {
     bulkRedirect(formData, { error: "bulk" });
   }
-  const count = await bulkApplyMarkupPercent({ percent, scope });
+  const count = await bulkApplyMarkupPercent({ percent, scope, productType });
   revalidatePath("/");
   revalidatePath("/en/shop");
   revalidatePath("/vi/shop");
@@ -395,11 +434,12 @@ export async function bulkMarkupPricesAction(formData: FormData) {
 export async function bulkDiscountPricesAction(formData: FormData) {
   await requireAdmin();
   const scope = readBulkScope(formData);
+  const productType = readBulkTypeScope(formData);
   const percent = Number(formData.get("discountPercent") || 0);
   if (!Number.isFinite(percent) || percent <= 0 || percent >= 100) {
     bulkRedirect(formData, { error: "bulk" });
   }
-  const count = await bulkApplyDiscountPercent({ percent, scope });
+  const count = await bulkApplyDiscountPercent({ percent, scope, productType });
   revalidatePath("/");
   revalidatePath("/en/shop");
   revalidatePath("/vi/shop");
@@ -409,7 +449,8 @@ export async function bulkDiscountPricesAction(formData: FormData) {
 export async function bulkClearDiscountsAction(formData: FormData) {
   await requireAdmin();
   const scope = readBulkScope(formData);
-  const count = await bulkClearDiscounts({ scope });
+  const productType = readBulkTypeScope(formData);
+  const count = await bulkClearDiscounts({ scope, productType });
   revalidatePath("/");
   revalidatePath("/en/shop");
   revalidatePath("/vi/shop");

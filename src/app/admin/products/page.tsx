@@ -10,7 +10,7 @@ import { listAdminProducts } from "@/lib/products";
 import { listCitiesForPricing } from "@/lib/product-city";
 import { getAdminT } from "@/lib/admin-locale";
 import { PRODUCT_SIZES, productUsesSizeLadder } from "@/lib/product-sizes";
-import { getProductType } from "@/lib/product-types";
+import { getProductType, isProductTypeSlug, PRODUCT_TYPES } from "@/lib/product-types";
 
 function fold(value: string) {
   return value
@@ -26,6 +26,7 @@ export default async function AdminProductsPage({
     saved?: string;
     q?: string;
     status?: string;
+    type?: string;
     error?: string;
     bulk?: string;
     n?: string;
@@ -39,6 +40,8 @@ export default async function AdminProductsPage({
   const sp = (await searchParams) || {};
   const q = (sp.q || "").trim();
   const status = (sp.status || "all").trim() || "all";
+  const typeRaw = (sp.type || "all").trim() || "all";
+  const typeFilter = isProductTypeSlug(typeRaw) ? typeRaw : "all";
   const qFold = fold(q);
   const bulkNotice =
     sp.bulk && sp.n
@@ -52,6 +55,12 @@ export default async function AdminProductsPage({
   const filtered = products.filter((product) => {
     if (status === "published" && !product.published) return false;
     if (status === "hidden" && product.published) return false;
+    if (
+      typeFilter !== "all" &&
+      (product.productType || "bouquet") !== typeFilter
+    ) {
+      return false;
+    }
     if (!qFold) return true;
     const hay = fold(
       [
@@ -60,6 +69,7 @@ export default async function AdminProductsPage({
         product.slug,
         product.tags.en,
         product.tags.vi,
+        product.productType || "",
       ].join(" "),
     );
     return hay.includes(qFold);
@@ -101,10 +111,21 @@ export default async function AdminProductsPage({
             <option value="hidden">{t.common.hidden}</option>
           </select>
         </label>
+        <label className="admin-filter-field">
+          <span>{t.products.filterType}</span>
+          <select name="type" defaultValue={typeFilter}>
+            <option value="all">{t.products.bulkTypeAll}</option>
+            {PRODUCT_TYPES.map((row) => (
+              <option key={row.slug} value={row.slug}>
+                {locale === "vi" ? row.nameVi : row.nameEn}
+              </option>
+            ))}
+          </select>
+        </label>
         <button type="submit" className="admin-btn secondary admin-btn-sm">
           {t.products.filterApply}
         </button>
-        {q || status !== "all" ? (
+        {q || status !== "all" || typeFilter !== "all" ? (
           <Link href="/admin/products" className="admin-btn secondary admin-btn-sm">
             {t.products.filterClear}
           </Link>
@@ -114,8 +135,10 @@ export default async function AdminProductsPage({
 
       <ProductsBulkPricing
         t={t}
+        locale={locale}
         returnQ={q}
         returnStatus={status}
+        returnType={typeFilter}
         notice={bulkNotice}
       />
 
