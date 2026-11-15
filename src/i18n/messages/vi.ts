@@ -489,6 +489,7 @@ export const vi = {
     messenger: "Messenger",
     tiktok: "TikTok",
     whatsapp: "WhatsApp",
+    zalo: "Zalo",
   },
   terms: {
     kicker: "Pháp lý",

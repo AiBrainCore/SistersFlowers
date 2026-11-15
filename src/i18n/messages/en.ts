@@ -488,6 +488,7 @@ export const en = {
     messenger: "Messenger",
     tiktok: "TikTok",
     whatsapp: "WhatsApp",
+    zalo: "Zalo",
   },
   terms: {
     kicker: "Legal",
