@@ -20,7 +20,7 @@ import {
   type CatalogSizeBand,
   type CatalogStyle,
   type CatalogSort,
-} from "@/lib/products";
+} from "@/lib/catalog-query";
 import type { AttributePublic } from "@/lib/catalog-attributes";
 import { PRODUCT_TYPES } from "@/lib/product-types";
 import { productUsesSizeLadder } from "@/lib/product-sizes";
