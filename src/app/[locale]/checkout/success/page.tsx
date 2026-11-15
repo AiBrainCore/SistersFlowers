@@ -84,12 +84,7 @@ export default async function CheckoutSuccessPage({
               </li>
             ))}
           </ul>
-          <p className="mt-4 text-xs text-moss">
-            Partner check:{" "}
-            <Link href="/voucher" className="underline">
-              /voucher
-            </Link>
-          </p>
+          <p className="mt-4 text-xs text-moss">{t.checkout.vouchersHint}</p>
         </div>
       ) : null}
 

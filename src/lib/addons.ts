@@ -21,19 +21,14 @@ export type AddonPublic = {
   sortOrder: number;
 };
 
-const VOUCHER_RULE_EN =
-  "Money voucher: use at partner; pay the difference if more; unused balance is not refunded.";
-const VOUCHER_RULE_VI =
-  "Phiếu tiền: dùng tại đối tác; thiếu thì trả thêm; dư không hoàn.";
-
 const DEFAULT_ADDONS = [
   {
     slug: "handwritten-card",
     kind: "extra",
     nameEn: "Handwritten card",
     nameVi: "Thiệp viết tay",
-    descriptionEn: "A short note with the bouquet",
-    descriptionVi: "Lời nhắn ngắn kèm bó hoa",
+    descriptionEn: "A few warm words tucked with the flowers",
+    descriptionVi: "Vài lời ấm áp gửi kèm bó hoa",
     price: 30000,
     requiresNote: true,
     partnerName: "",
@@ -47,8 +42,8 @@ const DEFAULT_ADDONS = [
     kind: "extra",
     nameEn: "Mini teddy",
     nameVi: "Gấu bông mini",
-    descriptionEn: "Small soft companion for the wrap",
-    descriptionVi: "Gấu nhỏ dễ thương kèm bó",
+    descriptionEn: "A soft little companion beside the wrap",
+    descriptionVi: "Người bạn nhỏ mềm mại bên bó hoa",
     price: 120000,
     requiresNote: false,
     partnerName: "",
@@ -62,8 +57,8 @@ const DEFAULT_ADDONS = [
     kind: "extra",
     nameEn: "Chocolate box",
     nameVi: "Hộp chocolate",
-    descriptionEn: "Sweet add-on beside the flowers",
-    descriptionVi: "Thêm ngọt bên cạnh hoa",
+    descriptionEn: "A sweet bite to enjoy with the flowers",
+    descriptionVi: "Chút ngọt ngào bên cạnh hoa",
     price: 90000,
     requiresNote: false,
     partnerName: "",
@@ -75,13 +70,13 @@ const DEFAULT_ADDONS = [
   {
     slug: "spa-massage-dalat",
     kind: "partner",
-    nameEn: "Spa money voucher 450k",
-    nameVi: "Phiếu spa 450k",
-    descriptionEn: `${VOUCHER_RULE_EN} Partner spa near the selected studio.`,
-    descriptionVi: `${VOUCHER_RULE_VI} Spa đối tác gần studio đã chọn.`,
+    nameEn: "Spa treat",
+    nameVi: "Trải nghiệm spa",
+    descriptionEn: "A relaxing spa moment near our studio",
+    descriptionVi: "Khoảnh khắc thư giãn tại spa gần studio",
     price: 450000,
     requiresNote: false,
-    partnerName: "Partner Spa",
+    partnerName: "Local spa",
     partnerCategory: "spa",
     commissionPercent: 15,
     validityDays: 90,
@@ -90,13 +85,13 @@ const DEFAULT_ADDONS = [
   {
     slug: "hotel-night-upgrade",
     kind: "partner",
-    nameEn: "Hotel money voucher 300k",
-    nameVi: "Phiếu khách sạn 300k",
-    descriptionEn: `${VOUCHER_RULE_EN} Partner hotel near the selected studio.`,
-    descriptionVi: `${VOUCHER_RULE_VI} Khách sạn đối tác gần studio đã chọn.`,
+    nameEn: "Hotel treat",
+    nameVi: "Trải nghiệm khách sạn",
+    descriptionEn: "A hotel credit for a nicer stay near the flowers",
+    descriptionVi: "Tín dụng khách sạn cho kỳ nghỉ dễ chịu hơn",
     price: 300000,
     requiresNote: true,
-    partnerName: "Partner Hotel",
+    partnerName: "Local hotel",
     partnerCategory: "hotel",
     commissionPercent: 12,
     validityDays: 90,
@@ -105,13 +100,13 @@ const DEFAULT_ADDONS = [
   {
     slug: "car-rental-day",
     kind: "partner",
-    nameEn: "Car / taxi money voucher 800k",
-    nameVi: "Phiếu xe / taxi 800k",
-    descriptionEn: `${VOUCHER_RULE_EN} Partner car / taxi.`,
-    descriptionVi: `${VOUCHER_RULE_VI} Xe / taxi đối tác.`,
+    nameEn: "Car & taxi treat",
+    nameVi: "Trải nghiệm xe / taxi",
+    descriptionEn: "Credit for a comfortable ride around town",
+    descriptionVi: "Tín dụng cho chuyến đi êm ái quanh phố",
     price: 800000,
     requiresNote: false,
-    partnerName: "Da Lat Drive Partner",
+    partnerName: "Local driver",
     partnerCategory: "car",
     commissionPercent: 10,
     validityDays: 90,
@@ -119,15 +114,31 @@ const DEFAULT_ADDONS = [
   },
 ] as const;
 
+/** Seed if empty; refresh buyer-facing copy for known default slugs. */
 async function ensureDefaultAddons() {
   const count = await prisma.addon.count();
-  if (count > 0) return;
+  if (count === 0) {
+    for (const addon of DEFAULT_ADDONS) {
+      await prisma.addon.create({
+        data: {
+          ...addon,
+          image: "",
+          active: true,
+        },
+      });
+    }
+    return;
+  }
+
   for (const addon of DEFAULT_ADDONS) {
-    await prisma.addon.create({
+    await prisma.addon.updateMany({
+      where: { slug: addon.slug },
       data: {
-        ...addon,
-        image: "",
-        active: true,
+        nameEn: addon.nameEn,
+        nameVi: addon.nameVi,
+        descriptionEn: addon.descriptionEn,
+        descriptionVi: addon.descriptionVi,
+        partnerName: addon.partnerName,
       },
     });
   }
