@@ -27,6 +27,7 @@ const staticPaths: {
   { path: "/journal", changeFrequency: "weekly", priority: 0.7 },
   { path: "/contact", changeFrequency: "monthly", priority: 0.65 },
   { path: "/terms", changeFrequency: "yearly", priority: 0.3 },
+  { path: "/return-policy", changeFrequency: "yearly", priority: 0.4 },
 ];
 
 function languageAlternates(pathWithoutLocale: string) {

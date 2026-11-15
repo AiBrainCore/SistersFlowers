@@ -17,6 +17,7 @@ export const vi = {
     journal: "Nhật ký",
     contact: "Liên hệ",
     terms: "Điều khoản",
+    returnPolicy: "Chính sách đổi trả",
     menu: "Menu",
     close: "Đóng",
     language: "Ngôn ngữ",
@@ -499,6 +500,28 @@ export const vi = {
     privacyTitle: "Bảo mật",
     privacyBody:
       "Chúng tôi dùng thông tin liên hệ chỉ để xử lý và xác nhận đơn. Không bán dữ liệu cá nhân.",
+  },
+  returnPolicy: {
+    kicker: "Chính sách",
+    title: "Chính sách đổi trả.",
+    intro:
+      "Sisters Flowers làm hoa tươi tại Đà Nẵng và Đà Lạt. Vì hoa mau héo, chúng tôi không nhận đổi, trả lại hay hoàn tiền sau khi đơn đã được xác nhận.",
+    noReturnsTitle: "Không đổi trả, không hoàn tiền",
+    noReturnsBody:
+      "Chúng tôi không nhận lại hoa và không đổi bó hoa đã hoàn thiện vì đổi ý. Hoa tươi không thể trả kho như quần áo hay đồ điện tử — sau khi cắt, cắm và rời studio thì không còn bán lại được.",
+    confirmTitle: "Xác nhận bằng ảnh trước khi giao",
+    confirmBody:
+      "Trước khi gửi hoặc trao bó hoa, khi quy trình đơn hàng cho phép, studio gửi ảnh thành phẩm để bạn duyệt. Khi bạn xác nhận bó hoa đó, đơn hàng là cuối cùng.",
+    perishableTitle: "Vì sao không nhận trả hoa",
+    perishableBody:
+      "Hoa cắt chỉ giữ được thời gian ngắn. Bó hoa trả lại sau một hai ngày đã héo và không thể bán lại an toàn. Vì vậy chính sách của chúng tôi rõ ràng: không đổi trả và không hoàn tiền cho hoa tươi đã giao hoặc đã xác nhận.",
+    studioErrorTitle: "Nếu lỗi thuộc về studio",
+    studioErrorBody:
+      "Nếu studio giao nhầm sản phẩm, hoặc hoa đến nơi hư hại rõ ràng do đóng gói / vận chuyển phía chúng tôi, hãy liên hệ ngay khi nhận kèm ảnh. Chúng tôi xem xét và đưa ra hướng xử lý công bằng — đây không phải cửa sổ đổi trả thông thường, và không áp dụng cho hoa héo sau giao bình thường hay đổi ý của khách.",
+    contactTitle: "Liên hệ",
+    contactBody:
+      "Nhắn hoặc gọi studio đã làm đơn của bạn. Chúng tôi sẵn sàng giải thích thời gian, cách giữ hoa và nội dung đã xác nhận trước khi giao.",
+    contactCta: "Liên hệ Sisters Flowers",
   },
   location: {
     deliveringIn: "Giao tại",
