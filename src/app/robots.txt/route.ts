@@ -2,7 +2,7 @@ import { siteUrl } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
-/** Explicit text robots.txt — Hostinger scanners expect Sitemap + Content-Signal lines. */
+/** Explicit text robots.txt — Sitemap + crawl rules for Search Console. */
 export function GET() {
   const sitemap = siteUrl("/sitemap.xml");
   const body = `# Sisters Flowers
@@ -11,6 +11,22 @@ Allow: /
 Disallow: /admin
 Disallow: /admin/
 Disallow: /api
+Disallow: /api/
+Disallow: /account
+Disallow: /account/
+Disallow: /en/account
+Disallow: /vi/account
+Disallow: /en/checkout
+Disallow: /vi/checkout
+Disallow: /en/unsubscribe
+Disallow: /vi/unsubscribe
+Disallow: /voucher
+Disallow: /en/classic
+Disallow: /vi/classic
+Disallow: /en/hero-3d
+Disallow: /vi/hero-3d
+Disallow: /en/hero-preview
+Disallow: /vi/hero-preview
 
 User-agent: Googlebot
 Allow: /
