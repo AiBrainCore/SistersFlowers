@@ -25,6 +25,9 @@ export const metadata: Metadata = {
   },
   description:
     "Handcrafted bouquets and gifts from Sisters Flowers. Flower delivery in Da Nang and Da Lat, Vietnam — English & Vietnamese.",
+  verification: {
+    google: "x2A3Uc3EjoMkvBm5FWlpKvh1egvj4pJ0xrIiCIpF2-c",
+  },
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },
