@@ -4,7 +4,10 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, type FormEvent } from "react";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
-import type { CatalogQuery } from "@/lib/products";
+import {
+  catalogQueryToSearchParams,
+  type CatalogQuery,
+} from "@/lib/products";
 
 /** Inline shop search — keeps other catalog filters when submitting. */
 export function ShopSearch({
@@ -26,17 +29,10 @@ export function ShopSearch({
 
   function onSubmit(event: FormEvent) {
     event.preventDefault();
-    const params = new URLSearchParams();
-    const next = q.trim();
-    if (next) params.set("q", next);
-    if (initial.category) params.set("category", initial.category);
-    if (initial.productType) params.set("type", initial.productType);
-    if (initial.sort && initial.sort !== "featured") {
-      params.set("sort", initial.sort);
-    }
-    if (initial.size) params.set("size", initial.size);
-    if (initial.accent) params.set("accent", initial.accent);
-    if (initial.style) params.set("style", initial.style);
+    const params = catalogQueryToSearchParams({
+      ...initial,
+      q: q.trim() || undefined,
+    });
     const qs = params.toString();
     router.push(`/${locale}/shop${qs ? `?${qs}` : ""}`);
   }

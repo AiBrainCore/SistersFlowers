@@ -204,6 +204,7 @@ export const en = {
     colorLabel: "Colour",
     colorMoodLabel: "Colour mood",
     styleLabel: "Bouquet style",
+    filtersHint: "Pick one or many — results update as you go.",
     sizes: {
       mini: "Small",
       classic: "Medium",

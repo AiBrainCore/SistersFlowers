@@ -49,22 +49,23 @@ export type CatalogStyle = "rose" | "mix" | "garden" | "ribbon" | "wrapped";
 
 export type CatalogQuery = {
   q?: string;
-  category?: string;
+  /** Occasion slugs (OR). */
+  categories?: string[];
   minPrice?: number;
   maxPrice?: number;
   sort?: CatalogSort;
-  /** Colour mood from product.accent */
-  accent?: string;
-  /** Bouquet style matched from tags */
-  style?: CatalogStyle;
-  /** Size band approximated from price */
-  size?: CatalogSizeBand;
-  /** CatalogAttribute slug (flower) */
-  flower?: string;
-  /** CatalogAttribute slug (color) */
-  color?: string;
-  /** CatalogAttribute slug (style) — preferred over tag style when set */
-  attrStyle?: string;
+  /** Colour moods from product.accent (OR). */
+  accents?: string[];
+  /** Bouquet styles matched from tags (OR). */
+  styles?: CatalogStyle[];
+  /** Size bands approximated from price (OR). */
+  sizes?: CatalogSizeBand[];
+  /** CatalogAttribute flower slugs (OR). */
+  flowers?: string[];
+  /** CatalogAttribute color slugs (OR). */
+  colors?: string[];
+  /** CatalogAttribute style slugs (OR). */
+  attrStyles?: string[];
   /** When set, apply city assortment (null list = all published). */
   cityProductIds?: string[] | null;
   /** Apply city/size prices after fetch. */
@@ -73,6 +74,11 @@ export type CatalogQuery = {
   /** Product kind: bouquet | flower-basket | stand-* */
   productType?: string;
 };
+
+/** @deprecated singular accessors for older call sites — prefer plural arrays. */
+export function catalogFirstCategory(query: CatalogQuery) {
+  return query.categories?.[0];
+}
 
 const SIZE_BANDS: Record<CatalogSizeBand, { min?: number; max?: number }> = {
   mini: { max: 524999 },
@@ -108,16 +114,19 @@ export async function listPublishedProducts(
   const and: object[] = [];
   const q = query.q?.trim();
 
+  const sizeBands = (query.sizes || []).filter((s) => SIZE_BANDS[s]);
   let minPrice = query.minPrice;
   let maxPrice = query.maxPrice;
-  if (query.size && SIZE_BANDS[query.size]) {
-    const band = SIZE_BANDS[query.size];
+  // Single size band can push into SQL; multiple bands stay post-filter (OR).
+  if (sizeBands.length === 1) {
+    const band = SIZE_BANDS[sizeBands[0]!];
     if (band.min != null) minPrice = band.min;
     if (band.max != null) maxPrice = band.max;
   }
 
-  // Price filters apply after city overrides when cityId is set.
-  const deferPriceFilter = Boolean(query.cityId);
+  // Price filters apply after city overrides when cityId is set, or multi size OR.
+  const deferPriceFilter =
+    Boolean(query.cityId) || sizeBands.length > 1;
   if (!deferPriceFilter) {
     if (minPrice != null && Number.isFinite(minPrice)) {
       and.push({ price: { gte: minPrice } });
@@ -127,34 +136,42 @@ export async function listPublishedProducts(
     }
   }
 
-  if (query.accent?.trim()) {
-    and.push({ accent: query.accent.trim() });
+  if (query.accents?.length) {
+    and.push({ accent: { in: query.accents } });
   }
 
-  if (query.category?.trim()) {
+  if (query.categories?.length) {
     where.categories = {
-      some: { category: { slug: query.category.trim(), active: true } },
+      some: {
+        category: { slug: { in: query.categories }, active: true },
+      },
     };
   }
 
-  if (query.flower?.trim()) {
+  if (query.flowers?.length) {
     and.push({
       attributes: {
-        some: { attribute: { slug: query.flower.trim(), kind: "flower" } },
+        some: {
+          attribute: { slug: { in: query.flowers }, kind: "flower" },
+        },
       },
     });
   }
-  if (query.color?.trim()) {
+  if (query.colors?.length) {
     and.push({
       attributes: {
-        some: { attribute: { slug: query.color.trim(), kind: "color" } },
+        some: {
+          attribute: { slug: { in: query.colors }, kind: "color" },
+        },
       },
     });
   }
-  if (query.attrStyle?.trim()) {
+  if (query.attrStyles?.length) {
     and.push({
       attributes: {
-        some: { attribute: { slug: query.attrStyle.trim(), kind: "style" } },
+        some: {
+          attribute: { slug: { in: query.attrStyles }, kind: "style" },
+        },
       },
     });
   }
@@ -191,11 +208,22 @@ export async function listPublishedProducts(
   });
 
   if (deferPriceFilter) {
-    if (minPrice != null && Number.isFinite(minPrice)) {
-      products = products.filter((p) => p.price >= minPrice);
-    }
-    if (maxPrice != null && Number.isFinite(maxPrice)) {
-      products = products.filter((p) => p.price <= maxPrice);
+    if (sizeBands.length > 1) {
+      products = products.filter((p) =>
+        sizeBands.some((id) => {
+          const band = SIZE_BANDS[id];
+          if (band.min != null && p.price < band.min) return false;
+          if (band.max != null && p.price > band.max) return false;
+          return true;
+        }),
+      );
+    } else {
+      if (minPrice != null && Number.isFinite(minPrice)) {
+        products = products.filter((p) => p.price >= minPrice!);
+      }
+      if (maxPrice != null && Number.isFinite(maxPrice)) {
+        products = products.filter((p) => p.price <= maxPrice!);
+      }
     }
   }
 
@@ -218,11 +246,13 @@ export async function listPublishedProducts(
     });
   }
 
-  if (query.style && STYLE_NEEDLES[query.style]) {
-    const needles = STYLE_NEEDLES[query.style];
+  if (query.styles?.length) {
     products = products.filter((product) => {
       const hay = stripDiacritics(`${product.tags.en} ${product.tags.vi}`);
-      return needles.some((n) => hay.includes(n));
+      return query.styles!.some((style) => {
+        const needles = STYLE_NEEDLES[style];
+        return needles?.some((n) => hay.includes(n));
+      });
     });
   }
 
@@ -380,18 +410,30 @@ export function parseCatalogSearchParams(input: {
   const one = (v?: string | string[]) =>
     typeof v === "string" ? v : Array.isArray(v) ? v[0] : undefined;
 
+  const many = (v?: string | string[]) => {
+    const parts = Array.isArray(v) ? v : v != null ? [v] : [];
+    const out: string[] = [];
+    for (const part of parts) {
+      for (const piece of String(part).split(",")) {
+        const t = piece.trim();
+        if (t && !out.includes(t)) out.push(t);
+      }
+    }
+    return out;
+  };
+
   const q = one(input.q)?.trim() || undefined;
-  const category = one(input.category)?.trim() || undefined;
+  const categories = many(input.category);
   const productType = one(input.type)?.trim() || undefined;
   const minRaw = one(input.min);
   const maxRaw = one(input.max);
   const sortRaw = one(input.sort);
-  const accent = one(input.accent)?.trim() || undefined;
-  const styleRaw = one(input.style)?.trim();
-  const sizeRaw = one(input.size)?.trim();
-  const flower = one(input.flower)?.trim() || undefined;
-  const color = one(input.color)?.trim() || undefined;
-  const attrStyle = one(input.attrStyle)?.trim() || undefined;
+  const accents = many(input.accent);
+  const styleRaw = many(input.style);
+  const sizeRaw = many(input.size);
+  const flowers = many(input.flower);
+  const colors = many(input.color);
+  const attrStyles = many(input.attrStyle);
 
   const minPrice = minRaw != null && minRaw !== "" ? Number(minRaw) : undefined;
   const maxPrice = maxRaw != null && maxRaw !== "" ? Number(maxRaw) : undefined;
@@ -404,32 +446,50 @@ export function parseCatalogSearchParams(input: {
       ? sortRaw
       : "featured";
 
-  const style =
-    styleRaw === "rose" ||
-    styleRaw === "mix" ||
-    styleRaw === "garden" ||
-    styleRaw === "ribbon" ||
-    styleRaw === "wrapped"
-      ? styleRaw
-      : undefined;
+  const styles = styleRaw.filter((s): s is CatalogStyle =>
+    s === "rose" ||
+    s === "mix" ||
+    s === "garden" ||
+    s === "ribbon" ||
+    s === "wrapped",
+  );
 
-  const size =
-    sizeRaw === "mini" || sizeRaw === "classic" || sizeRaw === "grand"
-      ? sizeRaw
-      : undefined;
+  const sizes = sizeRaw.filter((s): s is CatalogSizeBand =>
+    s === "mini" || s === "classic" || s === "grand",
+  );
 
   return {
     q,
-    category,
+    categories: categories.length ? categories : undefined,
     productType,
     minPrice: Number.isFinite(minPrice) ? minPrice : undefined,
     maxPrice: Number.isFinite(maxPrice) ? maxPrice : undefined,
     sort,
-    accent,
-    style,
-    size,
-    flower,
-    color,
-    attrStyle,
+    accents: accents.length ? accents : undefined,
+    styles: styles.length ? styles : undefined,
+    sizes: sizes.length ? sizes : undefined,
+    flowers: flowers.length ? flowers : undefined,
+    colors: colors.length ? colors : undefined,
+    attrStyles: attrStyles.length ? attrStyles : undefined,
   };
+}
+
+/** Build shop query-string from a CatalogQuery (multi values as comma lists). */
+export function catalogQueryToSearchParams(query: CatalogQuery): URLSearchParams {
+  const params = new URLSearchParams();
+  if (query.q?.trim()) params.set("q", query.q.trim());
+  if (query.categories?.length) params.set("category", query.categories.join(","));
+  if (query.productType) params.set("type", query.productType);
+  if (query.sort && query.sort !== "featured") params.set("sort", query.sort);
+  if (query.sizes?.length) params.set("size", query.sizes.join(","));
+  if (query.accents?.length) params.set("accent", query.accents.join(","));
+  if (query.styles?.length) params.set("style", query.styles.join(","));
+  if (query.flowers?.length) params.set("flower", query.flowers.join(","));
+  if (query.colors?.length) params.set("color", query.colors.join(","));
+  if (query.attrStyles?.length) {
+    params.set("attrStyle", query.attrStyles.join(","));
+  }
+  if (query.minPrice != null) params.set("min", String(query.minPrice));
+  if (query.maxPrice != null) params.set("max", String(query.maxPrice));
+  return params;
 }

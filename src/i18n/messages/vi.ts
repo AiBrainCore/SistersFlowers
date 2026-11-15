@@ -204,6 +204,7 @@ export const vi = {
     colorLabel: "Màu",
     colorMoodLabel: "Tone màu",
     styleLabel: "Kiểu bó",
+    filtersHint: "Chọn một hoặc nhiều — kết quả cập nhật theo lựa chọn.",
     sizes: {
       mini: "Nhỏ",
       classic: "Vừa",

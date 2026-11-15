@@ -94,22 +94,22 @@ export default async function ShopPage({
           colorAttrs={colorAttrs}
           initial={query}
           resultCount={products.length}
-        />
-
-        {products.length === 0 ? (
-          <p className="mt-8 text-sm text-moss">{t.shop.empty}</p>
-        ) : (
-          <div className="mt-6 grid grid-cols-2 gap-x-3 gap-y-7 sm:gap-x-4 sm:gap-y-10 md:grid-cols-3 lg:grid-cols-4">
-            {products.map((product) => (
-              <ProductCard
-                key={product.slug}
-                product={product}
-                locale={locale}
-                citySlug={activeCity.slug}
-              />
-            ))}
-          </div>
-        )}
+        >
+          {products.length === 0 ? (
+            <p className="mt-8 text-sm text-moss">{t.shop.empty}</p>
+          ) : (
+            <div className="mt-6 grid grid-cols-2 gap-x-3 gap-y-7 sm:gap-x-4 sm:gap-y-10 md:grid-cols-2 xl:grid-cols-3">
+              {products.map((product) => (
+                <ProductCard
+                  key={product.slug}
+                  product={product}
+                  locale={locale}
+                  citySlug={activeCity.slug}
+                />
+              ))}
+            </div>
+          )}
+        </CatalogFilters>
       </div>
     </div>
   );
