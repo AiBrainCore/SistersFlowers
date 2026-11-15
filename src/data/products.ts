@@ -50,6 +50,7 @@ export type Product = {
   published?: boolean;
   sortOrder?: number;
   createdAt?: Date;
+  updatedAt?: Date;
   categories?: CategoryPublic[];
   cityStock?: CityStockPublic[];
 };
@@ -99,6 +100,7 @@ export type ProductRecord = {
   published: boolean;
   sortOrder: number;
   createdAt?: Date;
+  updatedAt?: Date;
   categories?: { category: CategoryPublic }[];
   attributes?: {
     confidence?: number;
@@ -184,6 +186,7 @@ export function toProduct(record: ProductRecord): Product {
     published: record.published,
     sortOrder: record.sortOrder,
     createdAt: record.createdAt,
+    updatedAt: record.updatedAt,
     categories: record.categories?.map((link) => link.category),
     cityStock: record.cityStock?.map((row) => ({
       cityId: row.city.id,

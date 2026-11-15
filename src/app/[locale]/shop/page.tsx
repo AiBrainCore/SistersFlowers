@@ -19,15 +19,39 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,
+  searchParams,
 }: PageProps<"/[locale]/shop">): Promise<Metadata> {
   const { locale } = await params;
   if (!isLocale(locale)) return {};
   const { dictionary: t } = await getStorefrontDictionary(locale as Locale);
+  const raw = await searchParams;
+  const query = parseCatalogSearchParams(
+    raw as {
+      type?: string | string[];
+    },
+  );
+  // Indexable hub: plain /shop or a single product-type filter.
+  // Other filter combos stay canonical to /shop to avoid thin duplicates.
+  const typeOnly =
+    query.productType &&
+    !query.q &&
+    !query.categories?.length &&
+    query.minPrice == null &&
+    query.maxPrice == null &&
+    !query.accents?.length &&
+    !query.styles?.length &&
+    !query.sizes?.length &&
+    !query.flowers?.length &&
+    !query.colors?.length &&
+    !query.attrStyles?.length;
+  const pathWithoutLocale = typeOnly
+    ? `/shop?type=${encodeURIComponent(query.productType!)}`
+    : "/shop";
   return buildPageMetadata({
     locale: locale as Locale,
     title: t.shop.title,
     description: t.shop.intro,
-    pathWithoutLocale: "/shop",
+    pathWithoutLocale,
   });
 }
 
