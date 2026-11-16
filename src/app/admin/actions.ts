@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { bumpShopCatalogCache } from "@/lib/shop-cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import {
@@ -307,6 +308,7 @@ export async function saveProductAction(formData: FormData) {
   revalidatePath("/vi");
   revalidatePath("/en/shop");
   revalidatePath("/vi/shop");
+  bumpShopCatalogCache();
   redirect("/admin/products");
 }
 
@@ -361,6 +363,7 @@ export async function quickSaveProductCityPricesAction(formData: FormData) {
   revalidatePath("/");
   revalidatePath("/en/shop");
   revalidatePath("/vi/shop");
+  bumpShopCatalogCache();
   bulkRedirect(formData, { saved: "1" });
 }
 
@@ -386,6 +389,7 @@ export async function bulkSetAbsolutePricesAction(formData: FormData) {
   revalidatePath("/");
   revalidatePath("/en/shop");
   revalidatePath("/vi/shop");
+  bumpShopCatalogCache();
   bulkRedirect(formData, { bulk: "absolute", n: String(count) });
 }
 
@@ -413,6 +417,7 @@ export async function bulkSetFixedPriceAction(formData: FormData) {
   revalidatePath("/");
   revalidatePath("/en/shop");
   revalidatePath("/vi/shop");
+  bumpShopCatalogCache();
   bulkRedirect(formData, { bulk: "fixed", n: String(count) });
 }
 
@@ -428,6 +433,7 @@ export async function bulkMarkupPricesAction(formData: FormData) {
   revalidatePath("/");
   revalidatePath("/en/shop");
   revalidatePath("/vi/shop");
+  bumpShopCatalogCache();
   bulkRedirect(formData, { bulk: "markup", n: String(count) });
 }
 
@@ -443,6 +449,7 @@ export async function bulkDiscountPricesAction(formData: FormData) {
   revalidatePath("/");
   revalidatePath("/en/shop");
   revalidatePath("/vi/shop");
+  bumpShopCatalogCache();
   bulkRedirect(formData, { bulk: "discount", n: String(count) });
 }
 
@@ -454,6 +461,7 @@ export async function bulkClearDiscountsAction(formData: FormData) {
   revalidatePath("/");
   revalidatePath("/en/shop");
   revalidatePath("/vi/shop");
+  bumpShopCatalogCache();
   bulkRedirect(formData, { bulk: "clear", n: String(count) });
 }
 
@@ -465,6 +473,7 @@ export async function deleteProductAction(formData: FormData) {
   }
   revalidatePath("/en/shop");
   revalidatePath("/vi/shop");
+  bumpShopCatalogCache();
   redirect("/admin/products");
 }
 
@@ -654,6 +663,7 @@ export async function saveAddonAction(formData: FormData) {
 
   revalidatePath("/en/shop");
   revalidatePath("/vi/shop");
+  bumpShopCatalogCache();
   redirect("/admin/addons?saved=1");
 }
 
@@ -665,6 +675,7 @@ export async function deleteAddonAction(formData: FormData) {
   }
   revalidatePath("/en/shop");
   revalidatePath("/vi/shop");
+  bumpShopCatalogCache();
   redirect("/admin/addons?saved=1");
 }
 

@@ -1,3 +1,4 @@
+import { unstable_cache } from "next/cache";
 import { prisma } from "@/lib/db";
 import { toProduct, type Product } from "@/data/products";
 import { seedProductCategoriesIfEmpty } from "@/lib/categories";
@@ -10,6 +11,7 @@ import {
   type CatalogSizeBand,
   type CatalogStyle,
 } from "@/lib/catalog-query";
+import { SHOP_CATALOG_TAG } from "@/lib/shop-cache";
 
 export type {
   CatalogQuery,
@@ -357,11 +359,14 @@ function toShopCardProduct(
     storyEn: "",
     storyVi: "",
   });
-  if (citySlug) return withCityPrice(product, citySlug);
-  return {
-    ...product,
-    price: minOfferedPrice(product.sizePrices, undefined, product.price),
-  };
+  const priced = citySlug
+    ? withCityPrice(product, citySlug)
+    : {
+        ...product,
+        price: minOfferedPrice(product.sizePrices, undefined, product.price),
+      };
+  // Dates are not cache-safe via unstable_cache JSON — cards don't need them.
+  return { ...priced, createdAt: undefined, updatedAt: undefined };
 }
 
 export type ShopCatalogPage = {
@@ -372,12 +377,30 @@ export type ShopCatalogPage = {
   pageSize: number;
 };
 
-/**
- * Shop grid only — lean columns, active-city stock, real take/skip when
- * filters allow. Avoids the fat include used by PDP / admin / bot.
- */
-export async function listShopCatalogPage(
-  query: CatalogQuery = {},
+function shopCatalogCacheKey(query: CatalogQuery, kind: "page" | "count") {
+  return [
+    "shop-catalog-v1",
+    kind,
+    query.citySlug || "",
+    query.cityId || "",
+    String(query.page || 1),
+    query.q || "",
+    query.productType || "",
+    query.sort || "featured",
+    (query.categories || []).slice().sort().join(","),
+    (query.accents || []).slice().sort().join(","),
+    (query.styles || []).slice().sort().join(","),
+    (query.sizes || []).slice().sort().join(","),
+    (query.flowers || []).slice().sort().join(","),
+    (query.colors || []).slice().sort().join(","),
+    (query.attrStyles || []).slice().sort().join(","),
+    query.minPrice == null ? "" : String(query.minPrice),
+    query.maxPrice == null ? "" : String(query.maxPrice),
+  ];
+}
+
+async function listShopCatalogPageUncached(
+  query: CatalogQuery,
 ): Promise<ShopCatalogPage> {
   const built = buildCatalogWhere(query);
   const orderBy = catalogOrderBy(built.sort);
@@ -400,7 +423,6 @@ export async function listShopCatalogPage(
     const totalPages = Math.max(1, Math.ceil(total / pageSize) || 1);
     const safePage = Math.min(page, totalPages);
     const items = rows.map((row) => toShopCardProduct(row, query.citySlug));
-    // If page was past the end, re-fetch last page once.
     if (safePage !== page && total > 0) {
       const lastRows = await prisma.product.findMany({
         where: built.where,
@@ -434,10 +456,7 @@ export async function listShopCatalogPage(
   return paginateCatalog(products, query.page, pageSize);
 }
 
-/** Fast filter-drawer count — no card payload when SQL can answer. */
-export async function countShopCatalog(
-  query: CatalogQuery = {},
-): Promise<number> {
+async function countShopCatalogUncached(query: CatalogQuery): Promise<number> {
   const built = buildCatalogWhere(query);
   if (!needsMemoryPagination(query, built)) {
     return prisma.product.count({ where: built.where });
@@ -457,6 +476,31 @@ export async function countShopCatalog(
     built,
   );
   return products.length;
+}
+
+/**
+ * Shop grid only — lean columns, active-city stock, real take/skip when
+ * filters allow. 60s cache keyed by city + filters (admin bumps tag).
+ */
+export async function listShopCatalogPage(
+  query: CatalogQuery = {},
+): Promise<ShopCatalogPage> {
+  return unstable_cache(
+    () => listShopCatalogPageUncached(query),
+    shopCatalogCacheKey(query, "page"),
+    { revalidate: 60, tags: [SHOP_CATALOG_TAG] },
+  )();
+}
+
+/** Fast filter-drawer count — cached with the same shop-catalog tag. */
+export async function countShopCatalog(
+  query: CatalogQuery = {},
+): Promise<number> {
+  return unstable_cache(
+    () => countShopCatalogUncached(query),
+    shopCatalogCacheKey(query, "count"),
+    { revalidate: 60, tags: [SHOP_CATALOG_TAG] },
+  )();
 }
 
 export async function listPublishedProducts(
