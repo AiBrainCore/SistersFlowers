@@ -83,7 +83,6 @@ export function BouquetBuilder({
 
   const previewSrc = previewImageFor(selection, catalog);
   const wrapSwatch = find(active.wraps, wrapId)?.swatch ?? "#c4a574";
-  const ribbonSwatch = find(active.ribbons, ribbonId)?.swatch ?? "#c07a76";
   const moodSwatch = find(active.moods, moodId)?.swatch ?? "#e7c6c4";
 
   const summaryLines = useMemo(() => {
@@ -301,7 +300,7 @@ export function BouquetBuilder({
           </Step>
         </div>
 
-        <aside className="lg:sticky lg:top-24 h-fit space-y-6">
+        <aside className="lg:sticky lg:top-28 h-fit space-y-6">
           <div className="overflow-hidden rounded-[1.75rem] border border-forest/10 bg-[linear-gradient(165deg,#ffffff_0%,#fff7f1_55%,#f3e4d8_100%)] shadow-[0_20px_50px_rgba(44,41,38,0.08)]">
             <div className="relative aspect-[4/5] overflow-hidden sm:aspect-[5/6]">
               <Image
@@ -314,14 +313,10 @@ export function BouquetBuilder({
                 priority
               />
               <div
-                className="pointer-events-none absolute inset-0 mix-blend-soft-light opacity-55"
+                className="pointer-events-none absolute inset-0 opacity-30"
                 style={{
-                  background: `linear-gradient(145deg, ${wrapSwatch}88 0%, transparent 45%, ${moodSwatch}66 100%)`,
+                  background: `linear-gradient(160deg, ${wrapSwatch}55 0%, transparent 42%, ${moodSwatch}40 100%)`,
                 }}
-              />
-              <div
-                className="pointer-events-none absolute inset-x-[18%] bottom-[14%] h-2 rounded-full opacity-80 blur-[1px]"
-                style={{ background: ribbonSwatch }}
               />
               <div className="absolute top-4 left-4 right-4 flex items-start justify-between gap-3">
                 <p className="glass-premium rounded-full px-3 py-1.5 text-[10px] tracking-[0.16em] text-moss uppercase">

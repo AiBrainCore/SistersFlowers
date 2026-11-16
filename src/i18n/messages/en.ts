@@ -332,7 +332,7 @@ export const en = {
     },
     hints: {
       size: "How full should the bouquet feel in the hand?",
-      mood: "Pick the colour mood for your bouquet — included in the size price.",
+      mood: "Choose the colour direction for your bouquet.",
       wrap: "Studio wrapping paper styles.",
       ribbon: "A finishing bow for the wrap.",
       addons: "Optional gifts — only added when you choose them.",

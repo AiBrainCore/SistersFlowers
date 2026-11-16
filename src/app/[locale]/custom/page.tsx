@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { isLocale, type Locale } from "@/i18n/config";
@@ -7,8 +6,6 @@ import { BouquetBuilder } from "@/components/bouquet-builder";
 import { buildPageMetadata } from "@/lib/seo";
 import { DEFAULT_BUILDER_LOCATION } from "@/data/bouquet-builder";
 import { getBuilderCatalog } from "@/lib/builder-settings";
-
-const image = "/bouquets/shown/w-06.jpg";
 
 export async function generateMetadata({
   params,
@@ -34,29 +31,18 @@ export default async function CustomPage({
 
   return (
     <div>
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0">
-          <Image
-            src={image}
-            alt=""
-            fill
-            priority
-            className="object-cover object-[center_40%]"
-            sizes="100vw"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-paper via-paper/70 to-paper/25" />
-        </div>
-        <div className="relative mx-auto max-w-6xl px-4 pb-6 pt-20 sm:px-5 sm:pb-8 sm:pt-24">
+      <section className="border-b border-forest/8 bg-[linear-gradient(180deg,#fff7f0_0%,#f7efe6_100%)]">
+        <div className="mx-auto max-w-6xl px-4 pb-8 pt-24 sm:px-5 sm:pb-10 sm:pt-28">
           <h1 className="serif text-3xl text-forest sm:text-4xl lg:text-5xl">
             {t.custom.title}
           </h1>
-          <p className="mt-3 max-w-none text-sm leading-6 text-moss sm:text-[15px] sm:leading-7">
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-moss sm:text-[15px] sm:leading-7">
             {t.custom.intro}
           </p>
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 pb-16 pt-4 sm:px-5 sm:pb-20 sm:pt-5">
+      <section className="mx-auto max-w-6xl px-4 pb-16 pt-8 sm:px-5 sm:pb-20 sm:pt-10">
         <BouquetBuilder
           locale={locale}
           dictionary={t}
