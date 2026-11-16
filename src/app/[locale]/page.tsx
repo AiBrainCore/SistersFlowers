@@ -218,66 +218,6 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 py-16 sm:px-5 sm:py-20">
-        <div className="grid gap-10 lg:grid-cols-2 lg:items-end">
-          <Reveal>
-            <h2 className="serif text-4xl text-forest sm:text-5xl">
-              {t.home.deliveryTitle}
-            </h2>
-            <p className="mt-4 max-w-md text-base leading-7 text-moss">
-              {t.home.deliveryBody}
-            </p>
-            <Link
-              href={`/${locale}/delivery`}
-              className="mt-6 inline-flex min-h-11 items-center text-sm tracking-[0.08em] text-citrus uppercase border-b border-citrus/50"
-            >
-              {t.nav.delivery}
-            </Link>
-          </Reveal>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Reveal delay={1}>
-              <Link
-                href={`/${locale}/weddings`}
-                className="group flex min-h-[11rem] flex-col justify-end rounded-[1.5rem] bg-wood/15 p-6 transition duration-500 hover:-translate-y-1"
-              >
-                <h3 className="serif text-2xl text-forest">
-                  {t.home.weddingTitle}
-                </h3>
-                <p className="mt-2 text-sm leading-6 text-moss">
-                  {t.home.weddingBody}
-                </p>
-              </Link>
-            </Reveal>
-            <Reveal delay={2}>
-              <Link
-                href={`/${locale}/hotels`}
-                className="group flex min-h-[11rem] flex-col justify-end overflow-hidden rounded-[1.5rem]"
-              >
-                <div className="relative flex-1 min-h-[5rem] bg-mist">
-                  <Image
-                    src="/bouquets/b-01.jpg"
-                    alt=""
-                    fill
-                    className="object-cover transition duration-700 group-hover:scale-105"
-                    sizes="40vw"
-                    quality={65}
-                    loading="lazy"
-                  />
-                </div>
-                <div className="bg-cream/90 p-5">
-                  <h3 className="serif text-2xl text-forest">
-                    {t.home.hotelTitle}
-                  </h3>
-                  <p className="mt-2 text-sm leading-6 text-moss">
-                    {t.home.hotelBody}
-                  </p>
-                </div>
-              </Link>
-            </Reveal>
-          </div>
-        </div>
-      </section>
-
       <HomeReviews dictionary={t} />
 
       <StudiosSection
