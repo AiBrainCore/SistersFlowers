@@ -1,9 +1,11 @@
+import { unstable_cache } from "next/cache";
 import { cache } from "react";
 import { prisma } from "@/lib/db";
 import {
   FEATURED_CATEGORY_SLUGS,
   type CategoryPublic,
 } from "@/lib/category-constants";
+import { SHOP_CATEGORIES_TAG } from "@/lib/shop-cache";
 
 export type { CategoryPublic };
 export { FEATURED_CATEGORY_SLUGS };
@@ -67,32 +69,38 @@ export async function ensureDefaultCategories() {
   defaultCategoriesEnsured = true;
 }
 
-/** Request-deduped — layout + shop page share one query. */
-export const listActiveCategories = cache(
-  async (): Promise<CategoryPublic[]> => {
-    await ensureDefaultCategories();
-    const rows = await prisma.category.findMany({
-      where: { active: true },
-      orderBy: [{ sortOrder: "asc" }, { nameEn: "asc" }],
-      include: {
-        _count: {
-          select: {
-            products: {
-              where: { product: { published: true } },
-            },
+async function listActiveCategoriesUncached(): Promise<CategoryPublic[]> {
+  await ensureDefaultCategories();
+  const rows = await prisma.category.findMany({
+    where: { active: true },
+    orderBy: [{ sortOrder: "asc" }, { nameEn: "asc" }],
+    include: {
+      _count: {
+        select: {
+          products: {
+            where: { product: { published: true } },
           },
         },
       },
-    });
-    return rows.map((row) => ({
-      id: row.id,
-      slug: row.slug,
-      nameEn: row.nameEn,
-      nameVi: row.nameVi,
-      sortOrder: row.sortOrder,
-      productCount: row._count.products,
-    }));
-  },
+    },
+  });
+  return rows.map((row) => ({
+    id: row.id,
+    slug: row.slug,
+    nameEn: row.nameEn,
+    nameVi: row.nameVi,
+    sortOrder: row.sortOrder,
+    productCount: row._count.products,
+  }));
+}
+
+/** Request-deduped + 60s cross-request cache. */
+export const listActiveCategories = cache(
+  async (): Promise<CategoryPublic[]> =>
+    unstable_cache(listActiveCategoriesUncached, ["active-categories-v1"], {
+      revalidate: 60,
+      tags: [SHOP_CATEGORIES_TAG],
+    })(),
 );
 
 export async function listAllCategories() {
