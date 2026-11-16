@@ -380,8 +380,9 @@ export function ImmersiveHero({
                 priority={index === 0}
                 fetchPriority={index === 0 ? "high" : "auto"}
                 className="object-cover object-[center_22%]"
-                sizes="(min-width: 1024px) 42vw, 85vw"
-                quality={75}
+                // Stage is max ~380–480px with ~10% inset — 85vw over-fetched LCP.
+                sizes="(min-width: 1024px) 480px, (min-width: 640px) 400px, 320px"
+                quality={60}
               />
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-forest/20 via-transparent to-white/10" />
               <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-white/40" />

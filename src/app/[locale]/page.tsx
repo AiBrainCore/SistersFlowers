@@ -1,12 +1,12 @@
-import Image from "next/image";
+import Image, { getImageProps } from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { isLocale, type Locale } from "@/i18n/config";
 import { getStorefrontDictionary } from "@/lib/storefront";
-import { listPublishedProducts } from "@/lib/products";
+import { listShopCatalogPage } from "@/lib/products";
 import { listActiveCategories } from "@/lib/categories";
-import { listAvailableProductIdsForCity } from "@/lib/locations";
+import { prisma } from "@/lib/db";
 import { ProductCard } from "@/components/product-card";
 import { Reveal } from "@/components/reveal";
 import { ImmersiveHero } from "@/components/immersive-hero";
@@ -28,6 +28,10 @@ import { STUDIO_CONTACTS } from "@/lib/studio-contacts";
 const studioImage = "/bouquets/b-12.jpg";
 const personalImage = "/bouquets/b-08.jpg";
 
+/** Matches ImmersiveHero main bouquet stage — keep in sync for LCP preload. */
+const HERO_LCP_SIZES =
+  "(min-width: 1024px) 480px, (min-width: 640px) 400px, 320px";
+
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
@@ -48,24 +52,38 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
   const { dictionary: t, activeCity } = await getStorefrontDictionary(locale);
-  const cityProductIds = await listAvailableProductIdsForCity(activeCity.id);
-  const [products, categories] = await Promise.all([
-    listPublishedProducts({
-      cityProductIds,
+
+  const heroSlugs = HERO_BOUQUETS.map((entry) => entry.slug);
+  const [catalog, categories, heroPublished] = await Promise.all([
+    listShopCatalogPage({
       cityId: activeCity.id,
       citySlug: activeCity.slug,
+      page: 1,
     }),
     listActiveCategories(),
+    prisma.product.findMany({
+      where: { published: true, slug: { in: [...heroSlugs] } },
+      select: { slug: true },
+    }),
   ]);
-  const featured = products.slice(0, 8);
 
-  const heroBouquets: HeroBouquetItem[] = HERO_BOUQUETS.map((entry) => {
-    const product = products.find((p) => p.slug === entry.slug);
-    return {
-      slug: product ? product.slug : null,
-      image: entry.image,
-      name: locale === "vi" ? entry.nameVi : entry.nameEn,
-    };
+  const featured = catalog.items.slice(0, 8);
+  const heroOk = new Set(heroPublished.map((row) => row.slug));
+
+  const heroBouquets: HeroBouquetItem[] = HERO_BOUQUETS.map((entry) => ({
+    slug: heroOk.has(entry.slug) ? entry.slug : null,
+    image: entry.image,
+    name: locale === "vi" ? entry.nameVi : entry.nameEn,
+  }));
+
+  const firstHero = heroBouquets[0]!;
+  const { props: heroImageProps } = getImageProps({
+    src: firstHero.image,
+    alt: firstHero.name,
+    width: 640,
+    height: 800,
+    quality: 60,
+    sizes: HERO_LCP_SIZES,
   });
 
   const orgLd = organizationJsonLd(locale);
@@ -82,6 +100,15 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
 
   return (
     <div>
+      {/* Early LCP discovery — cuts resource-load delay before React hydrates. */}
+      <link
+        rel="preload"
+        as="image"
+        href={heroImageProps.src}
+        imageSrcSet={heroImageProps.srcSet}
+        imageSizes={HERO_LCP_SIZES}
+        fetchPriority="high"
+      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(orgLd) }}
