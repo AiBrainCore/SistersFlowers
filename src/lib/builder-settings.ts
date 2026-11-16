@@ -15,7 +15,8 @@ function asOptions(value: unknown, fallback: BuilderOption[]): BuilderOption[] {
       if (typeof o.id !== "string" || !o.id.trim()) return null;
       return {
         id: o.id.trim(),
-        price: typeof o.price === "number" && Number.isFinite(o.price) ? o.price : 0,
+        price:
+          typeof o.price === "number" && Number.isFinite(o.price) ? o.price : 0,
         swatch: typeof o.swatch === "string" ? o.swatch : undefined,
         image: typeof o.image === "string" ? o.image : undefined,
         active: o.active !== false,
@@ -31,14 +32,25 @@ function asOptions(value: unknown, fallback: BuilderOption[]): BuilderOption[] {
   return parsed.length > 0 ? parsed : fallback.map((o) => ({ ...o }));
 }
 
+/** Style choices never surcharge — keep stored prices at 0 for mood/wrap/ribbon */
+function freeStyle(options: BuilderOption[]) {
+  return options.map((o) => ({ ...o, price: 0 }));
+}
+
 function normalizeCatalog(raw: unknown): BuilderCatalog {
   const source =
     raw && typeof raw === "object" ? (raw as Record<string, unknown>) : {};
   return {
     sizes: asOptions(source.sizes, DEFAULT_BUILDER_CATALOG.sizes),
-    moods: asOptions(source.moods, DEFAULT_BUILDER_CATALOG.moods),
-    wraps: asOptions(source.wraps, DEFAULT_BUILDER_CATALOG.wraps),
-    ribbons: asOptions(source.ribbons, DEFAULT_BUILDER_CATALOG.ribbons),
+    moods: freeStyle(asOptions(source.moods, DEFAULT_BUILDER_CATALOG.moods)),
+    wraps: freeStyle(asOptions(source.wraps, DEFAULT_BUILDER_CATALOG.wraps)),
+    ribbons: freeStyle(
+      asOptions(source.ribbons, DEFAULT_BUILDER_CATALOG.ribbons),
+    ),
+    premiums: asOptions(
+      source.premiums,
+      DEFAULT_BUILDER_CATALOG.premiums,
+    ),
     addons: asOptions(source.addons, DEFAULT_BUILDER_CATALOG.addons),
   };
 }

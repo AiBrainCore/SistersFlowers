@@ -1192,6 +1192,7 @@ export async function saveBuilderSettingsAction(formData: FormData) {
     moods: parseBuilderSection(formData, "moods"),
     wraps: parseBuilderSection(formData, "wraps"),
     ribbons: parseBuilderSection(formData, "ribbons"),
+    premiums: parseBuilderSection(formData, "premiums"),
     addons: parseBuilderSection(formData, "addons"),
   });
   revalidatePath("/en/custom");
