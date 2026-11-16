@@ -1,12 +1,9 @@
 import { NextResponse } from "next/server";
 import {
-  listPublishedProducts,
+  countShopCatalog,
   parseCatalogSearchParams,
 } from "@/lib/products";
-import {
-  getActiveCity,
-  listAvailableProductIdsForCity,
-} from "@/lib/locations";
+import { getActiveCity } from "@/lib/locations";
 
 /** Live filter preview count for the shop drawer / sidebar draft. */
 export async function GET(request: Request) {
@@ -14,12 +11,10 @@ export async function GET(request: Request) {
   const raw = Object.fromEntries(url.searchParams.entries());
   const query = parseCatalogSearchParams(raw);
   const activeCity = await getActiveCity();
-  const cityProductIds = await listAvailableProductIdsForCity(activeCity.id);
-  const products = await listPublishedProducts({
+  const count = await countShopCatalog({
     ...query,
-    cityProductIds,
     cityId: activeCity.id,
     citySlug: activeCity.slug,
   });
-  return NextResponse.json({ count: products.length });
+  return NextResponse.json({ count });
 }

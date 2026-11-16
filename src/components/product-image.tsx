@@ -1,8 +1,9 @@
 import Image from "next/image";
 
 /**
- * Prefer WebP (`src`) with JPEG fallback (`fallback`) for picky clients.
- * Uses <picture> when fallback differs; otherwise standard next/image.
+ * Always go through next/image so /_next/image resizes remote WebP/JPEG.
+ * Do not put the raw Supabase URL in a <picture><source> — that bypasses
+ * the optimizer and ships multi‑MB originals (shop scroll jank).
  */
 export function ProductImage({
   src,
@@ -10,12 +11,13 @@ export function ProductImage({
   alt,
   fill,
   className,
-  sizes = "(min-width: 1024px) 25vw, 50vw",
+  sizes = "(min-width: 1280px) 33vw, 50vw",
   priority,
   quality = 72,
   unoptimized,
 }: {
   src: string;
+  /** Kept for API compat; optimizer negotiates AVIF/WebP from `src`. */
   fallback?: string | null;
   alt: string;
   fill?: boolean;
@@ -25,26 +27,7 @@ export function ProductImage({
   quality?: number;
   unoptimized?: boolean;
 }) {
-  const jpeg = fallback && fallback !== src ? fallback : null;
-
-  if (jpeg) {
-    return (
-      <picture>
-        <source srcSet={src} type="image/webp" />
-        <Image
-          src={jpeg}
-          alt={alt}
-          fill={fill}
-          className={className}
-          sizes={sizes}
-          priority={priority}
-          quality={quality}
-          unoptimized={unoptimized}
-        />
-      </picture>
-    );
-  }
-
+  void fallback;
   return (
     <Image
       src={src}

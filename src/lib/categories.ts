@@ -46,7 +46,11 @@ const ASSIGN_RULES: { slug: string; needles: string[] }[] = [
   { slug: "premium", needles: ["grand", "premium", "sang", "luxury"] },
 ];
 
+let defaultCategoriesEnsured = false;
+
+/** Idempotent — once per process. Avoids upsert storms on every shop request. */
 export async function ensureDefaultCategories() {
+  if (defaultCategoriesEnsured) return;
   for (const cat of DEFAULT_CATEGORIES) {
     await prisma.category.upsert({
       where: { slug: cat.slug },
@@ -59,6 +63,7 @@ export async function ensureDefaultCategories() {
       create: { ...cat, active: true },
     });
   }
+  defaultCategoriesEnsured = true;
 }
 
 export async function listActiveCategories(): Promise<CategoryPublic[]> {
