@@ -226,6 +226,9 @@ export const vi = {
     },
     customHint:
       "Muốn chọn giấy gói, nơ và quà kèm? Tạo bó cùng chúng tôi —",
+    previousPage: "Trước",
+    nextPage: "Sau",
+    pageLabel: "Trang cửa hàng",
   },
   product: {
     handmade: "Làm thủ công tại {city}",

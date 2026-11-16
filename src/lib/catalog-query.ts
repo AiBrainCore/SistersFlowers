@@ -9,6 +9,9 @@ export type CatalogSort = "newest" | "price-asc" | "price-desc" | "featured";
 export type CatalogSizeBand = "mini" | "classic" | "grand";
 export type CatalogStyle = "rose" | "mix" | "garden" | "ribbon" | "wrapped";
 
+/** Products per shop page — divisible by 2-col (mobile) and 3-col (xl). */
+export const SHOP_PAGE_SIZE = 24;
+
 export type CatalogQuery = {
   q?: string;
   /** Occasion slugs (OR). */
@@ -35,7 +38,27 @@ export type CatalogQuery = {
   citySlug?: string;
   /** Product kind: bouquet | flower-basket | stand-* */
   productType?: string;
+  /** 1-based page index for shop grid. */
+  page?: number;
 };
+
+export function paginateCatalog<T>(
+  items: T[],
+  page: number | undefined,
+  pageSize: number = SHOP_PAGE_SIZE,
+) {
+  const total = items.length;
+  const totalPages = Math.max(1, Math.ceil(total / pageSize) || 1);
+  const safePage = Math.min(Math.max(1, page || 1), totalPages);
+  const start = (safePage - 1) * pageSize;
+  return {
+    items: items.slice(start, start + pageSize),
+    page: safePage,
+    totalPages,
+    total,
+    pageSize,
+  };
+}
 
 /** @deprecated singular accessors for older call sites — prefer plural arrays. */
 export function catalogFirstCategory(query: CatalogQuery) {
@@ -55,6 +78,7 @@ export function parseCatalogSearchParams(input: {
   flower?: string | string[];
   color?: string | string[];
   attrStyle?: string | string[];
+  page?: string | string[];
 }): CatalogQuery {
   const one = (v?: string | string[]) =>
     typeof v === "string" ? v : Array.isArray(v) ? v[0] : undefined;
@@ -77,6 +101,7 @@ export function parseCatalogSearchParams(input: {
   const minRaw = one(input.min);
   const maxRaw = one(input.max);
   const sortRaw = one(input.sort);
+  const pageRaw = one(input.page);
   const accents = many(input.accent);
   const styleRaw = many(input.style);
   const sizeRaw = many(input.size);
@@ -86,6 +111,7 @@ export function parseCatalogSearchParams(input: {
 
   const minPrice = minRaw != null && minRaw !== "" ? Number(minRaw) : undefined;
   const maxPrice = maxRaw != null && maxRaw !== "" ? Number(maxRaw) : undefined;
+  const pageNum = pageRaw != null && pageRaw !== "" ? Number(pageRaw) : 1;
 
   const sort =
     sortRaw === "price-asc" ||
@@ -122,6 +148,8 @@ export function parseCatalogSearchParams(input: {
     flowers: flowers.length ? flowers : undefined,
     colors: colors.length ? colors : undefined,
     attrStyles: attrStyles.length ? attrStyles : undefined,
+    page:
+      Number.isFinite(pageNum) && pageNum >= 1 ? Math.floor(pageNum) : 1,
   };
 }
 
@@ -146,5 +174,8 @@ export function catalogQueryToSearchParams(
   }
   if (query.minPrice != null) params.set("min", String(query.minPrice));
   if (query.maxPrice != null) params.set("max", String(query.maxPrice));
+  if (query.page != null && query.page > 1) {
+    params.set("page", String(query.page));
+  }
   return params;
 }

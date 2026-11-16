@@ -226,6 +226,9 @@ export const en = {
     },
     customHint:
       "Want wrapping, ribbon and gift extras? Build one with us —",
+    previousPage: "Previous",
+    nextPage: "Next",
+    pageLabel: "Shop pages",
   },
   product: {
     handmade: "Handmade in {city}",

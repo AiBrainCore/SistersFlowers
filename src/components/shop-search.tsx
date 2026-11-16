@@ -29,9 +29,11 @@ export function ShopSearch({
 
   function onSubmit(event: FormEvent) {
     event.preventDefault();
+    // New search always resets to page 1.
     const params = catalogQueryToSearchParams({
       ...initial,
       q: q.trim() || undefined,
+      page: undefined,
     });
     const qs = params.toString();
     router.push(`/${locale}/shop${qs ? `?${qs}` : ""}`);
