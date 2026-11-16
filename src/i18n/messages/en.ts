@@ -458,9 +458,9 @@ export const en = {
     studios: "Find us",
     directions: "Directions",
     call: "Call",
-    seo: "Sisters Flowers is a flower shop in Da Nang and Da Lat — our own studios wrap fresh bouquets, wedding flowers, and gifts worth opening.",
+    seo: "Sisters Flowers is a flower studio in Da Nang and Da Lat, Vietnam. In our studios we craft fresh bouquets, wedding arrangements, and distinctive gifts that delight from the first moment.",
     seoExtra:
-      "Order online, pick up in studio, or ask us for flower delivery across town when we have capacity.",
+      "Order online, pick up at our studios, or arrange flower delivery in Da Nang and Da Lat.",
     localSeoTitle: "Find us by city",
     flowerShopDanang: "Flower shop in Da Nang",
     flowerDeliveryDanang: "Flower delivery in Da Nang",
