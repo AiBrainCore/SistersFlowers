@@ -127,13 +127,6 @@ export const en = {
     personalTitle: "A bouquet is only the beginning.",
     personalBody: "Card, gift, or a wrap composed just for them.",
     personalCta: "Build a custom wrap",
-    deliveryTitle: "Delivery to the door.",
-    deliveryBody:
-      "Same-day delivery in {city} when flowers are ready. Fee by distance — we confirm on Zalo or WhatsApp before you pay. For most orders we send a photo of the finished flowers before they leave.",
-    hotelTitle: "Hotels & business",
-    hotelBody: "Welcome flowers for the room.",
-    weddingTitle: "Weddings & events",
-    weddingBody: "Ceremony and quiet details.",
     promisePhotoTitle: "See it before it leaves",
     promisePhotoBody:
       "We send you a photo of the finished flowers before they head out — so you know exactly what’s arriving.",

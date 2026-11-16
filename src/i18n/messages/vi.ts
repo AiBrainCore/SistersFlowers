@@ -128,13 +128,6 @@ export const vi = {
     personalTitle: "Bó hoa chỉ là khởi đầu.",
     personalBody: "Thiệp, quà kèm, hoặc bó hoa riêng theo ý bạn.",
     personalCta: "Tạo bó theo yêu cầu",
-    deliveryTitle: "Giao tận nơi.",
-    deliveryBody:
-      "Giao trong ngày tại {city} khi hoa sẵn. Phí theo khoảng cách — xác nhận qua Zalo hoặc WhatsApp trước khi thanh toán. Hầu hết đơn chúng tôi gửi ảnh hoa đã hoàn thiện trước khi giao.",
-    hotelTitle: "Khách sạn & doanh nghiệp",
-    hotelBody: "Hoa chào trong phòng.",
-    weddingTitle: "Cưới hỏi & sự kiện",
-    weddingBody: "Lễ và chi tiết nhỏ của ngày ấy.",
     promisePhotoTitle: "Xem ảnh trước khi giao",
     promisePhotoBody:
       "Chúng tôi gửi ảnh hoa đã hoàn thiện trước khi rời tiệm — bạn biết rõ món quà sẽ tới.",
