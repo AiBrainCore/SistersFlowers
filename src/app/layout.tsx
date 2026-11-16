@@ -9,13 +9,14 @@ import "./globals.css";
 const sans = Be_Vietnam_Pro({
   variable: "--font-sans",
   subsets: ["latin", "vietnamese"],
-  weight: ["300", "400", "500", "600"],
+  // Shop/storefront use regular + medium + semibold only.
+  weight: ["400", "500", "600"],
 });
 
 const serif = Source_Serif_4({
   variable: "--font-serif",
   subsets: ["latin", "vietnamese"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "600"],
 });
 
 export const metadata: Metadata = {
