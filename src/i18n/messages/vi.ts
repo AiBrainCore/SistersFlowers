@@ -333,7 +333,7 @@ export const vi = {
     },
     hints: {
       size: "Bó cầm tay đầy đặn đến mức nào?",
-      mood: "Chọn tone màu cho bó — đã gồm trong giá theo cỡ.",
+      mood: "Chọn tone màu cho bó hoa.",
       wrap: "Kiểu giấy gói tại studio.",
       ribbon: "Nơ hoàn thiện cho bó.",
       addons: "Quà tùy chọn — chỉ thêm khi bạn chọn.",
