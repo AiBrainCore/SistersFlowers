@@ -67,6 +67,8 @@ export function ImmersiveHero({
   const suppressNav = useRef(false);
   const [pose, setPose] = useState<Pose>(REST);
   const [reduced, setReduced] = useState(false);
+  /** Defer rAF parallax until interaction / idle — cuts first-paint JS CPU. */
+  const [motionArmed, setMotionArmed] = useState(false);
   const [index, setIndex] = useState(0);
 
   const active = items[Math.min(index, items.length - 1)]!;
@@ -101,11 +103,37 @@ export function ImmersiveHero({
       setPose(REST);
       return;
     }
+    // Arm after idle so desktop hover still works without blocking TBT.
+    let idleId: number | undefined;
+    const timeoutId = window.setTimeout(() => setMotionArmed(true), 2000);
+    const ric = window.requestIdleCallback;
+    if (typeof ric === "function") {
+      idleId = ric(() => setMotionArmed(true), { timeout: 2500 });
+    }
+    return () => {
+      window.clearTimeout(timeoutId);
+      if (idleId != null && typeof window.cancelIdleCallback === "function") {
+        window.cancelIdleCallback(idleId);
+      }
+    };
+  }, [reduced]);
+
+  useEffect(() => {
+    if (reduced || !motionArmed) {
+      target.current = { ...REST };
+      current.current = { ...REST };
+      setPose(REST);
+      if (frameRef.current) {
+        cancelAnimationFrame(frameRef.current);
+        frameRef.current = null;
+      }
+      return;
+    }
     frameRef.current = requestAnimationFrame(tick);
     return () => {
       if (frameRef.current) cancelAnimationFrame(frameRef.current);
     };
-  }, [reduced, tick]);
+  }, [reduced, motionArmed, tick]);
 
   function goTo(next: number) {
     const len = items.length;
@@ -131,6 +159,7 @@ export function ImmersiveHero({
   }
 
   function onPointerMove(event: ReactPointerEvent<HTMLDivElement>) {
+    if (!reduced && !motionArmed) setMotionArmed(true);
     const session = drag.current;
     if (!session?.active) {
       if (!reduced) setFromPointer(event.clientX, event.clientY, 1);
@@ -162,6 +191,7 @@ export function ImmersiveHero({
   }
 
   function onPointerDown(event: ReactPointerEvent<HTMLDivElement>) {
+    if (!reduced) setMotionArmed(true);
     (event.currentTarget as HTMLElement).setPointerCapture(event.pointerId);
     drag.current = {
       active: true,
