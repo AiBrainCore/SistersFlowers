@@ -27,13 +27,16 @@ export function ShopBotLauncher({
     [searchParams],
   );
   const hideOnAssistant = Boolean(pathname?.includes("/assistant"));
+  // Custom builder has its own sticky Request CTA — hide Help Me Choose so it does not cover it.
+  const hideOnCustom = Boolean(pathname?.includes("/custom"));
+  const hideLauncher = hideOnAssistant || hideOnCustom;
   const [manualOpen, setManualOpen] = useState(false);
   const [dismissedAuto, setDismissedAuto] = useState(false);
 
-  const autoOpen = Boolean(deepLink.open) && !hideOnAssistant && !dismissedAuto;
+  const autoOpen = Boolean(deepLink.open) && !hideLauncher && !dismissedAuto;
   const open = manualOpen || autoOpen;
 
-  if (hideOnAssistant) return null;
+  if (hideLauncher) return null;
 
   return (
     <>

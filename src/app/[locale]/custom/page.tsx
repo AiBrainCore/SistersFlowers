@@ -6,6 +6,7 @@ import { getStorefrontDictionary } from "@/lib/storefront";
 import { BouquetBuilder } from "@/components/bouquet-builder";
 import { buildPageMetadata } from "@/lib/seo";
 import { DEFAULT_BUILDER_LOCATION } from "@/data/bouquet-builder";
+import { getBuilderCatalog } from "@/lib/builder-settings";
 
 const image = "/bouquets/shown/w-06.jpg";
 
@@ -29,6 +30,7 @@ export default async function CustomPage({
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
   const { dictionary: t } = await getStorefrontDictionary(locale);
+  const catalog = await getBuilderCatalog();
 
   return (
     <div>
@@ -58,6 +60,7 @@ export default async function CustomPage({
         <BouquetBuilder
           locale={locale}
           dictionary={t}
+          catalog={catalog}
           locationId={DEFAULT_BUILDER_LOCATION}
         />
       </section>

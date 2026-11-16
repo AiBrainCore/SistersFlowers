@@ -37,6 +37,7 @@ export async function AdminShell({
           <Link href="/admin/addons">{t.nav.addons}</Link>
           <Link href="/admin/vouchers">{t.nav.vouchers}</Link>
           <Link href="/admin/delivery">{t.nav.delivery}</Link>
+          <Link href="/admin/builder">{t.nav.builder}</Link>
           <Link href="/admin/studio-orders">{t.nav.studio}</Link>
           <Link href="/admin/orders">{t.nav.orders}</Link>
           <Link href="/admin/inquiries">{t.nav.inquiries}</Link>

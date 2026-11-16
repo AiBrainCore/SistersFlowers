@@ -1,0 +1,69 @@
+import type { Prisma } from "@prisma/client";
+import { prisma } from "@/lib/db";
+import {
+  DEFAULT_BUILDER_CATALOG,
+  type BuilderCatalog,
+  type BuilderOption,
+} from "@/data/bouquet-builder";
+
+function asOptions(value: unknown, fallback: BuilderOption[]): BuilderOption[] {
+  if (!Array.isArray(value)) return fallback.map((o) => ({ ...o }));
+  const parsed = value
+    .map((row) => {
+      if (!row || typeof row !== "object") return null;
+      const o = row as Record<string, unknown>;
+      if (typeof o.id !== "string" || !o.id.trim()) return null;
+      return {
+        id: o.id.trim(),
+        price: typeof o.price === "number" && Number.isFinite(o.price) ? o.price : 0,
+        swatch: typeof o.swatch === "string" ? o.swatch : undefined,
+        image: typeof o.image === "string" ? o.image : undefined,
+        active: o.active !== false,
+        sortOrder:
+          typeof o.sortOrder === "number" && Number.isFinite(o.sortOrder)
+            ? o.sortOrder
+            : 0,
+        labelEn: typeof o.labelEn === "string" ? o.labelEn : o.id,
+        labelVi: typeof o.labelVi === "string" ? o.labelVi : o.id,
+      } satisfies BuilderOption;
+    })
+    .filter(Boolean) as BuilderOption[];
+  return parsed.length > 0 ? parsed : fallback.map((o) => ({ ...o }));
+}
+
+function normalizeCatalog(raw: unknown): BuilderCatalog {
+  const source =
+    raw && typeof raw === "object" ? (raw as Record<string, unknown>) : {};
+  return {
+    sizes: asOptions(source.sizes, DEFAULT_BUILDER_CATALOG.sizes),
+    moods: asOptions(source.moods, DEFAULT_BUILDER_CATALOG.moods),
+    wraps: asOptions(source.wraps, DEFAULT_BUILDER_CATALOG.wraps),
+    ribbons: asOptions(source.ribbons, DEFAULT_BUILDER_CATALOG.ribbons),
+    addons: asOptions(source.addons, DEFAULT_BUILDER_CATALOG.addons),
+  };
+}
+
+export async function getBuilderCatalog(): Promise<BuilderCatalog> {
+  try {
+    const row = await prisma.builderSettings.findUnique({
+      where: { id: "default" },
+    });
+    if (!row?.catalog) {
+      return structuredClone(DEFAULT_BUILDER_CATALOG);
+    }
+    return normalizeCatalog(row.catalog);
+  } catch {
+    return structuredClone(DEFAULT_BUILDER_CATALOG);
+  }
+}
+
+export async function saveBuilderCatalog(catalog: BuilderCatalog) {
+  const normalized = normalizeCatalog(catalog);
+  const json = normalized as unknown as Prisma.InputJsonValue;
+  await prisma.builderSettings.upsert({
+    where: { id: "default" },
+    create: { id: "default", catalog: json },
+    update: { catalog: json },
+  });
+  return normalized;
+}

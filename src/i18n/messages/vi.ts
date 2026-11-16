@@ -308,12 +308,12 @@ export const vi = {
     preview: "Bó của bạn",
     previewNote:
       "Hình mang tính minh họa — bó hoàn thiện theo lựa chọn của bạn, không phải ảnh này từng cánh.",
-    estimate: "Tạm tính",
-    basePrice: "Bó cơ bản",
+    estimate: "Tổng",
+    basePrice: "Cỡ bó",
     extrasTotal: "Quà kèm",
-    deliveryNote: "Phí giao được báo riêng khi xác nhận.",
-    estimateNote:
-      "Chỉ là ước tính. Tiệm xác nhận giá cuối theo hoa sẵn có. Chưa thanh toán online.",
+    deliveryNote:
+      "Cần giao? Phí được xác nhận riêng qua Zalo hoặc WhatsApp.",
+    estimateNote: "",
     cta: "Gửi yêu cầu bó này",
     requestTitle: "Gửi yêu cầu tới tiệm",
     requestBody:
@@ -333,7 +333,7 @@ export const vi = {
     },
     hints: {
       size: "Bó cầm tay đầy đặn đến mức nào?",
-      mood: "Câu chuyện màu sắc cho món quà.",
+      mood: "Chọn tone màu cho bó — đã gồm trong giá theo cỡ.",
       wrap: "Kiểu giấy gói tại studio.",
       ribbon: "Nơ hoàn thiện cho bó.",
       addons: "Quà tùy chọn — chỉ thêm khi bạn chọn.",
@@ -342,12 +342,10 @@ export const vi = {
       mini: "Nhỏ",
       classic: "Vừa",
       grand: "Lớn",
-      luxury: "Grand",
       "soft-blush": "Hồng dịu",
       "bold-rose": "Hồng đậm",
       garden: "Màu vườn",
       "white-clean": "Kem & trắng",
-      sunset: "Hoàng hôn ấm",
       kraft: "Giấy kraft",
       pastel: "Giấy pastel",
       "deep-ink": "Gói đậm",
