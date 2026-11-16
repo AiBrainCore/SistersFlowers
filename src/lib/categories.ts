@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { prisma } from "@/lib/db";
 import {
   FEATURED_CATEGORY_SLUGS,
@@ -66,30 +67,33 @@ export async function ensureDefaultCategories() {
   defaultCategoriesEnsured = true;
 }
 
-export async function listActiveCategories(): Promise<CategoryPublic[]> {
-  await ensureDefaultCategories();
-  const rows = await prisma.category.findMany({
-    where: { active: true },
-    orderBy: [{ sortOrder: "asc" }, { nameEn: "asc" }],
-    include: {
-      _count: {
-        select: {
-          products: {
-            where: { product: { published: true } },
+/** Request-deduped — layout + shop page share one query. */
+export const listActiveCategories = cache(
+  async (): Promise<CategoryPublic[]> => {
+    await ensureDefaultCategories();
+    const rows = await prisma.category.findMany({
+      where: { active: true },
+      orderBy: [{ sortOrder: "asc" }, { nameEn: "asc" }],
+      include: {
+        _count: {
+          select: {
+            products: {
+              where: { product: { published: true } },
+            },
           },
         },
       },
-    },
-  });
-  return rows.map((row) => ({
-    id: row.id,
-    slug: row.slug,
-    nameEn: row.nameEn,
-    nameVi: row.nameVi,
-    sortOrder: row.sortOrder,
-    productCount: row._count.products,
-  }));
-}
+    });
+    return rows.map((row) => ({
+      id: row.id,
+      slug: row.slug,
+      nameEn: row.nameEn,
+      nameVi: row.nameVi,
+      sortOrder: row.sortOrder,
+      productCount: row._count.products,
+    }));
+  },
+);
 
 export async function listAllCategories() {
   await ensureDefaultCategories();

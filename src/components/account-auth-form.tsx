@@ -225,7 +225,7 @@ function GoogleMark() {
 
 function ZaloMark() {
   return (
-    <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-white text-[10px] font-bold tracking-tight text-[#0068FF]">
+    <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-white text-[10px] font-semibold tracking-tight text-[#0068FF]">
       Z
     </span>
   );

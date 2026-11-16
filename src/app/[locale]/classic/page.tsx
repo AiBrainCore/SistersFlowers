@@ -75,7 +75,7 @@ export default async function ClassicHomePage({
               <span className="italic text-citrus">{t.hero.titleAccent}</span>
               {t.hero.titleAfter}
             </h1>
-            <p className="mt-5 max-w-lg text-base font-light leading-relaxed text-ivory/90 sm:text-lg">
+            <p className="mt-5 max-w-lg text-base leading-relaxed text-ivory/90 sm:text-lg">
               {t.hero.subtitle}
             </p>
             <div className="mt-9 flex flex-wrap gap-3">

@@ -42,6 +42,16 @@ function withLocaleCookie(response: NextResponse, locale: Locale) {
   return response;
 }
 
+/** Auth cookie refresh — only where session actually matters. */
+function needsAuthRefresh(pathname: string) {
+  return (
+    pathname.startsWith("/admin") ||
+    pathname.startsWith("/api") ||
+    pathname.startsWith("/auth") ||
+    /\/(account|checkout)(\/|$)/.test(pathname)
+  );
+}
+
 async function withSupabaseSession(request: NextRequest, response: NextResponse) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
@@ -79,11 +89,14 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  if (pathname.startsWith("/_next")) {
+    return NextResponse.next();
+  }
+
   if (
     pathname.startsWith("/admin") ||
     pathname.startsWith("/api") ||
-    pathname.startsWith("/auth") ||
-    pathname.startsWith("/_next")
+    pathname.startsWith("/auth")
   ) {
     return withSupabaseSession(request, NextResponse.next());
   }
@@ -138,7 +151,11 @@ export async function middleware(request: NextRequest) {
         sameSite: "lax",
       });
     }
-    return withSupabaseSession(request, response);
+    // Public catalog/marketing pages skip Supabase getUser (saves TTFB).
+    if (needsAuthRefresh(pathname)) {
+      return withSupabaseSession(request, response);
+    }
+    return response;
   }
 
   const locale = preferredLocale(request);

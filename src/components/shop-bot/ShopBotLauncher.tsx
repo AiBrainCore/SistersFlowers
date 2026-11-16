@@ -1,11 +1,17 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useMemo, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import { parseShopBotParams } from "@/features/shop-bot/params";
-import { ShopBotPanel } from "./ShopBotPanel";
+
+/** Heavy panel/flow JS only downloads after the launcher opens. */
+const ShopBotPanel = dynamic(
+  () => import("./ShopBotPanel").then((m) => m.ShopBotPanel),
+  { ssr: false },
+);
 
 export function ShopBotLauncher({
   locale,
@@ -46,16 +52,18 @@ export function ShopBotLauncher({
           {dictionary.shopBot.launcher}
         </span>
       </button>
-      <ShopBotPanel
-        locale={locale}
-        dictionary={dictionary}
-        open={open}
-        onClose={() => {
-          setManualOpen(false);
-          setDismissedAuto(true);
-        }}
-        deepLink={deepLink}
-      />
+      {open ? (
+        <ShopBotPanel
+          locale={locale}
+          dictionary={dictionary}
+          open={open}
+          onClose={() => {
+            setManualOpen(false);
+            setDismissedAuto(true);
+          }}
+          deepLink={deepLink}
+        />
+      ) : null}
     </>
   );
 }
