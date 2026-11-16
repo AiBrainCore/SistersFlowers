@@ -307,12 +307,12 @@ export const en = {
   builder: {
     preview: "Your bouquet",
     previewNote: "Illustrative preview — the finished wrap follows your choices, not this exact photo.",
-    estimate: "Estimated total",
-    basePrice: "Base bouquet",
+    estimate: "Total",
+    basePrice: "Bouquet size",
     extrasTotal: "Extras",
-    deliveryNote: "Delivery is quoted separately at confirmation.",
-    estimateNote:
-      "Estimate only. The studio confirms the final price from available flowers. No online payment yet.",
+    deliveryNote:
+      "Need delivery? Fee is confirmed separately on Zalo or WhatsApp.",
+    estimateNote: "",
     cta: "Request this bouquet",
     requestTitle: "Send your bouquet request",
     requestBody:
@@ -332,7 +332,7 @@ export const en = {
     },
     hints: {
       size: "How full should the bouquet feel in the hand?",
-      mood: "The colour story your gift should carry.",
+      mood: "Pick the colour mood for your bouquet — included in the size price.",
       wrap: "Studio wrapping paper styles.",
       ribbon: "A finishing bow for the wrap.",
       addons: "Optional gifts — only added when you choose them.",
@@ -341,12 +341,10 @@ export const en = {
       mini: "Small",
       classic: "Medium",
       grand: "Large",
-      luxury: "Grand",
       "soft-blush": "Soft blush",
       "bold-rose": "Deep rose",
       garden: "Garden colour",
       "white-clean": "Ivory & soft",
-      sunset: "Warm sunset",
       kraft: "Kraft paper",
       pastel: "Pastel paper",
       "deep-ink": "Deep wrap",

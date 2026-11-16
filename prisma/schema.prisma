@@ -344,6 +344,13 @@ model DeliverySettings {
   updatedAt  DateTime @updatedAt
 }
 
+/// Custom bouquet builder catalog (sizes, moods, wraps, ribbons, addons).
+model BuilderSettings {
+  id        String   @id @default("default")
+  catalog   Json
+  updatedAt DateTime @updatedAt
+}
+
 model DeliveryZone {
   id        String   @id @default(cuid())
   nameEn    String

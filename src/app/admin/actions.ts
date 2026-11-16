@@ -1150,3 +1150,61 @@ export async function deleteJournalPostAction(formData: FormData) {
   revalidatePath("/vi/journal");
   redirect("/admin/journal");
 }
+
+function parseBuilderSection(formData: FormData, section: string) {
+  const ids = formData.getAll(`${section}Id`).map(String);
+  const prices = formData.getAll(`${section}Price`).map(String);
+  const labelsEn = formData.getAll(`${section}LabelEn`).map(String);
+  const labelsVi = formData.getAll(`${section}LabelVi`).map(String);
+  const swatches = formData.getAll(`${section}Swatch`).map(String);
+  const images = formData.getAll(`${section}Image`).map(String);
+  const sorts = formData.getAll(`${section}Sort`).map(String);
+  const activeFlags = formData.getAll(`${section}Active`).map(String);
+
+  return ids.flatMap((id, index) => {
+    const cleanId = id.trim();
+    if (!cleanId) return [];
+    const price = Number(prices[index] || 0);
+    const sortOrder = Number(sorts[index] || index * 10);
+    const swatch = (swatches[index] || "").trim();
+    const image = (images[index] || "").trim();
+    return [
+      {
+        id: cleanId,
+        price: Number.isFinite(price) ? Math.max(0, Math.round(price)) : 0,
+        labelEn: (labelsEn[index] || cleanId).trim(),
+        labelVi: (labelsVi[index] || cleanId).trim(),
+        swatch: swatch || undefined,
+        image: image || undefined,
+        sortOrder: Number.isFinite(sortOrder) ? sortOrder : index * 10,
+        // Checkbox posts "on" / "1" at matching index when checked via hidden+checkbox pattern below
+        active: activeFlags[index] === "1",
+      },
+    ];
+  });
+}
+
+export async function saveBuilderSettingsAction(formData: FormData) {
+  await requireAdmin();
+  const { saveBuilderCatalog } = await import("@/lib/builder-settings");
+  await saveBuilderCatalog({
+    sizes: parseBuilderSection(formData, "sizes"),
+    moods: parseBuilderSection(formData, "moods"),
+    wraps: parseBuilderSection(formData, "wraps"),
+    ribbons: parseBuilderSection(formData, "ribbons"),
+    addons: parseBuilderSection(formData, "addons"),
+  });
+  revalidatePath("/en/custom");
+  revalidatePath("/vi/custom");
+  redirect("/admin/builder?saved=1");
+}
+
+export async function resetBuilderSettingsAction() {
+  await requireAdmin();
+  const { DEFAULT_BUILDER_CATALOG } = await import("@/data/bouquet-builder");
+  const { saveBuilderCatalog } = await import("@/lib/builder-settings");
+  await saveBuilderCatalog(structuredClone(DEFAULT_BUILDER_CATALOG));
+  revalidatePath("/en/custom");
+  revalidatePath("/vi/custom");
+  redirect("/admin/builder?saved=1");
+}
