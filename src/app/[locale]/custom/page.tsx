@@ -4,7 +4,10 @@ import { isLocale, type Locale } from "@/i18n/config";
 import { getStorefrontDictionary } from "@/lib/storefront";
 import { BouquetBuilder } from "@/components/bouquet-builder";
 import { buildPageMetadata } from "@/lib/seo";
-import { DEFAULT_BUILDER_LOCATION } from "@/data/bouquet-builder";
+import {
+  DEFAULT_BUILDER_LOCATION,
+  parseBuilderQuery,
+} from "@/data/bouquet-builder";
 import { getBuilderCatalog } from "@/lib/builder-settings";
 
 export async function generateMetadata({
@@ -23,11 +26,14 @@ export async function generateMetadata({
 
 export default async function CustomPage({
   params,
+  searchParams,
 }: PageProps<"/[locale]/custom">) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
   const { dictionary: t } = await getStorefrontDictionary(locale);
   const catalog = await getBuilderCatalog();
+  const query = await searchParams;
+  const initialSelection = parseBuilderQuery(query, catalog);
 
   return (
     <div>
@@ -48,6 +54,7 @@ export default async function CustomPage({
           dictionary={t}
           catalog={catalog}
           locationId={DEFAULT_BUILDER_LOCATION}
+          initialSelection={initialSelection}
         />
       </section>
     </div>

@@ -1,7 +1,9 @@
 /**
- * Bouquet builder catalog — defaults + helpers.
- * Live prices/options are editable in Admin → Bouquet builder
- * and stored in BuilderSettings (falls back to these defaults).
+ * Custom bouquet builder catalog (V3 rules).
+ * - S/M/L size = base price
+ * - Colour mood / standard wrap / ribbon = free style direction
+ * - Premiums + gift extras = optional paid add-ons (admin-configured)
+ * Florist chooses actual stems/species from availability.
  */
 export type BuilderLocationId = "dalat" | "danang";
 
@@ -9,7 +11,7 @@ export type BuilderOption = {
   id: string;
   price: number;
   swatch?: string;
-  /** Representative studio photo — illustrative, not an exact final product */
+  /** Optional reference image — not required for V3 swatch UI */
   image?: string;
   active?: boolean;
   sortOrder?: number;
@@ -22,12 +24,14 @@ export type BuilderCatalog = {
   moods: BuilderOption[];
   wraps: BuilderOption[];
   ribbons: BuilderOption[];
+  /** Paid upgrades (premium materials, floral upgrades) — admin configured */
+  premiums: BuilderOption[];
   addons: BuilderOption[];
 };
 
 export const DEFAULT_BUILDER_LOCATION: BuilderLocationId = "danang";
 
-/** Three compact sizes — Small / Medium / Large */
+/** Three sizes — Small / Medium / Large (no XL) */
 export const builderSizes: BuilderOption[] = [
   {
     id: "mini",
@@ -58,13 +62,12 @@ export const builderSizes: BuilderOption[] = [
   },
 ];
 
-/** Four colour moods — included in the size price (no upsell label) */
+/** Colour moods — always free */
 export const builderMoods: BuilderOption[] = [
   {
     id: "soft-blush",
     price: 0,
     swatch: "#f0d5d2",
-    image: "/bouquets/shown/w-06.jpg",
     active: true,
     sortOrder: 10,
     labelEn: "Soft blush",
@@ -74,7 +77,6 @@ export const builderMoods: BuilderOption[] = [
     id: "bold-rose",
     price: 0,
     swatch: "#9b3d45",
-    image: "/bouquets/shown/w-08.jpg",
     active: true,
     sortOrder: 20,
     labelEn: "Deep rose",
@@ -84,7 +86,6 @@ export const builderMoods: BuilderOption[] = [
     id: "garden",
     price: 0,
     swatch: "#8b9a7d",
-    image: "/bouquets/shown/w-09.jpg",
     active: true,
     sortOrder: 30,
     labelEn: "Garden colour",
@@ -94,57 +95,63 @@ export const builderMoods: BuilderOption[] = [
     id: "white-clean",
     price: 0,
     swatch: "#f6f0e6",
-    image: "/bouquets/shown/w-05.jpg",
     active: true,
     sortOrder: 40,
     labelEn: "Ivory & soft",
     labelVi: "Trắng mềm",
   },
+  {
+    id: "sunset",
+    price: 0,
+    swatch: "#d4926a",
+    active: true,
+    sortOrder: 50,
+    labelEn: "Warm sunset",
+    labelVi: "Hoàng hôn ấm",
+  },
 ];
 
+/** Standard wrapping colours — always free */
 export const builderWraps: BuilderOption[] = [
   {
     id: "kraft",
     price: 0,
     swatch: "#c4a574",
-    image: "/bouquets/shown/w-10.jpg",
     active: true,
     sortOrder: 10,
-    labelEn: "Kraft paper",
-    labelVi: "Giấy kraft",
+    labelEn: "Kraft",
+    labelVi: "Kraft",
   },
   {
     id: "pastel",
-    price: 30000,
+    price: 0,
     swatch: "#e8d4e0",
-    image: "/bouquets/shown/w-07.jpg",
     active: true,
     sortOrder: 20,
-    labelEn: "Pastel paper",
-    labelVi: "Giấy pastel",
+    labelEn: "Pastel",
+    labelVi: "Pastel",
   },
   {
     id: "deep-ink",
-    price: 50000,
+    price: 0,
     swatch: "#3a2f35",
-    image: "/bouquets/shown/w-01.jpg",
     active: true,
     sortOrder: 30,
-    labelEn: "Deep wrap",
-    labelVi: "Giấy đậm",
+    labelEn: "Deep ink",
+    labelVi: "Đậm",
   },
   {
-    id: "sheer",
-    price: 40000,
-    swatch: "#efe8f2",
-    image: "/bouquets/shown/w-02.jpg",
+    id: "cream",
+    price: 0,
+    swatch: "#f3ebe0",
     active: true,
     sortOrder: 40,
-    labelEn: "Soft sheer layer",
-    labelVi: "Lớp sheer",
+    labelEn: "Cream",
+    labelVi: "Kem",
   },
 ];
 
+/** Standard ribbon colours — always free */
 export const builderRibbons: BuilderOption[] = [
   {
     id: "satin",
@@ -152,26 +159,57 @@ export const builderRibbons: BuilderOption[] = [
     swatch: "#c07a76",
     active: true,
     sortOrder: 10,
-    labelEn: "Satin ribbon",
-    labelVi: "Nơ satin",
+    labelEn: "Blush satin",
+    labelVi: "Satin hồng",
   },
   {
-    id: "wide-bow",
-    price: 40000,
+    id: "citrus",
+    price: 0,
     swatch: "#e86a2b",
     active: true,
     sortOrder: 20,
-    labelEn: "Wide bow",
-    labelVi: "Nơ rộng",
+    labelEn: "Citrus",
+    labelVi: "Cam cháy",
   },
   {
     id: "pearl",
-    price: 60000,
+    price: 0,
     swatch: "#d9d0c3",
     active: true,
     sortOrder: 30,
-    labelEn: "Pearl ribbon",
-    labelVi: "Nơ pearl",
+    labelEn: "Pearl",
+    labelVi: "Ngọc trai",
+  },
+  {
+    id: "forest",
+    price: 0,
+    swatch: "#2f3b32",
+    active: true,
+    sortOrder: 40,
+    labelEn: "Forest",
+    labelVi: "Rừng",
+  },
+];
+
+/** Optional paid upgrades — only what admin enables */
+export const builderPremiums: BuilderOption[] = [
+  {
+    id: "silk-wrap",
+    price: 80000,
+    swatch: "#c9b8a8",
+    active: true,
+    sortOrder: 10,
+    labelEn: "Premium silk wrap",
+    labelVi: "Giấy lụa cao cấp",
+  },
+  {
+    id: "extra-blooms",
+    price: 150000,
+    swatch: "#c24712",
+    active: true,
+    sortOrder: 20,
+    labelEn: "Extra seasonal blooms",
+    labelVi: "Thêm hoa theo mùa",
   },
 ];
 
@@ -179,56 +217,34 @@ export const builderAddons: BuilderOption[] = [
   {
     id: "card",
     price: 30000,
-    image: "/bouquets/clean/p05.jpg",
     active: true,
     sortOrder: 10,
     labelEn: "Handwritten card",
     labelVi: "Thiệp viết tay",
   },
   {
-    id: "dried",
-    price: 50000,
-    image: "/bouquets/clean/p08.jpg",
-    active: true,
-    sortOrder: 20,
-    labelEn: "Dried accent",
-    labelVi: "Hoa khô điểm",
-  },
-  {
     id: "teddy",
     price: 120000,
-    image: "/bouquets/clean/p03.jpg",
     active: true,
-    sortOrder: 30,
+    sortOrder: 20,
     labelEn: "Mini teddy",
     labelVi: "Gấu nhỏ",
   },
   {
     id: "chocolate",
     price: 90000,
-    image: "/bouquets/clean/p10.jpg",
     active: true,
-    sortOrder: 40,
+    sortOrder: 30,
     labelEn: "Chocolate",
     labelVi: "Socola",
   },
   {
     id: "balloon",
     price: 70000,
-    image: "/bouquets/clean/p01.jpg",
     active: true,
-    sortOrder: 50,
+    sortOrder: 40,
     labelEn: "Balloon",
     labelVi: "Bóng bay",
-  },
-  {
-    id: "led",
-    price: 80000,
-    image: "/bouquets/clean/p12.jpg",
-    active: true,
-    sortOrder: 60,
-    labelEn: "LED lights",
-    labelVi: "Đèn LED",
   },
 ];
 
@@ -237,6 +253,7 @@ export const DEFAULT_BUILDER_CATALOG: BuilderCatalog = {
   moods: builderMoods,
   wraps: builderWraps,
   ribbons: builderRibbons,
+  premiums: builderPremiums,
   addons: builderAddons,
 };
 
@@ -245,6 +262,7 @@ export type BuilderSelection = {
   moodId: string;
   wrapId: string;
   ribbonId: string;
+  premiumIds: string[];
   addonIds: string[];
 };
 
@@ -261,6 +279,7 @@ export function activeBuilderCatalog(catalog: BuilderCatalog): BuilderCatalog {
     moods: sortActive(catalog.moods),
     wraps: sortActive(catalog.wraps),
     ribbons: sortActive(catalog.ribbons),
+    premiums: sortActive(catalog.premiums ?? []),
     addons: sortActive(catalog.addons),
   };
 }
@@ -284,14 +303,16 @@ export function calcBuilderBreakdown(
   const mood = active.moods.find((o) => o.id === input.moodId);
   const wrap = active.wraps.find((o) => o.id === input.wrapId);
   const ribbon = active.ribbons.find((o) => o.id === input.ribbonId);
-  const addons = input.addonIds
+  const premiums = (input.premiumIds ?? [])
+    .map((id) => active.premiums.find((o) => o.id === id))
+    .filter(Boolean) as BuilderOption[];
+  const addons = (input.addonIds ?? [])
     .map((id) => active.addons.find((o) => o.id === id))
     .filter(Boolean) as BuilderOption[];
 
+  // V3 rule: mood / standard wrap / ribbon never surcharge
   const sizePrice = size?.price ?? 0;
-  const moodPrice = mood?.price ?? 0;
-  const wrapPrice = wrap?.price ?? 0;
-  const ribbonPrice = ribbon?.price ?? 0;
+  const premiumsPrice = premiums.reduce((sum, o) => sum + o.price, 0);
   const addonsPrice = addons.reduce((sum, o) => sum + o.price, 0);
 
   return {
@@ -299,13 +320,15 @@ export function calcBuilderBreakdown(
     mood,
     wrap,
     ribbon,
+    premiums,
     addons,
     sizePrice,
-    moodPrice,
-    wrapPrice,
-    ribbonPrice,
+    moodPrice: 0,
+    wrapPrice: 0,
+    ribbonPrice: 0,
+    premiumsPrice,
     addonsPrice,
-    subtotal: sizePrice + moodPrice + wrapPrice + ribbonPrice + addonsPrice,
+    subtotal: sizePrice + premiumsPrice + addonsPrice,
   };
 }
 
@@ -316,10 +339,107 @@ export function calcBuilderTotal(
   return calcBuilderBreakdown(input, catalog).subtotal;
 }
 
-export function previewImageFor(
-  input: BuilderSelection,
+/** Compact share query — no PII */
+export function serializeBuilderQuery(selection: BuilderSelection): string {
+  const params = new URLSearchParams();
+  params.set("size", selection.sizeId);
+  params.set("mood", selection.moodId);
+  params.set("wrap", selection.wrapId);
+  params.set("ribbon", selection.ribbonId);
+  if (selection.premiumIds.length) {
+    params.set("premium", selection.premiumIds.join(","));
+  }
+  if (selection.addonIds.length) {
+    params.set("extras", selection.addonIds.join(","));
+  }
+  return params.toString();
+}
+
+export function parseBuilderQuery(
+  raw: Record<string, string | string[] | undefined> | URLSearchParams,
   catalog: BuilderCatalog = DEFAULT_BUILDER_CATALOG,
+): Partial<BuilderSelection> {
+  const get = (key: string) => {
+    if (raw instanceof URLSearchParams) return raw.get(key) ?? undefined;
+    const v = raw[key];
+    return Array.isArray(v) ? v[0] : v;
+  };
+  const active = activeBuilderCatalog(catalog);
+  const sizeId = get("size");
+  const moodId = get("mood");
+  const wrapId = get("wrap");
+  const ribbonId = get("ribbon");
+  const premiumRaw = get("premium") ?? "";
+  const extrasRaw = get("extras") ?? "";
+
+  const premiumIds = premiumRaw
+    .split(",")
+    .map((s) => s.trim())
+    .filter((id) => active.premiums.some((o) => o.id === id));
+  const addonIds = extrasRaw
+    .split(",")
+    .map((s) => s.trim())
+    .filter((id) => active.addons.some((o) => o.id === id));
+
+  return {
+    sizeId: sizeId && active.sizes.some((o) => o.id === sizeId) ? sizeId : undefined,
+    moodId: moodId && active.moods.some((o) => o.id === moodId) ? moodId : undefined,
+    wrapId: wrapId && active.wraps.some((o) => o.id === wrapId) ? wrapId : undefined,
+    ribbonId:
+      ribbonId && active.ribbons.some((o) => o.id === ribbonId) ? ribbonId : undefined,
+    premiumIds,
+    addonIds,
+  };
+}
+
+export function buildOrderSnapshot(
+  selection: BuilderSelection,
+  catalog: BuilderCatalog,
+  locale: "en" | "vi",
+  cityLabel: string,
+  specialRequest?: string,
 ) {
-  const mood = catalog.moods.find((o) => o.id === input.moodId);
-  return mood?.image ?? "/bouquets/shown/w-06.jpg";
+  const b = calcBuilderBreakdown(selection, catalog);
+  const L = (o: BuilderOption | undefined, id: string) =>
+    optionLabel(o, locale, id);
+  const lines = [
+    `Sisters Flowers — Custom bouquet request`,
+    `City: ${cityLabel}`,
+    `Size: ${L(b.size, selection.sizeId)} — ${b.sizePrice}`,
+    `Colour mood: ${L(b.mood, selection.moodId)} (included)`,
+    `Wrapping: ${L(b.wrap, selection.wrapId)} (included)`,
+    `Ribbon: ${L(b.ribbon, selection.ribbonId)} (included)`,
+    `Premiums: ${
+      b.premiums.length
+        ? b.premiums.map((p) => `${L(p, p.id)} +${p.price}`).join("; ")
+        : "none"
+    }`,
+    `Gifts: ${
+      b.addons.length
+        ? b.addons.map((a) => `${L(a, a.id)} +${a.price}`).join("; ")
+        : "none"
+    }`,
+    `Quoted total (VND): ${b.subtotal}`,
+    `Note: Florist chooses stems/species from availability. Style preview is illustrative.`,
+  ];
+  if (specialRequest?.trim()) {
+    lines.push(
+      `Special request (florist review — price not auto-added): ${specialRequest.trim()}`,
+    );
+  }
+  lines.push(
+    `Snapshot: ${JSON.stringify({
+      sizeId: selection.sizeId,
+      moodId: selection.moodId,
+      wrapId: selection.wrapId,
+      ribbonId: selection.ribbonId,
+      premiumIds: selection.premiumIds,
+      addonIds: selection.addonIds,
+      sizePrice: b.sizePrice,
+      premiumsPrice: b.premiumsPrice,
+      addonsPrice: b.addonsPrice,
+      subtotal: b.subtotal,
+    })}`,
+  );
+  return lines.join("\n");
 }

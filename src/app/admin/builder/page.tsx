@@ -7,7 +7,13 @@ import { getBuilderCatalog } from "@/lib/builder-settings";
 import { getAdminT } from "@/lib/admin-locale";
 import type { BuilderOption } from "@/data/bouquet-builder";
 
-type SectionKey = "sizes" | "moods" | "wraps" | "ribbons" | "addons";
+type SectionKey =
+  | "sizes"
+  | "moods"
+  | "wraps"
+  | "ribbons"
+  | "premiums"
+  | "addons";
 
 function OptionRows({
   section,
@@ -133,6 +139,11 @@ export default async function AdminBuilderPage({
       { key: "moods", title: t.builder.moods, options: catalog.moods },
       { key: "wraps", title: t.builder.wraps, options: catalog.wraps },
       { key: "ribbons", title: t.builder.ribbons, options: catalog.ribbons },
+      {
+        key: "premiums",
+        title: t.builder.premiums,
+        options: catalog.premiums,
+      },
       { key: "addons", title: t.builder.addons, options: catalog.addons },
     ];
 
