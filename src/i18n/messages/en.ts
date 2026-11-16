@@ -121,7 +121,7 @@ export const en = {
     handmade: "Wrapped by hand",
     gifting: "Cards & extras",
     local: "Doorstep delivery",
-    featured: "Bouquets guests love",
+    featured: "Flowers guests love",
     viewAll: "See all flowers",
     personalKicker: "Make it theirs",
     personalTitle: "A bouquet is only the beginning.",
@@ -129,20 +129,20 @@ export const en = {
     personalCta: "Build a custom wrap",
     deliveryTitle: "Delivery to the door.",
     deliveryBody:
-      "Same-day windows in {city} when flowers are ready. Fee by distance — confirmed on WhatsApp before you pay. We send a photo of the finished bouquet before most deliveries.",
+      "Same-day delivery in {city} when flowers are ready. Fee by distance — we confirm on Zalo or WhatsApp before you pay. For most orders we send a photo of the finished flowers before they leave.",
     hotelTitle: "Hotels & business",
     hotelBody: "Welcome flowers for the room.",
     weddingTitle: "Weddings & events",
     weddingBody: "Ceremony and quiet details.",
-    promisePhotoTitle: "Photo before delivery",
+    promisePhotoTitle: "See it before it leaves",
     promisePhotoBody:
-      "For most orders we share a photo of the finished wrap before it leaves the studio.",
+      "We send you a photo of the finished flowers before they head out — so you know exactly what’s arriving.",
     promiseSameDayTitle: "Same-day when we can",
     promiseSameDayBody:
-      "Order earlier in the day for {city}. Exact timing is confirmed with the studio on WhatsApp.",
+      "Order earlier and we’ll aim for today in {city}. We’ll confirm the time with you on Zalo or WhatsApp.",
     promiseOverseasTitle: "Order from anywhere",
     promiseOverseasBody:
-      "English & Vietnamese support. Browse online, then confirm details and payment on WhatsApp — PayPal, Wise or bank transfer as agreed.",
+      "Message us in Vietnamese or English. Choose flowers here, then finish details and payment on Zalo or WhatsApp — PayPal, Wise, or bank transfer as agreed.",
     reviewsKicker: "From guests",
     reviewsTitle: "Trusted for local delivery.",
     reviewsBody:
