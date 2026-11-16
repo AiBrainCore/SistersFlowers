@@ -14,10 +14,13 @@ export function ProductCard({
   product,
   locale,
   citySlug,
+  priority = false,
 }: {
   product: Product;
   locale: Locale;
   citySlug?: string;
+  /** First-row cards — improves LCP on shop. */
+  priority?: boolean;
 }) {
   const usesLadder = productUsesSizeLadder(product.productType);
   const from = usesLadder && hasAnySizePrice(product.sizePrices);
@@ -44,8 +47,9 @@ export function ProductCard({
           fallback={product.imageFallback}
           alt={product.names[locale]}
           fill
+          priority={priority}
           className="object-cover transition duration-700 ease-out group-hover:scale-[1.05] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
-          sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
+          sizes="(min-width: 1280px) 33vw, 50vw"
         />
         <span className="absolute left-2 top-2 rounded-full bg-cream/95 px-2.5 py-1 text-[10px] tracking-[0.12em] text-forest uppercase shadow-sm">
           {typeLabel}

@@ -3,13 +3,11 @@ import type { Metadata } from "next";
 import { isLocale, type Locale } from "@/i18n/config";
 import { getStorefrontDictionary } from "@/lib/storefront";
 import {
-  listPublishedProducts,
-  paginateCatalog,
+  listShopCatalogPage,
   parseCatalogSearchParams,
 } from "@/lib/products";
 import { listActiveCategories } from "@/lib/categories";
 import { listAttributesForFilterChips } from "@/lib/catalog-attributes";
-import { listAvailableProductIdsForCity } from "@/lib/locations";
 import { ProductCard } from "@/components/product-card";
 import { CatalogFilters } from "@/components/catalog-filters";
 import { CatalogPagination } from "@/components/catalog-pagination";
@@ -82,23 +80,21 @@ export default async function ShopPage({
       page?: string | string[];
     },
   );
-  const cityProductIds = await listAvailableProductIdsForCity(activeCity.id);
-  const [allProducts, categories, flowerAttrs, colorAttrs] = await Promise.all([
-    listPublishedProducts({
-      ...query,
-      cityProductIds,
-      cityId: activeCity.id,
-      citySlug: activeCity.slug,
-    }),
+
+  const catalogQuery = {
+    ...query,
+    cityId: activeCity.id,
+    citySlug: activeCity.slug,
+  };
+
+  const [catalog, categories, flowerAttrs, colorAttrs] = await Promise.all([
+    listShopCatalogPage(catalogQuery),
     listActiveCategories(),
     listAttributesForFilterChips("flower"),
     listAttributesForFilterChips("color"),
   ]);
 
-  const { items: products, page, totalPages, total } = paginateCatalog(
-    allProducts,
-    query.page,
-  );
+  const { items: products, page, totalPages, total } = catalog;
 
   return (
     <div className="relative overflow-hidden">
@@ -134,12 +130,13 @@ export default async function ShopPage({
             <>
               {/* 2 cols mobile/tablet · 3 cols xl — 24 items fill evenly (12×2 / 8×3) */}
               <div className="mt-6 grid grid-cols-2 gap-x-3 gap-y-7 sm:gap-x-4 sm:gap-y-10 md:grid-cols-2 xl:grid-cols-3">
-                {products.map((product) => (
+                {products.map((product, index) => (
                   <ProductCard
                     key={product.slug}
                     product={product}
                     locale={locale}
                     citySlug={activeCity.slug}
+                    priority={index < 4}
                   />
                 ))}
               </div>

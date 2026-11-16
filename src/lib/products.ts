@@ -3,10 +3,12 @@ import { toProduct, type Product } from "@/data/products";
 import { seedProductCategoriesIfEmpty } from "@/lib/categories";
 import { withCityPrice } from "@/lib/product-city";
 import { minOfferedPrice } from "@/lib/product-sizes";
-import type {
-  CatalogQuery,
-  CatalogSizeBand,
-  CatalogStyle,
+import {
+  paginateCatalog,
+  SHOP_PAGE_SIZE,
+  type CatalogQuery,
+  type CatalogSizeBand,
+  type CatalogStyle,
 } from "@/lib/catalog-query";
 
 export type {
@@ -74,40 +76,51 @@ const STYLE_NEEDLES: Record<CatalogStyle, string[]> = {
   wrapped: ["wrap", "wrapped"],
 };
 
-export async function listPublishedProducts(
-  query: CatalogQuery = {},
-): Promise<Product[]> {
-  await seedProductCategoriesIfEmpty();
+type CatalogWhere = {
+  published: boolean;
+  id?: { in: string[] };
+  productType?: string;
+  AND?: object[];
+  categories?: object;
+};
 
-  const where: {
-    published: boolean;
-    id?: { in: string[] };
-    productType?: string;
-    AND?: object[];
-    categories?: object;
-  } = { published: true };
-
-  if (query.productType?.trim()) {
-    where.productType = query.productType.trim();
-  }
-
-  const and: object[] = [];
-  const q = query.q?.trim();
-
+function resolvePriceBounds(query: CatalogQuery) {
   const sizeBands = (query.sizes || []).filter((s) => SIZE_BANDS[s]);
   let minPrice = query.minPrice;
   let maxPrice = query.maxPrice;
-  // Single size band can push into SQL; multiple bands stay post-filter (OR).
   if (sizeBands.length === 1) {
     const band = SIZE_BANDS[sizeBands[0]!];
     if (band.min != null) minPrice = band.min;
     if (band.max != null) maxPrice = band.max;
   }
+  return { sizeBands, minPrice, maxPrice };
+}
 
-  // Price filters apply after city overrides when cityId is set, or multi size OR.
-  const deferPriceFilter =
-    Boolean(query.cityId) || sizeBands.length > 1;
-  if (!deferPriceFilter) {
+/** Price filters need city overrides in JS; multi size bands are OR in JS. */
+function deferPriceFilter(query: CatalogQuery, sizeBands: CatalogSizeBand[]) {
+  return Boolean(query.cityId) || sizeBands.length > 1;
+}
+
+function buildCatalogWhere(query: CatalogQuery): {
+  where: CatalogWhere;
+  q?: string;
+  sizeBands: CatalogSizeBand[];
+  minPrice?: number;
+  maxPrice?: number;
+  deferPrice: boolean;
+  sort: NonNullable<CatalogQuery["sort"]> | "featured";
+} {
+  const where: CatalogWhere = { published: true };
+  if (query.productType?.trim()) {
+    where.productType = query.productType.trim();
+  }
+
+  const and: object[] = [];
+  const q = query.q?.trim() || undefined;
+  const { sizeBands, minPrice, maxPrice } = resolvePriceBounds(query);
+  const deferPrice = deferPriceFilter(query, sizeBands);
+
+  if (!deferPrice) {
     if (minPrice != null && Number.isFinite(minPrice)) {
       and.push({ price: { gte: minPrice } });
     }
@@ -156,41 +169,53 @@ export async function listPublishedProducts(
     });
   }
 
-  if (query.cityProductIds) {
+  // Prefer relational city block over a huge `id IN (...)` list.
+  if (query.cityId) {
+    and.push({
+      NOT: {
+        cityStock: {
+          some: { cityId: query.cityId, available: false },
+        },
+      },
+    });
+  } else if (query.cityProductIds) {
     where.id = { in: query.cityProductIds };
   }
 
   if (and.length) where.AND = and;
 
   const sort = query.sort || "featured";
-  const orderBy =
-    sort === "price-asc"
-      ? [{ price: "asc" as const }, { sortOrder: "asc" as const }]
-      : sort === "price-desc"
-        ? [{ price: "desc" as const }, { sortOrder: "asc" as const }]
-        : sort === "newest"
-          ? [{ createdAt: "desc" as const }]
-          : [{ sortOrder: "asc" as const }, { createdAt: "asc" as const }];
+  return { where, q, sizeBands, minPrice, maxPrice, deferPrice, sort };
+}
 
-  const rows = await prisma.product.findMany({
-    where,
-    include: productInclude,
-    orderBy,
-  });
+function catalogOrderBy(sort: string) {
+  return sort === "price-asc"
+    ? [{ price: "asc" as const }, { sortOrder: "asc" as const }]
+    : sort === "price-desc"
+      ? [{ price: "desc" as const }, { sortOrder: "asc" as const }]
+      : sort === "newest"
+        ? [{ createdAt: "desc" as const }]
+        : [{ sortOrder: "asc" as const }, { createdAt: "asc" as const }];
+}
 
-  let products = rows.map((row) => {
-    const product = toProduct(row);
-    if (query.citySlug) return withCityPrice(product, query.citySlug);
-    return {
-      ...product,
-      price: minOfferedPrice(product.sizePrices, undefined, product.price),
-    };
-  });
+function applyPostFilters(
+  products: Product[],
+  query: CatalogQuery,
+  opts: {
+    q?: string;
+    sizeBands: CatalogSizeBand[];
+    minPrice?: number;
+    maxPrice?: number;
+    deferPrice: boolean;
+    sort: string;
+  },
+) {
+  let next = products;
 
-  if (deferPriceFilter) {
-    if (sizeBands.length > 1) {
-      products = products.filter((p) =>
-        sizeBands.some((id) => {
+  if (opts.deferPrice) {
+    if (opts.sizeBands.length > 1) {
+      next = next.filter((p) =>
+        opts.sizeBands.some((id) => {
           const band = SIZE_BANDS[id];
           if (band.min != null && p.price < band.min) return false;
           if (band.max != null && p.price > band.max) return false;
@@ -198,19 +223,18 @@ export async function listPublishedProducts(
         }),
       );
     } else {
-      if (minPrice != null && Number.isFinite(minPrice)) {
-        products = products.filter((p) => p.price >= minPrice!);
+      if (opts.minPrice != null && Number.isFinite(opts.minPrice)) {
+        next = next.filter((p) => p.price >= opts.minPrice!);
       }
-      if (maxPrice != null && Number.isFinite(maxPrice)) {
-        products = products.filter((p) => p.price <= maxPrice!);
+      if (opts.maxPrice != null && Number.isFinite(opts.maxPrice)) {
+        next = next.filter((p) => p.price <= opts.maxPrice!);
       }
     }
   }
 
-  // Accent-insensitive EN/VI search (SQLite has no unaccent)
-  if (q) {
-    const needle = stripDiacritics(q);
-    products = products.filter((product) => {
+  if (opts.q) {
+    const needle = stripDiacritics(opts.q);
+    next = next.filter((product) => {
       const hay = stripDiacritics(
         [
           product.slug,
@@ -227,7 +251,7 @@ export async function listPublishedProducts(
   }
 
   if (query.styles?.length) {
-    products = products.filter((product) => {
+    next = next.filter((product) => {
       const hay = stripDiacritics(`${product.tags.en} ${product.tags.vi}`);
       return query.styles!.some((style) => {
         const needles = STYLE_NEEDLES[style];
@@ -236,13 +260,229 @@ export async function listPublishedProducts(
     });
   }
 
-  if (query.cityId && (sort === "price-asc" || sort === "price-desc")) {
-    products = [...products].sort((a, b) =>
-      sort === "price-asc" ? a.price - b.price : b.price - a.price,
+  if (query.cityId && (opts.sort === "price-asc" || opts.sort === "price-desc")) {
+    next = [...next].sort((a, b) =>
+      opts.sort === "price-asc" ? a.price - b.price : b.price - a.price,
     );
   }
 
-  return products;
+  return next;
+}
+
+/** True when we cannot `take`/`skip` in SQL and must filter/sort in memory. */
+function needsMemoryPagination(query: CatalogQuery, opts: {
+  q?: string;
+  sizeBands: CatalogSizeBand[];
+  minPrice?: number;
+  maxPrice?: number;
+  deferPrice: boolean;
+  sort: string;
+}) {
+  if (opts.q) return true;
+  if (query.styles?.length) return true;
+  if (
+    query.cityId &&
+    (opts.sort === "price-asc" || opts.sort === "price-desc")
+  ) {
+    return true;
+  }
+  if (opts.deferPrice) {
+    if (opts.sizeBands.length > 1) return true;
+    if (opts.minPrice != null && Number.isFinite(opts.minPrice)) return true;
+    if (opts.maxPrice != null && Number.isFinite(opts.maxPrice)) return true;
+  }
+  return false;
+}
+
+const shopCardSelect = (citySlug?: string) =>
+  ({
+    id: true,
+    slug: true,
+    price: true,
+    priceSm: true,
+    priceMd: true,
+    priceLg: true,
+    priceGrand: true,
+    compareAtPrice: true,
+    compareAtSm: true,
+    compareAtMd: true,
+    compareAtLg: true,
+    compareAtGrand: true,
+    image: true,
+    imageFallback: true,
+    productType: true,
+    accent: true,
+    nameEn: true,
+    nameVi: true,
+    tagEn: true,
+    tagVi: true,
+    published: true,
+    sortOrder: true,
+    createdAt: true,
+    cityStock: {
+      ...(citySlug ? { where: { city: { slug: citySlug } } } : {}),
+      select: {
+        available: true,
+        priceOverride: true,
+        priceSm: true,
+        priceMd: true,
+        priceLg: true,
+        priceGrand: true,
+        city: {
+          select: {
+            id: true,
+            slug: true,
+            nameEn: true,
+            nameVi: true,
+          },
+        },
+      },
+    },
+  }) as const;
+
+function toShopCardProduct(
+  row: Omit<
+    Parameters<typeof toProduct>[0],
+    "blurbEn" | "blurbVi" | "storyEn" | "storyVi"
+  > & {
+    blurbEn?: string;
+    blurbVi?: string;
+  },
+  citySlug?: string,
+): Product {
+  const product = toProduct({
+    ...row,
+    blurbEn: row.blurbEn ?? "",
+    blurbVi: row.blurbVi ?? "",
+    storyEn: "",
+    storyVi: "",
+  });
+  if (citySlug) return withCityPrice(product, citySlug);
+  return {
+    ...product,
+    price: minOfferedPrice(product.sizePrices, undefined, product.price),
+  };
+}
+
+export type ShopCatalogPage = {
+  items: Product[];
+  page: number;
+  totalPages: number;
+  total: number;
+  pageSize: number;
+};
+
+/**
+ * Shop grid only — lean columns, active-city stock, real take/skip when
+ * filters allow. Avoids the fat include used by PDP / admin / bot.
+ */
+export async function listShopCatalogPage(
+  query: CatalogQuery = {},
+): Promise<ShopCatalogPage> {
+  const built = buildCatalogWhere(query);
+  const orderBy = catalogOrderBy(built.sort);
+  const pageSize = SHOP_PAGE_SIZE;
+  const memory = needsMemoryPagination(query, built);
+  const select = shopCardSelect(query.citySlug);
+
+  if (!memory) {
+    const page = Math.max(1, query.page || 1);
+    const [total, rows] = await Promise.all([
+      prisma.product.count({ where: built.where }),
+      prisma.product.findMany({
+        where: built.where,
+        select,
+        orderBy,
+        take: pageSize,
+        skip: (page - 1) * pageSize,
+      }),
+    ]);
+    const totalPages = Math.max(1, Math.ceil(total / pageSize) || 1);
+    const safePage = Math.min(page, totalPages);
+    const items = rows.map((row) => toShopCardProduct(row, query.citySlug));
+    // If page was past the end, re-fetch last page once.
+    if (safePage !== page && total > 0) {
+      const lastRows = await prisma.product.findMany({
+        where: built.where,
+        select,
+        orderBy,
+        take: pageSize,
+        skip: (safePage - 1) * pageSize,
+      });
+      return {
+        items: lastRows.map((row) => toShopCardProduct(row, query.citySlug)),
+        page: safePage,
+        totalPages,
+        total,
+        pageSize,
+      };
+    }
+    return { items, page: safePage, totalPages, total, pageSize };
+  }
+
+  const rows = await prisma.product.findMany({
+    where: built.where,
+    select: {
+      ...select,
+      blurbEn: true,
+      blurbVi: true,
+    },
+    orderBy,
+  });
+  let products = rows.map((row) => toShopCardProduct(row, query.citySlug));
+  products = applyPostFilters(products, query, built);
+  return paginateCatalog(products, query.page, pageSize);
+}
+
+/** Fast filter-drawer count — no card payload when SQL can answer. */
+export async function countShopCatalog(
+  query: CatalogQuery = {},
+): Promise<number> {
+  const built = buildCatalogWhere(query);
+  if (!needsMemoryPagination(query, built)) {
+    return prisma.product.count({ where: built.where });
+  }
+  const rows = await prisma.product.findMany({
+    where: built.where,
+    select: {
+      ...shopCardSelect(query.citySlug),
+      blurbEn: true,
+      blurbVi: true,
+    },
+    orderBy: catalogOrderBy(built.sort),
+  });
+  const products = applyPostFilters(
+    rows.map((row) => toShopCardProduct(row, query.citySlug)),
+    query,
+    built,
+  );
+  return products.length;
+}
+
+export async function listPublishedProducts(
+  query: CatalogQuery = {},
+): Promise<Product[]> {
+  await seedProductCategoriesIfEmpty();
+
+  const built = buildCatalogWhere(query);
+  const orderBy = catalogOrderBy(built.sort);
+
+  const rows = await prisma.product.findMany({
+    where: built.where,
+    include: productInclude,
+    orderBy,
+  });
+
+  let products = rows.map((row) => {
+    const product = toProduct(row);
+    if (query.citySlug) return withCityPrice(product, query.citySlug);
+    return {
+      ...product,
+      price: minOfferedPrice(product.sizePrices, undefined, product.price),
+    };
+  });
+
+  return applyPostFilters(products, query, built);
 }
 
 export function stripDiacritics(input: string) {
