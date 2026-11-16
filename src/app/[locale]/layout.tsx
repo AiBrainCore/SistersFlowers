@@ -9,7 +9,7 @@ import { CartProvider } from "@/context/cart-context";
 import { LocationProvider } from "@/context/location-context";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
-import { CartDrawer } from "@/components/cart-drawer";
+import { CartDrawerRoot } from "@/components/cart-drawer-root";
 import { LocationBanner } from "@/components/location-banner";
 import { LocaleHtmlLang } from "@/components/locale-html-lang";
 import { CityQuerySync } from "@/components/city-query-sync";
@@ -56,7 +56,7 @@ export default async function LocaleLayout({
             dictionary={dictionary}
             whatsappDigits={STUDIO_PHONE_DIGITS}
           />
-          <CartDrawer locale={locale as Locale} dictionary={dictionary} />
+          <CartDrawerRoot locale={locale as Locale} dictionary={dictionary} />
           <ShopBotRoot locale={locale as Locale} dictionary={dictionary} />
           <WebMcpTools locale={locale as Locale} />
         </div>
