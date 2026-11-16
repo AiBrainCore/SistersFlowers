@@ -124,10 +124,11 @@ export const vi = {
     local: "Giao tận cửa",
     featured: "Hoa được yêu thích",
     viewAll: "Xem tất cả hoa",
-    personalKicker: "Dành riêng cho họ",
-    personalTitle: "Bó hoa chỉ là khởi đầu.",
-    personalBody: "Thiệp, quà kèm, hoặc bó hoa riêng theo ý bạn.",
-    personalCta: "Tạo bó theo yêu cầu",
+    personalKicker: "Tạo bó hoa",
+    personalTitle: "Tạo bó hoa theo ý.",
+    personalBody:
+      "Chọn kích cỡ, màu, giấy gói và nơ — thêm quà hoặc lựa chọn khác nếu muốn.",
+    personalCta: "Tạo bó hoa",
     promisePhotoTitle: "Xem ảnh trước khi giao",
     promisePhotoBody:
       "Chúng tôi gửi ảnh hoa đã hoàn thiện trước khi rời tiệm — bạn biết rõ món quà sẽ tới.",
@@ -298,10 +299,10 @@ export const vi = {
     voucherUntil: "Dùng đến",
   },
   custom: {
-    kicker: "Bó theo ý bạn",
-    title: "Cùng Sisters tạo bó hoa.",
+    kicker: "Tạo bó hoa",
+    title: "Tạo bó hoa theo ý.",
     intro:
-      "Chọn kích cỡ, tone màu, giấy gói và nơ, rồi thêm quà nếu muốn. Giá ước tính đổi theo từng lựa chọn. Tiệm xác nhận giá cuối theo hoa trong ngày.",
+      "Chọn kích cỡ, tone màu, giấy gói và nơ. Quà và lựa chọn thêm là tùy chọn. Giá ước tính đổi theo từng lựa chọn — tiệm xác nhận giá cuối theo hoa trong ngày.",
   },
   builder: {
     preview: "Bó của bạn",

@@ -123,10 +123,11 @@ export const en = {
     local: "Doorstep delivery",
     featured: "Flowers guests love",
     viewAll: "See all flowers",
-    personalKicker: "Make it theirs",
-    personalTitle: "A bouquet is only the beginning.",
-    personalBody: "Card, gift, or a wrap composed just for them.",
-    personalCta: "Build a custom wrap",
+    personalKicker: "Bouquet builder",
+    personalTitle: "Compose your bouquet.",
+    personalBody:
+      "Choose size, colour, wrap and ribbon — add gifts or extras if you like.",
+    personalCta: "Build your bouquet",
     promisePhotoTitle: "See it before it leaves",
     promisePhotoBody:
       "We send you a photo of the finished flowers before they head out — so you know exactly what’s arriving.",
@@ -298,10 +299,10 @@ export const en = {
     voucherUntil: "Enjoy until",
   },
   custom: {
-    kicker: "Custom bouquet",
-    title: "Create a bouquet with us.",
+    kicker: "Bouquet builder",
+    title: "Compose your bouquet.",
     intro:
-      "Pick a size, colour mood, wrapping and ribbon, then add gifts if you like. The price estimate updates as you choose. We confirm the final amount from today’s flowers.",
+      "Pick a size, colour mood, wrapping and ribbon. Gifts and other extras are optional. The price estimate updates as you choose — we confirm the final amount from today’s flowers.",
   },
   builder: {
     preview: "Your bouquet",
