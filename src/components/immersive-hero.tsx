@@ -15,11 +15,6 @@ import type { Dictionary } from "@/i18n/dictionaries";
 import type { HeroBouquetItem } from "@/lib/hero-bouquets";
 import { CitySwitcher } from "@/components/city-switcher";
 import { useLocation } from "@/context/location-context";
-import {
-  IconBloom,
-  IconHeart,
-  IconTruck,
-} from "@/components/nav-icons";
 
 type Pose = { rx: number; ry: number; px: number; py: number };
 
@@ -473,29 +468,6 @@ export function ImmersiveHero({
               })}
             </div>
           ) : null}
-        </div>
-      </div>
-
-      <div className="relative mx-auto max-w-6xl px-4 pb-8 sm:px-5 sm:pb-10">
-        <div className="glass-hero-features grid grid-cols-3 divide-x divide-citrus/15 rounded-[1.35rem] px-2 py-3.5 sm:rounded-[1.6rem] sm:px-4 sm:py-4">
-          <div className="flex flex-col items-center gap-1.5 px-2 text-center sm:flex-row sm:justify-center sm:gap-2.5 sm:px-3">
-            <IconTruck className="h-5 w-5 text-citrus" />
-            <p className="text-[10px] leading-snug font-medium text-citrus sm:text-[12px]">
-              {t.featureDelivery}
-            </p>
-          </div>
-          <div className="flex flex-col items-center gap-1.5 px-2 text-center sm:flex-row sm:justify-center sm:gap-2.5 sm:px-3">
-            <IconBloom className="h-5 w-5 text-citrus" />
-            <p className="text-[10px] leading-snug font-medium text-citrus sm:text-[12px]">
-              {t.featureFresh}
-            </p>
-          </div>
-          <div className="flex flex-col items-center gap-1.5 px-2 text-center sm:flex-row sm:justify-center sm:gap-2.5 sm:px-3">
-            <IconHeart className="h-5 w-5 text-citrus" />
-            <p className="text-[10px] leading-snug font-medium text-citrus sm:text-[12px]">
-              {t.featureHandcrafted}
-            </p>
-          </div>
         </div>
       </div>
     </section>

@@ -153,13 +153,13 @@ export default async function ClassicHomePage({
 
       <section className="mx-auto max-w-6xl px-4 py-16 sm:px-5 sm:py-20">
         <Reveal>
-          <div className="mb-10 flex items-end justify-between gap-4">
-            <h2 className="serif text-4xl text-forest sm:text-5xl">
+          <div className="mb-10 flex items-end justify-between gap-3 sm:gap-4">
+            <h2 className="serif min-w-0 text-4xl text-forest sm:text-5xl">
               {t.home.featured}
             </h2>
             <Link
               href={`/${locale}/shop`}
-              className="min-h-11 text-[12px] tracking-[0.16em] text-citrus uppercase border-b border-citrus/50"
+              className="inline-flex min-h-11 shrink-0 items-center whitespace-nowrap text-[12px] tracking-[0.16em] text-citrus uppercase border-b border-citrus/50"
             >
               {t.home.viewAll}
             </Link>
