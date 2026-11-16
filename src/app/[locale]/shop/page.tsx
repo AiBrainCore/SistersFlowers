@@ -4,6 +4,7 @@ import { isLocale, type Locale } from "@/i18n/config";
 import { getStorefrontDictionary } from "@/lib/storefront";
 import {
   listPublishedProducts,
+  paginateCatalog,
   parseCatalogSearchParams,
 } from "@/lib/products";
 import { listActiveCategories } from "@/lib/categories";
@@ -11,6 +12,7 @@ import { listAttributesForFilterChips } from "@/lib/catalog-attributes";
 import { listAvailableProductIdsForCity } from "@/lib/locations";
 import { ProductCard } from "@/components/product-card";
 import { CatalogFilters } from "@/components/catalog-filters";
+import { CatalogPagination } from "@/components/catalog-pagination";
 import { DeliveryCityBar } from "@/components/delivery-city-bar";
 import { ShopSearch } from "@/components/shop-search";
 import { buildPageMetadata } from "@/lib/seo";
@@ -28,6 +30,7 @@ export async function generateMetadata({
   const query = parseCatalogSearchParams(
     raw as {
       type?: string | string[];
+      page?: string | string[];
     },
   );
   // Indexable hub: plain /shop or a single product-type filter.
@@ -76,10 +79,11 @@ export default async function ShopPage({
       size?: string | string[];
       flower?: string | string[];
       color?: string | string[];
+      page?: string | string[];
     },
   );
   const cityProductIds = await listAvailableProductIdsForCity(activeCity.id);
-  const [products, categories, flowerAttrs, colorAttrs] = await Promise.all([
+  const [allProducts, categories, flowerAttrs, colorAttrs] = await Promise.all([
     listPublishedProducts({
       ...query,
       cityProductIds,
@@ -90,6 +94,11 @@ export default async function ShopPage({
     listAttributesForFilterChips("flower"),
     listAttributesForFilterChips("color"),
   ]);
+
+  const { items: products, page, totalPages, total } = paginateCatalog(
+    allProducts,
+    query.page,
+  );
 
   return (
     <div className="relative overflow-hidden">
@@ -117,21 +126,35 @@ export default async function ShopPage({
           flowerAttrs={flowerAttrs}
           colorAttrs={colorAttrs}
           initial={query}
-          resultCount={products.length}
+          resultCount={total}
         >
           {products.length === 0 ? (
             <p className="mt-8 text-sm text-moss">{t.shop.empty}</p>
           ) : (
-            <div className="mt-6 grid grid-cols-2 gap-x-3 gap-y-7 sm:gap-x-4 sm:gap-y-10 md:grid-cols-2 xl:grid-cols-3">
-              {products.map((product) => (
-                <ProductCard
-                  key={product.slug}
-                  product={product}
-                  locale={locale}
-                  citySlug={activeCity.slug}
-                />
-              ))}
-            </div>
+            <>
+              {/* 2 cols mobile/tablet · 3 cols xl — 24 items fill evenly (12×2 / 8×3) */}
+              <div className="mt-6 grid grid-cols-2 gap-x-3 gap-y-7 sm:gap-x-4 sm:gap-y-10 md:grid-cols-2 xl:grid-cols-3">
+                {products.map((product) => (
+                  <ProductCard
+                    key={product.slug}
+                    product={product}
+                    locale={locale}
+                    citySlug={activeCity.slug}
+                  />
+                ))}
+              </div>
+              <CatalogPagination
+                locale={locale}
+                query={query}
+                page={page}
+                totalPages={totalPages}
+                labels={{
+                  previous: t.shop.previousPage,
+                  next: t.shop.nextPage,
+                  page: t.shop.pageLabel,
+                }}
+              />
+            </>
           )}
         </CatalogFilters>
       </div>

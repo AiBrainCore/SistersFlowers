@@ -18,7 +18,9 @@ export type {
 export {
   catalogFirstCategory,
   catalogQueryToSearchParams,
+  paginateCatalog,
   parseCatalogSearchParams,
+  SHOP_PAGE_SIZE,
 } from "@/lib/catalog-query";
 
 const categoryInclude = {
