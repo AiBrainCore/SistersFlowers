@@ -176,6 +176,7 @@ export const vi = {
     minPrice: "Từ",
     maxPrice: "Đến",
     sort: "Sắp xếp",
+    sortAll: "Tất cả",
     sortFeatured: "Nổi bật",
     sortNewest: "Mới nhất",
     sortPriceAsc: "Giá · thấp đến cao",

@@ -176,6 +176,7 @@ export const en = {
     minPrice: "From",
     maxPrice: "To",
     sort: "Sort",
+    sortAll: "All",
     sortFeatured: "Featured",
     sortNewest: "Newest",
     sortPriceAsc: "Price · low to high",

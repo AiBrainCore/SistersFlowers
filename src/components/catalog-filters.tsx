@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   useEffect,
@@ -15,6 +14,7 @@ import {
   type CategoryPublic,
 } from "@/lib/category-constants";
 import {
+  CATALOG_PRICE_PRESETS,
   catalogQueryToSearchParams,
   type CatalogQuery,
   type CatalogSizeBand,
@@ -25,7 +25,7 @@ import type { AttributePublic } from "@/lib/catalog-attributes";
 import { PRODUCT_TYPES } from "@/lib/product-types";
 import { productUsesSizeLadder } from "@/lib/product-sizes";
 
-const SIZE_OPTIONS: CatalogSizeBand[] = ["mini", "classic", "grand"];
+const PRICE_OPTIONS = CATALOG_PRICE_PRESETS;
 const STYLE_OPTIONS: CatalogStyle[] = [
   "rose",
   "mix",
@@ -49,23 +49,42 @@ function toggleIn(list: string[], slug: string) {
     : [...list, slug];
 }
 
+type PricePreset = (typeof PRICE_OPTIONS)[number];
+
 type Draft = {
   categories: string[];
   productType: string;
   sort: CatalogSort;
-  sizes: CatalogSizeBand[];
+  /** Price presets (stored in query.sizes for URL compat). */
+  sizes: PricePreset[];
+  minPrice: string;
+  maxPrice: string;
   accents: string[];
   styles: CatalogStyle[];
   flowers: string[];
   colors: string[];
 };
 
+function asPricePresets(sizes?: CatalogSizeBand[]): PricePreset[] {
+  return (sizes || []).filter((s): s is PricePreset =>
+    (PRICE_OPTIONS as readonly string[]).includes(s),
+  );
+}
+
 function draftFromQuery(initial: CatalogQuery): Draft {
   return {
     categories: initial.categories ? [...initial.categories] : [],
     productType: initial.productType || "",
     sort: initial.sort || "featured",
-    sizes: initial.sizes ? [...initial.sizes] : [],
+    sizes: asPricePresets(initial.sizes),
+    minPrice:
+      initial.minPrice != null && Number.isFinite(initial.minPrice)
+        ? String(initial.minPrice)
+        : "",
+    maxPrice:
+      initial.maxPrice != null && Number.isFinite(initial.maxPrice)
+        ? String(initial.maxPrice)
+        : "",
     accents: initial.accents ? [...initial.accents] : [],
     styles: initial.styles ? [...initial.styles] : [],
     flowers: initial.flowers ? [...initial.flowers] : [],
@@ -74,15 +93,22 @@ function draftFromQuery(initial: CatalogQuery): Draft {
 }
 
 function draftToQuery(draft: Draft, q?: string): CatalogQuery {
+  const minRaw = draft.minPrice.trim() ? Number(draft.minPrice) : undefined;
+  const maxRaw = draft.maxPrice.trim() ? Number(draft.maxPrice) : undefined;
+  const minPrice =
+    minRaw != null && Number.isFinite(minRaw) && minRaw > 0 ? minRaw : undefined;
+  const maxPrice =
+    maxRaw != null && Number.isFinite(maxRaw) && maxRaw > 0 ? maxRaw : undefined;
+  const customPrice = minPrice != null || maxPrice != null;
   return {
     q: q?.trim() || undefined,
     categories: draft.categories.length ? draft.categories : undefined,
     productType: draft.productType || undefined,
     sort: draft.sort,
-    sizes:
-      draft.sizes.length && productUsesSizeLadder(draft.productType || "bouquet")
-        ? draft.sizes
-        : undefined,
+    // Presets OR custom From/To — custom wins when either field is set.
+    sizes: !customPrice && draft.sizes.length ? draft.sizes : undefined,
+    minPrice: customPrice ? minPrice : undefined,
+    maxPrice: customPrice ? maxPrice : undefined,
     accents: draft.accents.length ? draft.accents : undefined,
     styles:
       draft.styles.length && productUsesSizeLadder(draft.productType || "bouquet")
@@ -91,6 +117,16 @@ function draftToQuery(draft: Draft, q?: string): CatalogQuery {
     flowers: draft.flowers.length ? draft.flowers : undefined,
     colors: draft.colors.length ? draft.colors : undefined,
   };
+}
+
+function pricePresetLabel(
+  id: PricePreset,
+  t: Dictionary["shop"],
+): string {
+  if (id === "under500") return t.priceUnder500;
+  if (id === "mid500") return t.price500to800;
+  if (id === "mid800") return t.price800to1200;
+  return t.priceOver1200;
 }
 
 export function CatalogFilters({
@@ -151,6 +187,8 @@ export function CatalogFilters({
       productType: "",
       sort: "featured",
       sizes: [],
+      minPrice: "",
+      maxPrice: "",
       accents: [],
       styles: [],
       flowers: [],
@@ -170,7 +208,6 @@ export function CatalogFilters({
       const next =
         typeof patch === "function" ? patch(current) : { ...current, ...patch };
       if (!productUsesSizeLadder(next.productType || "bouquet")) {
-        next.sizes = [];
         next.styles = [];
       }
       if (opts?.immediate) {
@@ -212,6 +249,8 @@ export function CatalogFilters({
     ...(initial.categories || []),
     initial.productType,
     ...(initial.sizes || []),
+    initial.minPrice != null ? "min" : "",
+    initial.maxPrice != null ? "max" : "",
     ...(initial.accents || []),
     ...(initial.styles || []),
     ...(initial.flowers || []),
@@ -224,6 +263,8 @@ export function CatalogFilters({
       initial.categories?.length ||
       initial.productType ||
       initial.sizes?.length ||
+      initial.minPrice != null ||
+      initial.maxPrice != null ||
       initial.accents?.length ||
       initial.styles?.length ||
       initial.flowers?.length ||
@@ -253,7 +294,7 @@ export function CatalogFilters({
           <div className="flex flex-col gap-1.5">
             {(
               [
-                ["featured", t.sortFeatured],
+                ["featured", t.sortAll],
                 ["newest", t.sortNewest],
                 ["price-asc", t.sortPriceAsc],
                 ["price-desc", t.sortPriceDesc],
@@ -390,37 +431,87 @@ export function CatalogFilters({
           </div>
         </FilterGroup>
 
-        {showBouquetFilters ? (
-          <FilterGroup title={t.sizeLabel}>
-            <div className="flex flex-col gap-1.5">
-              {SIZE_OPTIONS.map((id) => {
-                const on = draft.sizes.includes(id);
-                return (
-                  <button
-                    key={id}
-                    type="button"
-                    onClick={() =>
-                      patchDraft(
-                        (current) => ({
-                          ...current,
-                          sizes: toggleIn(
-                            current.sizes,
-                            id,
-                          ) as CatalogSizeBand[],
-                        }),
-                        { immediate },
-                      )
-                    }
-                    className={checkClass(on)}
-                  >
-                    <Mark on={on} />
-                    {t.sizes[id]}
-                  </button>
-                );
-              })}
-            </div>
-          </FilterGroup>
-        ) : null}
+        <FilterGroup title={t.price}>
+          <div className="flex flex-col gap-1.5">
+            {PRICE_OPTIONS.map((id) => {
+              const on =
+                draft.sizes.includes(id) &&
+                !draft.minPrice.trim() &&
+                !draft.maxPrice.trim();
+              return (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() =>
+                    patchDraft(
+                      (current) => ({
+                        ...current,
+                        minPrice: "",
+                        maxPrice: "",
+                        sizes: toggleIn(current.sizes, id) as PricePreset[],
+                      }),
+                      { immediate },
+                    )
+                  }
+                  className={checkClass(on)}
+                >
+                  <Mark on={on} />
+                  {pricePresetLabel(id, t)}
+                </button>
+              );
+            })}
+          </div>
+          <div className="mt-2.5 grid grid-cols-2 gap-2">
+            <label className="grid gap-1 text-[11px] tracking-[0.08em] text-moss uppercase">
+              {t.minPrice}
+              <input
+                type="number"
+                inputMode="numeric"
+                min={0}
+                step={50000}
+                value={draft.minPrice}
+                placeholder="0"
+                onChange={(e) =>
+                  patchDraft(
+                    {
+                      minPrice: e.target.value,
+                      sizes: [],
+                    },
+                    { immediate: false },
+                  )
+                }
+                onBlur={() => {
+                  if (immediate) applyDraft();
+                }}
+                className="min-h-10 w-full rounded-xl border border-forest/12 bg-white px-2.5 text-sm normal-case tracking-normal text-forest"
+              />
+            </label>
+            <label className="grid gap-1 text-[11px] tracking-[0.08em] text-moss uppercase">
+              {t.maxPrice}
+              <input
+                type="number"
+                inputMode="numeric"
+                min={0}
+                step={50000}
+                value={draft.maxPrice}
+                placeholder="—"
+                onChange={(e) =>
+                  patchDraft(
+                    {
+                      maxPrice: e.target.value,
+                      sizes: [],
+                    },
+                    { immediate: false },
+                  )
+                }
+                onBlur={() => {
+                  if (immediate) applyDraft();
+                }}
+                className="min-h-10 w-full rounded-xl border border-forest/12 bg-white px-2.5 text-sm normal-case tracking-normal text-forest"
+              />
+            </label>
+          </div>
+        </FilterGroup>
 
         {showBouquetFilters ? (
           <FilterGroup title={t.styleLabel}>
@@ -453,17 +544,6 @@ export function CatalogFilters({
             </div>
           </FilterGroup>
         ) : null}
-
-        <p className="mt-6 rounded-2xl bg-cream/80 px-4 py-3 text-sm leading-6 text-moss">
-          {t.customHint}{" "}
-          <Link
-            href={`/${locale}/custom`}
-            className="font-medium text-citrus underline-offset-2 hover:underline"
-            onClick={() => setPanelOpen(false)}
-          >
-            {dictionary.nav.custom}
-          </Link>
-        </p>
       </>
     );
   };
@@ -477,7 +557,6 @@ export function CatalogFilters({
             const next = {
               ...draftFromQuery(initial),
               productType: "",
-              sizes: [] as CatalogSizeBand[],
               styles: [] as CatalogStyle[],
             };
             setDraft(next);
@@ -495,14 +574,12 @@ export function CatalogFilters({
               type="button"
               onClick={() => {
                 const nextType = on ? "" : row.slug;
+                const base = draftFromQuery(initial);
                 const next = {
-                  ...draftFromQuery(initial),
+                  ...base,
                   productType: nextType,
-                  sizes: productUsesSizeLadder(nextType || "bouquet")
-                    ? draftFromQuery(initial).sizes
-                    : [],
                   styles: productUsesSizeLadder(nextType || "bouquet")
-                    ? draftFromQuery(initial).styles
+                    ? base.styles
                     : [],
                 };
                 setDraft(next);
@@ -517,7 +594,7 @@ export function CatalogFilters({
       </div>
 
       <div className="lg:grid lg:grid-cols-[15.5rem_minmax(0,1fr)] lg:items-start lg:gap-8">
-        <aside className="sticky top-24 hidden max-h-[calc(100vh-7rem)] overflow-y-auto rounded-2xl border border-forest/10 bg-white/70 p-4 lg:block">
+        <aside className="hidden rounded-2xl border border-forest/10 bg-white/70 p-4 lg:block">
           <div className="flex items-center justify-between gap-2">
             <h2 className="serif text-xl text-forest">{t.filters}</h2>
             {activeCount ? (
@@ -530,7 +607,6 @@ export function CatalogFilters({
               </button>
             ) : null}
           </div>
-          <p className="mt-2 text-xs leading-5 text-moss">{t.filtersHint}</p>
           <div className="mt-4">{filterBody("sidebar")}</div>
         </aside>
 
@@ -604,24 +680,37 @@ export function CatalogFilters({
                     pushQuery({
                       ...initial,
                       productType: undefined,
-                      sizes: undefined,
                       styles: undefined,
                     })
                   }
                 />
               ) : null}
-              {(initial.sizes || []).map((id) => (
+              {asPricePresets(initial.sizes).map((id) => (
                 <ActiveChip
-                  key={`size-${id}`}
-                  label={t.sizes[id]}
+                  key={`price-${id}`}
+                  label={pricePresetLabel(id, t)}
                   onClear={() =>
                     pushQuery({
                       ...initial,
-                      sizes: (initial.sizes || []).filter((s) => s !== id),
+                      sizes: asPricePresets(initial.sizes).filter(
+                        (s) => s !== id,
+                      ),
                     })
                   }
                 />
               ))}
+              {initial.minPrice != null || initial.maxPrice != null ? (
+                <ActiveChip
+                  label={`${t.price} ${initial.minPrice != null ? initial.minPrice : "…"}–${initial.maxPrice != null ? initial.maxPrice : "…"}`}
+                  onClear={() =>
+                    pushQuery({
+                      ...initial,
+                      minPrice: undefined,
+                      maxPrice: undefined,
+                    })
+                  }
+                />
+              ) : null}
               {(initial.accents || []).map((id) => (
                 <ActiveChip
                   key={`accent-${id}`}

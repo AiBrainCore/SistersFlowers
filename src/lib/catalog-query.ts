@@ -5,9 +5,25 @@
 
 export type CatalogSort = "newest" | "price-asc" | "price-desc" | "featured";
 
-/** Shop filter bands aligned to S / M / L ladder (~450 / 600 / 850k). */
-export type CatalogSizeBand = "mini" | "classic" | "grand";
+/**
+ * Shop price presets (URL `size=` keeps the historical param name).
+ * under500 / mid500 / mid800 / over1200 — not bouquet S/M/L sizes.
+ */
+export type CatalogSizeBand =
+  | "under500"
+  | "mid500"
+  | "mid800"
+  | "over1200"
+  /** @deprecated legacy URLs — mapped in parseCatalogSearchParams */
+  | "mini"
+  | "classic"
+  | "grand";
 export type CatalogStyle = "rose" | "mix" | "garden" | "ribbon" | "wrapped";
+
+export const CATALOG_PRICE_PRESETS: Exclude<
+  CatalogSizeBand,
+  "mini" | "classic" | "grand"
+>[] = ["under500", "mid500", "mid800", "over1200"];
 
 /** Products per shop page — divisible by 2-col (mobile) and 3-col (xl). */
 export const SHOP_PAGE_SIZE = 24;
@@ -130,10 +146,21 @@ export function parseCatalogSearchParams(input: {
       s === "wrapped",
   );
 
-  const sizes = sizeRaw.filter(
-    (s): s is CatalogSizeBand =>
-      s === "mini" || s === "classic" || s === "grand",
-  );
+  const sizes = sizeRaw
+    .map((s) => {
+      // Legacy size-as-price URLs → current presets
+      if (s === "mini") return "under500";
+      if (s === "classic") return "mid500";
+      if (s === "grand") return "over1200";
+      return s;
+    })
+    .filter(
+      (s): s is (typeof CATALOG_PRICE_PRESETS)[number] =>
+        s === "under500" ||
+        s === "mid500" ||
+        s === "mid800" ||
+        s === "over1200",
+    );
 
   return {
     q,
