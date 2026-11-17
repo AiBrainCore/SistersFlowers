@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import type { CategoryPublic } from "@/lib/category-constants";
@@ -9,6 +9,7 @@ import { OCCASION_NAV_SLUGS } from "@/lib/category-constants";
 import { useCart } from "@/context/cart-context";
 import { LanguageSwitch } from "@/components/language-switch";
 import { BrandLogo } from "@/components/brand-logo";
+import { HeaderSearch } from "@/components/header-search";
 import { IconAccount, IconBag } from "@/components/nav-icons";
 
 type OccasionLink = Pick<
@@ -119,7 +120,7 @@ export function SiteHeader({
   return (
     <>
       <header className="site-header-bar sticky top-0 z-50">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-2.5 sm:px-5 sm:py-3.5">
+        <div className="mx-auto flex max-w-6xl items-center gap-2 px-4 py-2.5 sm:gap-3 sm:px-5 sm:py-3.5">
           {/* Brand only — city switching lives on hero / shop delivery bar */}
           <div className="min-w-0 shrink-0">
             <BrandLogo
@@ -134,7 +135,7 @@ export function SiteHeader({
           {/* Centre nav — from 1200px to avoid cramped mid-widths */}
           <nav
             ref={navRef}
-            className="hidden items-center gap-0.5 text-[13px] tracking-normal text-white/90 min-[1200px]:flex"
+            className="hidden min-w-0 flex-1 items-center justify-center gap-0.5 text-[13px] tracking-normal text-white/90 min-[1200px]:flex"
           >
             <Link
               href={`/${locale}/shop`}
@@ -218,8 +219,26 @@ export function SiteHeader({
             </Link>
           </nav>
 
+          {/* Site-wide search — desktop inline between nav and icons */}
+          <Suspense fallback={<div className="hidden min-w-0 flex-1 max-w-[18rem] min-[1200px]:block" />}>
+            <HeaderSearch
+              locale={locale}
+              dictionary={dictionary}
+              variant="desktop"
+            />
+          </Suspense>
+
           {/* Right icons — compact on small phones so they stay inside the bar */}
           <div className="flex shrink-0 items-center gap-0.5 sm:gap-1.5">
+            <Suspense fallback={null}>
+              <HeaderSearch
+                locale={locale}
+                dictionary={dictionary}
+                variant="mobileBar"
+                onNavigated={closeAll}
+              />
+            </Suspense>
+
             <div className="hidden min-[400px]:block">
               <LanguageSwitch
                 locale={locale}
@@ -300,6 +319,14 @@ export function SiteHeader({
                 variant="panel"
               />
             </div>
+            <Suspense fallback={null}>
+              <HeaderSearch
+                locale={locale}
+                dictionary={dictionary}
+                variant="mobileMenu"
+                onNavigated={closeAll}
+              />
+            </Suspense>
             <Link
               href={`/${locale}/shop`}
               onClick={closeAll}

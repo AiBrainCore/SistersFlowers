@@ -240,21 +240,29 @@ function applyPostFilters(
   }
 
   if (opts.q) {
-    const needle = stripDiacritics(opts.q);
-    next = next.filter((product) => {
-      const hay = stripDiacritics(
-        [
-          product.slug,
-          product.names.en,
-          product.names.vi,
-          product.tags.en,
-          product.tags.vi,
-          product.blurb.en,
-          product.blurb.vi,
-        ].join(" "),
-      );
-      return hay.includes(needle);
-    });
+    const tokens = stripDiacritics(opts.q)
+      .split(/[\s,./|+-]+/)
+      .map((t) => t.trim())
+      .filter((t) => t.length > 0);
+    if (tokens.length) {
+      next = next.filter((product) => {
+        const hay = stripDiacritics(
+          [
+            product.sku || "",
+            product.slug,
+            product.productType || "",
+            product.names.en,
+            product.names.vi,
+            product.tags.en,
+            product.tags.vi,
+            product.blurb.en,
+            product.blurb.vi,
+          ].join(" "),
+        );
+        // Every word must match (accent-insensitive) so “red rose” finds roses.
+        return tokens.every((token) => hay.includes(token));
+      });
+    }
   }
 
   if (query.styles?.length) {
@@ -304,6 +312,7 @@ function needsMemoryPagination(query: CatalogQuery, opts: {
 const shopCardSelect = (citySlug?: string) =>
   ({
     id: true,
+    sku: true,
     slug: true,
     price: true,
     priceSm: true,
@@ -384,7 +393,7 @@ export type ShopCatalogPage = {
 
 function shopCatalogCacheKey(query: CatalogQuery, kind: "page" | "count") {
   return [
-    "shop-catalog-v1",
+    "shop-catalog-v2",
     kind,
     query.citySlug || "",
     query.cityId || "",

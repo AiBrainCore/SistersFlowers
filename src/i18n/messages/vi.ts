@@ -22,6 +22,8 @@ export const vi = {
     close: "Đóng",
     language: "Ngôn ngữ",
     account: "Tài khoản",
+    searchAria: "Tìm hoa",
+    searchClose: "Đóng tìm kiếm",
   },
   account: {
     title: "Tài khoản của bạn",

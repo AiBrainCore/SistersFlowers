@@ -57,6 +57,24 @@ export function IconAccount({ className = "h-5 w-5" }: { className?: string }) {
   );
 }
 
+export function IconSearch({ className = "h-5 w-5" }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <circle cx="11" cy="11" r="6.5" />
+      <path d="M16.5 16.5 21 21" />
+    </svg>
+  );
+}
+
 export function IconBag({ className = "h-5 w-5" }: { className?: string }) {
   return (
     <svg
