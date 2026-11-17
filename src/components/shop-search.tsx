@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, type FormEvent } from "react";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
+import { IconSearch } from "@/components/nav-icons";
 import {
   catalogQueryToSearchParams,
   type CatalogQuery,
@@ -48,13 +49,18 @@ export function ShopSearch({
       <label className="sr-only" htmlFor="shop-search">
         {t.search}
       </label>
-      <input
-        id="shop-search"
-        value={q}
-        onChange={(e) => setQ(e.target.value)}
-        placeholder={t.searchPlaceholder}
-        className="min-h-10 w-full min-w-0 rounded-full border border-forest/12 bg-white px-3.5 text-sm outline-none focus:border-citrus"
-      />
+      <div className="relative min-w-0 flex-1">
+        <IconSearch className="pointer-events-none absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2 text-citrus" />
+        <input
+          id="shop-search"
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          placeholder={t.searchPlaceholder}
+          autoComplete="off"
+          enterKeyHint="search"
+          className="min-h-10 w-full min-w-0 rounded-full border border-forest/12 bg-white pl-10 pr-3.5 text-sm outline-none focus:border-citrus"
+        />
+      </div>
       <button
         type="submit"
         className="inline-flex min-h-10 shrink-0 items-center rounded-full bg-citrus px-4 text-[11px] tracking-[0.12em] text-ivory uppercase"

@@ -22,6 +22,8 @@ export const en = {
     close: "Close",
     language: "Language",
     account: "Account",
+    searchAria: "Search flowers",
+    searchClose: "Close search",
   },
   account: {
     title: "Your account",
