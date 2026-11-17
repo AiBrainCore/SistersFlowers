@@ -8,6 +8,7 @@ import {
 } from "@/app/admin/actions";
 import { ProductsBulkPricing } from "@/components/admin/products-bulk-pricing";
 import { AdminScrollToProduct } from "@/components/admin/admin-scroll-to-product";
+import { AdminSaleRegularPair } from "@/components/admin/admin-sale-regular-pair";
 import { listAdminProducts } from "@/lib/products";
 import { listCitiesForPricing } from "@/lib/product-city";
 import { getAdminT } from "@/lib/admin-locale";
@@ -279,29 +280,14 @@ export default async function AdminProductsPage({
                           </span>
                         </div>
                         <div className="admin-size-inputs">
-                          <label>
-                            <span>{t.products.saleShort}</span>
-                            <input
-                              name={saleName}
-                              type="number"
-                              min={0}
-                              step={1000}
-                              placeholder="—"
-                              defaultValue={sale ?? ""}
-                            />
-                          </label>
-                          <label>
-                            <span>{t.products.wasShort}</span>
-                            <input
-                              name={wasName}
-                              type="number"
-                              min={0}
-                              step={1000}
-                              placeholder="—"
-                              defaultValue={was === null ? "" : was}
-                              className="admin-input-was"
-                            />
-                          </label>
+                          <AdminSaleRegularPair
+                            saleName={saleName}
+                            regularName={wasName}
+                            saleLabel={t.products.saleShort}
+                            regularLabel={t.products.wasShort}
+                            saleDefault={sale ?? ""}
+                            regularDefault={was === null ? "" : was}
+                          />
                         </div>
                       </div>
                     );
@@ -315,33 +301,19 @@ export default async function AdminProductsPage({
                       <span>{t.products.singlePrice}</span>
                     </div>
                     <div className="admin-size-inputs">
-                      <label>
-                        <span>{t.products.saleShort}</span>
-                        <input
-                          name="price"
-                          type="number"
-                          min={0}
-                          step={1000}
-                          defaultValue={product.price}
-                        />
-                      </label>
-                      <label>
-                        <span>{t.products.wasShort}</span>
-                        <input
-                          name="compareAtPrice"
-                          type="number"
-                          min={0}
-                          step={1000}
-                          placeholder="—"
-                          defaultValue={
-                            product.compareAtPrice != null &&
-                            product.compareAtPrice > 0
-                              ? product.compareAtPrice
-                              : product.price
-                          }
-                          className="admin-input-was"
-                        />
-                      </label>
+                      <AdminSaleRegularPair
+                        saleName="price"
+                        regularName="compareAtPrice"
+                        saleLabel={t.products.saleShort}
+                        regularLabel={t.products.wasShort}
+                        saleDefault={product.price}
+                        regularDefault={
+                          product.compareAtPrice != null &&
+                          product.compareAtPrice > 0
+                            ? product.compareAtPrice
+                            : product.price
+                        }
+                      />
                     </div>
                   </div>
                 </div>
