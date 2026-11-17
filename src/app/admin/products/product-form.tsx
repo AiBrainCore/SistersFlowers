@@ -9,6 +9,7 @@ import type { AdminDictionary, AdminLocale } from "@/i18n/admin-dictionaries";
 import type { CategoryPublic } from "@/lib/categories";
 import type { AttributePublic } from "@/lib/catalog-attributes";
 import type { CityPriceSlug } from "@/lib/product-city";
+import { useSaleRegularPair } from "@/components/admin/admin-sale-regular-pair";
 import { PRODUCT_SIZES, productUsesSizeLadder } from "@/lib/product-sizes";
 import { PRODUCT_TYPES } from "@/lib/product-types";
 
@@ -17,6 +18,96 @@ type PricingCity = {
   nameEn: string;
   nameVi: string;
 };
+
+function LadderSizePriceCells({
+  saleName,
+  regularName,
+  saleDefault,
+  regularDefault,
+  regularConfirmMessage,
+}: {
+  saleName: string;
+  regularName: string;
+  saleDefault: string | number;
+  regularDefault: string | number;
+  regularConfirmMessage: string;
+}) {
+  const { sale, regular, onSaleChange, onRegularChange, onRegularBlur } =
+    useSaleRegularPair(saleDefault, regularDefault, regularConfirmMessage);
+  return (
+    <>
+      <td>
+        <input
+          name={saleName}
+          type="number"
+          min={0}
+          step={1000}
+          placeholder="—"
+          value={sale}
+          onChange={(e) => onSaleChange(e.target.value)}
+          style={{ width: "100%", minWidth: 96 }}
+        />
+      </td>
+      <td>
+        <input
+          name={regularName}
+          type="number"
+          min={0}
+          step={1000}
+          placeholder="—"
+          value={regular}
+          onChange={(e) => onRegularChange(e.target.value)}
+          onBlur={onRegularBlur}
+          style={{ width: "100%", minWidth: 96 }}
+          className="admin-input-was"
+        />
+      </td>
+    </>
+  );
+}
+
+function FixedSaleRegularFields({
+  t,
+  saleDefault,
+  regularDefault,
+}: {
+  t: AdminDictionary;
+  saleDefault: number;
+  regularDefault: string | number;
+}) {
+  const { sale, regular, onSaleChange, onRegularChange, onRegularBlur } =
+    useSaleRegularPair(saleDefault, regularDefault, t.products.regularConfirm);
+  return (
+    <div className="admin-grid-2">
+      <label className="admin-field">
+        <span>{t.products.saleShort}</span>
+        <input
+          name="price"
+          type="number"
+          min={0}
+          step={1000}
+          required
+          value={sale}
+          onChange={(e) => onSaleChange(e.target.value)}
+        />
+      </label>
+      <label className="admin-field">
+        <span>{t.products.wasShort}</span>
+        <input
+          name="compareAtPrice"
+          type="number"
+          min={0}
+          step={1000}
+          placeholder="—"
+          value={regular}
+          onChange={(e) => onRegularChange(e.target.value)}
+          onBlur={onRegularBlur}
+          className="admin-input-was"
+        />
+      </label>
+    </div>
+  );
+}
 
 export function ProductForm({
   product,
@@ -163,29 +254,13 @@ export function ProductForm({
                         {locale === "vi" ? size.labelVi : size.labelEn}
                       </strong>
                     </td>
-                    <td>
-                      <input
-                        name={field}
-                        type="number"
-                        min={0}
-                        step={1000}
-                        placeholder="—"
-                        defaultValue={baseVal === null ? "" : baseVal}
-                        style={{ width: "100%", minWidth: 96 }}
-                      />
-                    </td>
-                    <td>
-                      <input
-                        name={compareField}
-                        type="number"
-                        min={0}
-                        step={1000}
-                        placeholder="—"
-                        defaultValue={wasVal === null ? "" : wasVal}
-                        style={{ width: "100%", minWidth: 96 }}
-                        className="admin-input-was"
-                      />
-                    </td>
+                    <LadderSizePriceCells
+                      saleName={field}
+                      regularName={compareField}
+                      saleDefault={baseVal === null ? "" : baseVal}
+                      regularDefault={wasVal === null ? "" : wasVal}
+                      regularConfirmMessage={t.products.regularConfirm}
+                    />
                     {cities.map((city) => {
                       const stock = stockBySlug.get(city.slug);
                       const cityVal = stock?.sizePrices?.[size.id] ?? "";
@@ -256,35 +331,15 @@ export function ProductForm({
         <p style={{ fontSize: 13, opacity: 0.7, marginTop: 0, marginBottom: 12 }}>
           {t.products.singlePriceHint}
         </p>
-        <div className="admin-grid-2">
-          <label className="admin-field">
-            <span>{t.products.saleShort}</span>
-            <input
-              name="price"
-              type="number"
-              min={0}
-              step={1000}
-              required
-              defaultValue={product?.price ?? 600000}
-            />
-          </label>
-          <label className="admin-field">
-            <span>{t.products.wasShort}</span>
-            <input
-              name="compareAtPrice"
-              type="number"
-              min={0}
-              step={1000}
-              placeholder="—"
-              defaultValue={
-                product?.compareAtPrice != null && product.compareAtPrice > 0
-                  ? product.compareAtPrice
-                  : product?.price ?? ""
-              }
-              className="admin-input-was"
-            />
-          </label>
-        </div>
+        <FixedSaleRegularFields
+          t={t}
+          saleDefault={product?.price ?? 600000}
+          regularDefault={
+            product?.compareAtPrice != null && product.compareAtPrice > 0
+              ? product.compareAtPrice
+              : product?.price ?? 600000
+          }
+        />
         <div style={{ overflowX: "auto", marginTop: 14 }}>
           <table className="admin-table" style={{ minWidth: 420 }}>
             <thead>
