@@ -358,9 +358,12 @@ export const vi = {
       special: "Ghi chú giúp florist. Báo giá thêm nếu cần.",
     },
     options: {
+      small: "Nhỏ",
       mini: "Nhỏ",
       classic: "Vừa",
       grand: "Lớn",
+      medium: "Vừa",
+      large: "Lớn",
       "soft-blush": "Hồng dịu",
       "bold-rose": "Hồng đậm",
       garden: "Màu vườn",
