@@ -857,10 +857,16 @@ export async function createStudioOrderAction(formData: FormData) {
       ? `pickup:${branch.city.slug}`
       : `studio:${branch.city.slug}`;
 
+  const orderAddress =
+    fulfillment === "pickup"
+      ? branch.addressVi || branch.addressEn || "Pickup at studio"
+      : address || "—";
+
   const { upsertBuyerCustomer } = await import("@/lib/customer-identity");
   const customerId = await upsertBuyerCustomer({
     name: customerName,
     phone: phone || null,
+    address: orderAddress,
     preferredLocale: "vi",
   });
 
@@ -876,10 +882,7 @@ export async function createStudioOrderAction(formData: FormData) {
       customerId: customerId || undefined,
       zone,
       deliveryFee: fee || null,
-      address:
-        fulfillment === "pickup"
-          ? branch.addressVi || branch.addressEn || "Pickup at studio"
-          : address || "—",
+      address: orderAddress,
       deliveryDate: deliveryDate || null,
       deliveryTime: deliveryTime || null,
       fulfillment,

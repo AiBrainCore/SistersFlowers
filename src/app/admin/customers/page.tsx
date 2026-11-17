@@ -15,6 +15,20 @@ function fold(value: string) {
     .toLowerCase();
 }
 
+function formatWhen(date: Date, locale: string) {
+  return date.toLocaleString(locale === "vi" ? "vi-VN" : "en-GB", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
+}
+
+function shortAddress(value: string | null | undefined) {
+  const text = (value || "").trim();
+  if (!text) return null;
+  if (text.length <= 42) return text;
+  return `${text.slice(0, 40)}…`;
+}
+
 export default async function AdminCustomersPage({
   searchParams,
 }: {
@@ -47,6 +61,11 @@ export default async function AdminCustomersPage({
     orderBy: { createdAt: "desc" },
     include: {
       _count: { select: { orders: true } },
+      orders: {
+        orderBy: { createdAt: "desc" },
+        take: 1,
+        select: { address: true, createdAt: true },
+      },
     },
   });
 
@@ -54,10 +73,16 @@ export default async function AdminCustomersPage({
   const filtered = customers.filter((c) => {
     if (providerFilter !== "all" && c.provider !== providerFilter) return false;
     if (!qFold) return true;
+    const latestAddress = c.address || c.orders[0]?.address || "";
     return fold(
-      [c.name || "", c.email || "", c.phone || "", c.provider, c.zaloId || ""].join(
-        " ",
-      ),
+      [
+        c.name || "",
+        c.email || "",
+        c.phone || "",
+        latestAddress,
+        c.provider,
+        c.zaloId || "",
+      ].join(" "),
     ).includes(qFold);
   });
 
@@ -72,6 +97,14 @@ export default async function AdminCustomersPage({
     google: customers.filter((c) => c.provider === "google").length,
     zalo: customers.filter((c) => c.provider === "zalo").length,
   };
+
+  const returnQs = (() => {
+    const p = new URLSearchParams();
+    if (q) p.set("returnQ", q);
+    if (providerFilter !== "all") p.set("returnProvider", providerFilter);
+    const s = p.toString();
+    return s ? `?${s}` : "";
+  })();
 
   return (
     <AdminShell title={t.customers.title}>
@@ -93,23 +126,14 @@ export default async function AdminCustomersPage({
         </p>
       ) : null}
 
-      <div
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: 12,
-          alignItems: "center",
-          marginTop: 16,
-          marginBottom: 12,
-        }}
-      >
-        <form method="get" style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+      <div className="admin-customers-toolbar">
+        <form method="get" className="admin-customers-filters">
           <input
             type="search"
             name="q"
             defaultValue={q}
             placeholder={t.customers.searchPlaceholder}
-            style={{ minWidth: 220 }}
+            className="admin-customers-search"
           />
           <select name="provider" defaultValue={providerFilter}>
             <option value="all">
@@ -132,7 +156,10 @@ export default async function AdminCustomersPage({
             {t.customers.search}
           </button>
           {q || providerFilter !== "all" ? (
-            <Link href="/admin/customers" className="admin-btn secondary admin-btn-sm">
+            <Link
+              href="/admin/customers"
+              className="admin-btn secondary admin-btn-sm"
+            >
               {t.customers.clearSearch}
             </Link>
           ) : null}
@@ -164,96 +191,110 @@ export default async function AdminCustomersPage({
         ) : null}
       </div>
 
-      <div className="admin-card" style={{ padding: 0, overflow: "hidden" }}>
-        <table className="admin-table">
+      <div className="admin-card admin-customers-card">
+        <table className="admin-table admin-customers-table">
           <thead>
             <tr>
+              <th className="admin-customers-num">{t.customers.colNum}</th>
               <th>{t.common.name}</th>
-              <th>{t.customers.contact}</th>
+              <th>{t.customers.email}</th>
+              <th>{t.customers.phone}</th>
+              <th>{t.customers.address}</th>
               <th>{t.customers.provider}</th>
               <th>{t.customers.orders}</th>
               <th>{t.customers.joined}</th>
+              <th>{t.customers.lastOrder}</th>
               <th />
             </tr>
           </thead>
           <tbody>
             {filtered.length === 0 ? (
               <tr>
-                <td colSpan={6} style={{ padding: 24, opacity: 0.7 }}>
-                  {customers.length === 0 ? t.customers.empty : t.customers.emptyFilter}
+                <td colSpan={10} style={{ padding: 24, opacity: 0.7 }}>
+                  {customers.length === 0
+                    ? t.customers.empty
+                    : t.customers.emptyFilter}
                 </td>
               </tr>
             ) : (
-              filtered.map((c) => (
-                <tr key={c.id}>
-                  <td>
-                    <strong>{c.name || "—"}</strong>
-                    <div
-                      style={{
-                        fontSize: 11,
-                        opacity: 0.55,
-                        fontFamily: "ui-monospace, monospace",
-                      }}
-                    >
-                      {c.id.slice(0, 10)}…
-                    </div>
-                  </td>
-                  <td>
-                    <div style={{ fontSize: 13 }}>{c.email || "—"}</div>
-                    {c.phone ? (
-                      <div style={{ fontSize: 12, opacity: 0.75 }}>{c.phone}</div>
-                    ) : null}
-                    {c.zaloId ? (
-                      <div style={{ fontSize: 11, opacity: 0.55 }}>
-                        Zalo · {c.zaloId.slice(0, 12)}…
-                      </div>
-                    ) : null}
-                  </td>
-                  <td>
-                    <span style={{ textTransform: "capitalize" }}>
-                      {c.provider === "guest"
-                        ? t.customers.providerGuest
-                        : c.provider}
-                    </span>
-                    {c.emailVerifiedAt ? (
-                      <div style={{ fontSize: 11, opacity: 0.6 }}>
-                        {t.customers.verified}
-                      </div>
-                    ) : c.authUserId ? (
-                      <div style={{ fontSize: 11, opacity: 0.6 }}>
-                        {t.customers.unverified}
-                      </div>
-                    ) : null}
-                  </td>
-                  <td>
-                    {c._count.orders > 0 ? (
-                      <span style={{ fontWeight: 600 }} title={t.customers.ordersHint}>
-                        {c._count.orders}
+              filtered.map((c, index) => {
+                const address =
+                  c.address ||
+                  (c.orders[0]?.address && c.orders[0].address !== "—"
+                    ? c.orders[0].address
+                    : null);
+                const lastOrderAt = c.orders[0]?.createdAt ?? null;
+                return (
+                  <tr key={c.id}>
+                    <td className="admin-customers-num">
+                      <span
+                        className="admin-customers-index"
+                        title={`${index + 1} / ${filtered.length}`}
+                      >
+                        {index + 1}
                       </span>
-                    ) : (
-                      <span style={{ opacity: 0.5 }}>0</span>
-                    )}
-                  </td>
-                  <td style={{ fontSize: 12, whiteSpace: "nowrap" }}>
-                    {c.createdAt.toLocaleString(
-                      locale === "vi" ? "vi-VN" : "en-GB",
-                      { dateStyle: "medium", timeStyle: "short" },
-                    )}
-                  </td>
-                  <td>
-                    <form action={deleteCustomerAction}>
-                      <input type="hidden" name="id" value={c.id} />
-                      <input type="hidden" name="returnQ" value={q} />
-                      <button
-                        type="submit"
+                    </td>
+                    <td>
+                      <strong>{c.name || "—"}</strong>
+                    </td>
+                    <td className="admin-customers-mono">
+                      {c.email || "—"}
+                    </td>
+                    <td className="admin-customers-mono">
+                      {c.phone || "—"}
+                    </td>
+                    <td
+                      className="admin-customers-address"
+                      title={address || undefined}
+                    >
+                      {shortAddress(address) || "—"}
+                    </td>
+                    <td>
+                      <span style={{ textTransform: "capitalize" }}>
+                        {c.provider === "guest"
+                          ? t.customers.providerGuest
+                          : c.provider}
+                      </span>
+                    </td>
+                    <td>
+                      {c._count.orders > 0 ? (
+                        <span
+                          style={{ fontWeight: 600 }}
+                          title={t.customers.ordersHint}
+                        >
+                          {c._count.orders}
+                        </span>
+                      ) : (
+                        <span style={{ opacity: 0.5 }}>0</span>
+                      )}
+                    </td>
+                    <td className="admin-customers-date">
+                      {formatWhen(c.createdAt, locale)}
+                    </td>
+                    <td className="admin-customers-date">
+                      {lastOrderAt ? formatWhen(lastOrderAt, locale) : "—"}
+                    </td>
+                    <td className="admin-customers-actions">
+                      <Link
+                        href={`/admin/customers/${c.id}${returnQs}`}
                         className="admin-btn secondary admin-btn-sm"
                       >
-                        {t.common.delete}
-                      </button>
-                    </form>
-                  </td>
-                </tr>
-              ))
+                        {t.customers.open}
+                      </Link>
+                      <form action={deleteCustomerAction}>
+                        <input type="hidden" name="id" value={c.id} />
+                        <input type="hidden" name="returnQ" value={q} />
+                        <button
+                          type="submit"
+                          className="admin-btn secondary admin-btn-sm"
+                        >
+                          {t.common.delete}
+                        </button>
+                      </form>
+                    </td>
+                  </tr>
+                );
+              })
             )}
           </tbody>
         </table>

@@ -182,6 +182,8 @@ model Customer {
   emailVerifiedAt  DateTime?
   name             String?
   phone            String?
+  /// Last known delivery / pickup address from an order
+  address          String?
   /// Zalo Social user id
   zaloId           String?  @unique
   preferredLocale  String   @default("vi")

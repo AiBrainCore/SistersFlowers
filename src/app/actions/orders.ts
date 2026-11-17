@@ -121,6 +121,7 @@ export async function submitOrderAction(
     name: payload.customerName.trim(),
     phone: payload.phone.trim(),
     email,
+    address: payload.address.trim(),
     preferredLocale: payload.locale,
     knownCustomerId: loggedIn?.id,
   });

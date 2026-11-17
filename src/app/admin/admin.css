@@ -58,6 +58,124 @@
   vertical-align: top;
 }
 
+.admin-customers-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin-top: 16px;
+  margin-bottom: 12px;
+}
+
+.admin-customers-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  flex: 1 1 320px;
+}
+
+.admin-customers-search {
+  flex: 1 1 240px;
+  min-width: 200px;
+  max-width: 420px;
+}
+
+.admin-customers-card {
+  padding: 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.admin-customers-table {
+  min-width: 960px;
+  font-size: 13px;
+}
+
+.admin-customers-table th,
+.admin-customers-table td {
+  padding: 10px 8px;
+}
+
+.admin-customers-num {
+  width: 36px;
+  text-align: center;
+}
+
+.admin-customers-index {
+  display: inline-block;
+  min-width: 22px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.7;
+}
+
+.admin-customers-mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12px;
+  word-break: break-word;
+}
+
+.admin-customers-address {
+  max-width: 180px;
+  font-size: 12px;
+  line-height: 1.35;
+  word-break: break-word;
+}
+
+.admin-customers-date {
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.admin-customers-actions {
+  white-space: nowrap;
+}
+
+.admin-customers-actions form {
+  display: inline-block;
+  margin-left: 6px;
+}
+
+.admin-customer-detail-top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.admin-customer-card {
+  padding: 20px;
+}
+
+.admin-customer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px 20px;
+}
+
+.admin-customer-field-label {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.55;
+  margin-bottom: 4px;
+}
+
+.admin-customer-field-value {
+  font-size: 14px;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.admin-customer-orders-title {
+  margin: 28px 0 12px;
+  font-size: 18px;
+  font-family: serif;
+  font-weight: 600;
+}
+
 .admin-btn {
   display: inline-block;
   border: 0;
