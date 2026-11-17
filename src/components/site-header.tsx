@@ -219,18 +219,24 @@ export function SiteHeader({
             </Link>
           </nav>
 
-          {/* Right icons — search (lupa) + cart/account; compact on phones */}
-          <div className="flex shrink-0 items-center gap-0.5 sm:gap-1.5">
-            <Suspense fallback={null}>
-              <HeaderSearch
-                locale={locale}
-                dictionary={dictionary}
-                variant="icon"
-                onNavigated={closeAll}
-              />
-            </Suspense>
+          {/*
+            Mobile (<1200): Lupa · Cart · ☰  (Account + language in menu)
+            Desktop: Lupa · Language · Account · Cart (cart last)
+            All icon hits are a uniform 40×40 circle.
+          */}
+          <div className="flex shrink-0 items-center gap-1.5">
+            <div className="order-1">
+              <Suspense fallback={null}>
+                <HeaderSearch
+                  locale={locale}
+                  dictionary={dictionary}
+                  variant="icon"
+                  onNavigated={closeAll}
+                />
+              </Suspense>
+            </div>
 
-            <div className="hidden min-[400px]:block">
+            <div className="order-2 hidden min-[1200px]:block">
               <LanguageSwitch
                 locale={locale}
                 dictionary={dictionary}
@@ -238,16 +244,27 @@ export function SiteHeader({
               />
             </div>
 
+            <Link
+              href={`/${locale}/account`}
+              onClick={closeAll}
+              aria-label={dictionary.nav.account}
+              title={dictionary.nav.account}
+              className="order-3 relative hidden h-10 w-10 items-center justify-center rounded-full border border-white/35 bg-white/15 text-white transition hover:bg-white/25 min-[1200px]:inline-flex"
+            >
+              <IconAccount className="h-4 w-4" />
+              <span className="sr-only">{dictionary.nav.account}</span>
+            </Link>
+
             <button
               type="button"
               onClick={() => setOpen(true)}
               aria-label={dictionary.cart.openAria}
               title={dictionary.cart.openAria}
-              className="relative inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/35 bg-white/15 text-white transition hover:bg-white/25 sm:h-11 sm:w-11"
+              className="relative order-2 inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/35 bg-white/15 text-white transition hover:bg-white/25 min-[1200px]:order-4"
             >
-              <IconBag />
+              <IconBag className="h-4 w-4" />
               {count > 0 ? (
-                <span className="absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-white px-1 text-[9px] font-medium text-citrus sm:h-5 sm:min-w-5 sm:text-[10px]">
+                <span className="absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-white px-1 text-[9px] font-medium text-citrus">
                   {count > 99 ? "99+" : count}
                 </span>
               ) : null}
@@ -255,7 +272,7 @@ export function SiteHeader({
 
             <button
               type="button"
-              className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/35 bg-white/15 text-[12px] text-white min-[1200px]:hidden sm:h-11 sm:w-11 sm:text-[13px]"
+              className="order-3 inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/35 bg-white/15 text-[13px] text-white min-[1200px]:hidden"
               aria-expanded={menuOpen}
               aria-controls="site-mobile-menu"
               aria-label={menuOpen ? dictionary.nav.close : dictionary.nav.menu}
@@ -263,17 +280,6 @@ export function SiteHeader({
             >
               {menuOpen ? "✕" : "☰"}
             </button>
-
-            <Link
-              href={`/${locale}/account`}
-              onClick={closeAll}
-              aria-label={dictionary.nav.account}
-              title={dictionary.nav.account}
-              className="relative inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/35 bg-white/15 text-white transition hover:bg-white/25 sm:h-11 sm:w-11"
-            >
-              <IconAccount className="h-4 w-4 sm:h-5 sm:w-5" />
-              <span className="sr-only">{dictionary.nav.account}</span>
-            </Link>
           </div>
         </div>
       </header>
@@ -303,13 +309,21 @@ export function SiteHeader({
             </button>
           </div>
           <nav className="mx-auto flex h-[calc(100dvh-3.5rem)] max-w-6xl flex-col gap-1 overflow-y-auto px-4 py-5 sm:px-5">
-            <div className="mb-3 min-[400px]:hidden">
+            <div className="mb-3">
               <LanguageSwitch
                 locale={locale}
                 dictionary={dictionary}
                 variant="panel"
               />
             </div>
+            <Link
+              href={`/${locale}/account`}
+              onClick={closeAll}
+              className="mb-2 flex min-h-12 items-center gap-2 rounded-xl border border-forest/10 bg-cream/60 px-3 text-[15px] text-forest"
+            >
+              <IconAccount className="h-4 w-4 text-citrus" />
+              {dictionary.nav.account}
+            </Link>
             <Suspense fallback={null}>
               <HeaderSearch
                 locale={locale}

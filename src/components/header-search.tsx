@@ -110,9 +110,9 @@ export function HeaderSearch({
         aria-label={aria}
         title={aria}
         aria-expanded={open}
-        className="relative inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/35 bg-white/15 text-white transition hover:bg-white/25 sm:h-11 sm:w-11"
+        className="relative inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/35 bg-white/15 text-white transition hover:bg-white/25"
       >
-        <IconSearch className="h-4 w-4 sm:h-5 sm:w-5" />
+        <IconSearch className="h-4 w-4" />
         {urlQ ? (
           <span className="absolute top-1 right-1 h-1.5 w-1.5 rounded-full bg-white" />
         ) : null}
