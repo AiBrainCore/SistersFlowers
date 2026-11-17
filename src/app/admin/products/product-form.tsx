@@ -24,16 +24,16 @@ function LadderSizePriceCells({
   regularName,
   saleDefault,
   regularDefault,
-  regularConfirmMessage,
 }: {
   saleName: string;
   regularName: string;
   saleDefault: string | number;
   regularDefault: string | number;
-  regularConfirmMessage: string;
 }) {
-  const { sale, regular, onSaleChange, onRegularChange, onRegularBlur } =
-    useSaleRegularPair(saleDefault, regularDefault, regularConfirmMessage);
+  const { sale, regular, onSaleChange, onRegularChange } = useSaleRegularPair(
+    saleDefault,
+    regularDefault,
+  );
   return (
     <>
       <td>
@@ -57,7 +57,6 @@ function LadderSizePriceCells({
           placeholder="—"
           value={regular}
           onChange={(e) => onRegularChange(e.target.value)}
-          onBlur={onRegularBlur}
           style={{ width: "100%", minWidth: 96 }}
           className="admin-input-was"
         />
@@ -75,8 +74,10 @@ function FixedSaleRegularFields({
   saleDefault: number;
   regularDefault: string | number;
 }) {
-  const { sale, regular, onSaleChange, onRegularChange, onRegularBlur } =
-    useSaleRegularPair(saleDefault, regularDefault, t.products.regularConfirm);
+  const { sale, regular, onSaleChange, onRegularChange } = useSaleRegularPair(
+    saleDefault,
+    regularDefault,
+  );
   return (
     <div className="admin-grid-2">
       <label className="admin-field">
@@ -101,7 +102,6 @@ function FixedSaleRegularFields({
           placeholder="—"
           value={regular}
           onChange={(e) => onRegularChange(e.target.value)}
-          onBlur={onRegularBlur}
           className="admin-input-was"
         />
       </label>
@@ -259,7 +259,6 @@ export function ProductForm({
                       regularName={compareField}
                       saleDefault={baseVal === null ? "" : baseVal}
                       regularDefault={wasVal === null ? "" : wasVal}
-                      regularConfirmMessage={t.products.regularConfirm}
                     />
                     {cities.map((city) => {
                       const stock = stockBySlug.get(city.slug);
