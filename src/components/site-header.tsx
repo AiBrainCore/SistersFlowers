@@ -120,7 +120,7 @@ export function SiteHeader({
   return (
     <>
       <header className="site-header-bar sticky top-0 z-50">
-        <div className="mx-auto flex max-w-6xl items-center gap-2 px-4 py-2.5 sm:gap-3 sm:px-5 sm:py-3.5">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-2.5 sm:px-5 sm:py-3.5">
           {/* Brand only — city switching lives on hero / shop delivery bar */}
           <div className="min-w-0 shrink-0">
             <BrandLogo
@@ -135,7 +135,7 @@ export function SiteHeader({
           {/* Centre nav — from 1200px to avoid cramped mid-widths */}
           <nav
             ref={navRef}
-            className="hidden min-w-0 flex-1 items-center justify-center gap-0.5 text-[13px] tracking-normal text-white/90 min-[1200px]:flex"
+            className="hidden items-center gap-0.5 text-[13px] tracking-normal text-white/90 min-[1200px]:flex"
           >
             <Link
               href={`/${locale}/shop`}
@@ -219,22 +219,13 @@ export function SiteHeader({
             </Link>
           </nav>
 
-          {/* Site-wide search — desktop inline between nav and icons */}
-          <Suspense fallback={<div className="hidden min-w-0 flex-1 max-w-[18rem] min-[1200px]:block" />}>
-            <HeaderSearch
-              locale={locale}
-              dictionary={dictionary}
-              variant="desktop"
-            />
-          </Suspense>
-
-          {/* Right icons — compact on small phones so they stay inside the bar */}
+          {/* Right icons — search (lupa) + cart/account; compact on phones */}
           <div className="flex shrink-0 items-center gap-0.5 sm:gap-1.5">
             <Suspense fallback={null}>
               <HeaderSearch
                 locale={locale}
                 dictionary={dictionary}
-                variant="mobileBar"
+                variant="icon"
                 onNavigated={closeAll}
               />
             </Suspense>

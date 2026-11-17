@@ -130,6 +130,8 @@ function pricePresetLabel(
 }
 
 export function CatalogFilters({
+  leadingToolbar,
+  showTypeChips = true,
   locale,
   dictionary,
   categories,
@@ -146,6 +148,10 @@ export function CatalogFilters({
   colorAttrs?: AttributePublic[];
   initial: CatalogQuery;
   resultCount: number;
+  /** City switcher (or similar) shown on the same row as type chips. */
+  leadingToolbar?: ReactNode;
+  /** When false, type chips are omitted (rare). Default true. */
+  showTypeChips?: boolean;
   children?: ReactNode;
 }) {
   const router = useRouter();
@@ -548,9 +554,9 @@ export function CatalogFilters({
     );
   };
 
-  return (
-    <div className="mt-4 space-y-3">
-      <div className="flex flex-wrap gap-2">
+  const typeChips =
+    showTypeChips ? (
+      <div className="flex min-w-0 flex-wrap items-center gap-2">
         <button
           type="button"
           onClick={() => {
@@ -592,6 +598,18 @@ export function CatalogFilters({
           );
         })}
       </div>
+    ) : null;
+
+  return (
+    <div className="mt-3 space-y-3">
+      {leadingToolbar || typeChips ? (
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between lg:gap-4">
+          {leadingToolbar ? (
+            <div className="min-w-0 shrink-0">{leadingToolbar}</div>
+          ) : null}
+          {typeChips}
+        </div>
+      ) : null}
 
       <div className="lg:grid lg:grid-cols-[15.5rem_minmax(0,1fr)] lg:items-start lg:gap-8">
         <aside className="hidden rounded-2xl border border-forest/10 bg-white/70 p-4 lg:block">
