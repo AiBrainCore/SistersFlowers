@@ -101,13 +101,13 @@ const en = {
     filterType: "Type",
     sizePricing: "Sizes × sale / regular × city",
     sizePricingHint:
-      "Sale = what customers pay. Regular = optional full price before discount (strikethrough). Empty size = not sold. Empty Da Nang / Da Lat cell = same as Sale.",
+      "Sale = what customers pay. Regular = full price before discount (strikethrough only when Sale < Regular). Empty Regular saves as Sale. Empty size = not sold. Empty Da Nang / Da Lat cell = same as Sale.",
     sizeCol: "Size",
     cityPriceOverride: "Legacy single city price (if no sizes)",
     cityAvailable: "Sell in this city",
     sameAsBase: "Same as base",
     listPricingHint:
-      "S / M / L sale + optional Regular (full price before discount). Tick Sell per city. City size overrides → Edit. Custom → /custom.",
+      "S / M / L Sale + Regular (auto-fills from Sale if empty). Storefront shows strikethrough only when Sale < Regular. Tick Sell per city. City size overrides → Edit. Custom → /custom.",
     baseShort: "Base",
     saleShort: "Sale",
     wasShort: "Regular",
@@ -143,16 +143,16 @@ const en = {
     bulkClearWas: "Also clear Regular / discounts",
     bulkMarkupTitle: "Supplier / holiday markup %",
     bulkMarkupBody:
-      "Increase every sale (and Regular if set) by this percent — only for the selected type. Example: 15 → ×1.15.",
+      "Increase Sale only by this percent; Regular stays as the undo baseline (filled from Sale if empty). While Sale ≥ Regular the shop shows one price. Example: 15 → ×1.15.",
     bulkMarkupCta: "Apply markup",
     bulkDiscountTitle: "Discount day %",
     bulkDiscountBody:
-      "Move current Sale → Regular, then reduce Sale by this percent — only for the selected type.",
+      "Seed Regular from Sale if empty, then reduce Sale by this percent — only for the selected type. Strikethrough shows when Sale < Regular.",
     bulkDiscountCta: "Apply discount",
-    bulkClearTitle: "End discount day",
+    bulkClearTitle: "End discount / markup day",
     bulkClearBody:
-      "Restore Sale from Regular and clear Regular fields — only for the selected type.",
-    bulkClearCta: "Clear discounts",
+      "Restore Sale from Regular (ends both discount and temporary markup). Keeps Regular filled equal to Sale — only for the selected type.",
+    bulkClearCta: "Reset to Regular",
     bulkPercent: "Percent",
   },
   journal: {
@@ -445,13 +445,13 @@ const vi: typeof en = {
     filterType: "Loại",
     sizePricing: "Size × giá bán / giá gốc × thành phố",
     sizePricingHint:
-      "Giá bán = khách trả. Giá gốc = tùy chọn, trước giảm (gạch ngang). Size trống = không bán. Ô Đà Nẵng / Đà Lạt trống = như Giá bán.",
+      "Giá bán = khách trả. Giá gốc = trước giảm (gạch ngang chỉ khi Giá bán < Giá gốc). Giá gốc trống khi lưu = Giá bán. Size trống = không bán. Ô Đà Nẵng / Đà Lạt trống = như Giá bán.",
     sizeCol: "Size",
     cityPriceOverride: "Giá thành phố cũ (nếu chưa có size)",
     cityAvailable: "Bán ở thành phố này",
     sameAsBase: "Như giá gốc",
     listPricingHint:
-      "Giá bán S / M / L + Giá gốc (trước giảm, tùy chọn). Tick Bán theo thành phố. Giá size riêng → Sửa. Custom → /custom.",
+      "Giá bán S / M / L + Giá gốc (trống thì tự điền = Giá bán). Shop chỉ gạch ngang khi Giá bán < Giá gốc. Tick Bán theo thành phố. Giá size riêng → Sửa. Custom → /custom.",
     baseShort: "Gốc",
     saleShort: "Giá bán",
     wasShort: "Giá gốc",
@@ -487,16 +487,16 @@ const vi: typeof en = {
     bulkClearWas: "Đồng thời xóa Giá gốc / giảm giá",
     bulkMarkupTitle: "Tăng % (nhà cung cấp / lễ)",
     bulkMarkupBody:
-      "Tăng mọi giá bán (và Giá gốc nếu có) theo % — chỉ loại đã chọn. Ví dụ: 15 → ×1.15.",
+      "Chỉ tăng Giá bán theo %; Giá gốc giữ làm mốc hoàn tác (trống thì điền = Giá bán). Khi Giá bán ≥ Giá gốc shop hiện một giá. Ví dụ: 15 → ×1.15.",
     bulkMarkupCta: "Áp dụng tăng giá",
     bulkDiscountTitle: "Ngày giảm giá %",
     bulkDiscountBody:
-      "Giá bán hiện tại → Giá gốc, rồi giảm Giá bán theo % — chỉ loại đã chọn.",
+      "Nếu Giá gốc trống thì điền = Giá bán, rồi giảm Giá bán theo % — chỉ loại đã chọn. Gạch ngang khi Giá bán < Giá gốc.",
     bulkDiscountCta: "Áp dụng giảm giá",
-    bulkClearTitle: "Kết thúc giảm giá",
+    bulkClearTitle: "Kết thúc giảm / tăng giá",
     bulkClearBody:
-      "Khôi phục Giá bán từ Giá gốc và xóa Giá gốc — chỉ loại đã chọn.",
-    bulkClearCta: "Xóa giảm giá",
+      "Khôi phục Giá bán từ Giá gốc (hết cả giảm và tăng tạm). Giữ Giá gốc = Giá bán đã khôi phục — chỉ loại đã chọn.",
+    bulkClearCta: "Về Giá gốc",
     bulkPercent: "Phần trăm",
   },
   journal: {

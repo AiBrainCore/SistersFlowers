@@ -210,8 +210,10 @@ export async function bulkSetAbsoluteFixedPrice(opts: {
 }
 
 /**
- * Apply markup % to current sale prices (and Was if present).
- * One SQL UPDATE — avoids ~N sequential Prisma updates that hang the admin action.
+ * Temporary supplier / holiday markup: bump Sale only.
+ * Seeds Regular from Sale when Regular is empty so End can restore.
+ * Leaves Regular alone when already set (baseline for undo).
+ * Storefront shows one price while Sale ≥ Regular (isOnSale requires Regular > Sale).
  */
 export async function bulkApplyMarkupPercent(opts: {
   percent: number;
@@ -246,11 +248,23 @@ export async function bulkApplyMarkupPercent(opts: {
         ${bumpSql(Prisma.sql`"priceSm"`, factor)} AS "priceSm",
         ${bumpSql(Prisma.sql`"priceMd"`, factor)} AS "priceMd",
         ${bumpSql(Prisma.sql`"priceLg"`, factor)} AS "priceLg",
-        ${bumpSql(Prisma.sql`"compareAtSm"`, factor)} AS "compareAtSm",
-        ${bumpSql(Prisma.sql`"compareAtMd"`, factor)} AS "compareAtMd",
-        ${bumpSql(Prisma.sql`"compareAtLg"`, factor)} AS "compareAtLg",
-        ${bumpSql(Prisma.sql`"compareAtPrice"`, factor)} AS "compareAtPrice",
-        ${bumpSql(Prisma.sql`"price"`, factor)} AS "priceLegacy"
+        ${bumpSql(Prisma.sql`"price"`, factor)} AS "priceLegacy",
+        CASE
+          WHEN "compareAtSm" IS NOT NULL AND "compareAtSm" > 0 THEN "compareAtSm"
+          ELSE "priceSm"
+        END AS "compareAtSm",
+        CASE
+          WHEN "compareAtMd" IS NOT NULL AND "compareAtMd" > 0 THEN "compareAtMd"
+          ELSE "priceMd"
+        END AS "compareAtMd",
+        CASE
+          WHEN "compareAtLg" IS NOT NULL AND "compareAtLg" > 0 THEN "compareAtLg"
+          ELSE "priceLg"
+        END AS "compareAtLg",
+        CASE
+          WHEN "compareAtPrice" IS NOT NULL AND "compareAtPrice" > 0 THEN "compareAtPrice"
+          ELSE "price"
+        END AS "compareAtPrice"
       FROM "Product"
       WHERE ${where}
     )
@@ -290,6 +304,14 @@ async function bulkApplyMarkupPercentChunked(opts: {
     if (value == null || !Number.isFinite(value) || value <= 0) return null;
     return roundVnd(value * factor);
   };
+  const keepOrSeedRegular = (
+    sale: number | null | undefined,
+    compareAt: number | null | undefined,
+  ) => {
+    if (compareAt != null && compareAt > 0) return compareAt;
+    if (sale != null && sale > 0) return sale;
+    return null;
+  };
   const rows = await prisma.product.findMany({
     where: productWhere(opts.scope, opts.productType),
     select: {
@@ -314,16 +336,17 @@ async function bulkApplyMarkupPercentChunked(opts: {
           priceSm: opts.sizes.includes("sm") ? bump(row.priceSm) : row.priceSm,
           priceMd: opts.sizes.includes("md") ? bump(row.priceMd) : row.priceMd,
           priceLg: opts.sizes.includes("lg") ? bump(row.priceLg) : row.priceLg,
+          // Regular = baseline before markup; never bump it with Sale.
           compareAtSm: opts.sizes.includes("sm")
-            ? bump(row.compareAtSm)
+            ? keepOrSeedRegular(row.priceSm, row.compareAtSm)
             : row.compareAtSm,
           compareAtMd: opts.sizes.includes("md")
-            ? bump(row.compareAtMd)
+            ? keepOrSeedRegular(row.priceMd, row.compareAtMd)
             : row.compareAtMd,
           compareAtLg: opts.sizes.includes("lg")
-            ? bump(row.compareAtLg)
+            ? keepOrSeedRegular(row.priceLg, row.compareAtLg)
             : row.compareAtLg,
-          compareAtPrice: bump(row.compareAtPrice),
+          compareAtPrice: keepOrSeedRegular(row.price, row.compareAtPrice),
         };
         const listPrice = syncListPrice(
           { sm: next.priceSm, md: next.priceMd, lg: next.priceLg },
@@ -345,7 +368,8 @@ async function bulkApplyMarkupPercentChunked(opts: {
 }
 
 /**
- * Discount day: current Sale → Was (if Was empty or lower), Sale *= (1 - %).
+ * Discount day: seed Regular from Sale only when Regular empty, then Sale *= (1 - %).
+ * Does not overwrite an existing Regular baseline (e.g. after temporary markup).
  * Single SQL UPDATE.
  */
 export async function bulkApplyDiscountPercent(opts: {
@@ -384,25 +408,25 @@ export async function bulkApplyDiscountPercent(opts: {
         END AS "priceLegacy",
         CASE
           WHEN "priceSm" IS NOT NULL AND "priceSm" > 0
-            AND ("compareAtSm" IS NULL OR "compareAtSm" <= "priceSm")
+            AND ("compareAtSm" IS NULL OR "compareAtSm" <= 0)
           THEN "priceSm"
           ELSE "compareAtSm"
         END AS "compareAtSm",
         CASE
           WHEN "priceMd" IS NOT NULL AND "priceMd" > 0
-            AND ("compareAtMd" IS NULL OR "compareAtMd" <= "priceMd")
+            AND ("compareAtMd" IS NULL OR "compareAtMd" <= 0)
           THEN "priceMd"
           ELSE "compareAtMd"
         END AS "compareAtMd",
         CASE
           WHEN "priceLg" IS NOT NULL AND "priceLg" > 0
-            AND ("compareAtLg" IS NULL OR "compareAtLg" <= "priceLg")
+            AND ("compareAtLg" IS NULL OR "compareAtLg" <= 0)
           THEN "priceLg"
           ELSE "compareAtLg"
         END AS "compareAtLg",
         CASE
           WHEN "price" > 0
-            AND ("compareAtPrice" IS NULL OR "compareAtPrice" <= "price")
+            AND ("compareAtPrice" IS NULL OR "compareAtPrice" <= 0)
           THEN "price"
           ELSE "compareAtPrice"
         END AS "compareAtPrice"
@@ -433,7 +457,11 @@ export async function bulkApplyDiscountPercent(opts: {
   return Number(count);
 }
 
-/** End discount day: restore Sale from Was, clear Was. Single SQL UPDATE. */
+/**
+ * End discount / markup day: restore Sale from Regular, keep Regular filled
+ * (= restored Sale). Also fills empty Regular from Sale (backfill, no price change).
+ * Single SQL UPDATE.
+ */
 export async function bulkClearDiscounts(opts: {
   scope: BulkPriceScope;
   productType?: BulkTypeScope;
@@ -474,10 +502,10 @@ export async function bulkClearDiscounts(opts: {
         Prisma.sql`s."priceLg"`,
         Prisma.sql`s."priceLegacy"`,
       )},
-      "compareAtPrice" = NULL,
-      "compareAtSm" = NULL,
-      "compareAtMd" = NULL,
-      "compareAtLg" = NULL,
+      "compareAtSm" = s."priceSm",
+      "compareAtMd" = s."priceMd",
+      "compareAtLg" = s."priceLg",
+      "compareAtPrice" = s."priceLegacy",
       "priceGrand" = NULL,
       "compareAtGrand" = NULL,
       "updatedAt" = NOW()

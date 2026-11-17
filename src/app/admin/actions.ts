@@ -18,6 +18,8 @@ import {
   upsertProductCityStock,
 } from "@/lib/product-city";
 import {
+  fillCompareAtFromSale,
+  fillCompareAtsFromSales,
   productUsesSizeLadder,
   syncListPrice,
   type SizePriceMap,
@@ -144,16 +146,20 @@ export async function saveProductAction(formData: FormData) {
   const sizePrices = usesLadder
     ? readBaseSizePrices(formData)
     : { sm: null, md: null, lg: null, grand: null };
-  const compareAts = usesLadder
+  const compareAtsRaw = usesLadder
     ? readCompareAtPrices(formData)
     : { sm: null, md: null, lg: null, grand: null };
   const legacyPrice = Number(formData.get("price") || 0);
   const price = usesLadder
     ? syncListPrice(sizePrices, legacyPrice)
     : Math.round(legacyPrice);
-  const compareAtPrice = usesLadder
-    ? parseOptionalVnd(formData.get("compareAtPrice"))
-    : parseOptionalVnd(formData.get("compareAtPrice"));
+  const compareAts = usesLadder
+    ? fillCompareAtsFromSales(sizePrices, compareAtsRaw)
+    : compareAtsRaw;
+  const compareAtPrice = fillCompareAtFromSale(
+    usesLadder ? price : Math.round(legacyPrice),
+    parseOptionalVnd(formData.get("compareAtPrice")),
+  );
   let slug = String(formData.get("slug") || "").trim() || slugify(nameEn || nameVi);
   const accent = String(formData.get("accent") || "rose");
   const tagEn = String(formData.get("tagEn") || "Wrapped bouquet");
@@ -330,7 +336,7 @@ export async function quickSaveProductCityPricesAction(formData: FormData) {
   const sizePrices = usesLadder
     ? readBaseSizePrices(formData)
     : { sm: null, md: null, lg: null, grand: null };
-  const compareAts = usesLadder
+  const compareAtsRaw = usesLadder
     ? readCompareAtPrices(formData)
     : { sm: null, md: null, lg: null, grand: null };
   const legacyPrice = Number(formData.get("price") || current.price || 0);
@@ -340,6 +346,13 @@ export async function quickSaveProductCityPricesAction(formData: FormData) {
   if (!price || !Number.isFinite(price)) {
     bulkRedirect(formData, { error: "price", focus: id });
   }
+  const compareAts = usesLadder
+    ? fillCompareAtsFromSales(sizePrices, compareAtsRaw)
+    : compareAtsRaw;
+  const compareAtPrice = fillCompareAtFromSale(
+    Math.round(price),
+    parseOptionalVnd(formData.get("compareAtPrice")),
+  );
 
   await prisma.product.update({
     where: { id },
@@ -349,7 +362,7 @@ export async function quickSaveProductCityPricesAction(formData: FormData) {
       priceMd: sizePrices.md,
       priceLg: sizePrices.lg,
       priceGrand: null,
-      compareAtPrice: parseOptionalVnd(formData.get("compareAtPrice")),
+      compareAtPrice,
       compareAtSm: compareAts.sm,
       compareAtMd: compareAts.md,
       compareAtLg: compareAts.lg,

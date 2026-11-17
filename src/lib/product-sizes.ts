@@ -175,8 +175,31 @@ export function resolveCompareAt(
   return null;
 }
 
+/** Dual-price / strikethrough only when Regular is strictly above Sale. */
 export function isOnSale(price: number, compareAt: number | null | undefined) {
   return compareAt != null && compareAt > price && price > 0;
+}
+
+/** Keep Regular when set; otherwise copy Sale so baseline is always filled. */
+export function fillCompareAtFromSale(
+  sale: number | null | undefined,
+  compareAt: number | null | undefined,
+): number | null {
+  if (compareAt != null && compareAt > 0) return compareAt;
+  if (sale != null && sale > 0) return sale;
+  return null;
+}
+
+export function fillCompareAtsFromSales(
+  sales: SizePriceMap,
+  compareAts: SizePriceMap,
+): SizePriceMap {
+  return {
+    sm: fillCompareAtFromSale(sales.sm, compareAts.sm),
+    md: fillCompareAtFromSale(sales.md, compareAts.md),
+    lg: fillCompareAtFromSale(sales.lg, compareAts.lg),
+    grand: fillCompareAtFromSale(sales.grand, compareAts.grand),
+  };
 }
 
 /** Compare-at paired with the lowest current size price (for cards). */
