@@ -12,7 +12,6 @@ import { ProductCard } from "@/components/product-card";
 import { CatalogFilters } from "@/components/catalog-filters";
 import { CatalogPagination } from "@/components/catalog-pagination";
 import { DeliveryCityBar } from "@/components/delivery-city-bar";
-import { ShopSearch } from "@/components/shop-search";
 import { buildPageMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
@@ -110,11 +109,6 @@ export default async function ShopPage({
           {t.shop.intro}
         </p>
 
-        <div className="mt-3 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between lg:gap-4">
-          <DeliveryCityBar locale={locale} dictionary={t} />
-          <ShopSearch locale={locale} dictionary={t} initial={query} />
-        </div>
-
         <CatalogFilters
           locale={locale}
           dictionary={t}
@@ -123,6 +117,9 @@ export default async function ShopPage({
           colorAttrs={colorAttrs}
           initial={query}
           resultCount={total}
+          leadingToolbar={
+            <DeliveryCityBar locale={locale} dictionary={t} />
+          }
         >
           {products.length === 0 ? (
             <p className="mt-8 text-sm text-moss">{t.shop.empty}</p>
