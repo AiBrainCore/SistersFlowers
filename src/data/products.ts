@@ -18,6 +18,8 @@ export type ProductAttributePublic = {
 export type Product = {
   id?: string;
   slug: string;
+  /** Short staff code (e.g. SF-7878). */
+  sku?: string;
   /** Display / list price (min size or legacy). */
   price: number;
   sizePrices?: SizePriceMap;
@@ -58,6 +60,7 @@ export type Product = {
 export type ProductRecord = {
   id: string;
   slug: string;
+  sku?: string | null;
   price: number;
   priceSm?: number | null;
   priceMd?: number | null;
@@ -131,6 +134,7 @@ export function toProduct(record: ProductRecord): Product {
   return {
     id: record.id,
     slug: record.slug,
+    sku: record.sku || undefined,
     price: record.price,
     sizePrices: baseSizePrices(record),
     compareAtPrices: baseCompareAtPrices(record),

@@ -176,11 +176,13 @@ export function ProductForm({
 
       <div className="admin-grid-2">
         <label className="admin-field">
-          <span>{t.common.slug}</span>
+          <span>{t.products.sku}</span>
           <input
-            name="slug"
-            defaultValue={product?.slug}
-            placeholder={t.products.slugPlaceholder}
+            name="sku"
+            defaultValue={product?.sku || ""}
+            placeholder={t.products.skuPlaceholder}
+            autoCapitalize="characters"
+            spellCheck={false}
           />
         </label>
         <label className="admin-field">
@@ -196,6 +198,17 @@ export function ProductForm({
               </option>
             ))}
           </select>
+        </label>
+      </div>
+      <p className="admin-field-hint">{t.products.skuHint}</p>
+      <div className="admin-grid-2">
+        <label className="admin-field">
+          <span>{t.common.slug}</span>
+          <input
+            name="slug"
+            defaultValue={product?.slug}
+            placeholder={t.products.slugPlaceholder}
+          />
         </label>
       </div>
       <p style={{ fontSize: 13, opacity: 0.7, marginTop: -6, marginBottom: 14 }}>

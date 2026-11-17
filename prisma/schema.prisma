@@ -13,6 +13,8 @@ datasource db {
 model Product {
   id         String            @id @default(cuid())
   slug       String            @unique
+  /// Short staff code for phone/WhatsApp/studio orders (e.g. SF-7878). Not the cuid.
+  sku        String            @unique
   /// List/sort price (synced to min size or legacy single price).
   price      Int
   /// Size matrix (null = size not offered at network level).

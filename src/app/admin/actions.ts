@@ -11,6 +11,7 @@ import {
   isAdminAuthenticated,
 } from "@/lib/admin-auth";
 import { slugify } from "@/lib/products";
+import { resolveUniqueSku } from "@/lib/product-sku";
 import { makeAddonSlug } from "@/lib/addons";
 import {
   listCitiesForPricing,
@@ -74,6 +75,8 @@ function bulkRedirect(formData: FormData, extra: Record<string, string> = {}) {
   if (q) params.set("q", q);
   if (status && status !== "all") params.set("status", status);
   if (type && type !== "all") params.set("type", type);
+  // Changing nonce so re-saving the same product still remounts scroll restore.
+  params.set("_", String(Date.now()));
   redirect(`/admin/products?${params.toString()}`);
 }
 
@@ -161,6 +164,7 @@ export async function saveProductAction(formData: FormData) {
     parseOptionalVnd(formData.get("compareAtPrice")),
   );
   let slug = String(formData.get("slug") || "").trim() || slugify(nameEn || nameVi);
+  const skuRaw = String(formData.get("sku") || "").trim();
   const accent = String(formData.get("accent") || "rose");
   const tagEn = String(formData.get("tagEn") || "Wrapped bouquet");
   const tagVi = String(formData.get("tagVi") || "Bó hoa gói giấy");
@@ -237,10 +241,24 @@ export async function saveProductAction(formData: FormData) {
       const clash = await prisma.product.findUnique({ where: { slug } });
       if (clash) slug = `${slug}-${Date.now().toString(36)}`;
     }
+    const sku = await resolveUniqueSku({
+      raw: skuRaw || current.sku || "",
+      slug,
+      id,
+      sourceKey: current.sourceKey,
+      taken: async (candidate) => {
+        const row = await prisma.product.findUnique({
+          where: { sku: candidate },
+          select: { id: true },
+        });
+        return Boolean(row && row.id !== id);
+      },
+    });
     await prisma.product.update({
       where: { id },
       data: {
         slug,
+        sku,
         price,
         productType,
         ...sizeData,
@@ -262,9 +280,21 @@ export async function saveProductAction(formData: FormData) {
   } else {
     const clash = await prisma.product.findUnique({ where: { slug } });
     if (clash) slug = `${slug}-${Date.now().toString(36)}`;
+    const sku = await resolveUniqueSku({
+      raw: skuRaw,
+      slug,
+      taken: async (candidate) => {
+        const row = await prisma.product.findUnique({
+          where: { sku: candidate },
+          select: { id: true },
+        });
+        return Boolean(row);
+      },
+    });
     const created = await prisma.product.create({
       data: {
         slug,
+        sku,
         price,
         productType,
         ...sizeData,
@@ -491,13 +521,15 @@ export async function bulkClearDiscountsAction(formData: FormData) {
 export async function deleteProductAction(formData: FormData) {
   await requireAdmin();
   const id = String(formData.get("id") || "");
+  const focusAfter = String(formData.get("focusAfter") || "").trim();
   if (id) {
     await prisma.product.delete({ where: { id } });
   }
   revalidatePath("/en/shop");
   revalidatePath("/vi/shop");
   bumpShopCatalogCache();
-  redirect("/admin/products");
+  // Keep filters and land near the deleted row (neighbor), not list top.
+  bulkRedirect(formData, focusAfter ? { focus: focusAfter } : {});
 }
 
 export async function updateOrderStatusAction(formData: FormData) {
