@@ -7,8 +7,6 @@ import {
   type BuilderOption,
 } from "@/data/bouquet-builder";
 
-const STALE_SIZE_LABEL_EN = new Set(["Medium", "Large"]);
-
 function asOptions(
   value: unknown,
   fallback: BuilderOption[],
@@ -23,14 +21,13 @@ function asOptions(
       const rawId = o.id.trim();
       const id = opts?.remapSizeIds ? normalizeBuilderSizeId(rawId) : rawId;
       const fallbackRow = fallback.find((f) => f.id === id);
-      let labelEn =
-        typeof o.labelEn === "string" ? o.labelEn : fallbackRow?.labelEn || id;
-      // Align old defaults: mini→small, Medium→Classic, Large→Grand.
-      if (opts?.remapSizeIds && fallbackRow) {
-        if (rawId !== id || STALE_SIZE_LABEL_EN.has(labelEn)) {
-          labelEn = fallbackRow.labelEn || id;
-        }
-      }
+      // Only rewrite label when remapping id (e.g. mini → small).
+      const labelEn =
+        opts?.remapSizeIds && rawId !== id && fallbackRow?.labelEn
+          ? fallbackRow.labelEn
+          : typeof o.labelEn === "string"
+            ? o.labelEn
+            : fallbackRow?.labelEn || id;
       return {
         id,
         price:

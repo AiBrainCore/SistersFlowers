@@ -32,8 +32,8 @@ export type BuilderCatalog = {
 export const DEFAULT_BUILDER_LOCATION: BuilderLocationId = "danang";
 
 /**
- * Three sizes — ID matches the English name stem:
- * small / Small, classic / Classic, grand / Grand (no XL).
+ * Three sizes (S / M / L) — customer names Small / Medium / Large.
+ * IDs: small, classic, grand (not mini — that mismatched “Small”).
  */
 export const builderSizes: BuilderOption[] = [
   {
@@ -51,7 +51,7 @@ export const builderSizes: BuilderOption[] = [
     swatch: "#e86a2b",
     active: true,
     sortOrder: 20,
-    labelEn: "Classic",
+    labelEn: "Medium",
     labelVi: "Vừa",
   },
   {
@@ -60,7 +60,7 @@ export const builderSizes: BuilderOption[] = [
     swatch: "#2f3b32",
     active: true,
     sortOrder: 30,
-    labelEn: "Grand",
+    labelEn: "Large",
     labelVi: "Lớn",
   },
 ];
