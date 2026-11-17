@@ -25,10 +25,17 @@ function normalizeEmail(raw: string | null | undefined): string | null {
 
 const AUTH_PROVIDERS = new Set(["email", "google", "zalo"]);
 
+function normalizeAddress(raw: string | null | undefined): string | null {
+  const address = (raw || "").trim();
+  if (!address || address === "—") return null;
+  return address;
+}
+
 export async function upsertBuyerCustomer(input: {
   name?: string | null;
   phone?: string | null;
   email?: string | null;
+  address?: string | null;
   preferredLocale?: string;
   /** Prefer logged-in account when present. */
   knownCustomerId?: string | null;
@@ -36,6 +43,7 @@ export async function upsertBuyerCustomer(input: {
   const name = (input.name || "").trim() || null;
   const phone = normalizePhone(input.phone);
   const email = normalizeEmail(input.email);
+  const address = normalizeAddress(input.address);
   const locale =
     input.preferredLocale === "en" || input.preferredLocale === "vi"
       ? input.preferredLocale
@@ -54,6 +62,7 @@ export async function upsertBuyerCustomer(input: {
           name: name || undefined,
           phone: phone || undefined,
           email: email || undefined,
+          address: address || undefined,
           preferredLocale: locale,
         },
       });
@@ -92,6 +101,7 @@ export async function upsertBuyerCustomer(input: {
         name: name || undefined,
         phone: phone || match.phone || undefined,
         email: email || match.email || undefined,
+        address: address || undefined,
         preferredLocale: locale,
         // Never downgrade a real account to guest
         provider: keepProvider ? undefined : match.provider || "guest",
@@ -105,6 +115,7 @@ export async function upsertBuyerCustomer(input: {
       name,
       phone,
       email,
+      address,
       preferredLocale: locale,
       provider: "guest",
     },
@@ -123,6 +134,7 @@ export async function backfillGuestCustomersFromOrders(limit = 200) {
       customerName: true,
       phone: true,
       email: true,
+      address: true,
       locale: true,
     },
   });
@@ -133,6 +145,7 @@ export async function backfillGuestCustomersFromOrders(limit = 200) {
       name: order.customerName,
       phone: order.phone === "—" ? null : order.phone,
       email: order.email,
+      address: order.address,
       preferredLocale: order.locale,
     });
     if (!customerId) continue;
