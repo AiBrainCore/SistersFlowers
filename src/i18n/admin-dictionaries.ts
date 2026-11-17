@@ -67,7 +67,7 @@ const en = {
     authOff:
       "Supabase Auth is not configured in this environment — new email/Google sign-ups will fail until keys are set. Guest contacts from orders still work.",
     search: "Search",
-    searchPlaceholder: "Name, email, phone, provider…",
+    searchPlaceholder: "Name, email, phone…",
     filterAll: "All",
     count: "Showing {shown} of {total}",
     contact: "Contact",
@@ -465,7 +465,7 @@ const vi: typeof en = {
     authOff:
       "Supabase Auth chưa cấu hình — đăng ký email/Google sẽ lỗi đến khi có keys. Contact guest từ đơn vẫn hoạt động.",
     search: "Tìm",
-    searchPlaceholder: "Tên, email, SĐT, provider…",
+    searchPlaceholder: "Tên, email, SĐT…",
     filterAll: "Tất cả",
     count: "Hiển thị {shown} / {total}",
     contact: "Liên hệ",
