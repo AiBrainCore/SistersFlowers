@@ -17,11 +17,25 @@ function initialRegular(
   return saleInit;
 }
 
+function isPaired(sale: string, regular: string) {
+  return (
+    regular === "" ||
+    regular === sale ||
+    !Number.isFinite(Number(regular)) ||
+    Number(regular) <= 0
+  );
+}
+
 /**
- * When Sale and Regular match (normal list price), editing either keeps both
- * equal — staff cannot leave Sale behind after changing Regular.
- * When they already differ (discount or markup), fields edit independently;
- * use bulk Discount / Markup / Reset for those campaigns.
+ * Sale = what the customer pays (edit this for normal price changes).
+ * Regular = baseline / “was” price.
+ *
+ * When they currently match:
+ * - Raise Sale → Regular follows (new list price, keep baseline in sync)
+ * - Lower Sale → Regular stays (starts a discount; you still know the old Regular)
+ * Editing Regular never auto-changes Sale.
+ *
+ * When they already differ (discount/markup), fields stay independent.
  */
 export function useSaleRegularPair(
   saleDefault?: string | number | null,
@@ -37,24 +51,28 @@ export function useSaleRegularPair(
     const prevSale = sale;
     setSale(next);
     setRegular((prevRegular) => {
-      const paired =
-        prevRegular === "" ||
-        prevRegular === prevSale ||
-        Number(prevRegular) <= 0;
-      return paired ? next : prevRegular;
+      if (!isPaired(prevSale, prevRegular)) return prevRegular;
+
+      const prevNum = Number(prevSale);
+      const nextNum = Number(next);
+      // Lowering Sale while paired → keep Regular as the discount baseline.
+      if (
+        next !== "" &&
+        prevSale !== "" &&
+        Number.isFinite(nextNum) &&
+        Number.isFinite(prevNum) &&
+        nextNum < prevNum
+      ) {
+        return prevRegular === "" ? prevSale : prevRegular;
+      }
+      // Raise / rewrite Sale → Regular follows.
+      return next;
     });
   }
 
   function onRegularChange(next: string) {
-    const prevRegular = regular;
+    // Regular is the baseline — never drag Sale along with it.
     setRegular(next);
-    setSale((prevSale) => {
-      const paired =
-        prevSale === "" ||
-        prevSale === prevRegular ||
-        Number(prevSale) <= 0;
-      return paired ? next : prevSale;
-    });
   }
 
   return {

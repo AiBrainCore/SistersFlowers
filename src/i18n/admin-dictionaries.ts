@@ -102,13 +102,13 @@ const en = {
     filterType: "Type",
     sizePricing: "Sizes × sale / regular × city",
     sizePricingHint:
-      "Sale = what customers pay. When Sale = Regular, editing either keeps both equal. When they differ, edit independently (or use bulk Discount / Markup). Strikethrough only when Sale < Regular. Empty size = not sold.",
+      "Sale = what customers pay. If Sale = Regular: raise Sale → Regular follows; lower Sale → Regular stays (discount). Editing Regular never changes Sale. Strikethrough only when Sale < Regular. Empty size = not sold.",
     sizeCol: "Size",
     cityPriceOverride: "Legacy single city price (if no sizes)",
     cityAvailable: "Sell in this city",
     sameAsBase: "Same as base",
     listPricingHint:
-      "When Sale = Regular, editing either updates both (no accidental discount). When they differ (discount/markup), edit independently — or use bulk Discount / Markup / Reset. Shop strikethrough only when Sale < Regular.",
+      "Edit Sale for the customer price. If Sale = Regular: raising Sale updates Regular too; lowering Sale keeps Regular (discount baseline). Regular alone never changes Sale. Shop strikethrough only when Sale < Regular.",
     baseShort: "Base",
     saleShort: "Sale",
     wasShort: "Regular",
@@ -461,13 +461,13 @@ const vi: typeof en = {
     filterType: "Loại",
     sizePricing: "Size × giá bán / giá gốc × thành phố",
     sizePricingHint:
-      "Giá bán = khách trả. Khi Giá bán = Giá gốc, sửa một ô giữ cả hai bằng nhau. Khi khác nhau, sửa riêng (hoặc hàng loạt Giảm / Tăng). Gạch ngang chỉ khi Giá bán < Giá gốc. Size trống = không bán.",
+      "Giá bán = khách trả. Khi Giá bán = Giá gốc: tăng Giá bán → Giá gốc theo; giảm Giá bán → giữ Giá gốc. Sửa Giá gốc không kéo Giá bán. Gạch ngang chỉ khi Giá bán < Giá gốc. Size trống = không bán.",
     sizeCol: "Size",
     cityPriceOverride: "Giá thành phố cũ (nếu chưa có size)",
     cityAvailable: "Bán ở thành phố này",
     sameAsBase: "Như giá gốc",
     listPricingHint:
-      "Khi Giá bán = Giá gốc, sửa một ô cập nhật cả hai (không giảm giá nhầm). Khi khác nhau (đang giảm/tăng), sửa riêng — hoặc dùng hàng loạt Giảm / Tăng / Reset. Shop gạch ngang chỉ khi Giá bán < Giá gốc.",
+      "Sửa Giá bán = giá khách trả. Khi Giá bán = Giá gốc: tăng Giá bán → Giá gốc theo; giảm Giá bán → giữ Giá gốc (mốc giảm giá). Sửa Giá gốc không đổi Giá bán. Shop gạch ngang chỉ khi Giá bán < Giá gốc.",
     baseShort: "Gốc",
     saleShort: "Giá bán",
     wasShort: "Giá gốc",
