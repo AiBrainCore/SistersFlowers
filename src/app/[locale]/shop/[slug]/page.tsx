@@ -110,9 +110,32 @@ export default async function ProductPage({
             <h1 className="serif mt-3 text-4xl text-forest sm:text-5xl">
               {product.names[locale]}
             </h1>
-            <p className="mt-3 text-xs tracking-[0.14em] text-moss uppercase">
-              {product.tags[locale]}
-            </p>
+            {(() => {
+              const tag = product.tags[locale]?.trim() || "";
+              const name = product.names[locale]?.trim() || "";
+              // Skip tags that repeat the product title (e.g. “Romantic Rose Bouquet”).
+              const fold = (value: string) =>
+                value
+                  .normalize("NFD")
+                  .replace(/\p{M}/gu, "")
+                  .toLowerCase()
+                  .replace(/[^a-z0-9\s]/g, " ")
+                  .replace(/\s+/g, " ")
+                  .trim();
+              const tagFold = fold(tag);
+              const nameFold = fold(name);
+              const looksLikeSecondTitle =
+                /\b(bouquet|bó hoa|bo hoa)\b/i.test(tag) ||
+                tagFold === nameFold ||
+                (tagFold.length > 0 &&
+                  (nameFold.includes(tagFold) || tagFold.includes(nameFold)));
+              if (!tag || looksLikeSecondTitle) return null;
+              return (
+                <p className="mt-3 text-xs tracking-[0.14em] text-moss uppercase">
+                  {tag}
+                </p>
+              );
+            })()}
             <p className="mt-6 max-w-md text-sm leading-7 text-moss">
               {product.story[locale]}
             </p>

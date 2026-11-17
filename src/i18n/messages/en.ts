@@ -229,7 +229,7 @@ export const en = {
     add: "Add to tray",
     added: "Added to tray",
     deliveryNote:
-      "We’ll confirm delivery with you before sending — the fee depends on distance.",
+      "Pickup at the studio, or delivery after you order — we confirm timing and fee with you.",
     more: "More bouquets",
     sizeLabel: "Size",
     fromPrice: "From",

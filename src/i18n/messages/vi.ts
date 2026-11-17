@@ -229,7 +229,7 @@ export const vi = {
     add: "Thêm vào khay",
     added: "Đã thêm vào khay",
     deliveryNote:
-      "Chúng tôi sẽ xác nhận giao hàng với bạn trước khi gửi — phí tùy khoảng cách.",
+      "Nhận tại studio, hoặc giao sau khi đặt — chúng tôi xác nhận giờ và phí với bạn.",
     more: "Thêm bó hoa",
     sizeLabel: "Kích thước",
     fromPrice: "Từ",
