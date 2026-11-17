@@ -65,9 +65,14 @@ const productInclude = {
 } as const;
 
 const SIZE_BANDS: Record<CatalogSizeBand, { min?: number; max?: number }> = {
-  mini: { max: 524999 },
-  classic: { min: 525000, max: 724999 },
-  grand: { min: 725000 },
+  under500: { max: 499999 },
+  mid500: { min: 500000, max: 799999 },
+  mid800: { min: 800000, max: 1199999 },
+  over1200: { min: 1200000 },
+  // Legacy aliases (normalized away in parse, kept for type safety)
+  mini: { max: 499999 },
+  classic: { min: 500000, max: 799999 },
+  grand: { min: 1200000 },
 };
 
 const STYLE_NEEDLES: Record<CatalogStyle, string[]> = {
