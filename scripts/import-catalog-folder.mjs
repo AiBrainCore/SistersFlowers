@@ -388,8 +388,33 @@ async function main() {
         }
 
         const usesSizeLadder = productType === "bouquet";
+        const digitMatch =
+          finalSlug.match(/(?:^|-)img-(\d{3,})(?:-|$)/i) ||
+          finalSlug.match(/(\d{3,})$/);
+        let skuBase = digitMatch
+          ? `SF-${digitMatch[1]}`
+          : `SF-${String(i + 1).padStart(4, "0")}`;
+        let sku = skuBase;
+        if (!existingBySource || !existingBySource.sku) {
+          let n = 2;
+          while (true) {
+            const clash = await prisma.product.findUnique({
+              where: { sku },
+            });
+            if (!clash || clash.id === existingBySource?.id) break;
+            sku = `${skuBase}-${n}`;
+            n += 1;
+            if (n > 99) {
+              sku = `${skuBase}-${Date.now().toString(36).toUpperCase()}`;
+              break;
+            }
+          }
+        } else {
+          sku = existingBySource.sku;
+        }
         const data = {
           slug: finalSlug,
+          sku,
           price: DEFAULT_PRICE,
           // Baskets / stands = one fixed size; only bouquets get S/M/L.
           priceSm: usesSizeLadder ? DEFAULT_SM : null,

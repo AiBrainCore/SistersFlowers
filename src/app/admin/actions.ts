@@ -11,6 +11,7 @@ import {
   isAdminAuthenticated,
 } from "@/lib/admin-auth";
 import { slugify } from "@/lib/products";
+import { resolveUniqueSku } from "@/lib/product-sku";
 import { makeAddonSlug } from "@/lib/addons";
 import {
   listCitiesForPricing,
@@ -163,6 +164,7 @@ export async function saveProductAction(formData: FormData) {
     parseOptionalVnd(formData.get("compareAtPrice")),
   );
   let slug = String(formData.get("slug") || "").trim() || slugify(nameEn || nameVi);
+  const skuRaw = String(formData.get("sku") || "").trim();
   const accent = String(formData.get("accent") || "rose");
   const tagEn = String(formData.get("tagEn") || "Wrapped bouquet");
   const tagVi = String(formData.get("tagVi") || "Bó hoa gói giấy");
@@ -239,10 +241,24 @@ export async function saveProductAction(formData: FormData) {
       const clash = await prisma.product.findUnique({ where: { slug } });
       if (clash) slug = `${slug}-${Date.now().toString(36)}`;
     }
+    const sku = await resolveUniqueSku({
+      raw: skuRaw || current.sku || "",
+      slug,
+      id,
+      sourceKey: current.sourceKey,
+      taken: async (candidate) => {
+        const row = await prisma.product.findUnique({
+          where: { sku: candidate },
+          select: { id: true },
+        });
+        return Boolean(row && row.id !== id);
+      },
+    });
     await prisma.product.update({
       where: { id },
       data: {
         slug,
+        sku,
         price,
         productType,
         ...sizeData,
@@ -264,9 +280,21 @@ export async function saveProductAction(formData: FormData) {
   } else {
     const clash = await prisma.product.findUnique({ where: { slug } });
     if (clash) slug = `${slug}-${Date.now().toString(36)}`;
+    const sku = await resolveUniqueSku({
+      raw: skuRaw,
+      slug,
+      taken: async (candidate) => {
+        const row = await prisma.product.findUnique({
+          where: { sku: candidate },
+          select: { id: true },
+        });
+        return Boolean(row);
+      },
+    });
     const created = await prisma.product.create({
       data: {
         slug,
+        sku,
         price,
         productType,
         ...sizeData,

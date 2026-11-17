@@ -75,6 +75,7 @@ async function main() {
       await prisma.product.create({
         data: {
           slug: product.slug,
+          sku: `SF-SEED-${String(index + 1).padStart(3, "0")}`,
           price: product.price,
           image: product.image,
           imageFallback: "",

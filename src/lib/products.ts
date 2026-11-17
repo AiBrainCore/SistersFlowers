@@ -555,6 +555,7 @@ export async function listAdminProducts(): Promise<Product[]> {
     select: {
       id: true,
       slug: true,
+      sku: true,
       price: true,
       priceSm: true,
       priceMd: true,

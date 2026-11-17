@@ -71,6 +71,7 @@ export default async function AdminProductsPage({
         product.names.en,
         product.names.vi,
         product.slug,
+        product.sku || "",
         product.tags.en,
         product.tags.vi,
         product.productType || "",
@@ -195,7 +196,9 @@ export default async function AdminProductsPage({
                       return locale === "vi" ? typeMeta.nameVi : typeMeta.nameEn;
                     })()}
                     {" · "}
-                    {product.slug}
+                    <span className="admin-product-sku">
+                      {t.products.skuShort} {product.sku || "—"}
+                    </span>
                     {" · "}
                     {product.published
                       ? t.common.published
