@@ -243,6 +243,7 @@ export const en = {
       "Spa, salon, taxi, or hotel credit your recipient can enjoy. If they spend a little more, they simply pay the difference.",
     addonNotePlaceholder: "Card message or a note for us",
     withExtras: "Gift + selected",
+    totalLabel: "Total",
     voucherValidDays: "Enjoy within {days} days",
   },
   cart: {
