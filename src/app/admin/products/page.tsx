@@ -172,7 +172,7 @@ export default async function AdminProductsPage({
                     alt=""
                     fill
                     className="object-cover"
-                    sizes="88px"
+                    sizes="64px"
                     unoptimized
                   />
                 </div>
@@ -197,6 +197,14 @@ export default async function AdminProductsPage({
                   </span>
                 </div>
                 <div className="admin-product-actions">
+                  <a
+                    href={`/${locale}/shop/${product.slug}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="admin-btn secondary admin-btn-sm"
+                  >
+                    {t.common.openShop}
+                  </a>
                   <Link
                     href={(() => {
                       const p = new URLSearchParams({

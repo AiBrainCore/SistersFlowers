@@ -24,6 +24,7 @@ const en = {
     update: "Update",
     manage: "Manage",
     view: "View",
+    openShop: "Open in shop",
     saved: "Saved.",
     backToList: "Back to list",
     active: "Active",
@@ -127,6 +128,8 @@ const en = {
     bulkTitle: "Bulk pricing",
     bulkHint:
       "Pick a product type on every bulk action so bouquets, baskets, and stands never mix. S/M/L absolute = bouquets only; fixed absolute = one non-bouquet type.",
+    bulkRules:
+      "Rules: Regular = undo baseline. Markup raises Sale only. Discount lowers Sale (seeds Regular if empty). Reset sets Sale = Regular for every product in the selected type — it ends markup and discount together. Do not stack markup + discount on the same type the same day. Prefer one type (not All). For a few SKUs, edit Sale/Regular on the card instead of Reset.",
     bulkDone: "Bulk {action}: updated {n} products.",
     bulkError: "Bulk pricing failed — check the numbers.",
     bulkScope: "Publish status",
@@ -136,23 +139,35 @@ const en = {
     bulkAbsoluteTitle: "Set absolute S / M / L",
     bulkAbsoluteBody: "Overwrite bouquet sale prices with these VND amounts.",
     bulkAbsoluteCta: "Set bouquet prices",
+    bulkAbsoluteConfirm:
+      "Overwrite S/M/L Sale for ALL bouquets in this publish scope? This cannot be undone automatically.",
     bulkFixedTitle: "Set fixed price (one type)",
     bulkFixedBody:
       "Overwrite the single Sale price for one non-bouquet type (basket or stand).",
     bulkFixedCta: "Set fixed prices",
+    bulkFixedConfirm:
+      "Overwrite Sale for ALL products of this type in the publish scope? This cannot be undone automatically.",
     bulkClearWas: "Also clear Regular / discounts",
     bulkMarkupTitle: "Supplier / holiday markup %",
     bulkMarkupBody:
-      "Increase Sale only by this percent; Regular stays as the undo baseline (filled from Sale if empty). While Sale ≥ Regular the shop shows one price. Example: 15 → ×1.15.",
+      "Increase Sale only; Regular stays as undo baseline (filled from Sale if empty). Shop shows one price while Sale ≥ Regular. Example: 15 → ×1.15. Avoid applying if a discount day is still active on the same type.",
     bulkMarkupCta: "Apply markup",
+    bulkMarkupConfirm:
+      "Raise Sale by this % for the selected type/scope? Regular is kept as baseline. Confirm type is correct — All types affects everything.",
     bulkDiscountTitle: "Discount day %",
     bulkDiscountBody:
-      "Seed Regular from Sale if empty, then reduce Sale by this percent — only for the selected type. Strikethrough shows when Sale < Regular.",
+      "Seed Regular from Sale if empty, then reduce Sale. Strikethrough when Sale < Regular. Avoid stacking on top of an active markup for the same type.",
     bulkDiscountCta: "Apply discount",
+    bulkDiscountConfirm:
+      "Cut Sale by this % for the selected type/scope? Confirm type is correct before continuing.",
     bulkClearTitle: "End discount / markup day",
     bulkClearBody:
-      "Restore Sale from Regular (ends both discount and temporary markup). Keeps Regular filled equal to Sale — only for the selected type.",
+      "Sets Sale = Regular for the selected type (ends markup and discount together). Products that still need a discount must be re-discounted afterward, or edit them one-by-one. Narrow Product type first — avoid All types unless you mean every SKU.",
     bulkClearCta: "Reset to Regular",
+    bulkClearConfirmCheck:
+      "I understand: Sale will equal Regular for every product in this type/scope (ends both markup and discount).",
+    bulkClearConfirm:
+      "Reset Sale to Regular for this type/scope? This ends temporary markup AND any active discount on those products.",
     bulkPercent: "Percent",
   },
   journal: {
@@ -368,6 +383,7 @@ const vi: typeof en = {
     update: "Cập nhật",
     manage: "Quản lý",
     view: "Xem",
+    openShop: "Mở trên shop",
     saved: "Đã lưu.",
     backToList: "Về danh sách",
     active: "Đang bật",
@@ -471,6 +487,8 @@ const vi: typeof en = {
     bulkTitle: "Giá hàng loạt",
     bulkHint:
       "Mỗi thao tác hàng loạt chọn loại sản phẩm — bó / giỏ / kệ không lẫn. S/M/L tuyệt đối = chỉ bó; giá cố định = một loại không phải bó.",
+    bulkRules:
+      "Quy tắc: Giá gốc = mốc hoàn tác. Tăng giá chỉ nâng Giá bán. Giảm giá hạ Giá bán (điền Giá gốc nếu trống). Reset: Giá bán = Giá gốc cho mọi SP loại đã chọn — hết cả tăng và giảm cùng lúc. Đừng chồng tăng + giảm cùng loại trong cùng ngày. Ưu tiên chọn một loại (không Tất cả). Vài SKU → sửa tay trên thẻ, đừng Reset.",
     bulkDone: "Hàng loạt {action}: đã cập nhật {n} sản phẩm.",
     bulkError: "Lỗi giá hàng loạt — kiểm tra số liệu.",
     bulkScope: "Trạng thái đăng",
@@ -480,23 +498,35 @@ const vi: typeof en = {
     bulkAbsoluteTitle: "Đặt tuyệt đối S / M / L",
     bulkAbsoluteBody: "Ghi đè giá bán bó hoa bằng các số VND này.",
     bulkAbsoluteCta: "Đặt giá bó hoa",
+    bulkAbsoluteConfirm:
+      "Ghi đè Giá bán S/M/L cho TẤT CẢ bó hoa trong phạm vi đăng? Không hoàn tác tự động.",
     bulkFixedTitle: "Đặt giá cố định (một loại)",
     bulkFixedBody:
       "Ghi đè một Giá bán cho một loại không phải bó (giỏ hoặc kệ).",
     bulkFixedCta: "Đặt giá cố định",
+    bulkFixedConfirm:
+      "Ghi đè Giá bán cho TẤT CẢ sản phẩm loại này trong phạm vi đăng? Không hoàn tác tự động.",
     bulkClearWas: "Đồng thời xóa Giá gốc / giảm giá",
     bulkMarkupTitle: "Tăng % (nhà cung cấp / lễ)",
     bulkMarkupBody:
-      "Chỉ tăng Giá bán theo %; Giá gốc giữ làm mốc hoàn tác (trống thì điền = Giá bán). Khi Giá bán ≥ Giá gốc shop hiện một giá. Ví dụ: 15 → ×1.15.",
+      "Chỉ tăng Giá bán; Giá gốc giữ làm mốc (trống thì = Giá bán). Shop một giá khi Giá bán ≥ Giá gốc. Ví dụ: 15 → ×1.15. Đừng áp nếu cùng loại vẫn đang giảm giá.",
     bulkMarkupCta: "Áp dụng tăng giá",
+    bulkMarkupConfirm:
+      "Tăng Giá bán theo % cho loại/phạm vi đã chọn? Giá gốc giữ làm mốc. Kiểm tra loại — Tất cả loại ảnh hưởng mọi thứ.",
     bulkDiscountTitle: "Ngày giảm giá %",
     bulkDiscountBody:
-      "Nếu Giá gốc trống thì điền = Giá bán, rồi giảm Giá bán theo % — chỉ loại đã chọn. Gạch ngang khi Giá bán < Giá gốc.",
+      "Điền Giá gốc từ Giá bán nếu trống, rồi giảm Giá bán. Gạch ngang khi Giá bán < Giá gốc. Đừng chồng lên tăng giá đang chạy cùng loại.",
     bulkDiscountCta: "Áp dụng giảm giá",
+    bulkDiscountConfirm:
+      "Giảm Giá bán theo % cho loại/phạm vi đã chọn? Kiểm tra loại trước khi tiếp tục.",
     bulkClearTitle: "Kết thúc giảm / tăng giá",
     bulkClearBody:
-      "Khôi phục Giá bán từ Giá gốc (hết cả giảm và tăng tạm). Giữ Giá gốc = Giá bán đã khôi phục — chỉ loại đã chọn.",
+      "Đặt Giá bán = Giá gốc cho loại đã chọn (hết cả tăng và giảm). SP vẫn cần giảm phải giảm lại sau, hoặc sửa từng thẻ. Chọn đúng loại trước — tránh Tất cả loại trừ khi cố ý.",
     bulkClearCta: "Về Giá gốc",
+    bulkClearConfirmCheck:
+      "Tôi hiểu: Giá bán sẽ = Giá gốc cho mọi SP loại/phạm vi này (hết cả tăng và giảm).",
+    bulkClearConfirm:
+      "Đặt lại Giá bán = Giá gốc cho loại/phạm vi này? Sẽ kết thúc tăng tạm VÀ mọi giảm giá đang có trên các SP đó.",
     bulkPercent: "Phần trăm",
   },
   journal: {

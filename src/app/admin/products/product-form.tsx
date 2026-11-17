@@ -532,6 +532,16 @@ export function ProductForm({
         <button type="submit" className="admin-btn">
           {t.products.save}
         </button>
+        {product?.slug ? (
+          <a
+            href={`/${locale}/shop/${product.slug}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="admin-btn secondary"
+          >
+            {t.common.openShop}
+          </a>
+        ) : null}
         <Link href={listHref} className="admin-btn secondary">
           {t.common.backToList}
         </Link>
