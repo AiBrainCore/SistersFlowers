@@ -122,6 +122,7 @@ const en = {
     skuPlaceholder: "SF-7878 (auto if empty)",
     skuHint:
       "Short studio code for phone / WhatsApp / orders. One per product (size is S/M/L, not a separate SKU). Editable anytime.",
+    priceWarn: "Check prices",
     categories: "Categories (occasions)",
     categoriesHint: "A bouquet can belong to several occasions.",
     productType: "Product type",
@@ -156,7 +157,7 @@ const en = {
     citySizesHint: "Different price per city size →",
     countShowing: "Showing {shown} of {total}",
     filterSearch: "Search",
-    filterSearchPlaceholder: "Name, SKU, slug…",
+    filterSearchPlaceholder: "Name, SKU (SF-1127), slug…",
     filterStatus: "Status",
     filterAll: "All",
     filterApply: "Filter",
@@ -519,6 +520,7 @@ const vi: typeof en = {
     skuPlaceholder: "SF-7878 (trống = tự tạo)",
     skuHint:
       "Mã ngắn cho studio / Zalo / đơn hàng. Một SKU / sản phẩm (size là S/M/L, không SKU riêng). Có thể sửa bất cứ lúc nào.",
+    priceWarn: "Kiểm tra giá",
     categories: "Danh mục (dịp)",
     categoriesHint: "Một bó có thể thuộc nhiều dịp.",
     productType: "Loại sản phẩm",
@@ -553,7 +555,7 @@ const vi: typeof en = {
     citySizesHint: "Giá size khác theo thành phố →",
     countShowing: "Hiển thị {shown} / {total}",
     filterSearch: "Tìm",
-    filterSearchPlaceholder: "Tên, SKU, slug…",
+    filterSearchPlaceholder: "Tên, SKU (SF-1127), slug…",
     filterStatus: "Trạng thái",
     filterAll: "Tất cả",
     filterApply: "Lọc",

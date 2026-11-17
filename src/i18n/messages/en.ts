@@ -227,6 +227,7 @@ export const en = {
   },
   product: {
     handmade: "Handmade in {city}",
+    skuLabel: "SKU",
     add: "Add to tray",
     added: "Added to tray",
     deliveryNote:
