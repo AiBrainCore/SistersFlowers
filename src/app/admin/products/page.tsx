@@ -287,6 +287,7 @@ export default async function AdminProductsPage({
                             regularLabel={t.products.wasShort}
                             saleDefault={sale ?? ""}
                             regularDefault={was === null ? "" : was}
+                            regularConfirmMessage={t.products.regularConfirm}
                           />
                         </div>
                       </div>
@@ -313,6 +314,7 @@ export default async function AdminProductsPage({
                             ? product.compareAtPrice
                             : product.price
                         }
+                        regularConfirmMessage={t.products.regularConfirm}
                       />
                     </div>
                   </div>

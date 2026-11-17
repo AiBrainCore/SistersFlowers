@@ -102,16 +102,18 @@ const en = {
     filterType: "Type",
     sizePricing: "Sizes × sale / regular × city",
     sizePricingHint:
-      "Sale = what customers pay. If Sale = Regular: raise Sale → Regular follows; lower Sale → Regular stays (discount). Editing Regular never changes Sale. Strikethrough only when Sale < Regular. Empty size = not sold.",
+      "Sale = customer price. Regular = stable base (Sale never overwrites it; editing Regular asks Yes/No). Empty Regular seeds from Sale once. Strikethrough only when Sale < Regular. Empty size = not sold.",
     sizeCol: "Size",
     cityPriceOverride: "Legacy single city price (if no sizes)",
     cityAvailable: "Sell in this city",
     sameAsBase: "Same as base",
     listPricingHint:
-      "Edit Sale for the customer price. If Sale = Regular: raising Sale updates Regular too; lowering Sale keeps Regular (discount baseline). Regular alone never changes Sale. Shop strikethrough only when Sale < Regular.",
+      "Sale = customer price (temporary markup/discount jumps here). Regular = stable base — Sale never moves it; changing Regular asks Yes/No. Empty Regular seeds from Sale once. Shop strikethrough only when Sale < Regular.",
     baseShort: "Base",
     saleShort: "Sale",
     wasShort: "Regular",
+    regularConfirm:
+      "Change Regular (base) price? Sale will not follow. Temporary markups and discounts use Regular as the undo baseline.",
     compareAtLegacy: "Regular price (if no sizes)",
     overrideShort: "Override",
     sellShort: "Sell",
@@ -461,16 +463,18 @@ const vi: typeof en = {
     filterType: "Loại",
     sizePricing: "Size × giá bán / giá gốc × thành phố",
     sizePricingHint:
-      "Giá bán = khách trả. Khi Giá bán = Giá gốc: tăng Giá bán → Giá gốc theo; giảm Giá bán → giữ Giá gốc. Sửa Giá gốc không kéo Giá bán. Gạch ngang chỉ khi Giá bán < Giá gốc. Size trống = không bán.",
+      "Giá bán = khách trả. Giá gốc = mốc ổn định (Giá bán không ghi đè; đổi Giá gốc hỏi Yes/No). Giá gốc trống lần đầu = Giá bán. Gạch ngang chỉ khi Giá bán < Giá gốc. Size trống = không bán.",
     sizeCol: "Size",
     cityPriceOverride: "Giá thành phố cũ (nếu chưa có size)",
     cityAvailable: "Bán ở thành phố này",
     sameAsBase: "Như giá gốc",
     listPricingHint:
-      "Sửa Giá bán = giá khách trả. Khi Giá bán = Giá gốc: tăng Giá bán → Giá gốc theo; giảm Giá bán → giữ Giá gốc (mốc giảm giá). Sửa Giá gốc không đổi Giá bán. Shop gạch ngang chỉ khi Giá bán < Giá gốc.",
+      "Giá bán = giá khách (tăng/giảm tạm ở đây). Giá gốc = mốc ổn định — Giá bán không kéo Giá gốc; đổi Giá gốc hỏi Yes/No. Giá gốc trống lần đầu = Giá bán. Shop gạch ngang chỉ khi Giá bán < Giá gốc.",
     baseShort: "Gốc",
     saleShort: "Giá bán",
     wasShort: "Giá gốc",
+    regularConfirm:
+      "Đổi Giá gốc (giá cơ sở)? Giá bán sẽ không theo. Tăng/giảm tạm dùng Giá gốc làm mốc hoàn tác.",
     compareAtLegacy: "Giá gốc (nếu chưa có size)",
     overrideShort: "Riêng",
     sellShort: "Bán",
