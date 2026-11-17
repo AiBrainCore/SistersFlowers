@@ -12,6 +12,7 @@ import { SalePrice } from "@/components/sale-price";
 import {
   defaultSize,
   hasAnySizePrice,
+  isOnSale,
   offeredSizes,
   productUsesSizeLadder,
   resolveCompareAt,
@@ -169,7 +170,15 @@ export function ProductPurchase({
           <p className="text-[11px] tracking-[0.18em] text-moss uppercase">
             {dictionary.product.sizeLabel}
           </p>
-          <div className="mt-3 flex flex-wrap gap-2">
+          <div
+            className={`mt-3 grid gap-2 ${
+              sizes.length >= 3
+                ? "grid-cols-3"
+                : sizes.length === 2
+                  ? "grid-cols-2"
+                  : "grid-cols-1"
+            }`}
+          >
             {sizes.map((id) => {
               const price = resolveSizePrice(
                 id,
@@ -177,34 +186,57 @@ export function ProductPurchase({
                 citySizes,
                 product.price,
               );
+              const compareAt = resolveCompareAt(
+                id,
+                product.compareAtPrices,
+                product.compareAtPrice,
+              );
               const on = size === id;
+              const sale = isOnSale(price, compareAt);
               return (
                 <button
                   key={id}
                   type="button"
                   onClick={() => setSize(id)}
-                  className={`min-h-11 rounded-full border px-4 text-sm transition ${
+                  className={`flex min-h-14 flex-col items-center justify-center gap-0.5 rounded-2xl border px-2 py-2.5 text-center transition ${
                     on
-                      ? "border-citrus bg-citrus text-ivory"
+                      ? "border-citrus bg-citrus text-ivory shadow-[0_8px_20px_rgba(176,84,44,0.16)]"
                       : "border-forest/15 bg-white text-forest hover:border-citrus/40"
                   }`}
                 >
-                  {sizeLabel(id, locale)}
-                  <span className={`ml-2 ${on ? "text-ivory/90" : "text-moss"}`}>
+                  <span className="text-[12px] font-medium leading-tight tracking-wide">
+                    {sizeLabel(id, locale)}
+                  </span>
+                  {sale ? (
+                    <span
+                      className={`text-[11px] leading-tight line-through ${
+                        on ? "text-ivory/75" : "text-moss/80"
+                      }`}
+                    >
+                      {formatVnd(compareAt!, locale)}
+                    </span>
+                  ) : null}
+                  <span
+                    className={`text-[12px] leading-tight tabular-nums ${
+                      on ? "text-ivory" : "text-citrus"
+                    }`}
+                  >
                     {formatVnd(price, locale)}
                   </span>
                 </button>
               );
             })}
           </div>
-          <div className="mt-4">
-            <SalePrice
-              price={unitPrice}
-              compareAt={unitCompareAt}
-              locale={locale}
-              size="lg"
-            />
-          </div>
+          {isOnSale(unitPrice, unitCompareAt) ? (
+            <div className="mt-3">
+              <SalePrice
+                price={unitPrice}
+                compareAt={unitCompareAt}
+                locale={locale}
+                size="lg"
+              />
+            </div>
+          ) : null}
           {size && product.sizeNotes?.[size]?.[locale]?.trim() ? (
             <p className="mt-2 text-sm text-moss">
               {product.sizeNotes[size]![locale]}
