@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { AdminShell } from "@/app/admin/_shell";
-import { deleteCustomerAction } from "@/app/admin/actions";
+import {
+  deleteCustomerAction,
+  syncGuestCustomersAction,
+} from "@/app/admin/actions";
 import { prisma } from "@/lib/db";
 import { getAdminT } from "@/lib/admin-locale";
 import { supabaseConfigured } from "@/lib/supabase/env";
@@ -15,14 +18,30 @@ function fold(value: string) {
 export default async function AdminCustomersPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ q?: string; deleted?: string }>;
+  searchParams?: Promise<{
+    q?: string;
+    deleted?: string;
+    synced?: string;
+    scanned?: string;
+    provider?: string;
+  }>;
 }) {
   const [{ locale, t }, sp] = await Promise.all([
     getAdminT(),
     searchParams || Promise.resolve({}),
   ]);
-  const q = ((sp as { q?: string }).q || "").trim();
-  const deleted = (sp as { deleted?: string }).deleted;
+  const params = sp as {
+    q?: string;
+    deleted?: string;
+    synced?: string;
+    scanned?: string;
+    provider?: string;
+  };
+  const q = (params.q || "").trim();
+  const providerFilter = (params.provider || "all").trim() || "all";
+  const deleted = params.deleted;
+  const synced = params.synced;
+  const scanned = params.scanned;
 
   const customers = await prisma.customer.findMany({
     orderBy: { createdAt: "desc" },
@@ -32,19 +51,27 @@ export default async function AdminCustomersPage({
   });
 
   const qFold = fold(q);
-  const filtered = !qFold
-    ? customers
-    : customers.filter((c) =>
-        fold(
-          [c.name || "", c.email || "", c.phone || "", c.provider, c.zaloId || ""].join(
-            " ",
-          ),
-        ).includes(qFold),
-      );
-
-  const guestOrders = await prisma.order.count({
-    where: { customerId: null, source: "shop" },
+  const filtered = customers.filter((c) => {
+    if (providerFilter !== "all" && c.provider !== providerFilter) return false;
+    if (!qFold) return true;
+    return fold(
+      [c.name || "", c.email || "", c.phone || "", c.provider, c.zaloId || ""].join(
+        " ",
+      ),
+    ).includes(qFold);
   });
+
+  const unlinkedOrders = await prisma.order.count({
+    where: { customerId: null },
+  });
+
+  const counts = {
+    all: customers.length,
+    guest: customers.filter((c) => c.provider === "guest").length,
+    email: customers.filter((c) => c.provider === "email").length,
+    google: customers.filter((c) => c.provider === "google").length,
+    zalo: customers.filter((c) => c.provider === "zalo").length,
+  };
 
   return (
     <AdminShell title={t.customers.title}>
@@ -84,25 +111,56 @@ export default async function AdminCustomersPage({
             placeholder={t.customers.searchPlaceholder}
             style={{ minWidth: 220 }}
           />
+          <select name="provider" defaultValue={providerFilter}>
+            <option value="all">
+              {t.customers.filterAll} ({counts.all})
+            </option>
+            <option value="guest">
+              {t.customers.providerGuest} ({counts.guest})
+            </option>
+            <option value="email">
+              {t.customers.providerEmail} ({counts.email})
+            </option>
+            <option value="google">
+              {t.customers.providerGoogle} ({counts.google})
+            </option>
+            <option value="zalo">
+              {t.customers.providerZalo} ({counts.zalo})
+            </option>
+          </select>
           <button type="submit" className="admin-btn secondary admin-btn-sm">
             {t.customers.search}
           </button>
-          {q ? (
+          {q || providerFilter !== "all" ? (
             <Link href="/admin/customers" className="admin-btn secondary admin-btn-sm">
               {t.customers.clearSearch}
             </Link>
           ) : null}
         </form>
+
+        {unlinkedOrders > 0 ? (
+          <form action={syncGuestCustomersAction}>
+            <input type="hidden" name="returnQ" value={q} />
+            <button type="submit" className="admin-btn admin-btn-sm">
+              {t.customers.syncGuests.replace("{n}", String(unlinkedOrders))}
+            </button>
+          </form>
+        ) : null}
+
         <span style={{ fontSize: 13, opacity: 0.7 }}>
           {t.customers.count
             .replace("{shown}", String(filtered.length))
             .replace("{total}", String(customers.length))}
-          {guestOrders
-            ? ` · ${t.customers.guestOrders.replace("{n}", String(guestOrders))}`
-            : ""}
         </span>
         {deleted ? (
           <span className="admin-products-saved">{t.customers.deleted}</span>
+        ) : null}
+        {synced != null ? (
+          <span className="admin-products-saved">
+            {t.customers.synced
+              .replace("{linked}", synced)
+              .replace("{scanned}", scanned || synced)}
+          </span>
         ) : null}
       </div>
 
@@ -130,7 +188,13 @@ export default async function AdminCustomersPage({
                 <tr key={c.id}>
                   <td>
                     <strong>{c.name || "—"}</strong>
-                    <div style={{ fontSize: 11, opacity: 0.55, fontFamily: "ui-monospace, monospace" }}>
+                    <div
+                      style={{
+                        fontSize: 11,
+                        opacity: 0.55,
+                        fontFamily: "ui-monospace, monospace",
+                      }}
+                    >
                       {c.id.slice(0, 10)}…
                     </div>
                   </td>
@@ -146,7 +210,11 @@ export default async function AdminCustomersPage({
                     ) : null}
                   </td>
                   <td>
-                    <span style={{ textTransform: "capitalize" }}>{c.provider}</span>
+                    <span style={{ textTransform: "capitalize" }}>
+                      {c.provider === "guest"
+                        ? t.customers.providerGuest
+                        : c.provider}
+                    </span>
                     {c.emailVerifiedAt ? (
                       <div style={{ fontSize: 11, opacity: 0.6 }}>
                         {t.customers.verified}
@@ -159,13 +227,9 @@ export default async function AdminCustomersPage({
                   </td>
                   <td>
                     {c._count.orders > 0 ? (
-                      <Link
-                        href={`/admin/orders`}
-                        style={{ fontWeight: 600 }}
-                        title={t.customers.ordersHint}
-                      >
+                      <span style={{ fontWeight: 600 }} title={t.customers.ordersHint}>
                         {c._count.orders}
-                      </Link>
+                      </span>
                     ) : (
                       <span style={{ opacity: 0.5 }}>0</span>
                     )}

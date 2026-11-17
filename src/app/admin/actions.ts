@@ -545,6 +545,22 @@ export async function deleteCustomerAction(formData: FormData) {
   redirect(`/admin/customers?${params.toString()}`);
 }
 
+/** Build Customer rows from past orders that had no account link. */
+export async function syncGuestCustomersAction(formData: FormData) {
+  await requireAdmin();
+  const { backfillGuestCustomersFromOrders } = await import(
+    "@/lib/customer-identity"
+  );
+  const result = await backfillGuestCustomersFromOrders(500);
+  const q = String(formData.get("returnQ") || "").trim();
+  const params = new URLSearchParams({
+    synced: String(result.linked),
+    scanned: String(result.scanned),
+  });
+  if (q) params.set("q", q);
+  redirect(`/admin/customers?${params.toString()}`);
+}
+
 export async function updateOrderStatusAction(formData: FormData) {
   await requireAdmin();
   const id = String(formData.get("id") || "");
@@ -841,6 +857,13 @@ export async function createStudioOrderAction(formData: FormData) {
       ? `pickup:${branch.city.slug}`
       : `studio:${branch.city.slug}`;
 
+  const { upsertBuyerCustomer } = await import("@/lib/customer-identity");
+  const customerId = await upsertBuyerCustomer({
+    name: customerName,
+    phone: phone || null,
+    preferredLocale: "vi",
+  });
+
   const order = await prisma.order.create({
     data: {
       reference,
@@ -850,6 +873,7 @@ export async function createStudioOrderAction(formData: FormData) {
       locale: "vi",
       customerName,
       phone: phone || "—",
+      customerId: customerId || undefined,
       zone,
       deliveryFee: fee || null,
       address:
