@@ -299,9 +299,24 @@
 
 .admin-product-row-body {
   display: grid;
-  grid-template-columns: 112px minmax(0, 1fr);
+  grid-template-columns: 28px 112px minmax(0, 1fr);
   gap: 10px;
   align-items: stretch;
+}
+
+.admin-product-index {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 4px;
+  min-width: 28px;
+  font-size: 13px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  color: #5c574f;
+  line-height: 1.2;
+  user-select: none;
 }
 
 .admin-product-main {
@@ -905,8 +920,14 @@
   }
 
   .admin-product-row-body {
-    grid-template-columns: 88px minmax(0, 1fr);
+    grid-template-columns: 22px 88px minmax(0, 1fr);
     gap: 8px;
+  }
+
+  .admin-product-index {
+    min-width: 22px;
+    font-size: 12px;
+    padding-top: 2px;
   }
 
   .admin-product-thumb {

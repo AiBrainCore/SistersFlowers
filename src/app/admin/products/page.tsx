@@ -171,6 +171,13 @@ export default async function AdminProductsPage({
               className="admin-product-row"
             >
               <div className="admin-product-row-body">
+                <span
+                  className="admin-product-index"
+                  title={`${index + 1} / ${filtered.length}`}
+                  aria-label={`${index + 1} / ${filtered.length}`}
+                >
+                  {index + 1}
+                </span>
                 <div className="admin-product-thumb">
                   <Image
                     src={product.image}
