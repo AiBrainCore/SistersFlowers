@@ -243,6 +243,7 @@ export const vi = {
       "Spa, salon, taxi hoặc khách sạn — món quà người nhận có thể tận hưởng. Nếu dùng nhiều hơn một chút, chỉ cần trả phần chênh.",
     addonNotePlaceholder: "Lời thiệp hoặc ghi chú cho tiệm",
     withExtras: "Quà + đã chọn",
+    totalLabel: "Tổng",
     voucherValidDays: "Dùng trong {days} ngày",
   },
   cart: {

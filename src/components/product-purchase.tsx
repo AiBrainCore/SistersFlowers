@@ -227,16 +227,6 @@ export function ProductPurchase({
               );
             })}
           </div>
-          {isOnSale(unitPrice, unitCompareAt) ? (
-            <div className="mt-3">
-              <SalePrice
-                price={unitPrice}
-                compareAt={unitCompareAt}
-                locale={locale}
-                size="lg"
-              />
-            </div>
-          ) : null}
           {size && product.sizeNotes?.[size]?.[locale]?.trim() ? (
             <p className="mt-2 text-sm text-moss">
               {product.sizeNotes[size]![locale]}
@@ -265,7 +255,28 @@ export function ProductPurchase({
         partners,
       )}
 
-      <div className="flex flex-wrap items-center gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-[11px] tracking-[0.14em] text-moss uppercase">
+            {extrasTotal > 0
+              ? dictionary.product.withExtras
+              : dictionary.product.totalLabel}
+          </p>
+          {extrasTotal === 0 && isOnSale(unitPrice, unitCompareAt) ? (
+            <div className="mt-1">
+              <SalePrice
+                price={unitPrice}
+                compareAt={unitCompareAt}
+                locale={locale}
+                size="lg"
+              />
+            </div>
+          ) : (
+            <p className="serif mt-1 text-2xl text-citrus tabular-nums sm:text-3xl">
+              {formatVnd(total, locale)}
+            </p>
+          )}
+        </div>
         <button
           type="button"
           onClick={() => {
@@ -276,16 +287,10 @@ export function ProductPurchase({
             setAdded(true);
             window.setTimeout(() => setAdded(false), 1600);
           }}
-          className="min-h-12 rounded-full bg-citrus px-8 py-3 text-[12px] tracking-[0.18em] text-ivory uppercase transition hover:bg-citrus/90"
+          className="min-h-12 shrink-0 rounded-full bg-citrus px-8 py-3 text-[12px] tracking-[0.18em] text-ivory uppercase transition hover:bg-citrus/90"
         >
           {added ? dictionary.product.added : dictionary.product.add}
         </button>
-        {extrasTotal > 0 ? (
-          <p className="text-sm text-moss">
-            {dictionary.product.withExtras}:{" "}
-            <span className="text-forest">{formatVnd(total, locale)}</span>
-          </p>
-        ) : null}
       </div>
     </div>
   );
