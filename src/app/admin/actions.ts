@@ -532,6 +532,19 @@ export async function deleteProductAction(formData: FormData) {
   bulkRedirect(formData, focusAfter ? { focus: focusAfter } : {});
 }
 
+export async function deleteCustomerAction(formData: FormData) {
+  await requireAdmin();
+  const id = String(formData.get("id") || "");
+  const q = String(formData.get("returnQ") || "").trim();
+  if (id) {
+    // Orders keep history: customerId becomes null (onDelete: SetNull).
+    await prisma.customer.delete({ where: { id } });
+  }
+  const params = new URLSearchParams({ deleted: "1" });
+  if (q) params.set("q", q);
+  redirect(`/admin/customers?${params.toString()}`);
+}
+
 export async function updateOrderStatusAction(formData: FormData) {
   await requireAdmin();
   const id = String(formData.get("id") || "");
