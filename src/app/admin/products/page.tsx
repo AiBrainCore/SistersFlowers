@@ -156,10 +156,13 @@ export default async function AdminProductsPage({
           <p className="admin-products-empty">{t.products.filterEmpty}</p>
         ) : null}
 
-        {filtered.map((product) => {
+        {filtered.map((product, index) => {
           const stockBySlug = new Map(
             (product.cityStock || []).map((row) => [row.citySlug, row]),
           );
+          // After delete, scroll to the next row (or previous if this was last).
+          const focusAfter =
+            filtered[index + 1]?.id || filtered[index - 1]?.id || "";
           return (
             <article
               key={product.id}
@@ -226,6 +229,10 @@ export default async function AdminProductsPage({
                   </Link>
                   <form action={deleteProductAction}>
                     <input type="hidden" name="id" value={product.id} />
+                    <input type="hidden" name="returnQ" value={q} />
+                    <input type="hidden" name="returnStatus" value={status} />
+                    <input type="hidden" name="returnType" value={typeFilter} />
+                    <input type="hidden" name="focusAfter" value={focusAfter} />
                     <button
                       type="submit"
                       className="admin-btn secondary admin-btn-sm"

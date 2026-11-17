@@ -74,6 +74,8 @@ function bulkRedirect(formData: FormData, extra: Record<string, string> = {}) {
   if (q) params.set("q", q);
   if (status && status !== "all") params.set("status", status);
   if (type && type !== "all") params.set("type", type);
+  // Changing nonce so re-saving the same product still remounts scroll restore.
+  params.set("_", String(Date.now()));
   redirect(`/admin/products?${params.toString()}`);
 }
 
@@ -491,13 +493,15 @@ export async function bulkClearDiscountsAction(formData: FormData) {
 export async function deleteProductAction(formData: FormData) {
   await requireAdmin();
   const id = String(formData.get("id") || "");
+  const focusAfter = String(formData.get("focusAfter") || "").trim();
   if (id) {
     await prisma.product.delete({ where: { id } });
   }
   revalidatePath("/en/shop");
   revalidatePath("/vi/shop");
   bumpShopCatalogCache();
-  redirect("/admin/products");
+  // Keep filters and land near the deleted row (neighbor), not list top.
+  bulkRedirect(formData, focusAfter ? { focus: focusAfter } : {});
 }
 
 export async function updateOrderStatusAction(formData: FormData) {
