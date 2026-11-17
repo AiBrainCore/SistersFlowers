@@ -1,10 +1,9 @@
 import type { Locale } from "@/i18n/config";
 import { getDictionary, type Dictionary } from "@/i18n/dictionaries";
+import { cityDisplayName } from "@/lib/city-display";
 import { getActiveCity, type CityPublic } from "@/lib/locations";
 
-export function cityDisplayName(city: CityPublic, locale: Locale) {
-  return locale === "vi" ? city.nameVi : city.nameEn;
-}
+export { cityDisplayName } from "@/lib/city-display";
 
 /** Dictionary with `{city}` filled from the active studio. */
 export async function getStorefrontDictionary(locale: Locale): Promise<{

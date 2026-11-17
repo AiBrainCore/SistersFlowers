@@ -25,7 +25,7 @@ import {
 import { BouquetPreviewSvg } from "@/components/bouquet-preview-svg";
 import { InquiryForm } from "@/components/inquiry-form";
 import { useLocation } from "@/context/location-context";
-import { cityDisplayName } from "@/lib/storefront";
+import { cityDisplayName } from "@/lib/city-display";
 
 type Labels = Dictionary["builder"];
 
