@@ -227,6 +227,7 @@ export const vi = {
   },
   product: {
     handmade: "Làm thủ công tại {city}",
+    skuLabel: "SKU",
     add: "Thêm vào khay",
     added: "Đã thêm vào khay",
     deliveryNote:

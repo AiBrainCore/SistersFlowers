@@ -110,6 +110,14 @@ export default async function ProductPage({
             <h1 className="serif mt-3 text-4xl text-forest sm:text-5xl">
               {product.names[locale]}
             </h1>
+            {product.sku ? (
+              <p className="mt-2 text-[11px] tracking-[0.12em] text-moss/80">
+                {t.product.skuLabel}{" "}
+                <span className="font-semibold tracking-[0.06em] text-forest">
+                  {product.sku}
+                </span>
+              </p>
+            ) : null}
             {(() => {
               const tag = product.tags[locale]?.trim() || "";
               const name = product.names[locale]?.trim() || "";

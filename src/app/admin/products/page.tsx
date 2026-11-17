@@ -22,6 +22,39 @@ function fold(value: string) {
     .toLowerCase();
 }
 
+/** Flag obvious ladder / sale typos so staff can spot them in the list. */
+function priceAnomaly(
+  product: {
+    price?: number;
+    sizePrices?: { sm?: number | null; md?: number | null; lg?: number | null };
+    compareAtPrices?: {
+      sm?: number | null;
+      md?: number | null;
+      lg?: number | null;
+    };
+    compareAtPrice?: number | null;
+  },
+  usesLadder: boolean,
+): string | null {
+  if (usesLadder) {
+    const sm = product.sizePrices?.sm ?? 0;
+    const md = product.sizePrices?.md ?? 0;
+    const lg = product.sizePrices?.lg ?? 0;
+    const wasLg = product.compareAtPrices?.lg ?? 0;
+    const wasMd = product.compareAtPrices?.md ?? 0;
+    if (lg > 0 && md > 0 && lg < md * 0.5) return "L < M";
+    if (md > 0 && sm > 0 && md < sm * 0.5) return "M < S";
+    if (lg > 0 && wasLg > 0 && lg < wasLg * 0.35) return "L sale≪regular";
+    if (md > 0 && wasMd > 0 && md < wasMd * 0.35) return "M sale≪regular";
+    if (md >= 5_000_000 || lg >= 5_000_000) return "price too high?";
+    return null;
+  }
+  const sale = product.price ?? 0;
+  const was = product.compareAtPrice ?? 0;
+  if (sale > 0 && was > 0 && sale < was * 0.35) return "sale≪regular";
+  return null;
+}
+
 export default async function AdminProductsPage({
   searchParams,
 }: {
@@ -164,11 +197,13 @@ export default async function AdminProductsPage({
           // After delete, scroll to the next row (or previous if this was last).
           const focusAfter =
             filtered[index + 1]?.id || filtered[index - 1]?.id || "";
+          const usesLadder = productUsesSizeLadder(product.productType);
+          const anomaly = priceAnomaly(product, usesLadder);
           return (
             <article
               key={product.id}
               id={`product-${product.id}`}
-              className="admin-product-row"
+              className={`admin-product-row${anomaly ? " admin-product-row-warn" : ""}`}
             >
               <div className="admin-product-row-body">
                 <span
@@ -210,6 +245,14 @@ export default async function AdminProductsPage({
                     {product.published
                       ? t.common.published
                       : t.common.hidden}
+                    {anomaly ? (
+                      <>
+                        {" · "}
+                        <span className="admin-product-price-warn" title={anomaly}>
+                          {t.products.priceWarn}
+                        </span>
+                      </>
+                    ) : null}
                   </span>
                 </div>
                 <div className="admin-product-actions">
@@ -262,7 +305,7 @@ export default async function AdminProductsPage({
                 <input type="hidden" name="returnStatus" value={status} />
                 <input type="hidden" name="returnType" value={typeFilter} />
 
-                {productUsesSizeLadder(product.productType) ? (
+                {usesLadder ? (
                 <>
                 <input type="hidden" name="price" value={product.price} />
                 <div className="admin-size-grid">
