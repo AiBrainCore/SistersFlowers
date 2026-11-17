@@ -358,6 +358,9 @@ export const vi = {
       special: "Ghi chú giúp florist. Báo giá thêm nếu cần.",
     },
     options: {
+      small: "Nhỏ",
+      medium: "Vừa",
+      large: "Lớn",
       mini: "Nhỏ",
       classic: "Vừa",
       grand: "Lớn",

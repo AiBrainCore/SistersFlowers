@@ -358,6 +358,9 @@ export const en = {
       special: "Tell the florist anything helpful. Quote confirmed if needed.",
     },
     options: {
+      small: "Small",
+      medium: "Medium",
+      large: "Large",
       mini: "Small",
       classic: "Medium",
       grand: "Large",

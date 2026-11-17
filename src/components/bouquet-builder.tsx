@@ -56,7 +56,7 @@ export function BouquetBuilder({
     initialSelection?.sizeId ??
     active.sizes[1]?.id ??
     active.sizes[0]?.id ??
-    "classic";
+    "medium";
   const defaultMoodId =
     initialSelection?.moodId ?? active.moods[0]?.id ?? "soft-blush";
   const defaultWrapId =

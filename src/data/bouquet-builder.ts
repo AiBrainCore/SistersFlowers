@@ -31,10 +31,12 @@ export type BuilderCatalog = {
 
 export const DEFAULT_BUILDER_LOCATION: BuilderLocationId = "danang";
 
-/** Three sizes — Small / Medium / Large (no XL) */
+/**
+ * Three sizes — ID and EN name match: small / medium / large.
+ */
 export const builderSizes: BuilderOption[] = [
   {
-    id: "mini",
+    id: "small",
     price: 450000,
     swatch: "#e7c6c4",
     active: true,
@@ -43,7 +45,7 @@ export const builderSizes: BuilderOption[] = [
     labelVi: "Nhỏ",
   },
   {
-    id: "classic",
+    id: "medium",
     price: 750000,
     swatch: "#e86a2b",
     active: true,
@@ -52,7 +54,7 @@ export const builderSizes: BuilderOption[] = [
     labelVi: "Vừa",
   },
   {
-    id: "grand",
+    id: "large",
     price: 1200000,
     swatch: "#2f3b32",
     active: true,
@@ -61,6 +63,20 @@ export const builderSizes: BuilderOption[] = [
     labelVi: "Lớn",
   },
 ];
+
+/** Legacy builder size ids → current ids (saved catalogs / old inquiry links). */
+export const BUILDER_SIZE_ID_ALIASES: Record<string, string> = {
+  mini: "small",
+  classic: "medium",
+  grand: "large",
+  sm: "small",
+  md: "medium",
+  lg: "large",
+};
+
+export function normalizeBuilderSizeId(id: string): string {
+  return BUILDER_SIZE_ID_ALIASES[id] || id;
+}
 
 /** Colour moods — always free */
 export const builderMoods: BuilderOption[] = [
@@ -365,7 +381,8 @@ export function parseBuilderQuery(
     return Array.isArray(v) ? v[0] : v;
   };
   const active = activeBuilderCatalog(catalog);
-  const sizeId = get("size");
+  const sizeRaw = get("size");
+  const sizeId = sizeRaw ? normalizeBuilderSizeId(sizeRaw) : undefined;
   const moodId = get("mood");
   const wrapId = get("wrap");
   const ribbonId = get("ribbon");
