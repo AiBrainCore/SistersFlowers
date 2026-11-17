@@ -474,6 +474,10 @@ export async function bulkDiscountPricesAction(formData: FormData) {
 
 export async function bulkClearDiscountsAction(formData: FormData) {
   await requireAdmin();
+  // Explicit checkbox + browser confirm — Reset ends markup and discount together.
+  if (formData.get("confirmReset") !== "1") {
+    bulkRedirect(formData, { error: "bulk" });
+  }
   const scope = readBulkScope(formData);
   const productType = readBulkTypeScope(formData);
   const count = await bulkClearDiscounts({ scope, productType });

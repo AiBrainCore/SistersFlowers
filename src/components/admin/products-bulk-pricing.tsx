@@ -1,4 +1,5 @@
 import type { AdminDictionary, AdminLocale } from "@/i18n/admin-dictionaries";
+import { BulkConfirmForm } from "@/components/admin/bulk-confirm-form";
 import {
   bulkClearDiscountsAction,
   bulkDiscountPricesAction,
@@ -102,10 +103,15 @@ export function ProductsBulkPricing({
     <section className="admin-bulk-panel">
       <h2 className="admin-bulk-title">{t.products.bulkTitle}</h2>
       <p className="admin-bulk-hint">{t.products.bulkHint}</p>
+      <p className="admin-bulk-rules">{t.products.bulkRules}</p>
       {notice ? <p className="admin-products-saved">{notice}</p> : null}
 
       <div className="admin-bulk-grid">
-        <form action={bulkSetAbsolutePricesAction} className="admin-bulk-card">
+        <BulkConfirmForm
+          action={bulkSetAbsolutePricesAction}
+          confirmMessage={t.products.bulkAbsoluteConfirm}
+          className="admin-bulk-card"
+        >
           {hidden}
           <input type="hidden" name="productType" value="bouquet" />
           <h3>{t.products.bulkAbsoluteTitle}</h3>
@@ -154,9 +160,13 @@ export function ProductsBulkPricing({
           <button type="submit" className="admin-btn admin-btn-sm">
             {t.products.bulkAbsoluteCta}
           </button>
-        </form>
+        </BulkConfirmForm>
 
-        <form action={bulkSetFixedPriceAction} className="admin-bulk-card">
+        <BulkConfirmForm
+          action={bulkSetFixedPriceAction}
+          confirmMessage={t.products.bulkFixedConfirm}
+          className="admin-bulk-card"
+        >
           {hidden}
           <h3>{t.products.bulkFixedTitle}</h3>
           <p>{t.products.bulkFixedBody}</p>
@@ -186,9 +196,13 @@ export function ProductsBulkPricing({
           <button type="submit" className="admin-btn admin-btn-sm">
             {t.products.bulkFixedCta}
           </button>
-        </form>
+        </BulkConfirmForm>
 
-        <form action={bulkMarkupPricesAction} className="admin-bulk-card">
+        <BulkConfirmForm
+          action={bulkMarkupPricesAction}
+          confirmMessage={t.products.bulkMarkupConfirm}
+          className="admin-bulk-card"
+        >
           {hidden}
           <h3>{t.products.bulkMarkupTitle}</h3>
           <p>{t.products.bulkMarkupBody}</p>
@@ -211,9 +225,13 @@ export function ProductsBulkPricing({
           <button type="submit" className="admin-btn admin-btn-sm">
             {t.products.bulkMarkupCta}
           </button>
-        </form>
+        </BulkConfirmForm>
 
-        <form action={bulkDiscountPricesAction} className="admin-bulk-card">
+        <BulkConfirmForm
+          action={bulkDiscountPricesAction}
+          confirmMessage={t.products.bulkDiscountConfirm}
+          className="admin-bulk-card"
+        >
           {hidden}
           <h3>{t.products.bulkDiscountTitle}</h3>
           <p>{t.products.bulkDiscountBody}</p>
@@ -238,9 +256,13 @@ export function ProductsBulkPricing({
           <button type="submit" className="admin-btn admin-btn-sm">
             {t.products.bulkDiscountCta}
           </button>
-        </form>
+        </BulkConfirmForm>
 
-        <form action={bulkClearDiscountsAction} className="admin-bulk-card">
+        <BulkConfirmForm
+          action={bulkClearDiscountsAction}
+          confirmMessage={t.products.bulkClearConfirm}
+          className="admin-bulk-card admin-bulk-card-danger"
+        >
           {hidden}
           <h3>{t.products.bulkClearTitle}</h3>
           <p>{t.products.bulkClearBody}</p>
@@ -250,10 +272,14 @@ export function ProductsBulkPricing({
             defaultValue={returnType || "all"}
           />
           <PublishScopeSelect t={t} />
+          <label className="admin-bulk-confirm-check">
+            <input type="checkbox" name="confirmReset" value="1" required />
+            <span>{t.products.bulkClearConfirmCheck}</span>
+          </label>
           <button type="submit" className="admin-btn secondary admin-btn-sm">
             {t.products.bulkClearCta}
           </button>
-        </form>
+        </BulkConfirmForm>
       </div>
     </section>
   );
