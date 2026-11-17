@@ -250,6 +250,17 @@
   border: 1px solid rgba(31, 42, 36, 0.08);
   border-radius: 12px;
   padding: 10px 12px;
+  scroll-margin-top: 24px;
+  transition:
+    box-shadow 0.35s ease,
+    border-color 0.35s ease,
+    background 0.35s ease;
+}
+
+.admin-product-row-focus {
+  border-color: rgba(194, 71, 18, 0.45);
+  background: #fff6ee;
+  box-shadow: 0 0 0 3px rgba(194, 71, 18, 0.16);
 }
 
 .admin-product-row-top {

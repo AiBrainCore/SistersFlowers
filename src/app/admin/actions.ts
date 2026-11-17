@@ -309,7 +309,12 @@ export async function saveProductAction(formData: FormData) {
   revalidatePath("/en/shop");
   revalidatePath("/vi/shop");
   bumpShopCatalogCache();
-  redirect("/admin/products");
+  // Back to the list on the same product so the admin can continue to the next row.
+  const focusId = productId || id;
+  if (focusId) {
+    bulkRedirect(formData, { saved: "1", focus: focusId });
+  }
+  redirect("/admin/products?saved=1");
 }
 
 /** Quick inline save of size/sale prices + city sell flags from the list. */
@@ -333,7 +338,7 @@ export async function quickSaveProductCityPricesAction(formData: FormData) {
     ? syncListPrice(sizePrices, legacyPrice)
     : Math.round(legacyPrice);
   if (!price || !Number.isFinite(price)) {
-    redirect("/admin/products?error=price");
+    bulkRedirect(formData, { error: "price", focus: id });
   }
 
   await prisma.product.update({
@@ -364,7 +369,8 @@ export async function quickSaveProductCityPricesAction(formData: FormData) {
   revalidatePath("/en/shop");
   revalidatePath("/vi/shop");
   bumpShopCatalogCache();
-  bulkRedirect(formData, { saved: "1" });
+  // Keep filters and jump back to this product — do not dump the admin at list top.
+  bulkRedirect(formData, { saved: "1", focus: id });
 }
 
 export async function bulkSetAbsolutePricesAction(formData: FormData) {

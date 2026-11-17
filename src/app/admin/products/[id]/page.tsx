@@ -9,10 +9,17 @@ import { listCitiesForPricing } from "@/lib/product-city";
 
 export default async function EditProductPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams?: Promise<{
+    returnQ?: string;
+    returnStatus?: string;
+    returnType?: string;
+  }>;
 }) {
   const { id } = await params;
+  const sp = (await searchParams) || {};
   const [product, { locale, t }, categories, cities, attributes] =
     await Promise.all([
       getProductById(id),
@@ -32,6 +39,9 @@ export default async function EditProductPage({
         categories={categories}
         cities={cities}
         attributes={attributes}
+        returnQ={sp.returnQ || ""}
+        returnStatus={sp.returnStatus || "all"}
+        returnType={sp.returnType || "all"}
       />
     </AdminShell>
   );
