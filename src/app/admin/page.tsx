@@ -5,14 +5,16 @@ import { getAdminT } from "@/lib/admin-locale";
 
 export default async function AdminDashboardPage() {
   const { t } = await getAdminT();
-  const [products, orders, inquiries, vouchersOpen] = await Promise.all([
-    prisma.product.count(),
-    prisma.order.count(),
-    prisma.inquiry.count(),
-    prisma.orderItem.count({
-      where: { voucherCode: { not: null }, voucherStatus: "issued" },
-    }),
-  ]);
+  const [products, orders, customers, inquiries, vouchersOpen] =
+    await Promise.all([
+      prisma.product.count(),
+      prisma.order.count(),
+      prisma.customer.count(),
+      prisma.inquiry.count(),
+      prisma.orderItem.count({
+        where: { voucherCode: { not: null }, voucherStatus: "issued" },
+      }),
+    ]);
 
   return (
     <AdminShell title={t.dashboard.title}>
@@ -33,6 +35,15 @@ export default async function AdminDashboardPage() {
           <p style={{ fontFamily: "serif", fontSize: 42, margin: "8px 0" }}>{orders}</p>
           <Link href="/admin/orders" className="admin-btn secondary">
             {t.common.view}
+          </Link>
+        </div>
+        <div className="admin-card">
+          <p style={{ margin: 0, opacity: 0.65, fontSize: 12, letterSpacing: "0.14em", textTransform: "uppercase" }}>
+            {t.dashboard.customers}
+          </p>
+          <p style={{ fontFamily: "serif", fontSize: 42, margin: "8px 0" }}>{customers}</p>
+          <Link href="/admin/customers" className="admin-btn secondary">
+            {t.common.manage}
           </Link>
         </div>
         <div className="admin-card">

@@ -10,6 +10,8 @@ import {
   type IssuedVoucherLine,
 } from "@/lib/orders";
 import { commissionAmount } from "@/lib/addons";
+import { upsertBuyerCustomer } from "@/lib/customer-identity";
+import { getCurrentCustomer } from "@/lib/customer-session";
 import { makeVoucherCode, remitToPartner } from "@/lib/vouchers";
 
 export type SubmitOrderResult =
@@ -114,6 +116,14 @@ export async function submitOrderAction(
   const whatsappUrl = buildWhatsAppUrl(reference, payload, issuedVouchers);
 
   const email = payload.email?.trim() || null;
+  const loggedIn = await getCurrentCustomer().catch(() => null);
+  const customerId = await upsertBuyerCustomer({
+    name: payload.customerName.trim(),
+    phone: payload.phone.trim(),
+    email,
+    preferredLocale: payload.locale,
+    knownCustomerId: loggedIn?.id,
+  });
 
   await prisma.order.create({
     data: {
@@ -122,6 +132,7 @@ export async function submitOrderAction(
       customerName: payload.customerName.trim(),
       phone: payload.phone.trim(),
       email,
+      customerId: customerId || undefined,
       zone: payload.zone.trim(),
       deliveryKm: payload.deliveryKm ?? null,
       deliveryFee,

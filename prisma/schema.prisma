@@ -185,7 +185,7 @@ model Customer {
   /// Zalo Social user id
   zaloId           String?  @unique
   preferredLocale  String   @default("vi")
-  /// email | google | zalo
+  /// email | google | zalo | guest (checkout/studio contact, no Auth login)
   provider         String   @default("email")
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
