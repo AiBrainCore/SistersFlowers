@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
 import { saveProductAction } from "@/app/admin/actions";
 import type { Product } from "@/data/products";
@@ -24,6 +25,9 @@ export function ProductForm({
   categories,
   cities,
   attributes = [],
+  returnQ = "",
+  returnStatus = "all",
+  returnType = "all",
 }: {
   product?: Product;
   t: AdminDictionary;
@@ -31,6 +35,9 @@ export function ProductForm({
   categories: CategoryPublic[];
   cities: PricingCity[];
   attributes?: AttributePublic[];
+  returnQ?: string;
+  returnStatus?: string;
+  returnType?: string;
 }) {
   const [productType, setProductType] = useState(
     product?.productType || "bouquet",
@@ -48,10 +55,22 @@ export function ProductForm({
   const label = (en: string, vi: string) => (locale === "vi" ? vi : en);
   const cityLabel = (city: PricingCity) => label(city.nameEn, city.nameVi);
 
+  const listParams = new URLSearchParams();
+  if (returnQ.trim()) listParams.set("q", returnQ.trim());
+  if (returnStatus && returnStatus !== "all") {
+    listParams.set("status", returnStatus);
+  }
+  if (returnType && returnType !== "all") listParams.set("type", returnType);
+  if (product?.id) listParams.set("focus", product.id);
+  const listHref = `/admin/products${listParams.toString() ? `?${listParams}` : ""}`;
+
   return (
     <form action={saveProductAction} className="admin-card" encType="multipart/form-data">
       {product?.id ? <input type="hidden" name="id" value={product.id} /> : null}
       <input type="hidden" name="existingImage" value={product?.image || ""} />
+      <input type="hidden" name="returnQ" value={returnQ} />
+      <input type="hidden" name="returnStatus" value={returnStatus} />
+      <input type="hidden" name="returnType" value={returnType} />
 
       <div className="admin-grid-2">
         <label className="admin-field">
@@ -499,9 +518,14 @@ export function ProductForm({
         <span style={{ margin: 0 }}>{t.products.publishedShop}</span>
       </label>
 
-      <button type="submit" className="admin-btn">
-        {t.products.save}
-      </button>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginTop: 8 }}>
+        <button type="submit" className="admin-btn">
+          {t.products.save}
+        </button>
+        <Link href={listHref} className="admin-btn secondary">
+          {t.common.backToList}
+        </Link>
+      </div>
     </form>
   );
 }

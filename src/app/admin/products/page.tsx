@@ -1,11 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
+import { Suspense } from "react";
 import { AdminShell } from "@/app/admin/_shell";
 import {
   deleteProductAction,
   quickSaveProductCityPricesAction,
 } from "@/app/admin/actions";
 import { ProductsBulkPricing } from "@/components/admin/products-bulk-pricing";
+import { AdminScrollToProduct } from "@/components/admin/admin-scroll-to-product";
 import { listAdminProducts } from "@/lib/products";
 import { listCitiesForPricing } from "@/lib/product-city";
 import { getAdminT } from "@/lib/admin-locale";
@@ -30,6 +32,7 @@ export default async function AdminProductsPage({
     error?: string;
     bulk?: string;
     n?: string;
+    focus?: string;
   }>;
 }) {
   const [products, cities, { locale, t }] = await Promise.all([
@@ -81,6 +84,9 @@ export default async function AdminProductsPage({
 
   return (
     <AdminShell title={t.products.title}>
+      <Suspense fallback={null}>
+        <AdminScrollToProduct />
+      </Suspense>
       <div className="admin-products-toolbar">
         <Link href="/admin/products/new" className="admin-btn">
           {t.products.add}
@@ -154,7 +160,11 @@ export default async function AdminProductsPage({
             (product.cityStock || []).map((row) => [row.citySlug, row]),
           );
           return (
-            <article key={product.id} className="admin-product-row">
+            <article
+              key={product.id}
+              id={`product-${product.id}`}
+              className="admin-product-row"
+            >
               <div className="admin-product-row-top">
                 <div className="admin-product-thumb">
                   <Image
@@ -188,7 +198,17 @@ export default async function AdminProductsPage({
                 </div>
                 <div className="admin-product-actions">
                   <Link
-                    href={`/admin/products/${product.id}`}
+                    href={(() => {
+                      const p = new URLSearchParams({
+                        ...(q ? { returnQ: q } : {}),
+                        ...(status !== "all" ? { returnStatus: status } : {}),
+                        ...(typeFilter !== "all"
+                          ? { returnType: typeFilter }
+                          : {}),
+                      });
+                      const qs = p.toString();
+                      return `/admin/products/${product.id}${qs ? `?${qs}` : ""}`;
+                    })()}
                     className="admin-btn secondary admin-btn-sm"
                   >
                     {t.common.edit}
@@ -212,6 +232,7 @@ export default async function AdminProductsPage({
                 <input type="hidden" name="id" value={product.id} />
                 <input type="hidden" name="returnQ" value={q} />
                 <input type="hidden" name="returnStatus" value={status} />
+                <input type="hidden" name="returnType" value={typeFilter} />
 
                 {productUsesSizeLadder(product.productType) ? (
                 <>
@@ -327,7 +348,19 @@ export default async function AdminProductsPage({
                   })}
                   <p className="admin-city-edit-hint">
                     {t.products.citySizesHint}{" "}
-                    <Link href={`/admin/products/${product.id}`}>
+                    <Link
+                      href={(() => {
+                        const p = new URLSearchParams({
+                          ...(q ? { returnQ: q } : {}),
+                          ...(status !== "all" ? { returnStatus: status } : {}),
+                          ...(typeFilter !== "all"
+                            ? { returnType: typeFilter }
+                            : {}),
+                        });
+                        const qs = p.toString();
+                        return `/admin/products/${product.id}${qs ? `?${qs}` : ""}`;
+                      })()}
+                    >
                       {t.common.edit}
                     </Link>
                   </p>
