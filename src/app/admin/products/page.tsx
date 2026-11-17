@@ -166,17 +166,19 @@ export default async function AdminProductsPage({
               id={`product-${product.id}`}
               className="admin-product-row"
             >
-              <div className="admin-product-row-top">
+              <div className="admin-product-row-body">
                 <div className="admin-product-thumb">
                   <Image
                     src={product.image}
                     alt=""
                     fill
                     className="object-cover"
-                    sizes="64px"
+                    sizes="120px"
                     unoptimized
                   />
                 </div>
+                <div className="admin-product-main">
+              <div className="admin-product-row-top">
                 <div className="admin-product-meta">
                   <strong>
                     {locale === "vi" ? product.names.vi : product.names.en}
@@ -287,7 +289,6 @@ export default async function AdminProductsPage({
                             regularLabel={t.products.wasShort}
                             saleDefault={sale ?? ""}
                             regularDefault={was === null ? "" : was}
-                            regularConfirmMessage={t.products.regularConfirm}
                           />
                         </div>
                       </div>
@@ -314,7 +315,6 @@ export default async function AdminProductsPage({
                             ? product.compareAtPrice
                             : product.price
                         }
-                        regularConfirmMessage={t.products.regularConfirm}
                       />
                     </div>
                   </div>
@@ -363,6 +363,8 @@ export default async function AdminProductsPage({
                   {t.common.save}
                 </button>
               </form>
+                </div>
+              </div>
             </article>
           );
         })}
