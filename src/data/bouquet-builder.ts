@@ -32,8 +32,7 @@ export type BuilderCatalog = {
 export const DEFAULT_BUILDER_LOCATION: BuilderLocationId = "danang";
 
 /**
- * Three sizes (S / M / L) — customer names Small / Medium / Large.
- * IDs: small, classic, grand (not mini — that mismatched “Small”).
+ * Three sizes — ID and EN name match: small / medium / large.
  */
 export const builderSizes: BuilderOption[] = [
   {
@@ -46,7 +45,7 @@ export const builderSizes: BuilderOption[] = [
     labelVi: "Nhỏ",
   },
   {
-    id: "classic",
+    id: "medium",
     price: 750000,
     swatch: "#e86a2b",
     active: true,
@@ -55,7 +54,7 @@ export const builderSizes: BuilderOption[] = [
     labelVi: "Vừa",
   },
   {
-    id: "grand",
+    id: "large",
     price: 1200000,
     swatch: "#2f3b32",
     active: true,
@@ -68,11 +67,11 @@ export const builderSizes: BuilderOption[] = [
 /** Legacy builder size ids → current ids (saved catalogs / old inquiry links). */
 export const BUILDER_SIZE_ID_ALIASES: Record<string, string> = {
   mini: "small",
-  medium: "classic",
-  large: "grand",
+  classic: "medium",
+  grand: "large",
   sm: "small",
-  md: "classic",
-  lg: "grand",
+  md: "medium",
+  lg: "large",
 };
 
 export function normalizeBuilderSizeId(id: string): string {

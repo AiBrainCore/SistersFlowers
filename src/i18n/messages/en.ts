@@ -359,11 +359,11 @@ export const en = {
     },
     options: {
       small: "Small",
+      medium: "Medium",
+      large: "Large",
       mini: "Small",
       classic: "Medium",
       grand: "Large",
-      medium: "Medium",
-      large: "Large",
       "soft-blush": "Soft blush",
       "bold-rose": "Deep rose",
       garden: "Garden colour",
