@@ -248,8 +248,8 @@
 .admin-product-row {
   background: #fffdf8;
   border: 1px solid rgba(31, 42, 36, 0.08);
-  border-radius: 12px;
-  padding: 10px 12px;
+  border-radius: 14px;
+  padding: 12px 14px;
   scroll-margin-top: 24px;
   transition:
     box-shadow 0.35s ease,
@@ -265,18 +265,19 @@
 
 .admin-product-row-top {
   display: grid;
-  grid-template-columns: 40px minmax(0, 1fr) auto;
-  gap: 10px;
-  align-items: center;
+  grid-template-columns: 88px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: start;
 }
 
 .admin-product-thumb {
   position: relative;
-  width: 40px;
-  height: 52px;
-  border-radius: 6px;
+  width: 88px;
+  height: 114px;
+  border-radius: 8px;
   overflow: hidden;
   flex-shrink: 0;
+  background: rgba(31, 42, 36, 0.04);
 }
 
 .admin-product-meta {
@@ -828,7 +829,7 @@
   }
 
   .admin-product-row-top {
-    grid-template-columns: 40px minmax(0, 1fr);
+    grid-template-columns: 88px minmax(0, 1fr);
   }
 
   .admin-product-actions {

@@ -172,7 +172,7 @@ export default async function AdminProductsPage({
                     alt=""
                     fill
                     className="object-cover"
-                    sizes="40px"
+                    sizes="88px"
                     unoptimized
                   />
                 </div>
@@ -240,7 +240,13 @@ export default async function AdminProductsPage({
                 <div className="admin-size-grid">
                   {PRODUCT_SIZES.map((size) => {
                     const sale = product.sizePrices?.[size.id] ?? "";
-                    const was = product.compareAtPrices?.[size.id] ?? "";
+                    const wasRaw = product.compareAtPrices?.[size.id];
+                    const was =
+                      wasRaw != null && wasRaw > 0
+                        ? wasRaw
+                        : sale !== "" && Number(sale) > 0
+                          ? sale
+                          : "";
                     const saleName =
                       size.id === "sm"
                         ? "priceSm"
@@ -319,7 +325,12 @@ export default async function AdminProductsPage({
                           min={0}
                           step={1000}
                           placeholder="—"
-                          defaultValue={product.compareAtPrice ?? ""}
+                          defaultValue={
+                            product.compareAtPrice != null &&
+                            product.compareAtPrice > 0
+                              ? product.compareAtPrice
+                              : product.price
+                          }
                           className="admin-input-was"
                         />
                       </label>

@@ -146,7 +146,13 @@ export function ProductForm({
                       ? "compareAtMd"
                       : "compareAtLg";
                 const baseVal = product?.sizePrices?.[size.id] ?? "";
-                const wasVal = product?.compareAtPrices?.[size.id] ?? "";
+                const wasRaw = product?.compareAtPrices?.[size.id];
+                const wasVal =
+                  wasRaw != null && wasRaw > 0
+                    ? wasRaw
+                    : baseVal !== "" && Number(baseVal) > 0
+                      ? baseVal
+                      : "";
                 const cityKey =
                   size.id === "sm" ? "Sm" : size.id === "md" ? "Md" : "Lg";
                 return (
@@ -270,7 +276,11 @@ export function ProductForm({
               min={0}
               step={1000}
               placeholder="—"
-              defaultValue={product?.compareAtPrice ?? ""}
+              defaultValue={
+                product?.compareAtPrice != null && product.compareAtPrice > 0
+                  ? product.compareAtPrice
+                  : product?.price ?? ""
+              }
               className="admin-input-was"
             />
           </label>
