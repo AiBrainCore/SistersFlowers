@@ -7,6 +7,8 @@ export type CheckoutItem = {
   qty: number;
   image: string;
   kind?: "product" | "addon";
+  /** Bouquet size id snapshot */
+  size?: string;
   note?: string;
   addonKind?: "extra" | "partner";
   partnerName?: string;

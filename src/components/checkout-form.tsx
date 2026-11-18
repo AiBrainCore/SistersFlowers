@@ -150,6 +150,7 @@ export function CheckoutForm({
         qty: item.qty,
         image: item.image,
         kind: item.type,
+        size: item.size,
         note: item.note,
         addonKind: item.addonKind,
         partnerName: item.partnerName,

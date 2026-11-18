@@ -8,6 +8,7 @@ Branch: `cursor/payments-fulfillment-v1-60b5`
 | Suite | Result |
 | --- | --- |
 | `src/lib/payments/vietqr.test.ts` | VietQR URL integer amount, short transfer content, stub methods not live-by-default, receipt ≠ e-invoice |
+| `src/lib/payments/pricing.test.ts` | Checklist completeness; paid-only revenue summary; CSV export |
 | Existing `shop-bot` tests | Unchanged; still in `npm test` |
 
 Run: `npm test`

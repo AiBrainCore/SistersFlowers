@@ -49,6 +49,15 @@ Customer → /order/pay/[token] · /order/track/[token]
 
 See `SF_PAYMENTS_V1_ACTIVATION_CHECKLIST.md`.
 
+## Slice B additions
+
+- Server `repriceCheckoutItems` before charge  
+- `awaiting_delivery_quote` → staff fee → `awaiting_payment` + new intent  
+- `FulfillmentChecklist` gates handoff statuses  
+- Ops alerts on admin dashboard  
+- `/admin/reports` + CSV (customer fee vs courier cost)  
+- `/api/cron/notifications` drains `NotificationOutbox` with `CRON_SECRET`
+
 ## Launch priority (founder)
 
 1. VietQR + order persistence + staff notifications  

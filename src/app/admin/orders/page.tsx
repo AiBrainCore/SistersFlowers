@@ -60,11 +60,20 @@ export default async function AdminOrdersPage({
                 return (
                   <tr key={order.id}>
                     <td>
-                      <strong>{order.reference}</strong>
+                      <strong>
+                        <Link href={`/admin/orders/${order.id}`}>
+                          {order.reference}
+                        </Link>
+                      </strong>
                       <div style={{ fontSize: 11, opacity: 0.6 }}>
                         {order.createdAt.toLocaleString(
                           locale === "vi" ? "vi-VN" : "en-GB",
                         )}
+                      </div>
+                      <div style={{ marginTop: 4 }}>
+                        <Link href={`/admin/orders/${order.id}`}>
+                          {t.orders.open}
+                        </Link>
                       </div>
                       <div style={{ fontSize: 11, opacity: 0.7 }}>
                         {order.fulfillment}
