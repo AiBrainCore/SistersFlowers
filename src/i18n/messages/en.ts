@@ -595,9 +595,10 @@ export const en = {
       "Your tray was cleared because the shop location changed.",
     switchConfirmTitle: "Change delivery city?",
     switchConfirmBody:
-      "Your tray has {count} item(s). Switching city will clear it so locations are not mixed.",
-    switchConfirmKeep: "Keep tray",
-    switchConfirmClear: "Switch and clear",
+      "Your tray has {count} item(s). {city} has its own prices and availability — checkout recalculates the total. Keep the tray, clear it, or stay here.",
+    switchConfirmKeep: "Switch & keep tray",
+    switchConfirmClear: "Switch & clear tray",
+    switchConfirmCancel: "Stay here",
   },
   shopBot: {
     launcher: "Help me choose",

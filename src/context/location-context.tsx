@@ -15,12 +15,17 @@ import type { CityPublic } from "@/lib/locations";
 import { setActiveCityAction } from "@/app/actions/location";
 import { useCart } from "@/context/cart-context";
 
+export type SetCityOptions = {
+  /** When true and the tray has items, clear the cart after a successful switch. */
+  clearCart?: boolean;
+};
+
 type LocationContextValue = {
   cities: CityPublic[];
   activeCity: CityPublic;
   acceptsOrders: boolean;
   pending: boolean;
-  setCity: (slug: string) => Promise<void>;
+  setCity: (slug: string, options?: SetCityOptions) => Promise<void>;
 };
 
 const LocationContext = createContext<LocationContextValue | null>(null);
@@ -45,24 +50,27 @@ export function LocationProvider({
   }, [activeCity]);
 
   const setCity = useCallback(
-    async (slug: string) => {
+    async (slug: string, options?: SetCityOptions) => {
       if (slug === city.slug) return;
       const next = cities.find((item) => item.slug === slug);
       if (!next) return;
 
       const previous = city;
       const hadCartItems = cart.count > 0;
+      const shouldClear = Boolean(options?.clearCart) && hadCartItems;
 
       // Optimistic UI — switcher updates immediately.
       setCityState(next);
 
-      const result = await setActiveCityAction(slug, { hadCartItems });
+      const result = await setActiveCityAction(slug, {
+        hadCartItems: shouldClear,
+      });
       if (!result.ok) {
         setCityState(previous);
         return;
       }
 
-      if (hadCartItems) {
+      if (shouldClear) {
         cart.clear();
       }
 

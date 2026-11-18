@@ -24,9 +24,9 @@ export function DeliveryCityBar({
   const [pendingSlug, setPendingSlug] = useState<string | null>(null);
   const t = dictionary.location;
 
-  async function applyCity(slug: string) {
+  async function applyCity(slug: string, clearCart: boolean) {
     setPendingSlug(null);
-    await setCity(slug);
+    await setCity(slug, { clearCart });
   }
 
   function requestCity(slug: string) {
@@ -35,7 +35,7 @@ export function DeliveryCityBar({
       setPendingSlug(slug);
       return;
     }
-    void applyCity(slug);
+    void applyCity(slug, false);
   }
 
   const pendingCity = cities.find((c) => c.slug === pendingSlug);
@@ -93,21 +93,31 @@ export function DeliveryCityBar({
               .replace("{count}", String(count))
               .replace("{city}", pendingName)}
           </p>
-          <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+          <div className="mt-3 flex flex-col gap-2">
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <button
+                type="button"
+                disabled={pending}
+                onClick={() => void applyCity(pendingSlug, false)}
+                className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full bg-citrus px-3 text-[11px] tracking-[0.12em] text-white uppercase disabled:opacity-60"
+              >
+                {t.switchConfirmKeep}
+              </button>
+              <button
+                type="button"
+                disabled={pending}
+                onClick={() => void applyCity(pendingSlug, true)}
+                className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full bg-forest px-3 text-[11px] tracking-[0.12em] text-ivory uppercase disabled:opacity-60"
+              >
+                {t.switchConfirmClear}
+              </button>
+            </div>
             <button
               type="button"
               onClick={() => setPendingSlug(null)}
-              className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full border border-forest/15 px-3 text-[11px] tracking-[0.12em] uppercase"
+              className="inline-flex min-h-10 w-full items-center justify-center text-[11px] tracking-[0.12em] text-moss uppercase"
             >
-              {t.switchConfirmKeep}
-            </button>
-            <button
-              type="button"
-              disabled={pending}
-              onClick={() => void applyCity(pendingSlug)}
-              className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full bg-forest px-3 text-[11px] tracking-[0.12em] text-ivory uppercase disabled:opacity-60"
-            >
-              {t.switchConfirmClear}
+              {t.switchConfirmCancel}
             </button>
           </div>
         </div>
