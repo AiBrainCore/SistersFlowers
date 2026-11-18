@@ -15,7 +15,13 @@ import { getCurrentCustomer } from "@/lib/customer-session";
 import { makeVoucherCode, remitToPartner } from "@/lib/vouchers";
 
 export type SubmitOrderResult =
-  | { ok: true; reference: string; whatsappUrl: string }
+  | {
+      ok: true;
+      reference: string;
+      whatsappUrl: string;
+      trackingToken?: string;
+      paymentPath?: string;
+    }
   | { ok: false; error: string };
 
 export async function submitOrderAction(
@@ -114,6 +120,20 @@ export async function submitOrderAction(
   }
 
   const whatsappUrl = buildWhatsAppUrl(reference, payload, issuedVouchers);
+  const fulfillment =
+    payload.fulfillment === "pickup" ? "pickup" : "delivery";
+  const paymentMethod = (payload.paymentMethod || "whatsapp").trim();
+  const feeForTotal =
+    fulfillment === "pickup" ? 0 : deliveryFee ?? 0;
+  const payableTotal = subtotal + feeForTotal;
+
+  if (paymentMethod !== "whatsapp") {
+    const { isMethodSelectable } = await import("@/lib/payments/catalog");
+    const ok = await isMethodSelectable(paymentMethod, payload.citySlug);
+    if (!ok) {
+      return { ok: false, error: "Selected payment method is not available" };
+    }
+  }
 
   const email = payload.email?.trim() || null;
   const loggedIn = await getCurrentCustomer().catch(() => null);
@@ -126,7 +146,19 @@ export async function submitOrderAction(
     knownCustomerId: loggedIn?.id,
   });
 
-  await prisma.order.create({
+  const { makeTrackingToken, createPaymentIntentForOrder } = await import(
+    "@/lib/payments/intents"
+  );
+  const trackingToken = makeTrackingToken();
+
+  const primaryBranch = payload.citySlug
+    ? await prisma.branch.findFirst({
+        where: { city: { slug: payload.citySlug }, isPrimary: true },
+        select: { id: true },
+      })
+    : null;
+
+  const order = await prisma.order.create({
     data: {
       reference,
       locale: payload.locale,
@@ -134,40 +166,93 @@ export async function submitOrderAction(
       phone: payload.phone.trim(),
       email,
       customerId: customerId || undefined,
-      zone: payload.zone.trim(),
-      deliveryKm: payload.deliveryKm ?? null,
-      deliveryFee,
-      address: payload.address.trim(),
+      branchId: primaryBranch?.id || undefined,
+      zone:
+        fulfillment === "pickup"
+          ? `pickup:${payload.citySlug || "studio"}`
+          : payload.zone.trim(),
+      deliveryKm: fulfillment === "pickup" ? null : payload.deliveryKm ?? null,
+      deliveryFee: fulfillment === "pickup" ? 0 : deliveryFee,
+      address:
+        fulfillment === "pickup"
+          ? payload.address.trim() || "Pickup at studio"
+          : payload.address.trim(),
       deliveryDate: payload.deliveryDate?.trim() || null,
       deliveryTime: payload.deliveryTime?.trim() || null,
+      fulfillment,
       notes: payload.notes?.trim() || null,
       recipientName: payload.recipientName?.trim() || null,
+      recipientPhone: payload.recipientPhone?.trim() || null,
+      cardMessage: payload.cardMessage?.trim() || null,
       hotelName: payload.hotelName?.trim() || null,
       roomNumber: payload.roomNumber?.trim() || null,
       subtotal,
-      deliveryTotal,
+      deliveryTotal: payableTotal,
+      paymentStatus: paymentMethod === "whatsapp" ? "unpaid" : "pending",
+      paymentMethod,
+      trackingToken,
+      anonymousSender: Boolean(payload.anonymousSender),
       whatsappUrl,
       items: { create: itemsData },
+      statusHistory: {
+        create: {
+          toStatus: "new",
+          note: `Shop checkout · ${paymentMethod}`,
+          actor: "system",
+        },
+      },
+      deliveryBooking:
+        fulfillment === "delivery"
+          ? {
+              create: {
+                provider: "grab_manual",
+                status: "awaiting_arrangement",
+                customerFee: feeForTotal,
+              },
+            }
+          : undefined,
     },
   });
+
+  let paymentPath: string | undefined;
+  try {
+    const intent = await createPaymentIntentForOrder({
+      orderId: order.id,
+      orderReference: reference,
+      amount: payableTotal,
+      method: paymentMethod,
+      citySlug: payload.citySlug,
+      branchId: primaryBranch?.id,
+      locale: payload.locale,
+      siteUrl: process.env.NEXT_PUBLIC_SITE_URL || process.env.MAIL_PUBLIC_SITE_URL,
+    });
+    if (intent?.method === "vietqr") {
+      paymentPath = `/${payload.locale}/order/pay/${trackingToken}`;
+    } else if (intent?.checkoutUrl) {
+      paymentPath = intent.checkoutUrl;
+    }
+  } catch (error) {
+    console.error("[orders] payment intent", error);
+  }
 
   try {
     const { notifyOrderEmails } = await import("@/lib/mail/order-notify");
     await notifyOrderEmails({
       locale: payload.locale === "en" ? "en" : "vi",
       reference,
+      orderId: order.id,
       customerName: payload.customerName.trim(),
       phone: payload.phone.trim(),
       email,
-      address: payload.address.trim(),
-      zone: payload.zone.trim(),
+      address: order.address,
+      zone: order.zone,
       citySlug: payload.citySlug?.trim() || null,
       deliveryDate: payload.deliveryDate?.trim() || null,
       deliveryTime: payload.deliveryTime?.trim() || null,
       notes: payload.notes?.trim() || null,
       subtotal,
-      deliveryFee,
-      deliveryTotal,
+      deliveryFee: order.deliveryFee,
+      deliveryTotal: payableTotal,
       items: itemsData.map((item) => ({
         name: item.name,
         qty: item.qty,
@@ -178,7 +263,13 @@ export async function submitOrderAction(
     console.error("[orders] email notify failed", error);
   }
 
-  return { ok: true, reference, whatsappUrl };
+  return {
+    ok: true,
+    reference,
+    whatsappUrl,
+    trackingToken,
+    paymentPath,
+  };
 }
 
 export type SubmitInquiryResult =

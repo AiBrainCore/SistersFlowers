@@ -19,6 +19,7 @@ export default async function CheckoutSuccessPage({
   const query = await searchParams;
   const reference = typeof query.ref === "string" ? query.ref : "";
   const whatsapp = typeof query.wa === "string" ? query.wa : "";
+  const trackToken = typeof query.track === "string" ? query.track : "";
 
   const vouchers =
     reference.length > 0
@@ -98,6 +99,14 @@ export default async function CheckoutSuccessPage({
           >
             {t.checkout.openWhatsapp}
           </a>
+        ) : null}
+        {trackToken ? (
+          <Link
+            href={`/${locale}/order/track/${trackToken}`}
+            className="rounded-full bg-citrus px-8 py-3 text-[12px] tracking-[0.18em] text-white uppercase"
+          >
+            {t.payments.trackTitle}
+          </Link>
         ) : null}
         <Link
           href={`/${locale}/shop`}
