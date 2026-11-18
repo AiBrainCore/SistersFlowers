@@ -228,11 +228,16 @@ model Order {
   roomNumber     String?
   subtotal       Int
   deliveryTotal  Int         @default(0)
-  /// unpaid | deposit | paid | cod
+  /// unpaid | deposit | paid | cod | pending | expired | refunded
   paymentStatus  String      @default("unpaid")
   depositAmount  Int         @default(0)
   status         String      @default("new")
   whatsappUrl    String?
+  /// Guest order tracking secret (not sequential)
+  trackingToken  String?     @unique
+  /// Selected checkout method id: vietqr | payos | whatsapp | …
+  paymentMethod  String?
+  anonymousSender Boolean    @default(false)
   /// Optimistic concurrency for studio edits
   version        Int         @default(1)
   createdAt      DateTime    @default(now())
@@ -241,6 +246,8 @@ model Order {
   statusHistory  OrderStatusHistory[]
   payments       OrderPayment[]
   media          OrderMedia[]
+  paymentIntents PaymentIntent[]
+  deliveryBooking DeliveryBooking?
 }
 
 /// Reference photos — preferably per order line item.
@@ -426,8 +433,115 @@ model Branch {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   orders    Order[]
+  paymentAccounts PaymentAccount[]
 
   @@unique([cityId, slug])
+}
+
+/// Receiving bank account for VietQR / transfers (never hardcode live numbers in code).
+model PaymentAccount {
+  id            String    @id @default(cuid())
+  label         String
+  /// VietQR bank id / BIN e.g. 970415 VietinBank
+  bankCode      String
+  bankName      String
+  accountNumber String
+  accountName   String
+  /// business | household | personal
+  holderType    String    @default("household")
+  currency      String    @default("VND")
+  branchId      String?
+  branch        Branch?   @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  /// When null + no branch → all studios
+  citySlug      String?
+  isDefault     Boolean   @default(false)
+  active        Boolean   @default(true)
+  verifiedAt    DateTime?
+  internalNote  String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  intents       PaymentIntent[]
+
+  @@index([active, isDefault])
+}
+
+/// Admin toggles for catalog of payment methods (coming-soon vs live).
+model PaymentMethodSetting {
+  id         String   @id @default(cuid())
+  methodId   String   @unique
+  enabled    Boolean  @default(false)
+  comingSoon Boolean  @default(true)
+  sortOrder  Int      @default(0)
+  updatedAt  DateTime @updatedAt
+}
+
+/// Provider-agnostic payment request bound to an Order.
+model PaymentIntent {
+  id                String    @id @default(cuid())
+  orderId           String
+  order             Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  provider          String
+  method            String
+  amount            Int
+  currency          String    @default("VND")
+  /// pending | processing | paid | failed | expired | cancelled
+  status            String    @default("pending")
+  /// Short bank transfer / provider reference
+  reference         String
+  idempotencyKey    String    @unique
+  accountId         String?
+  account           PaymentAccount? @relation(fields: [accountId], references: [id], onDelete: SetNull)
+  /// JSON snapshot of receiving account at intent creation
+  accountSnapshot   String?
+  providerPaymentId String?
+  checkoutUrl       String?
+  qrImageUrl        String?
+  expiresAt         DateTime?
+  paidAt            DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([orderId, createdAt])
+  @@index([reference])
+  @@index([status])
+}
+
+/// Manual (or future API) courier booking — customer fee vs actual cost.
+model DeliveryBooking {
+  id           String   @id @default(cuid())
+  orderId      String   @unique
+  order        Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  /// grab_manual | staff | other | grab_api
+  provider     String   @default("grab_manual")
+  /// awaiting_arrangement | courier_requested | in_transit | delivered | failed
+  status       String   @default("awaiting_arrangement")
+  customerFee  Int      @default(0)
+  actualCost   Int?
+  bookingRef   String?
+  trackingRef  String?
+  courierName  String?
+  courierPhone String?
+  notes        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+/// Durable notification queue (email today; SMS later).
+model NotificationOutbox {
+  id         String    @id @default(cuid())
+  dedupeKey  String    @unique
+  channel    String    @default("email")
+  template   String
+  recipient  String
+  payload    String
+  status     String    @default("pending")
+  attempts   Int       @default(0)
+  lastError  String?
+  sentAt     DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@index([status, createdAt])
 }
 
 /// City-level assortment / price override.

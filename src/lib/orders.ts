@@ -29,9 +29,16 @@ export type CheckoutPayload = {
   deliveryTime?: string;
   notes?: string;
   recipientName?: string;
+  recipientPhone?: string;
   hotelName?: string;
   roomNumber?: string;
   items: CheckoutItem[];
+  /** delivery | pickup */
+  fulfillment?: "delivery" | "pickup";
+  /** vietqr | payos | whatsapp | cash_pickup | cod */
+  paymentMethod?: string;
+  anonymousSender?: boolean;
+  cardMessage?: string;
 };
 
 export type IssuedVoucherLine = {
@@ -128,8 +135,11 @@ export function validateCheckout(payload: CheckoutPayload) {
   const errors: string[] = [];
   if (!payload.customerName.trim()) errors.push("name");
   if (!payload.phone.trim()) errors.push("phone");
-  if (!payload.zone.trim()) errors.push("zone");
-  if (!payload.address.trim()) errors.push("address");
   if (!payload.items.length) errors.push("items");
+  const fulfillment = payload.fulfillment || "delivery";
+  if (fulfillment === "delivery") {
+    if (!payload.zone.trim()) errors.push("zone");
+    if (!payload.address.trim()) errors.push("address");
+  }
   return errors;
 }

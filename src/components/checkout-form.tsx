@@ -45,6 +45,19 @@ export function CheckoutForm({
     notes?: string;
   }>({});
   const [hintsReady, setHintsReady] = useState(false);
+  const [fulfillment, setFulfillment] = useState<"delivery" | "pickup">(
+    "delivery",
+  );
+  const [paymentMethod, setPaymentMethod] = useState("whatsapp");
+  const [payMethods, setPayMethods] = useState<
+    Array<{
+      id: string;
+      nameEn: string;
+      nameVi: string;
+      selectable: boolean;
+      comingSoon: boolean;
+    }>
+  >([]);
 
   useEffect(() => {
     queueMicrotask(() => {
@@ -54,6 +67,40 @@ export function CheckoutForm({
       setHintsReady(true);
     });
   }, []);
+
+  useEffect(() => {
+    const city = activeCity?.slug || "";
+    let cancelled = false;
+    fetch(`/api/payments/methods?city=${encodeURIComponent(city)}`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (cancelled) return;
+        const methods = (data.methods || []) as typeof payMethods;
+        setPayMethods(methods);
+        const first =
+          methods.find((m) => m.selectable)?.id ||
+          methods.find((m) => m.id === "whatsapp")?.id ||
+          "whatsapp";
+        setPaymentMethod(first);
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setPayMethods([
+            {
+              id: "whatsapp",
+              nameEn: "Confirm on WhatsApp",
+              nameVi: "Xác nhận qua WhatsApp",
+              selectable: true,
+              comingSoon: false,
+            },
+          ]);
+          setPaymentMethod("whatsapp");
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [activeCity?.slug]);
 
   const onDeliveryChange = useCallback(
     (value: { km: number; fee: number | null; zone: string }) => {
@@ -83,15 +130,19 @@ export function CheckoutForm({
       email: String(form.get("email") || "") || undefined,
       citySlug: activeCity?.slug,
       zone: deliveryZone || String(form.get("deliveryZone") || ""),
-      deliveryKm,
-      deliveryFee: deliveryFee ?? undefined,
+      deliveryKm: fulfillment === "pickup" ? undefined : deliveryKm,
+      deliveryFee: fulfillment === "pickup" ? 0 : deliveryFee ?? undefined,
       address: String(form.get("address") || ""),
       deliveryDate: String(form.get("deliveryDate") || "") || undefined,
       deliveryTime: String(form.get("deliveryTime") || "") || undefined,
       notes: String(form.get("notes") || "") || undefined,
       recipientName: String(form.get("recipientName") || "") || undefined,
+      recipientPhone: String(form.get("recipientPhone") || "") || undefined,
       hotelName: String(form.get("hotelName") || "") || undefined,
       roomNumber: String(form.get("roomNumber") || "") || undefined,
+      fulfillment,
+      paymentMethod,
+      anonymousSender: form.get("anonymousSender") === "on",
       items: items.map((item) => ({
         slug: item.slug,
         name: item.name,
@@ -114,10 +165,19 @@ export function CheckoutForm({
     }
 
     clear();
+    if (result.paymentPath?.startsWith("http")) {
+      window.location.href = result.paymentPath;
+      return;
+    }
+    if (result.paymentPath?.startsWith("/")) {
+      router.push(result.paymentPath);
+      return;
+    }
     const params = new URLSearchParams({
       ref: result.reference,
       wa: result.whatsappUrl,
     });
+    if (result.trackingToken) params.set("track", result.trackingToken);
     router.push(`/${locale}/checkout/success?${params.toString()}`);
   }
 
@@ -127,26 +187,65 @@ export function CheckoutForm({
     );
   }
 
-  const grandTotal = subtotal + (deliveryFee ?? 0);
+  const effectiveFee = fulfillment === "pickup" ? 0 : deliveryFee;
+  const grandTotal = subtotal + (effectiveFee ?? 0);
 
   return (
     <div className="grid gap-12 lg:grid-cols-[1.1fr_0.9fr]">
       <form onSubmit={onSubmit} className="grid gap-5">
         <DeliveryCityBar locale={locale} dictionary={dictionary} />
+
+        <fieldset className="grid gap-2">
+          <legend className="text-[11px] tracking-[0.16em] text-moss uppercase">
+            {dictionary.checkout.fulfillment}
+          </legend>
+          <div className="flex flex-wrap gap-2">
+            {(
+              [
+                ["delivery", dictionary.checkout.fulfillmentDelivery],
+                ["pickup", dictionary.checkout.fulfillmentPickup],
+              ] as const
+            ).map(([id, label]) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => setFulfillment(id)}
+                className={`min-h-11 rounded-full border px-4 text-sm transition ${
+                  fulfillment === id
+                    ? "border-citrus bg-citrus text-white"
+                    : "border-forest/15 bg-white text-forest"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </fieldset>
+
         <Field label={dictionary.checkout.name} name="customerName" required />
         <div className="grid gap-5 sm:grid-cols-2">
           <Field label={dictionary.checkout.phone} name="phone" required />
           <Field label={dictionary.checkout.email} name="email" type="email" />
         </div>
-        <DeliveryCalculator
-          locale={locale}
-          dictionary={dictionary}
-          config={deliveryConfig}
-          zones={zones}
-          compact
-          onChange={onDeliveryChange}
-        />
-        <Field label={dictionary.checkout.address} name="address" required />
+        {fulfillment === "delivery" ? (
+          <>
+            <DeliveryCalculator
+              locale={locale}
+              dictionary={dictionary}
+              config={deliveryConfig}
+              zones={zones}
+              compact
+              onChange={onDeliveryChange}
+            />
+            <Field label={dictionary.checkout.address} name="address" required />
+          </>
+        ) : (
+          <Field
+            label={dictionary.checkout.address}
+            name="address"
+            defaultValue="Pickup at studio"
+          />
+        )}
         <div className="grid gap-5 sm:grid-cols-2">
           <Field label={dictionary.checkout.date} name="deliveryDate" type="date" />
           <Field label={dictionary.checkout.time} name="deliveryTime" />
@@ -155,6 +254,10 @@ export function CheckoutForm({
           label={dictionary.checkout.recipient}
           name="recipientName"
           defaultValue={hints.recipientName}
+        />
+        <Field
+          label={dictionary.checkout.recipientPhone}
+          name="recipientPhone"
         />
         <div className="grid gap-5 sm:grid-cols-2">
           <Field
@@ -167,6 +270,10 @@ export function CheckoutForm({
         <p className="text-xs leading-6 text-moss">
           {dictionary.checkout.hotelHint}
         </p>
+        <label className="flex min-h-11 items-center gap-2 text-sm text-forest">
+          <input type="checkbox" name="anonymousSender" className="h-4 w-4" />
+          {dictionary.checkout.anonymousSender}
+        </label>
         <label className="block">
           <span className="text-[11px] tracking-[0.16em] text-moss uppercase">
             {dictionary.checkout.notes}
@@ -179,6 +286,45 @@ export function CheckoutForm({
             className="mt-2 w-full rounded-2xl border border-forest/15 bg-white/70 px-4 py-3 text-sm outline-none focus:border-rose"
           />
         </label>
+
+        <fieldset className="grid gap-2">
+          <legend className="text-[11px] tracking-[0.16em] text-moss uppercase">
+            {dictionary.checkout.paymentMethod}
+          </legend>
+          <div className="grid gap-2">
+            {payMethods.map((m) => {
+              const label = locale === "vi" ? m.nameVi : m.nameEn;
+              const disabled = !m.selectable;
+              return (
+                <label
+                  key={m.id}
+                  className={`flex min-h-11 items-center gap-3 rounded-2xl border px-3 text-sm ${
+                    disabled
+                      ? "border-forest/10 bg-cream/40 text-moss/70"
+                      : paymentMethod === m.id
+                        ? "border-citrus/50 bg-citrus/8 text-forest"
+                        : "border-forest/15 bg-white text-forest"
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="paymentMethodUi"
+                    disabled={disabled}
+                    checked={paymentMethod === m.id}
+                    onChange={() => setPaymentMethod(m.id)}
+                  />
+                  <span className="flex-1">{label}</span>
+                  {m.comingSoon || disabled ? (
+                    <span className="text-[10px] tracking-wide uppercase">
+                      {dictionary.payments.comingSoon}
+                    </span>
+                  ) : null}
+                </label>
+              );
+            })}
+          </div>
+        </fieldset>
+
         {error ? <p className="text-sm text-rose">{error}</p> : null}
         <button
           type="submit"
@@ -221,18 +367,22 @@ export function CheckoutForm({
           <div className="flex justify-between text-moss">
             <span>
               {dictionary.delivery.feeLabel}
-              {deliveryKm ? ` · ${deliveryKm} km` : ""}
+              {fulfillment === "delivery" && deliveryKm
+                ? ` · ${deliveryKm} km`
+                : ""}
             </span>
             <span>
-              {deliveryFee === null
-                ? dictionary.delivery.quoted
-                : formatVnd(deliveryFee, locale)}
+              {fulfillment === "pickup"
+                ? formatVnd(0, locale)
+                : effectiveFee === null
+                  ? dictionary.delivery.quoted
+                  : formatVnd(effectiveFee, locale)}
             </span>
           </div>
           <div className="flex items-center justify-between pt-2">
             <span>{dictionary.checkout.grandTotal}</span>
             <span className="serif text-2xl">
-              {deliveryFee === null
+              {fulfillment === "delivery" && effectiveFee === null
                 ? formatVnd(subtotal, locale) + "+"
                 : formatVnd(grandTotal, locale)}
             </span>
