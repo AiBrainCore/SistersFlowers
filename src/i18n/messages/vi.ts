@@ -595,9 +595,10 @@ export const vi = {
     cartCleared: "Khay đã được xóa vì bạn đổi địa điểm mua hàng.",
     switchConfirmTitle: "Đổi thành phố giao?",
     switchConfirmBody:
-      "Khay đang có {count} món. Đổi thành phố sẽ xóa khay để không trộn địa điểm.",
-    switchConfirmKeep: "Giữ khay",
-    switchConfirmClear: "Đổi và xóa",
+      "Khay đang có {count} món. {city} có giá và tồn kho riêng — thanh toán sẽ tính lại tổng. Giữ khay, xóa khay, hoặc ở lại.",
+    switchConfirmKeep: "Đổi & giữ khay",
+    switchConfirmClear: "Đổi & xóa khay",
+    switchConfirmCancel: "Ở lại",
   },
   shopBot: {
     launcher: "Giúp chọn hoa",

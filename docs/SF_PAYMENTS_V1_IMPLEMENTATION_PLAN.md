@@ -33,11 +33,20 @@ Grab: **manual staff booking first**; architecture ready for later API.
 - Notification outbox processor (`/api/cron/notifications`, `CRON_SECRET`)  
 - Builder → cart still optional; inquiry remains
 
-### Slice C — Activation (owner ops, not code)
+### Slice C — Activation (owner ops, not code) — **remaining**
 - Enter verified VietinBank (or other) account in admin  
 - Mark verified → enable VietQR  
 - Configure payOS env + webhook URL → enable after test payment  
-- Ensure `EMAIL_ENABLED=true` with working SMTP (P.A Vietnam or Zoho paid IMAP)
+- Ensure `EMAIL_ENABLED=true` with working SMTP (P.A Vietnam or Zoho paid IMAP)  
+- Optional: schedule `CRON_SECRET` → `/api/cron/notifications`
+
+### Optional later code (not blocking launch)
+- Custom Bouquet Builder → shared cart (inquiry path still works)  
+- Full payOS live link signing (adapter scaffold exists)  
+- Multi-staff branch RBAC  
+- Licensed Vietnamese e-invoice provider  
+- Live GrabExpress API  
+- Richer escalation timers / SLA clocks
 
 ## Activation policy
 
