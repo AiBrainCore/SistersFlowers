@@ -38,11 +38,21 @@ export async function createPaymentIntentForOrder(input: {
     throw new Error("payment_method_unavailable");
   }
 
-  const idempotencyKey = `order:${input.orderId}:method:${method}:v1`;
+  const idempotencyKey = `order:${input.orderId}:method:${method}:amt:${amount}:v1`;
   const existing = await prisma.paymentIntent.findUnique({
     where: { idempotencyKey },
   });
   if (existing) return existing;
+
+  // Cancel older pending intents for this order+method when amount changes (quote flow).
+  await prisma.paymentIntent.updateMany({
+    where: {
+      orderId: input.orderId,
+      method,
+      status: "pending",
+    },
+    data: { status: "cancelled" },
+  });
 
   if (method === "vietqr") {
     const account = await resolvePaymentAccount({

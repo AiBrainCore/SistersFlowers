@@ -24,12 +24,14 @@ Grab: **manual staff booking first**; architecture ready for later API.
 - Wire shop status updates → history + status email  
 - payOS adapter + webhook route: **safe no-op when env missing**
 
-### Slice B — Ops polish (follow-up if needed)
-- Fulfillment checklist UI  
-- Delivery quote awaiting flow (`awaiting_delivery_quote`)  
-- Courier cost vs customer fee reporting CSV  
-- Notification outbox worker / cron  
-- Builder → cart (optional; inquiry remains)
+### Slice B — Ops polish (PR follow-up)
+- Fulfillment checklist UI + gate on handoff statuses  
+- Delivery quote awaiting flow (`awaiting_delivery_quote`) + staff fee confirm  
+- Server-side catalog reprice (never trust client amounts)  
+- Admin order detail + ops alerts on dashboard  
+- Courier cost vs customer fee reporting + CSV  
+- Notification outbox processor (`/api/cron/notifications`, `CRON_SECRET`)  
+- Builder → cart still optional; inquiry remains
 
 ### Slice C — Activation (owner ops, not code)
 - Enter verified VietinBank (or other) account in admin  

@@ -4,7 +4,6 @@ import { prisma } from "@/lib/db";
 import {
   buildWhatsAppUrl,
   makeOrderReference,
-  orderSubtotal,
   validateCheckout,
   type CheckoutPayload,
   type IssuedVoucherLine,
@@ -32,10 +31,25 @@ export async function submitOrderAction(
     return { ok: false, error: `Missing: ${errors.join(", ")}` };
   }
 
+  const fulfillment =
+    payload.fulfillment === "pickup" ? "pickup" : "delivery";
+  const paymentMethod = (payload.paymentMethod || "whatsapp").trim();
+
+  const { repriceCheckoutItems } = await import("@/lib/payments/pricing");
+  const priced = await repriceCheckoutItems({
+    items: payload.items,
+    citySlug: payload.citySlug,
+  });
+  if (!priced.ok) {
+    return { ok: false, error: priced.error };
+  }
+
   const reference = makeOrderReference();
-  const subtotal = orderSubtotal(payload.items);
-  const deliveryFee = payload.deliveryFee ?? null;
-  const deliveryTotal = subtotal + (deliveryFee ?? 0);
+  const subtotal = priced.subtotal;
+  const needsDeliveryQuote =
+    fulfillment === "delivery" &&
+    (payload.deliveryFee === null || payload.deliveryFee === undefined);
+  const deliveryFee = fulfillment === "pickup" ? 0 : payload.deliveryFee ?? null;
 
   type ItemCreate = {
     slug: string;
@@ -44,6 +58,7 @@ export async function submitOrderAction(
     qty: number;
     image: string;
     kind: string;
+    size: string | null;
     note: string | null;
     partnerName: string | null;
     commissionPercent: number | null;
@@ -57,7 +72,7 @@ export async function submitOrderAction(
   const itemsData: ItemCreate[] = [];
   const issuedVouchers: IssuedVoucherLine[] = [];
 
-  for (const item of payload.items) {
+  for (const item of priced.items) {
     const isPartner =
       item.kind === "addon" && item.addonKind === "partner";
     const commissionPercent = item.commissionPercent ?? null;
@@ -80,6 +95,7 @@ export async function submitOrderAction(
           qty: 1,
           image: item.image,
           kind: "partner",
+          size: null,
           note: item.note || null,
           partnerName: item.partnerName || null,
           commissionPercent: percent > 0 ? percent : null,
@@ -112,6 +128,7 @@ export async function submitOrderAction(
       qty: item.qty,
       image: item.image,
       kind: item.kind === "addon" ? "addon" : "product",
+      size: item.size || null,
       note: item.note || null,
       partnerName: item.partnerName || null,
       commissionPercent,
@@ -119,15 +136,20 @@ export async function submitOrderAction(
     });
   }
 
-  const whatsappUrl = buildWhatsAppUrl(reference, payload, issuedVouchers);
-  const fulfillment =
-    payload.fulfillment === "pickup" ? "pickup" : "delivery";
-  const paymentMethod = (payload.paymentMethod || "whatsapp").trim();
-  const feeForTotal =
-    fulfillment === "pickup" ? 0 : deliveryFee ?? 0;
+  const pricedPayload = { ...payload, items: priced.items };
+  const whatsappUrl = buildWhatsAppUrl(reference, pricedPayload, issuedVouchers);
+  const feeForTotal = needsDeliveryQuote ? 0 : deliveryFee ?? 0;
   const payableTotal = subtotal + feeForTotal;
+  const initialStatus = needsDeliveryQuote
+    ? "awaiting_delivery_quote"
+    : "new";
+  const initialPaymentStatus = needsDeliveryQuote
+    ? "unpaid"
+    : paymentMethod === "whatsapp"
+      ? "unpaid"
+      : "pending";
 
-  if (paymentMethod !== "whatsapp") {
+  if (!needsDeliveryQuote && paymentMethod !== "whatsapp") {
     const { isMethodSelectable } = await import("@/lib/payments/catalog");
     const ok = await isMethodSelectable(paymentMethod, payload.citySlug);
     if (!ok) {
@@ -188,16 +210,20 @@ export async function submitOrderAction(
       roomNumber: payload.roomNumber?.trim() || null,
       subtotal,
       deliveryTotal: payableTotal,
-      paymentStatus: paymentMethod === "whatsapp" ? "unpaid" : "pending",
+      status: initialStatus,
+      paymentStatus: initialPaymentStatus,
       paymentMethod,
       trackingToken,
       anonymousSender: Boolean(payload.anonymousSender),
       whatsappUrl,
       items: { create: itemsData },
+      fulfillmentChecklist: { create: {} },
       statusHistory: {
         create: {
-          toStatus: "new",
-          note: `Shop checkout · ${paymentMethod}`,
+          toStatus: initialStatus,
+          note: needsDeliveryQuote
+            ? `Shop checkout · awaiting delivery quote · ${paymentMethod}`
+            : `Shop checkout · ${paymentMethod}`,
           actor: "system",
         },
       },
@@ -206,8 +232,11 @@ export async function submitOrderAction(
           ? {
               create: {
                 provider: "grab_manual",
-                status: "awaiting_arrangement",
+                status: needsDeliveryQuote
+                  ? "awaiting_arrangement"
+                  : "awaiting_arrangement",
                 customerFee: feeForTotal,
+                notes: needsDeliveryQuote ? "awaiting_customer_quote" : null,
               },
             }
           : undefined,
@@ -215,24 +244,29 @@ export async function submitOrderAction(
   });
 
   let paymentPath: string | undefined;
-  try {
-    const intent = await createPaymentIntentForOrder({
-      orderId: order.id,
-      orderReference: reference,
-      amount: payableTotal,
-      method: paymentMethod,
-      citySlug: payload.citySlug,
-      branchId: primaryBranch?.id,
-      locale: payload.locale,
-      siteUrl: process.env.NEXT_PUBLIC_SITE_URL || process.env.MAIL_PUBLIC_SITE_URL,
-    });
-    if (intent?.method === "vietqr") {
-      paymentPath = `/${payload.locale}/order/pay/${trackingToken}`;
-    } else if (intent?.checkoutUrl) {
-      paymentPath = intent.checkoutUrl;
+  if (!needsDeliveryQuote) {
+    try {
+      const intent = await createPaymentIntentForOrder({
+        orderId: order.id,
+        orderReference: reference,
+        amount: payableTotal,
+        method: paymentMethod,
+        citySlug: payload.citySlug,
+        branchId: primaryBranch?.id,
+        locale: payload.locale,
+        siteUrl:
+          process.env.NEXT_PUBLIC_SITE_URL || process.env.MAIL_PUBLIC_SITE_URL,
+      });
+      if (intent?.method === "vietqr") {
+        paymentPath = `/${payload.locale}/order/pay/${trackingToken}`;
+      } else if (intent?.checkoutUrl) {
+        paymentPath = intent.checkoutUrl;
+      }
+    } catch (error) {
+      console.error("[orders] payment intent", error);
     }
-  } catch (error) {
-    console.error("[orders] payment intent", error);
+  } else {
+    paymentPath = `/${payload.locale}/order/track/${trackingToken}`;
   }
 
   try {

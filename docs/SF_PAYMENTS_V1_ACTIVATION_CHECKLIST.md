@@ -44,6 +44,7 @@ Separate **Implemented** · **Configured** · **Live & verified**.
 - [ ] SMTP / Zoho credentials present for studio + customer mail
 - [ ] Studio inbox routing by city verified
 - [ ] Failed sends do not delete orders
+- [ ] Optional: set `CRON_SECRET` and schedule `POST /api/cron/notifications` every few minutes
 
 ## Legal documents
 

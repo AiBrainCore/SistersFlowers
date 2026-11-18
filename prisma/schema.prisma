@@ -248,6 +248,9 @@ model Order {
   media          OrderMedia[]
   paymentIntents PaymentIntent[]
   deliveryBooking DeliveryBooking?
+  fulfillmentChecklist FulfillmentChecklist?
+  /// Staff acknowledged new paid order (clears ops alert)
+  acknowledgedAt DateTime?
 }
 
 /// Reference photos — preferably per order line item.
@@ -310,6 +313,8 @@ model OrderItem {
   qty                Int
   image              String
   kind               String    @default("product")
+  /// Bouquet size snapshot: sm | md | lg | grand
+  size               String?
   note               String?
   partnerName        String?
   commissionPercent  Int?
@@ -323,6 +328,26 @@ model OrderItem {
   /// Amount Sisters remits to partner after commission (face value − commission)
   remitAmount        Int?
   media              OrderMedia[]
+}
+
+/// Florist preparation checklist — blocks careless completion.
+model FulfillmentChecklist {
+  id                   String    @id @default(cuid())
+  orderId              String    @unique
+  order                Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productsReviewed     Boolean   @default(false)
+  flowersPrepared      Boolean   @default(false)
+  customVerified       Boolean   @default(false)
+  extrasIncluded       Boolean   @default(false)
+  greetingCardIncluded Boolean   @default(false)
+  recipientVerified    Boolean   @default(false)
+  packagingCompleted   Boolean   @default(false)
+  readyForHandoff      Boolean   @default(false)
+  /// Authorized skip of incomplete checklist
+  overrideNote         String?
+  completedAt          DateTime?
+  updatedAt            DateTime  @updatedAt
+  createdAt            DateTime  @default(now())
 }
 
 model Inquiry {

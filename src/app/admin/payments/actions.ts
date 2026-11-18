@@ -183,7 +183,8 @@ export async function confirmShopPaymentAction(formData: FormData) {
   }
 
   revalidatePath("/admin/orders");
-  redirect("/admin/orders?paid=1");
+  revalidatePath(`/admin/orders/${orderId}`);
+  redirect(`/admin/orders/${orderId}?saved=1`);
 }
 
 export async function updateDeliveryBookingAction(formData: FormData) {
@@ -231,5 +232,263 @@ export async function updateDeliveryBookingAction(formData: FormData) {
   });
 
   revalidatePath("/admin/orders");
-  redirect("/admin/orders?delivery=1");
+  revalidatePath(`/admin/orders/${orderId}`);
+  redirect(`/admin/orders/${orderId}?saved=1`);
+}
+
+export async function acknowledgeOrderAction(formData: FormData) {
+  await requireAdmin();
+  const orderId = String(formData.get("orderId") || "");
+  if (!orderId) redirect("/admin/orders");
+  await prisma.order.update({
+    where: { id: orderId },
+    data: { acknowledgedAt: new Date() },
+  });
+  await prisma.orderStatusHistory.create({
+    data: {
+      orderId,
+      toStatus: "acknowledged",
+      note: "Staff acknowledged paid order",
+      actor: "admin",
+    },
+  });
+  revalidatePath("/admin");
+  revalidatePath(`/admin/orders/${orderId}`);
+  redirect(`/admin/orders/${orderId}?saved=1`);
+}
+
+export async function saveFulfillmentChecklistAction(formData: FormData) {
+  await requireAdmin();
+  const orderId = String(formData.get("orderId") || "");
+  if (!orderId) redirect("/admin/orders");
+
+  const {
+    CHECKLIST_FIELDS,
+    checklistComplete,
+  } = await import("@/lib/payments/checklist");
+
+  const data: Record<string, boolean | string | Date | null> = {};
+  for (const field of CHECKLIST_FIELDS) {
+    data[field] = formData.get(field) === "on";
+  }
+  const overrideNote =
+    String(formData.get("overrideNote") || "").trim() || null;
+  data.overrideNote = overrideNote;
+  const complete = checklistComplete(
+    data as Record<(typeof CHECKLIST_FIELDS)[number], boolean>,
+  );
+  data.completedAt = complete || overrideNote ? new Date() : null;
+
+  await prisma.fulfillmentChecklist.upsert({
+    where: { orderId },
+    create: {
+      orderId,
+      productsReviewed: Boolean(data.productsReviewed),
+      flowersPrepared: Boolean(data.flowersPrepared),
+      customVerified: Boolean(data.customVerified),
+      extrasIncluded: Boolean(data.extrasIncluded),
+      greetingCardIncluded: Boolean(data.greetingCardIncluded),
+      recipientVerified: Boolean(data.recipientVerified),
+      packagingCompleted: Boolean(data.packagingCompleted),
+      readyForHandoff: Boolean(data.readyForHandoff),
+      overrideNote,
+      completedAt: data.completedAt as Date | null,
+    },
+    update: {
+      productsReviewed: Boolean(data.productsReviewed),
+      flowersPrepared: Boolean(data.flowersPrepared),
+      customVerified: Boolean(data.customVerified),
+      extrasIncluded: Boolean(data.extrasIncluded),
+      greetingCardIncluded: Boolean(data.greetingCardIncluded),
+      recipientVerified: Boolean(data.recipientVerified),
+      packagingCompleted: Boolean(data.packagingCompleted),
+      readyForHandoff: Boolean(data.readyForHandoff),
+      overrideNote,
+      completedAt: data.completedAt as Date | null,
+    },
+  });
+
+  revalidatePath(`/admin/orders/${orderId}`);
+  redirect(`/admin/orders/${orderId}?saved=1`);
+}
+
+export async function updateShopOrderStatusAction(formData: FormData) {
+  await requireAdmin();
+  const orderId = String(formData.get("orderId") || "");
+  const status = String(formData.get("status") || "new");
+  if (!orderId) redirect("/admin/orders");
+
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
+    include: { fulfillmentChecklist: true },
+  });
+  if (!order) redirect("/admin/orders");
+
+  const {
+    CHECKLIST_GATE_STATUSES,
+    checklistComplete,
+  } = await import("@/lib/payments/checklist");
+
+  if (CHECKLIST_GATE_STATUSES.has(status)) {
+    const cl = order.fulfillmentChecklist;
+    const ok =
+      (cl && checklistComplete(cl)) || Boolean(cl?.overrideNote?.trim());
+    if (!ok) {
+      redirect(`/admin/orders/${orderId}?err=checklist`);
+    }
+  }
+
+  await prisma.$transaction([
+    prisma.order.update({
+      where: { id: orderId },
+      data: { status, version: { increment: 1 } },
+    }),
+    prisma.orderStatusHistory.create({
+      data: {
+        orderId,
+        fromStatus: order.status,
+        toStatus: status,
+        actor: "admin",
+      },
+    }),
+  ]);
+
+  try {
+    const mailStatus =
+      status === "confirmed"
+        ? "accepted"
+        : status === "ready_for_pickup" || status === "ready_for_dispatch"
+          ? "ready"
+          : status === "out_for_delivery"
+            ? "dispatched"
+            : status === "completed" || status === "delivered"
+              ? "completed"
+              : status === "cancelled"
+                ? "cancelled"
+                : null;
+    if (mailStatus && order.email) {
+      const { notifyOrderStatusEmail } = await import(
+        "@/lib/mail/order-notify"
+      );
+      await notifyOrderStatusEmail({
+        orderId: order.id,
+        reference: order.reference,
+        locale: order.locale === "en" ? "en" : "vi",
+        status: mailStatus,
+        customerName: order.customerName,
+        email: order.email,
+      });
+    }
+  } catch (error) {
+    console.error("[orders] status email", error);
+  }
+
+  revalidatePath("/admin/orders");
+  revalidatePath(`/admin/orders/${orderId}`);
+  redirect(`/admin/orders/${orderId}?saved=1`);
+}
+
+export async function setDeliveryQuoteAction(formData: FormData) {
+  await requireAdmin();
+  const orderId = String(formData.get("orderId") || "");
+  const fee = Math.max(
+    0,
+    Math.round(Number(formData.get("deliveryFee") || 0) || 0),
+  );
+  if (!orderId) redirect("/admin/orders");
+
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
+    include: { paymentIntents: true },
+  });
+  if (!order) redirect("/admin/orders");
+
+  const payableTotal = order.subtotal + fee;
+  const method = order.paymentMethod || "whatsapp";
+
+  await prisma.$transaction([
+    prisma.order.update({
+      where: { id: orderId },
+      data: {
+        deliveryFee: fee,
+        deliveryTotal: payableTotal,
+        status: "awaiting_payment",
+        paymentStatus: method === "whatsapp" ? "unpaid" : "pending",
+        version: { increment: 1 },
+      },
+    }),
+    prisma.deliveryBooking.upsert({
+      where: { orderId },
+      create: {
+        orderId,
+        customerFee: fee,
+        provider: "grab_manual",
+        status: "awaiting_arrangement",
+      },
+      update: { customerFee: fee, notes: "quote_confirmed" },
+    }),
+    prisma.orderStatusHistory.create({
+      data: {
+        orderId,
+        fromStatus: order.status,
+        toStatus: "awaiting_payment",
+        note: `Delivery quote set: ${fee} VND`,
+        actor: "admin",
+      },
+    }),
+  ]);
+
+  if (method !== "whatsapp") {
+    try {
+      const { createPaymentIntentForOrder } = await import(
+        "@/lib/payments/intents"
+      );
+      await createPaymentIntentForOrder({
+        orderId: order.id,
+        orderReference: order.reference,
+        amount: payableTotal,
+        method,
+        branchId: order.branchId,
+        locale: order.locale,
+        siteUrl:
+          process.env.NEXT_PUBLIC_SITE_URL || process.env.MAIL_PUBLIC_SITE_URL,
+      });
+    } catch (error) {
+      console.error("[orders] quote payment intent", error);
+    }
+  }
+
+  try {
+    if (order.email) {
+      const { enqueueNotification } = await import("@/lib/payments/outbox");
+      const locale = order.locale === "en" ? "en" : "vi";
+      const subject =
+        locale === "vi"
+          ? `Cập nhật phí giao — ${order.reference}`
+          : `Delivery fee update — ${order.reference}`;
+      const payLink = order.trackingToken
+        ? `${(process.env.NEXT_PUBLIC_SITE_URL || "").replace(/\/$/, "")}/${locale}/order/pay/${order.trackingToken}`
+        : "";
+      const html = `<p>Hello ${order.customerName},</p>
+<p>Your delivery fee is confirmed: <strong>${fee.toLocaleString("vi-VN")} ₫</strong>.</p>
+<p>New total: <strong>${payableTotal.toLocaleString("vi-VN")} ₫</strong>.</p>
+${payLink ? `<p><a href="${payLink}">Pay now</a></p>` : ""}
+<p>Sisters Flowers</p>`;
+      await enqueueNotification({
+        dedupeKey: `order:${order.id}:delivery_quote:${fee}`,
+        template: "delivery_quote",
+        recipient: order.email,
+        payload: { subject, html, from: "orders" },
+      });
+      const { processNotificationOutbox } = await import(
+        "@/lib/payments/outbox-process"
+      );
+      await processNotificationOutbox(5);
+    }
+  } catch (error) {
+    console.error("[orders] quote notify", error);
+  }
+
+  revalidatePath(`/admin/orders/${orderId}`);
+  redirect(`/admin/orders/${orderId}?saved=1`);
 }

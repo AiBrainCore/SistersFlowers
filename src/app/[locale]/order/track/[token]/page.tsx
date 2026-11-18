@@ -9,6 +9,11 @@ export const dynamic = "force-dynamic";
 
 const CUSTOMER_STATUS_LABEL: Record<string, { en: string; vi: string }> = {
   new: { en: "Received", vi: "Đã nhận" },
+  awaiting_delivery_quote: {
+    en: "Waiting for delivery quote",
+    vi: "Đang chờ báo giá giao hàng",
+  },
+  awaiting_payment: { en: "Awaiting payment", vi: "Chờ thanh toán" },
   confirmed: { en: "Accepted by studio", vi: "Studio đã nhận" },
   preparing: { en: "Preparing", vi: "Đang chuẩn bị" },
   making: { en: "Preparing", vi: "Đang làm" },
@@ -20,6 +25,7 @@ const CUSTOMER_STATUS_LABEL: Record<string, { en: string; vi: string }> = {
   delivered: { en: "Delivered", vi: "Đã giao" },
   completed: { en: "Completed", vi: "Hoàn tất" },
   cancelled: { en: "Cancelled", vi: "Đã hủy" },
+  exception: { en: "Needs attention", vi: "Cần xử lý" },
 };
 
 export default async function OrderTrackPage({
