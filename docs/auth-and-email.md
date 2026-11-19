@@ -13,14 +13,16 @@
 Hosting panel (admin): `https://mail9234.maychuemail.com:1000/`  
 Webmail: `https://mail9234.maychuemail.com/`
 
-Start with the mailbox created by P.A Vietnam. Prefer creating clean aliases in the panel when possible:
+## Live mailboxes (launch)
 
-- `info@sistersflowers.vn` — general + studio alerts  
-- `orders@sistersflowers.vn` — order confirmations (optional; app can use one mailbox)
+| Address | Role |
+| --- | --- |
+| `info@sistersflowers.vn` | General + shared studio inbox |
+| `orders@sistersflowers.vn` | Order confirmations / status |
 
-Until aliases exist, `SMTP_USER` / `MAIL_FROM*` use the panel mailbox.
+`dalat@` / `danang@` can be added later. Until then both branches share `info@`; every studio alert subject includes `[Branch: Da Lat]` or `[Branch: Da Nang]` so staff do not mix cities.
 
-Provider note: change the mailbox password after first login, then update `secrets/mail.env` and the VPS `.env`.
+Same SMTP password may be used for both mailboxes; store it only in `secrets/mail.env` and the VPS `.env` (never git).
 
 ## DNS (required for delivery)
 

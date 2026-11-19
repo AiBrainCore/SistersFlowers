@@ -137,7 +137,10 @@ export function buildOrderStudioEmail(payload: OrderMailPayload) {
   const studio = studioContactForCity(payload.citySlug);
   const city = cityLabel(payload.citySlug, "en") || "—";
   const rows: Array<[string, string]> = [
-    ["City", `<strong>${escapeHtml(city)}</strong>`],
+    [
+      "Branch",
+      `<strong style="color:#C24712;">${escapeHtml(city)}</strong>`,
+    ],
     ["Reference", escapeHtml(payload.reference)],
     ["Locale", escapeHtml(payload.locale)],
     ["Customer", escapeHtml(payload.customerName)],

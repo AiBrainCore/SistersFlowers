@@ -28,10 +28,12 @@ export function cityLabel(citySlug?: string | null, locale: Locale = "en") {
   return locale === "vi" ? studio.nameVi : studio.nameEn;
 }
 
-/** Inbox subject marker so studio can sort Da Lat vs Da Nang at a glance. */
+/** Inbox subject marker so staff can sort Da Lat vs Da Nang at a glance. */
 export function citySubjectTag(citySlug?: string | null) {
   const label = cityLabel(citySlug, "en");
-  return label ? `[${label}]` : null;
+  if (!label) return null;
+  // e.g. [Branch: Da Lat] — clear even when both cities share info@
+  return `[Branch: ${label}]`;
 }
 
 export function studioAddress(
