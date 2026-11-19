@@ -1,4 +1,4 @@
-/** Zoho Mail / transactional SMTP — server-side only. */
+/** Transactional SMTP (P.A Vietnam / maychuemail) — server-side only. */
 
 /**
  * Public origin used inside HTML emails (logos + CTA links).
@@ -90,7 +90,8 @@ export function emailSendingEnabled() {
 }
 
 function smtpBase() {
-  const host = process.env.SMTP_HOST?.trim() || "smtp.zoho.com";
+  const host =
+    process.env.SMTP_HOST?.trim() || "mail9234.maychuemail.com";
   const port = Number(process.env.SMTP_PORT || "465");
   const secure =
     process.env.SMTP_SECURE != null
@@ -99,12 +100,12 @@ function smtpBase() {
   return { host, port, secure };
 }
 
-/** Default / info@ SMTP login. */
+/** Default / primary mailbox SMTP login. */
 export function getSmtpConfig(): SmtpConfig | null {
   return getSmtpConfigFor("info");
 }
 
-/** Per-mailbox Zoho auth (orders@ uses its own password when set). */
+/** Per-mailbox auth (orders@ uses its own password when set). */
 export function getSmtpConfigFor(identity: MailIdentity = "info"): SmtpConfig | null {
   const { host, port, secure } = smtpBase();
   if (identity === "orders") {
@@ -149,12 +150,16 @@ export function mailIntegrationStatus(): {
   port: number | null;
 } {
   const smtp = getSmtpConfig();
+  const host = smtp?.host || "";
+  const provider = !smtp
+    ? "Not configured"
+    : host.includes("maychuemail") || host.includes("pavietnam")
+      ? "P.A Vietnam Mail"
+      : host.includes("zoho")
+        ? "Zoho Mail (legacy)"
+        : "SMTP";
   return {
-    provider: smtp?.host?.includes("zoho")
-      ? "Zoho Mail"
-      : smtp
-        ? "SMTP"
-        : "Not configured",
+    provider,
     from: MAILBOX.info,
     ordersFrom: MAILBOX.orders,
     fromName: MAILBOX.fromName,
