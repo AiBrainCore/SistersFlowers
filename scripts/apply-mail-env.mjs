@@ -85,10 +85,12 @@ const fromFile = mailEnvPath && existsSync(mailEnvPath)
 /** @type {Record<string, string>} */
 const updates = {};
 for (const key of KEYS) {
-  const v = process.env[key] ?? fromFile[key];
+  // Prefer MAIL_ENV_FILE over ambient process.env (shells often carry stale SMTP_*).
+  const v = fromFile[key] ?? process.env[key];
   if (v != null && v !== "") updates[key] = v;
 }
 
+// Explicit CLI/env flip wins (mac-apply-mail-env.sh sets EMAIL_ENABLED=true).
 if (process.env.EMAIL_ENABLED != null && process.env.EMAIL_ENABLED !== "") {
   updates.EMAIL_ENABLED = process.env.EMAIL_ENABLED;
 }
