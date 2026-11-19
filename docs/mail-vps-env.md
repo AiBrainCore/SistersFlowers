@@ -1,6 +1,19 @@
 # VPS mail env (P.A Vietnam)
 
-Copy these keys into `/var/www/sisters-flowers/.env` on the production VPS (values from local `secrets/mail.env` — never commit passwords).
+## One-shot from Mac (recommended)
+
+Cloud agents often cannot reach Superdata SSH (`:22` firewall). From a Mac that already SSHs to the VPS:
+
+```bash
+cd /path/to/SistersFlowers
+bash scripts/mac-apply-mail-env.sh --test
+```
+
+That copies `secrets/mail.env`, upserts `/var/www/sisters-flowers/.env` with `EMAIL_ENABLED=true`, strips leftover Zoho host lines, restarts `sisters-flowers`, and sends test emails.
+
+## Manual keys
+
+Copy these into `/var/www/sisters-flowers/.env` (values from local `secrets/mail.env` — never commit passwords):
 
 ```bash
 EMAIL_ENABLED=true
@@ -24,7 +37,15 @@ MAIL_PUBLIC_SITE_URL=https://sistersflowers.vn
 MAIL_PREVIEW_TO=felsendorff@gmail.com,butchi0603@gmail.com,dinhlamhung50@gmail.com
 ```
 
-Then restart the app (systemd / `pm2` / deploy script).
+Or on the VPS after uploading `secrets/mail.env`:
+
+```bash
+ENV_FILE=/var/www/sisters-flowers/.env \
+MAIL_ENV_FILE=/tmp/sf-mail.env \
+EMAIL_ENABLED=true \
+node /var/www/sisters-flowers/scripts/apply-mail-env.mjs
+systemctl restart sisters-flowers
+```
 
 Verify:
 
@@ -33,4 +54,4 @@ cd /var/www/sisters-flowers
 node --env-file=.env --import tsx scripts/send-test-emails.mjs
 ```
 
-Remove any leftover `smtp.zoho.com` / Zoho passwords from the same `.env`.
+Remove any leftover `smtp.zoho.com` / Zoho passwords from the same `.env` (the apply script strips Zoho host lines automatically).
