@@ -4,8 +4,10 @@ type OrderCustomerCopy = {
   subject: (ref: string) => string;
   preheader: (ref: string) => string;
   heading: string;
-  intro: (name: string) => string;
+  /** name, optional branch/city label for body copy */
+  intro: (name: string, branch?: string | null) => string;
   statusNote: string;
+  branchLabel: string;
   itemsLabel: string;
   totalLabel: string;
   deliveryLabel: string;
@@ -20,8 +22,8 @@ type OrderCustomerCopy = {
 type OrderStudioCopy = {
   subject: (ref: string, name: string) => string;
   preheader: (ref: string) => string;
-  heading: string;
-  intro: string;
+  heading: (branch?: string | null) => string;
+  intro: (branch?: string | null) => string;
   openAdmin: string;
 };
 
@@ -42,10 +44,13 @@ const orderCustomer: Record<Locale, OrderCustomerCopy> = {
     subject: (ref) => `Sisters Flowers — đã nhận đơn ${ref}`,
     preheader: (ref) => `Cảm ơn bạn. Mã đơn ${ref}.`,
     heading: "Đã nhận đơn của bạn",
-    intro: (name) =>
-      `Xin chào ${name || "bạn"}, cảm ơn bạn đã đặt hoa tại Sisters Flowers.`,
+    intro: (name, branch) =>
+      branch
+        ? `Xin chào ${name || "bạn"}, cảm ơn bạn đã đặt hoa tại Sisters Flowers — chi nhánh ${branch}.`
+        : `Xin chào ${name || "bạn"}, cảm ơn bạn đã đặt hoa tại Sisters Flowers.`,
     statusNote:
       "Studio sẽ sớm xác nhận chi tiết và hướng dẫn thanh toán. Đây chưa phải biên lai thanh toán.",
+    branchLabel: "Chi nhánh",
     itemsLabel: "Sản phẩm",
     totalLabel: "Tạm tính",
     deliveryLabel: "Giao hàng",
@@ -54,16 +59,19 @@ const orderCustomer: Record<Locale, OrderCustomerCopy> = {
     dateLabel: "Ngày / giờ giao",
     notesLabel: "Ghi chú",
     cta: "Xem cửa hàng",
-    footer: "Da Nang & Da Lat · sistersflowers.vn",
+    footer: "Đà Nẵng & Đà Lạt · sistersflowers.vn",
   },
   en: {
     subject: (ref) => `Sisters Flowers — order received ${ref}`,
     preheader: (ref) => `Thank you. Reference ${ref}.`,
     heading: "We received your order",
-    intro: (name) =>
-      `Hi ${name || "there"}, thank you for ordering with Sisters Flowers.`,
+    intro: (name, branch) =>
+      branch
+        ? `Hi ${name || "there"}, thank you for ordering with Sisters Flowers — ${branch} branch.`
+        : `Hi ${name || "there"}, thank you for ordering with Sisters Flowers.`,
     statusNote:
       "The studio will confirm details and arrange payment shortly. This is not a payment receipt yet.",
+    branchLabel: "Branch",
     itemsLabel: "Items",
     totalLabel: "Subtotal",
     deliveryLabel: "Delivery",
@@ -79,8 +87,12 @@ const orderCustomer: Record<Locale, OrderCustomerCopy> = {
 const orderStudio: OrderStudioCopy = {
   subject: (ref, name) => `New order ${ref} — ${name}`,
   preheader: (ref) => `New Sisters Flowers order ${ref}`,
-  heading: "New shop order",
-  intro: "A customer submitted a new order. Full details below.",
+  heading: (branch) =>
+    branch ? `New shop order — ${branch}` : "New shop order",
+  intro: (branch) =>
+    branch
+      ? `A customer submitted a new order for the ${branch} branch. Full details below — do not mix with the other city.`
+      : "A customer submitted a new order. Full details below.",
   openAdmin: "Open admin orders",
 };
 
@@ -152,8 +164,10 @@ export function orderStatusCopy(locale: Locale, status: string) {
     return {
       subject: (ref: string) => `Sisters Flowers — order ${ref} update`,
       heading: "Order status update",
-      intro: (name: string) =>
-        `Hi ${name || "there"}, your order is now ${label}.`,
+      intro: (name: string, branch?: string | null) =>
+        branch
+          ? `Hi ${name || "there"}, your ${branch} order is now ${label}.`
+          : `Hi ${name || "there"}, your order is now ${label}.`,
       support: "Questions? Reply to this email or write info@sistersflowers.vn.",
       footer: "Da Nang & Da Lat · sistersflowers.vn",
     };
@@ -161,8 +175,10 @@ export function orderStatusCopy(locale: Locale, status: string) {
   return {
     subject: (ref: string) => `Sisters Flowers — cập nhật đơn ${ref}`,
     heading: "Cập nhật trạng thái đơn",
-    intro: (name: string) =>
-      `Xin chào ${name || "bạn"}, đơn hàng của bạn hiện ${label}.`,
+    intro: (name: string, branch?: string | null) =>
+      branch
+        ? `Xin chào ${name || "bạn"}, đơn ${branch} của bạn hiện ${label}.`
+        : `Xin chào ${name || "bạn"}, đơn hàng của bạn hiện ${label}.`,
     support: "Cần hỗ trợ? Trả lời email này hoặc liên hệ info@sistersflowers.vn.",
     footer: "Đà Nẵng & Đà Lạt · sistersflowers.vn",
   };
@@ -173,24 +189,30 @@ export function inquiryCopy(locale: Locale) {
     return {
       ackSubject: "We received your Sisters Flowers request",
       ackHeading: "Thank you for writing",
-      ackIntro: (name: string) =>
-        `Hi ${name || "there"}, we received your request and will reply soon.`,
+      ackIntro: (name: string, branch?: string | null) =>
+        branch
+          ? `Hi ${name || "there"}, we received your request for our ${branch} studio and will reply soon.`
+          : `Hi ${name || "there"}, we received your request and will reply soon.`,
       ackBody: "Our studio team reads every message. WhatsApp remains available for urgent arrangements.",
       studioSubject: (variant: string, name: string) =>
         `New ${variant} inquiry — ${name}`,
-      studioHeading: "New customer inquiry",
+      studioHeading: (branch?: string | null) =>
+        branch ? `New customer inquiry — ${branch}` : "New customer inquiry",
     };
   }
   return {
     ackSubject: "Sisters Flowers đã nhận yêu cầu của bạn",
     ackHeading: "Cảm ơn bạn đã liên hệ",
-    ackIntro: (name: string) =>
-      `Xin chào ${name || "bạn"}, chúng tôi đã nhận yêu cầu và sẽ phản hồi sớm.`,
+    ackIntro: (name: string, branch?: string | null) =>
+      branch
+        ? `Xin chào ${name || "bạn"}, chúng tôi đã nhận yêu cầu cho studio ${branch} và sẽ phản hồi sớm.`
+        : `Xin chào ${name || "bạn"}, chúng tôi đã nhận yêu cầu và sẽ phản hồi sớm.`,
     ackBody:
       "Studio đọc mọi tin nhắn. Nếu cần gấp, bạn vẫn có thể nhắn WhatsApp.",
     studioSubject: (variant: string, name: string) =>
       `Yêu cầu ${variant} mới — ${name}`,
-    studioHeading: "Yêu cầu khách hàng mới",
+    studioHeading: (branch?: string | null) =>
+      branch ? `Yêu cầu khách hàng mới — ${branch}` : "Yêu cầu khách hàng mới",
   };
 }
 

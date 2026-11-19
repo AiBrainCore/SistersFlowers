@@ -82,19 +82,28 @@ function withCityTag(subject: string, citySlug?: string | null) {
 function cityRow(
   locale: Locale,
   citySlug?: string | null,
+  branchLabel?: string,
 ): Array<[string, string]> {
   const label = cityLabel(citySlug, locale);
   if (!label) return [];
-  return [[locale === "vi" ? "Studio" : "Studio", escapeHtml(label)]];
+  const key =
+    branchLabel || (locale === "vi" ? "Chi nhánh" : "Branch");
+  return [
+    [
+      key,
+      `<strong style="color:#C24712;">${escapeHtml(label)}</strong>`,
+    ],
+  ];
 }
 
 export function buildOrderCustomerEmail(payload: OrderMailPayload) {
   const c = orderCustomerCopy(payload.locale);
+  const branch = cityLabel(payload.citySlug, payload.locale);
   const when = [payload.deliveryDate, payload.deliveryTime]
     .filter(Boolean)
     .join(" · ");
   const rows: Array<[string, string]> = [
-    ...cityRow(payload.locale, payload.citySlug),
+    ...cityRow(payload.locale, payload.citySlug, c.branchLabel),
     ["Ref", escapeHtml(payload.reference)],
     [c.phoneLabel, escapeHtml(payload.phone)],
     [c.addressLabel, escapeHtml(payload.address)],
@@ -112,7 +121,7 @@ export function buildOrderCustomerEmail(payload: OrderMailPayload) {
 
   const body = [
     mailHeading(c.heading),
-    mailParagraph(escapeHtml(c.intro(payload.customerName))),
+    mailParagraph(escapeHtml(c.intro(payload.customerName, branch))),
     mailMuted(escapeHtml(c.statusNote)),
     mailDetailTable(rows),
     `<p style="margin:16px 0 6px;font-size:13px;color:#6b635c;text-align:center;">${escapeHtml(c.itemsLabel)}</p>`,
@@ -166,8 +175,8 @@ export function buildOrderStudioEmail(payload: OrderMailPayload) {
   }
 
   const body = [
-    mailHeading(c.heading),
-    mailParagraph(escapeHtml(c.intro)),
+    mailHeading(c.heading(city === "—" ? null : city)),
+    mailParagraph(escapeHtml(c.intro(city === "—" ? null : city))),
     mailDetailTable(rows),
     `<p style="margin:16px 0 6px;font-size:13px;color:#6b635c;text-align:center;">Items</p>`,
     `<table role="presentation" width="100%" cellpadding="0" cellspacing="0">${itemsHtml(payload.items, "en")}</table>`,
@@ -247,14 +256,19 @@ export function buildOrderStatusEmail(input: {
   email?: string | null;
 }) {
   const c = orderStatusCopy(input.locale, input.status);
+  const branch = cityLabel(input.citySlug, input.locale);
   const rows: Array<[string, string]> = [
-    ...cityRow(input.locale, input.citySlug),
+    ...cityRow(
+      input.locale,
+      input.citySlug,
+      input.locale === "vi" ? "Chi nhánh" : "Branch",
+    ),
     ["Ref", escapeHtml(input.reference)],
     ["Status", escapeHtml(input.status)],
   ];
   const body = [
     mailHeading(c.heading),
-    mailParagraph(escapeHtml(c.intro(input.customerName))),
+    mailParagraph(escapeHtml(c.intro(input.customerName, branch))),
     mailDetailTable(rows),
     mailMuted(escapeHtml(c.support)),
   ].join("\n");
@@ -274,7 +288,10 @@ export function buildInquiryStudioEmail(payload: InquiryMailPayload) {
   const c = inquiryCopy("en");
   const city = cityLabel(payload.citySlug, "en") || "—";
   const rows: Array<[string, string]> = [
-    ["City", `<strong>${escapeHtml(city)}</strong>`],
+    [
+      "Branch",
+      `<strong style="color:#C24712;">${escapeHtml(city)}</strong>`,
+    ],
     ["Type", escapeHtml(payload.variant)],
     ["Name", escapeHtml(payload.name)],
     ["Email", escapeHtml(payload.email)],
@@ -284,8 +301,16 @@ export function buildInquiryStudioEmail(payload: InquiryMailPayload) {
     ["Venue", escapeHtml(payload.venue || "—")],
     ["Message", escapeHtml(payload.message)],
   ];
+  const heading = c.studioHeading(city === "—" ? null : city);
   const body = [
-    mailHeading(c.studioHeading),
+    mailHeading(heading),
+    mailParagraph(
+      escapeHtml(
+        city === "—"
+          ? "A customer sent a new inquiry. Details below."
+          : `A customer sent a new inquiry for the ${city} branch. Details below — do not mix with the other city.`,
+      ),
+    ),
     mailDetailTable(rows),
     mailButton(mailPublicSiteUrl("/admin/inquiries"), "Open inquiries"),
   ].join("\n");
@@ -296,7 +321,7 @@ export function buildInquiryStudioEmail(payload: InquiryMailPayload) {
     ),
     html: renderMailLayout({
       bodyHtml: body,
-      preheader: c.studioHeading,
+      preheader: heading,
       citySlug: payload.citySlug,
       locale: "en",
       toEmail: MAILBOX.studioInbox,
@@ -306,10 +331,21 @@ export function buildInquiryStudioEmail(payload: InquiryMailPayload) {
 
 export function buildInquiryAckEmail(payload: InquiryMailPayload) {
   const c = inquiryCopy(payload.locale);
+  const branch = cityLabel(payload.citySlug, payload.locale);
   const body = [
     mailHeading(c.ackHeading),
-    mailParagraph(escapeHtml(c.ackIntro(payload.name))),
+    mailParagraph(escapeHtml(c.ackIntro(payload.name, branch))),
     mailParagraph(escapeHtml(c.ackBody)),
+    ...(branch
+      ? [
+          mailDetailTable([
+            [
+              payload.locale === "vi" ? "Chi nhánh" : "Branch",
+              `<strong style="color:#C24712;">${escapeHtml(branch)}</strong>`,
+            ],
+          ]),
+        ]
+      : []),
     mailButton(
       mailPublicSiteUrl(`/${payload.locale}/shop`),
       payload.locale === "vi" ? "Xem cửa hàng" : "Browse shop",

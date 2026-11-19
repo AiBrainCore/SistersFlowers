@@ -166,7 +166,10 @@ export async function confirmShopPaymentAction(formData: FormData) {
   }
 
   try {
-    const order = await prisma.order.findUnique({ where: { id: orderId } });
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+      include: { branch: { include: { city: true } } },
+    });
     if (order?.email) {
       const { notifyOrderStatusEmail } = await import("@/lib/mail/order-notify");
       await notifyOrderStatusEmail({
@@ -176,6 +179,7 @@ export async function confirmShopPaymentAction(formData: FormData) {
         status: "accepted",
         customerName: order.customerName,
         email: order.email,
+        citySlug: order.branch?.city.slug || null,
       });
     }
   } catch (error) {
@@ -320,7 +324,10 @@ export async function updateShopOrderStatusAction(formData: FormData) {
 
   const order = await prisma.order.findUnique({
     where: { id: orderId },
-    include: { fulfillmentChecklist: true },
+    include: {
+      fulfillmentChecklist: true,
+      branch: { include: { city: true } },
+    },
   });
   if (!order) redirect("/admin/orders");
 
@@ -377,6 +384,7 @@ export async function updateShopOrderStatusAction(formData: FormData) {
         status: mailStatus,
         customerName: order.customerName,
         email: order.email,
+        citySlug: order.branch?.city.slug || null,
       });
     }
   } catch (error) {
