@@ -1,5 +1,5 @@
 /**
- * Send branded SF sample emails via Zoho (info@ + orders@) using production mail builders.
+ * Send branded SF sample emails via P.A Vietnam / maychuemail SMTP.
  *
  * Usage:
  *   node --env-file=secrets/mail.env --import tsx scripts/send-test-emails.mjs
@@ -33,7 +33,7 @@ const FROM_ORDERS = process.env.MAIL_FROM_ORDERS || "orders@sistersflowers.vn";
 const FROM_NAME = process.env.MAIL_FROM_NAME || "Sisters Flowers";
 
 function smtpFor(identity) {
-  const host = process.env.SMTP_HOST || "smtp.zoho.com";
+  const host = process.env.SMTP_HOST || "mail9234.maychuemail.com";
   const port = Number(process.env.SMTP_PORT || "465");
   const secure =
     process.env.SMTP_SECURE != null

@@ -41,7 +41,9 @@ Separate **Implemented** · **Configured** · **Live & verified**.
 
 ## Notifications
 
-- [ ] SMTP / Zoho credentials present for studio + customer mail
+- [ ] P.A Vietnam / maychuemail SMTP on VPS (`mail9234.maychuemail.com:465`)
+- [ ] Domain MX + SPF (remove Zoho MX); DKIM from P.A when provided
+- [ ] Test send OK → set `EMAIL_ENABLED=true`
 - [ ] Studio inbox routing by city verified
 - [ ] Failed sends do not delete orders
 - [ ] Optional: set `CRON_SECRET` and schedule `POST /api/cron/notifications` every few minutes
