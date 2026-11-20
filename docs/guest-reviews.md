@@ -29,6 +29,15 @@ Google may resolve that to a **different flower shop** (e.g. Lily’s Flower). D
 | **Places API Place Details** | Up to **5** reviews per place + rating/count | Paid SKU; needs Place ID |
 | **Embed widgets** | Often more reviews via their cache | Third-party |
 
+### Current Place IDs
+
+| City | Status | Place ID |
+| --- | --- | --- |
+| **Da Lat** | Live GBP “Sisters Flowers Shop” (~4.8★ / 21) | `ChIJD3G8K7YTcTERRCQM8wSngQc` |
+| **Da Nang** | No public Sisters listing found under that name | — (Facebook CTA until created) |
+
+Searches for Da Nang phone `0327453536`, Facebook `sistersflowers.Danang`, and `53 Lương Nhữ Hộc` do **not** open a Sisters GBP — only Da Lat or unrelated florists. Create/claim a Da Nang Google Business Profile, then paste its Place ID into `STUDIO_GOOGLE_PROFILES`.
+
 ### Adding Place IDs (required for Google badges)
 
 1. Open the **correct** Sisters listing in Google Maps (your GBP).

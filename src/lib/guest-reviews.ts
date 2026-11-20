@@ -84,20 +84,26 @@ function studioBySlug(slug: "dalat" | "danang") {
 
 /**
  * Studio review / Maps targets.
- * Set `placeId` from the correct Sisters GBP listing before enabling Google badges.
+ *
+ * Da Lat — verified GBP “Sisters Flowers Shop”
+ *   https://www.google.com/maps/place/?q=place_id:ChIJD3G8K7YTcTERRCQM8wSngQc
+ *   (also 0x317113b62bbc710f:0x781a704f30c2444)
+ *
+ * Da Nang — no public Sisters GBP under that name (Maps searches for
+ * 0327453536 / sistersflowers.Danang / 53 Lương Nhữ Hộc all resolve to Da Lat
+ * or unrelated shops). Keep Facebook until a Da Nang Place ID exists.
  */
 export const STUDIO_GOOGLE_PROFILES: StudioGoogleProfile[] = [
   {
     slug: "dalat",
-    // placeId: "ChIJ…", // paste Da Lat Sisters Place ID
-    // rating: 4.8,
-    // reviewCount: 22,
+    placeId: "ChIJD3G8K7YTcTERRCQM8wSngQc",
+    rating: 4.8,
+    reviewCount: 21,
     mapsUrl: studioMapsUrl(studioBySlug("dalat")),
     facebookUrl: studioBySlug("dalat").socials.facebook,
   },
   {
     slug: "danang",
-    // placeId: "ChIJ…", // paste Da Nang Sisters Place ID — do NOT fuzzy-search
     mapsUrl: studioMapsUrl(studioBySlug("danang")),
     facebookUrl: studioBySlug("danang").socials.facebook,
   },
@@ -106,7 +112,7 @@ export const STUDIO_GOOGLE_PROFILES: StudioGoogleProfile[] = [
 /** Google listing URL only when Place ID is known. */
 export function studioGoogleListingUrl(profile: StudioGoogleProfile) {
   if (!profile.placeId) return null;
-  return `https://www.google.com/maps/search/?api=1&query_place_id=${encodeURIComponent(profile.placeId)}`;
+  return `https://www.google.com/maps/search/?api=1&query=Sisters+Flowers+Shop&query_place_id=${encodeURIComponent(profile.placeId)}`;
 }
 
 /**

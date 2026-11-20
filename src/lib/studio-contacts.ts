@@ -68,8 +68,9 @@ export const STUDIO_CONTACTS: StudioContact[] = [
     nameVi: "Đà Lạt",
     addressEn: "04 Chi Lang, Ward 9, Da Lat, Lam Dong",
     addressVi: "Số 04 Chi Lăng, P. 9, TP. Đà Lạt, Lâm Đồng",
-    lat: 11.95423,
-    lng: 108.46948,
+    // Pin matches live GBP “Sisters Flowers Shop” (Thi Sách / Cam Ly area).
+    lat: 11.949064,
+    lng: 108.431574,
     image: "/home/studio-dalat.jpg",
     primaryDigits: "84904985761",
     phones: [
