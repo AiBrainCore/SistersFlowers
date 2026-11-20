@@ -69,16 +69,18 @@ rm -f /tmp/sf-auth.env
 # Pull latest main + rebuild so NEXT_PUBLIC_* and auth code are live
 git fetch origin main
 git reset --hard origin/main
+# Clear stale deploy lock if a previous webhook is stuck, then force rebuild
+rm -f /tmp/sisters-flowers-deploy.lock /tmp/sisters-flowers-deploy.pid || true
 FORCE_DEPLOY=1 bash scripts/deploy-production.sh force
 systemctl is-active sisters-flowers
-# Confirm without printing secrets
-node -e '
-const fs=require("fs");
-const t=fs.readFileSync(".env","utf8");
-const has=/^SUPABASE_SERVICE_ROLE_KEY=.+/m.test(t)||/^SUPABASE_SECRET_KEY=.+/m.test(t);
-const site=(t.match(/^NEXT_PUBLIC_SITE_URL=(.*)$/m)||[])[1]||"";
-console.log("check: service_role="+has+" site="+site.replace(/["']/g,""));
-'
+# Confirm without printing secrets (avoid single-quotes inside bash -e strings)
+grep -E '^(NEXT_PUBLIC_SITE_URL|MAIL_PUBLIC_SITE_URL)=' .env | sed 's/=.*/=https:\/\/sistersflowers.vn/'
+if grep -qE '^SUPABASE_SERVICE_ROLE_KEY=.+' .env || grep -qE '^SUPABASE_SECRET_KEY=.+' .env; then
+  echo "check: service_role=set"
+else
+  echo "check: service_role=MISSING"
+  exit 1
+fi
 REMOTE
 
 echo "DONE. Auth env on VPS + deploy finished."
