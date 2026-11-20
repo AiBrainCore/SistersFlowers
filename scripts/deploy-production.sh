@@ -5,8 +5,9 @@
 #   bash scripts/deploy-production.sh force     # always rebuild (webhook / recovery)
 #   FORCE_DEPLOY=1 bash scripts/deploy-production.sh
 #
-# Atomic build: never delete the live .next until the new build is ready.
-# Stale locks (>25m) are cleared so a hung npm build cannot brick forever.
+# True zero-downtime-during-build: compile into .next.new via NEXT_DIST_DIR so
+# the live `.next` stays on disk the whole time. Swap + restart only after
+# Build OK. Stale locks (>25m) are cleared so a hung npm build cannot brick forever.
 set -euo pipefail
 
 APP_DIR="${APP_DIR:-/var/www/sisters-flowers}"
@@ -81,47 +82,50 @@ trap 'rm -f "$LOCK_PID_FILE"' EXIT
   # Seed + prerender need more than one pooled connection.
   if [ -f .env ] && grep -q 'connection_limit=1' .env; then
     sed -i 's/connection_limit=1/connection_limit=5/g' .env
+    echo "Raised DATABASE_URL connection_limit 1 → 5 for build/runtime"
   fi
 
   npm ci || npm install
   npx prisma generate
 
-  # Build into a sidecar directory so the live site keeps working if build fails.
-  export NEXT_BUILD_DIR=".next.new"
+  # Build into a sidecar distDir — live `.next` keeps serving throughout.
+  export NEXT_DIST_DIR=".next.new"
   rm -rf .next.new
-  mkdir -p .next.new
-  # Next always writes to .next — build there in an isolated copy tree via rename dance:
-  # 1) move live .next aside (keep as fallback)
-  # 2) build fresh .next
-  # 3) on success discard fallback; on failure restore fallback
-  LIVE_BACKUP=""
-  if [ -d .next ]; then
-    LIVE_BACKUP=".next.live.bak"
-    rm -rf "$LIVE_BACKUP"
-    mv .next "$LIVE_BACKUP"
-    echo "Parked live build at $LIVE_BACKUP"
-  fi
+  echo "Building into $NEXT_DIST_DIR (live .next untouched)"
 
   set +e
   NODE_OPTIONS='--max-old-space-size=2048' npm run build
   BUILD_RC=$?
   set -e
 
-  if [ "$BUILD_RC" -ne 0 ] || [ ! -f .next/BUILD_ID ] || [ ! -d .next/static ]; then
-    echo "ERROR: next build failed (rc=$BUILD_RC) or missing .next/static"
-    rm -rf .next
-    if [ -n "$LIVE_BACKUP" ] && [ -d "$LIVE_BACKUP" ]; then
-      mv "$LIVE_BACKUP" .next
-      echo "Restored previous .next — live assets preserved"
-    fi
+  if [ "$BUILD_RC" -ne 0 ] || [ ! -f .next.new/BUILD_ID ] || [ ! -d .next.new/static ]; then
+    echo "ERROR: next build failed (rc=$BUILD_RC) or missing .next.new/static"
+    rm -rf .next.new
+    echo "Live .next left in place — site should still be up"
     exit 1
   fi
 
-  rm -rf "$LIVE_BACKUP" .next.new
-  echo "Build OK ($(cat .next/BUILD_ID))"
-
-  systemctl restart sisters-flowers
+  echo "Build OK ($(cat .next.new/BUILD_ID)) — swapping into place"
+  # Brief cutover: stop → swap → start so nothing reads a half-moved tree.
+  systemctl stop sisters-flowers || true
+  rm -rf .next.prev
+  if [ -d .next ]; then
+    mv .next .next.prev
+  fi
+  mv .next.new .next
+  systemctl start sisters-flowers
   sleep 2
+  if ! systemctl is-active --quiet sisters-flowers; then
+    echo "ERROR: service failed to start after swap — restoring previous .next"
+    systemctl stop sisters-flowers || true
+    rm -rf .next
+    if [ -d .next.prev ]; then
+      mv .next.prev .next
+    fi
+    systemctl start sisters-flowers || true
+    exit 1
+  fi
+  rm -rf .next.prev
   systemctl --no-pager --full status sisters-flowers | head -15
 
   # Prefer nginx disk static when the HTTPS vhost still proxies /_next/static to Node.

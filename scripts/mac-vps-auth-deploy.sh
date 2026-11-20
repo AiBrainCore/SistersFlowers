@@ -51,8 +51,13 @@ if [ -f .env ] && grep -q 'connection_limit=1' .env; then
   sed -i 's/connection_limit=1/connection_limit=5/g' .env
 fi
 npm ci || npm install
-NODE_OPTIONS='--max-old-space-size=2048' npm run build
-systemctl restart sisters-flowers
+# Prefer the atomic deploy path (sidecar .next.new) when available.
+if [ -f scripts/deploy-production.sh ]; then
+  FORCE_DEPLOY=1 bash scripts/deploy-production.sh force
+else
+  NODE_OPTIONS='--max-old-space-size=2048' npm run build
+  systemctl restart sisters-flowers
+fi
 sleep 2
 systemctl is-active sisters-flowers
 curl -sS -o /dev/null -w "local_register:%{http_code}\n" --max-time 20 http://127.0.0.1:3000/vi/account/register || true

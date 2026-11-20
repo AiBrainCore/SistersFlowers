@@ -1,6 +1,14 @@
 import type { NextConfig } from "next";
 
+/**
+ * Production deploys set NEXT_DIST_DIR=.next.new so `next build` never
+ * removes the live `.next` the running Node process is serving.
+ * Cutover swaps directories only after a successful build.
+ */
+const distDir = process.env.NEXT_DIST_DIR?.trim() || ".next";
+
 const nextConfig: NextConfig = {
+  distDir,
   images: {
     // Serve responsive WebP/AVIF via /_next/image — PageSpeed was serving
     // multi‑MB originals because unoptimized bypassed all resizing.
@@ -25,7 +33,9 @@ const nextConfig: NextConfig = {
   experimental: {
     cpus: 1,
     workerThreads: false,
-    staticGenerationMaxConcurrency: 2,
+    // Keep prerender concurrency low — Supabase pooler + connection_limit
+    // otherwise trips Prisma P2024 during sitemap/static export.
+    staticGenerationMaxConcurrency: 1,
     staticGenerationMinPagesPerWorker: 50,
   },
   // Keep Prisma schema + SQLite assets available in the Node server bundle (Hostinger).
