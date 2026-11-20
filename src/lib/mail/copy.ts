@@ -49,7 +49,7 @@ const orderCustomer: Record<Locale, OrderCustomerCopy> = {
         ? `Xin chào ${name || "bạn"}, cảm ơn bạn đã đặt hoa tại Sisters Flowers — chi nhánh ${branch}.`
         : `Xin chào ${name || "bạn"}, cảm ơn bạn đã đặt hoa tại Sisters Flowers.`,
     statusNote:
-      "Studio sẽ sớm xác nhận chi tiết và hướng dẫn thanh toán. Đây chưa phải biên lai thanh toán.",
+      "Studio sẽ sớm xác nhận chi tiết và hướng dẫn thanh toán. Đây chưa phải biên lai thanh toán. Nếu cần gấp — nhắn Zalo hoặc WhatsApp.",
     branchLabel: "Chi nhánh",
     itemsLabel: "Sản phẩm",
     totalLabel: "Tạm tính",
@@ -58,7 +58,7 @@ const orderCustomer: Record<Locale, OrderCustomerCopy> = {
     phoneLabel: "Điện thoại",
     dateLabel: "Ngày / giờ giao",
     notesLabel: "Ghi chú",
-    cta: "Xem cửa hàng",
+    cta: "Xem đơn hàng",
     footer: "Đà Nẵng & Đà Lạt · sistersflowers.vn",
   },
   en: {
@@ -70,7 +70,7 @@ const orderCustomer: Record<Locale, OrderCustomerCopy> = {
         ? `Hi ${name || "there"}, thank you for ordering with Sisters Flowers — ${branch} branch.`
         : `Hi ${name || "there"}, thank you for ordering with Sisters Flowers.`,
     statusNote:
-      "The studio will confirm details and arrange payment shortly. This is not a payment receipt yet.",
+      "The studio will confirm details and arrange payment shortly. This is not a payment receipt yet. For anything urgent, message us on Zalo or WhatsApp.",
     branchLabel: "Branch",
     itemsLabel: "Items",
     totalLabel: "Subtotal",
@@ -79,7 +79,7 @@ const orderCustomer: Record<Locale, OrderCustomerCopy> = {
     phoneLabel: "Phone",
     dateLabel: "Delivery date / time",
     notesLabel: "Notes",
-    cta: "Browse the shop",
+    cta: "View your order",
     footer: "Da Nang & Da Lat · sistersflowers.vn",
   },
 };
@@ -168,7 +168,8 @@ export function orderStatusCopy(locale: Locale, status: string) {
         branch
           ? `Hi ${name || "there"}, your ${branch} order is now ${label}.`
           : `Hi ${name || "there"}, your order is now ${label}.`,
-      support: "Questions? Reply to this email or write info@sistersflowers.vn.",
+      support:
+        "Questions? Reply to this email, or message us on Zalo or WhatsApp for anything urgent.",
       footer: "Da Nang & Da Lat · sistersflowers.vn",
     };
   }
@@ -179,7 +180,8 @@ export function orderStatusCopy(locale: Locale, status: string) {
       branch
         ? `Xin chào ${name || "bạn"}, đơn ${branch} của bạn hiện ${label}.`
         : `Xin chào ${name || "bạn"}, đơn hàng của bạn hiện ${label}.`,
-    support: "Cần hỗ trợ? Trả lời email này hoặc liên hệ info@sistersflowers.vn.",
+    support:
+      "Cần hỗ trợ? Trả lời email này, hoặc nếu gấp — nhắn Zalo hoặc WhatsApp.",
     footer: "Đà Nẵng & Đà Lạt · sistersflowers.vn",
   };
 }
@@ -193,7 +195,8 @@ export function inquiryCopy(locale: Locale) {
         branch
           ? `Hi ${name || "there"}, we received your request for our ${branch} studio and will reply soon.`
           : `Hi ${name || "there"}, we received your request and will reply soon.`,
-      ackBody: "Our studio team reads every message. WhatsApp remains available for urgent arrangements.",
+      ackBody:
+        "Our studio team reads every message. For anything urgent, message us on Zalo or WhatsApp.",
       studioSubject: (variant: string, name: string) =>
         `New ${variant} inquiry — ${name}`,
       studioHeading: (branch?: string | null) =>
@@ -208,7 +211,7 @@ export function inquiryCopy(locale: Locale) {
         ? `Xin chào ${name || "bạn"}, chúng tôi đã nhận yêu cầu cho studio ${branch} và sẽ phản hồi sớm.`
         : `Xin chào ${name || "bạn"}, chúng tôi đã nhận yêu cầu và sẽ phản hồi sớm.`,
     ackBody:
-      "Studio đọc mọi tin nhắn. Nếu cần gấp, bạn vẫn có thể nhắn WhatsApp.",
+      "Studio đọc mọi tin nhắn. Nếu cần gấp, hãy nhắn Zalo hoặc WhatsApp.",
     studioSubject: (variant: string, name: string) =>
       `Yêu cầu ${variant} mới — ${name}`,
     studioHeading: (branch?: string | null) =>

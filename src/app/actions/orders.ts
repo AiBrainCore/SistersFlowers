@@ -271,6 +271,21 @@ export async function submitOrderAction(
 
   try {
     const { notifyOrderEmails } = await import("@/lib/mail/order-notify");
+    const productSlugs = Array.from(
+      new Set(
+        itemsData
+          .filter((item) => item.kind === "product")
+          .map((item) => item.slug),
+      ),
+    );
+    const skuRows =
+      productSlugs.length > 0
+        ? await prisma.product.findMany({
+            where: { slug: { in: productSlugs } },
+            select: { slug: true, sku: true },
+          })
+        : [];
+    const skuBySlug = new Map(skuRows.map((row) => [row.slug, row.sku]));
     await notifyOrderEmails({
       locale: payload.locale === "en" ? "en" : "vi",
       reference,
@@ -291,6 +306,10 @@ export async function submitOrderAction(
         name: item.name,
         qty: item.qty,
         price: item.price,
+        sku:
+          skuBySlug.get(item.slug) ||
+          (item.kind === "partner" ? item.voucherCode : null) ||
+          null,
       })),
     });
   } catch (error) {

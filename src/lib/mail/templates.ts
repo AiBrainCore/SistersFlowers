@@ -29,6 +29,8 @@ export type OrderMailItem = {
   name: string;
   qty: number;
   price: number;
+  /** Catalog SKU when known — shown so similar names stay distinguishable */
+  sku?: string | null;
 };
 
 export type OrderMailPayload = {
@@ -64,14 +66,28 @@ export type InquiryMailPayload = {
 
 function itemsHtml(items: OrderMailItem[], locale: Locale) {
   return items
-    .map(
-      (item) =>
-        `<tr>
-  <td style="padding:8px 0;border-bottom:1px solid #e8d9cc;">${escapeHtml(item.name)} × ${item.qty}</td>
-  <td align="right" style="padding:8px 0;border-bottom:1px solid #e8d9cc;white-space:nowrap;">${escapeHtml(formatVnd(item.price * item.qty, locale))}</td>
-</tr>`,
-    )
+    .map((item) => {
+      const sku = item.sku?.trim();
+      const nameLine = `${escapeHtml(item.name)} × ${item.qty}`;
+      const skuLine = sku
+        ? `<div style="margin-top:2px;font-size:12px;letter-spacing:0.04em;color:#6b635c;">SKU ${escapeHtml(sku)}</div>`
+        : "";
+      return `<tr>
+  <td style="padding:8px 0;border-bottom:1px solid #e8d9cc;vertical-align:top;">${nameLine}${skuLine}</td>
+  <td align="right" style="padding:8px 0;border-bottom:1px solid #e8d9cc;white-space:nowrap;vertical-align:top;">${escapeHtml(formatVnd(item.price * item.qty, locale))}</td>
+</tr>`;
+    })
     .join("");
+}
+
+function customerOrderUrl(locale: Locale, reference: string) {
+  const ref = encodeURIComponent(reference);
+  return mailPublicSiteUrl(`/${locale}/checkout/success?ref=${ref}`);
+}
+
+function studioOrderUrl(orderId?: string | null) {
+  if (orderId) return mailPublicSiteUrl(`/admin/orders/${orderId}`);
+  return mailPublicSiteUrl("/admin/orders");
 }
 
 function withCityTag(subject: string, citySlug?: string | null) {
@@ -126,7 +142,10 @@ export function buildOrderCustomerEmail(payload: OrderMailPayload) {
     mailDetailTable(rows),
     `<p style="margin:16px 0 6px;font-size:13px;color:#6b635c;text-align:center;">${escapeHtml(c.itemsLabel)}</p>`,
     `<table role="presentation" width="100%" cellpadding="0" cellspacing="0">${itemsHtml(payload.items, payload.locale)}</table>`,
-    mailButton(mailPublicSiteUrl(`/${payload.locale}/shop`), c.cta),
+    mailButton(
+      customerOrderUrl(payload.locale, payload.reference),
+      c.cta,
+    ),
   ].join("\n");
 
   return {
@@ -141,7 +160,9 @@ export function buildOrderCustomerEmail(payload: OrderMailPayload) {
   };
 }
 
-export function buildOrderStudioEmail(payload: OrderMailPayload) {
+export function buildOrderStudioEmail(
+  payload: OrderMailPayload & { orderId?: string },
+) {
   const c = orderStudioCopy();
   const studio = studioContactForCity(payload.citySlug);
   const city = cityLabel(payload.citySlug, "en") || "—";
@@ -180,7 +201,7 @@ export function buildOrderStudioEmail(payload: OrderMailPayload) {
     mailDetailTable(rows),
     `<p style="margin:16px 0 6px;font-size:13px;color:#6b635c;text-align:center;">Items</p>`,
     `<table role="presentation" width="100%" cellpadding="0" cellspacing="0">${itemsHtml(payload.items, "en")}</table>`,
-    mailButton(mailPublicSiteUrl("/admin/orders"), c.openAdmin),
+    mailButton(studioOrderUrl(payload.orderId), c.openAdmin),
   ].join("\n");
 
   return {
@@ -271,6 +292,10 @@ export function buildOrderStatusEmail(input: {
     mailParagraph(escapeHtml(c.intro(input.customerName, branch))),
     mailDetailTable(rows),
     mailMuted(escapeHtml(c.support)),
+    mailButton(
+      customerOrderUrl(input.locale, input.reference),
+      input.locale === "vi" ? "Xem đơn hàng" : "View your order",
+    ),
   ].join("\n");
   return {
     subject: withCityTag(c.subject(input.reference), input.citySlug),
