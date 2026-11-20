@@ -2,36 +2,42 @@
 
 ## Do we translate quotes?
 
-**No.** A review is what a person wrote. Machine-translating it when the visitor switches EN↔VI can change meaning and looks fake. Only the section chrome (kicker, title, body, Google CTAs) is localized.
+**No.** A review is what a person wrote. Machine-translating it when the visitor switches EN↔VI can change meaning and looks fake. Only the section chrome (kicker, title, body, CTAs) is localized.
 
 Quotes live in `src/lib/guest-reviews.ts`, not in `src/i18n/messages/*`.
 
 ## Where can guests write a review?
 
-There is **no on-site review form** yet. Guests leave reviews on each studio’s **Google Business Profile** (Maps). The homepage shows a curated pool plus links to **see all / leave a review** on Google.
+There is **no on-site review form** yet.
+
+- **With Google Place ID set** → CTA opens Google `writereview` for that listing.
+- **Without Place ID** → CTA opens the studio **Facebook** page (safe fallback).
+
+### Never fuzzy-search the brand on Google Maps
+
+Do **not** use links like:
+
+`https://www.google.com/maps/search/?api=1&query=Sisters+Flowers+Da+Nang`
+
+Google may resolve that to a **different flower shop** (e.g. Lily’s Flower). Directions use **lat/lng pins** from `STUDIO_CONTACTS`. Google ratings / writereview only after a real `placeId`.
 
 ## Using Google’s 20+ reviews
 
 | Approach | What you get | Notes |
 | --- | --- | --- |
-| **Curated pool (current)** | Any 5★ quotes you paste, original language; daily rotate 3 on the homepage | Best quality control; paste real Google wording as you collect it |
-| **Places API Place Details** | Up to **5** reviews per place + rating/count | Not the full 22; paid Enterprise(+Atmosphere) SKU; must show Google attribution |
-| **Embed widgets** (Elfsight, etc.) | Often more reviews via their cache | Third-party cost + branding |
-| **GBP API** | Manage replies; not a free “pull all reviews for website” path for most shops | Overkill for display |
+| **Curated pool (current)** | Any 5★ quotes you paste, original language; daily rotate 3 | Paste real Google wording as you collect it |
+| **Places API Place Details** | Up to **5** reviews per place + rating/count | Paid SKU; needs Place ID |
+| **Embed widgets** | Often more reviews via their cache | Third-party |
 
-Practical pattern (what we use):
+### Adding Place IDs (required for Google badges)
 
-1. Keep a **curated 5★ pool** in original languages (VI + EN mixed on the page is fine).
-2. Show **rating badges** (manual snapshot until Places API) linking to Maps.
-3. CTA: **Leave a Google review** / **See on Google**.
-4. Later: set `placeId` on each studio in `STUDIO_GOOGLE_PROFILES`, then optionally sync rating + up to 5 live reviews via Places API.
-
-### Adding Place IDs
-
-1. Open the listing in Google Maps → Share → copy the place link, or use [Place ID Finder](https://developers.google.com/maps/documentation/javascript/examples/places-placeid-finder).
-2. Set `placeId` on the matching entry in `STUDIO_GOOGLE_PROFILES`.
-3. Write-review deep link becomes:  
+1. Open the **correct** Sisters listing in Google Maps (your GBP).
+2. Use [Place ID Finder](https://developers.google.com/maps/documentation/javascript/examples/places-placeid-finder) or copy the place link and extract the id.
+3. Set `placeId` (and optional `rating` / `reviewCount`) on that city in `STUDIO_GOOGLE_PROFILES`.
+4. Writereview becomes:  
    `https://search.google.com/local/writereview?placeid=…`
+
+Until then the homepage shows Facebook CTAs and address pins — not competitor listings.
 
 ### Adding a real Google quote
 

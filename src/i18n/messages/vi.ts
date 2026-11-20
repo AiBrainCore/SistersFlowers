@@ -150,8 +150,9 @@ export const vi = {
     reviewsViaGoogle: "Google",
     reviewsSeeGoogle: "Xem đánh giá Google",
     reviewsWritePrompt:
-      "Đã đặt hoa? Một đánh giá ngắn trên Google giúp khách sau tin tưởng hơn.",
-    reviewsLeaveGoogle: "Viết đánh giá",
+      "Đã đặt hoa? Một đánh giá ngắn trên trang studio giúp khách sau tin tưởng hơn.",
+    reviewsLeaveGoogle: "Viết đánh giá Google",
+    reviewsLeaveFacebook: "Viết đánh giá Facebook",
     dalatName: "Đà Lạt",
     dalatStatus: "Đang mở",
     dalatNote: "Số 04 Chi Lăng, P. 9, TP. Đà Lạt, Lâm Đồng",

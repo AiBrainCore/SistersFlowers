@@ -148,8 +148,10 @@ export const en = {
     reviewsOnGoogle: "on Google",
     reviewsViaGoogle: "Google",
     reviewsSeeGoogle: "Open Google reviews",
-    reviewsWritePrompt: "Been a guest? A short Google review helps the next person trust us.",
-    reviewsLeaveGoogle: "Leave a review",
+    reviewsWritePrompt:
+      "Been a guest? A short review on our studio page helps the next person trust us.",
+    reviewsLeaveGoogle: "Leave a Google review",
+    reviewsLeaveFacebook: "Leave a Facebook review",
     // Names kept for footer studio cards
     dalatName: "Da Lat",
     dalatStatus: "Open now",
