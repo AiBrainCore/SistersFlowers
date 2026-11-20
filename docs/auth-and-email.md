@@ -85,23 +85,44 @@ Do not use unencrypted ports 110/143/25.
 
 Project: `vztzjqodazcolxfcljsf` · region `ap-southeast-1`
 
-In Supabase dashboard:
+### Customer email signup flow (branded)
 
-1. Authentication → Providers → enable **Email**
-2. Enable **Google** → paste Google Cloud OAuth client ID/secret
-3. URL configuration / Redirect URLs allowlist:
-   - `https://sistersflowers.vn/auth/callback`
-   - `http://localhost:3000/auth/callback`
-4. Optional: Authentication → SMTP → same maychuemail SMTP so verify emails come from Sisters
+1. App registers via **Auth admin `generateLink({ type: "signup" })`** — Supabase does **not** send its default confirm mail
+2. App sends **Sisters Flowers** HTML verify mail (`info@…`, VI/EN by register locale)
+3. After the customer taps confirm → `/auth/callback` → **welcome** mail once
+
+Requires `SUPABASE_SERVICE_ROLE_KEY` on the VPS (same secret used for catalog uploads).
+
+Purge a test account so they can re-register:
+
+```bash
+node --env-file=secrets/supabase-service.env --env-file=.env.local \
+  scripts/purge-customer-auth.mjs someone@gmail.com
+```
+
+### Dashboard checklist
+
+1. Authentication → Providers → enable **Email** (+ **Google** if used)
+2. **URL configuration** (critical — wrong Site URL → confirm opens `localhost:3000`):
+   - Site URL: `https://sistersflowers.vn`
+   - Redirect URLs allowlist:
+     - `https://sistersflowers.vn/auth/callback`
+     - `https://sistersflowers.vn/**`
+     - `http://localhost:3000/auth/callback` (local only)
+3. You do **not** need Supabase Auth SMTP for signup confirm anymore (app sends verify/welcome). Optional SMTP there only if you still use Supabase-built recovery templates.
 
 App env (VPS + local) — deploy also runs `scripts/ensure-auth-env.mjs`:
 
 ```bash
 NEXT_PUBLIC_SUPABASE_URL=https://vztzjqodazcolxfcljsf.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_…
+SUPABASE_SERVICE_ROLE_KEY=sb_secret_…   # server only; never NEXT_PUBLIC_
 CUSTOMER_SESSION_SECRET=long-random
 NEXT_PUBLIC_SITE_URL=https://sistersflowers.vn
+MAIL_PUBLIC_SITE_URL=https://sistersflowers.vn
 ```
+
+`siteUrl()` ignores `localhost` in production and falls back to `https://sistersflowers.vn`.
 
 ## Zalo login
 

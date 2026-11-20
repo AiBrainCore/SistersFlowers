@@ -13,6 +13,7 @@ const UPDATES = {
   NEXT_PUBLIC_SUPABASE_ANON_KEY:
     "sb_publishable_K6M3oritixBYqPavJvyfjQ_dbSLyL5i",
   NEXT_PUBLIC_SITE_URL: "https://sistersflowers.vn",
+  MAIL_PUBLIC_SITE_URL: "https://sistersflowers.vn",
 };
 
 function upsert(text, key, value) {
