@@ -145,19 +145,13 @@ export const vi = {
     reviewsKicker: "Từ khách",
     reviewsTitle: "Tin cậy cho giao hoa địa phương.",
     reviewsBody:
-      "Vài lời từ người đã đặt hoa khách sạn, nhà riêng và dịp đặc biệt tại Việt Nam.",
-    review1Quote:
-      "Đặt từ nước ngoài giao khách sạn Đà Nẵng. Trả lời tiếng Anh rõ ràng, có ảnh trước khi giao, đúng giờ.",
-    review1Name: "Emma",
-    review1Meta: "Giao khách sạn · Đà Nẵng",
-    review2Quote:
-      "Bó hoa đẹp, gói tay tỉ mỉ. Tiệm xác nhận địa chỉ và giờ trên WhatsApp — dễ từ đầu đến cuối.",
-    review2Name: "Minh",
-    review2Meta: "Sinh nhật · Đà Lạt",
-    review3Quote:
-      "Cần hoa chào khách đến. Phối hợp lễ tân suôn sẻ, bó hoa đúng như ảnh.",
-    review3Name: "James",
-    review3Meta: "Hoa chào phòng · Đà Nẵng",
+      "Lời khách giữ nguyên ngôn ngữ họ viết — chúng tôi không dịch lại khi bạn đổi EN/VI. Nhiều đánh giá hơn nằm trên hồ sơ Google của tiệm.",
+    reviewsOnGoogle: "trên Google",
+    reviewsViaGoogle: "Google",
+    reviewsSeeGoogle: "Xem đánh giá Google",
+    reviewsWritePrompt:
+      "Đã đặt hoa? Một đánh giá ngắn trên Google giúp khách sau tin tưởng hơn.",
+    reviewsLeaveGoogle: "Viết đánh giá",
     dalatName: "Đà Lạt",
     dalatStatus: "Đang mở",
     dalatNote: "Số 04 Chi Lăng, P. 9, TP. Đà Lạt, Lâm Đồng",

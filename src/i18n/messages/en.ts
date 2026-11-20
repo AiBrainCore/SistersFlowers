@@ -144,19 +144,12 @@ export const en = {
     reviewsKicker: "From guests",
     reviewsTitle: "Trusted for local delivery.",
     reviewsBody:
-      "Short notes from people who ordered for hotels, homes and celebrations in Vietnam.",
-    review1Quote:
-      "Ordered from abroad for a hotel surprise in Da Nang. Clear English replies, photo before delivery, and it arrived on time.",
-    review1Name: "Emma",
-    review1Meta: "Hotel delivery · Da Nang",
-    review2Quote:
-      "Beautiful handcrafted bouquet. The studio confirmed the address and time on WhatsApp — easy from start to finish.",
-    review2Name: "Minh",
-    review2Meta: "Birthday · Da Lat",
-    review3Quote:
-      "We needed flowers for a guest arrival. Reception coordination was smooth and the wrap looked exactly like the photo.",
-    review3Name: "James",
-    review3Meta: "Hotel welcome · Da Nang",
+      "Guest notes stay in the language they wrote — we don’t rewrite them when you switch EN/VI. More stories live on our Google profiles.",
+    reviewsOnGoogle: "on Google",
+    reviewsViaGoogle: "Google",
+    reviewsSeeGoogle: "Open Google reviews",
+    reviewsWritePrompt: "Been a guest? A short Google review helps the next person trust us.",
+    reviewsLeaveGoogle: "Leave a review",
     // Names kept for footer studio cards
     dalatName: "Da Lat",
     dalatStatus: "Open now",
