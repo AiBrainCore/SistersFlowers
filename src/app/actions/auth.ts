@@ -61,10 +61,16 @@ export async function registerWithEmailAction(formData: FormData): Promise<AuthR
   }
 
   const user = data.user;
-  const actionLink = data.properties?.action_link;
-  if (!user || !actionLink) {
+  const hashedToken = data.properties?.hashed_token;
+  if (!user || !hashedToken) {
     return { ok: false, error: "signup_link_failed" };
   }
+
+  // Stay on sistersflowers.vn — never send guests through supabase.co/auth/v1/verify
+  // (browsers show a scary “redirect notice” for that intermediate hop).
+  const verifyUrl = siteUrl(
+    `/auth/confirm?token_hash=${encodeURIComponent(hashedToken)}&type=signup&locale=${locale}`,
+  );
 
   await prisma.customer.upsert({
     where: { authUserId: user.id },
@@ -84,7 +90,7 @@ export async function registerWithEmailAction(formData: FormData): Promise<AuthR
     },
   });
 
-  const verify = buildVerifyEmail(locale, actionLink, email);
+  const verify = buildVerifyEmail(locale, verifyUrl, email);
   const sent = await sendMail({
     to: email,
     from: "info",

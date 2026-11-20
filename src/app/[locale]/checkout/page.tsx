@@ -6,6 +6,7 @@ import {
   getDeliveryConfig,
   listActiveDeliveryZones,
 } from "@/lib/delivery-settings";
+import { getActiveCity } from "@/lib/locations";
 
 export const dynamic = "force-dynamic";
 
@@ -15,9 +16,10 @@ export default async function CheckoutPage({
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
   const { dictionary: t } = await getStorefrontDictionary(locale);
+  const city = await getActiveCity();
   const [deliveryConfig, zones] = await Promise.all([
-    getDeliveryConfig(),
-    listActiveDeliveryZones(),
+    getDeliveryConfig(city.slug),
+    listActiveDeliveryZones(city.slug),
   ]);
 
   return (
@@ -40,8 +42,10 @@ export default async function CheckoutPage({
       </ul>
       <div className="mt-12">
         <CheckoutForm
+          key={city.slug}
           locale={locale}
           dictionary={t}
+          citySlug={city.slug}
           deliveryConfig={deliveryConfig}
           zones={zones}
         />

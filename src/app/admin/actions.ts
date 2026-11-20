@@ -584,7 +584,11 @@ export async function updateInquiryStatusAction(formData: FormData) {
 export async function saveDeliverySettingsAction(formData: FormData) {
   await requireAdmin();
 
-  const studioName = String(formData.get("studioName") || "Da Lat").trim();
+  const citySlug =
+    String(formData.get("citySlug") || "").trim() === "dalat"
+      ? "dalat"
+      : "danang";
+  const studioName = String(formData.get("studioName") || citySlug).trim();
   const includedKm = Number(formData.get("includedKm") || 8);
   const baseFee = Number(formData.get("baseFee") || 30000);
   const midKm = Number(formData.get("midKm") || 20);
@@ -593,7 +597,7 @@ export async function saveDeliverySettingsAction(formData: FormData) {
   const maxFee = Number(formData.get("maxFee") || 120000);
 
   await prisma.deliverySettings.upsert({
-    where: { id: "default" },
+    where: { id: citySlug },
     update: {
       studioName,
       includedKm,
@@ -604,7 +608,7 @@ export async function saveDeliverySettingsAction(formData: FormData) {
       maxFee,
     },
     create: {
-      id: "default",
+      id: citySlug,
       studioName,
       includedKm,
       baseFee,
@@ -619,13 +623,17 @@ export async function saveDeliverySettingsAction(formData: FormData) {
   revalidatePath("/vi/delivery");
   revalidatePath("/en/checkout");
   revalidatePath("/vi/checkout");
-  redirect("/admin/delivery?saved=1");
+  redirect(`/admin/delivery?city=${citySlug}&saved=1`);
 }
 
 export async function saveDeliveryZoneAction(formData: FormData) {
   await requireAdmin();
 
   const id = String(formData.get("id") || "");
+  const citySlug =
+    String(formData.get("citySlug") || "").trim() === "dalat"
+      ? "dalat"
+      : "danang";
   const nameEn = String(formData.get("nameEn") || "").trim();
   const nameVi = String(formData.get("nameVi") || "").trim();
   const km = Number(formData.get("km") || 0);
@@ -636,17 +644,37 @@ export async function saveDeliveryZoneAction(formData: FormData) {
   const active = formData.get("active") === "on";
 
   if (!nameEn || !nameVi) {
-    redirect("/admin/delivery?error=1");
+    redirect(`/admin/delivery?city=${citySlug}&error=1`);
   }
 
   if (id) {
     await prisma.deliveryZone.update({
       where: { id },
-      data: { nameEn, nameVi, km, sortOrder, noteEn, noteVi, quoteOnly, active },
+      data: {
+        citySlug,
+        nameEn,
+        nameVi,
+        km,
+        sortOrder,
+        noteEn,
+        noteVi,
+        quoteOnly,
+        active,
+      },
     });
   } else {
     await prisma.deliveryZone.create({
-      data: { nameEn, nameVi, km, sortOrder, noteEn, noteVi, quoteOnly, active },
+      data: {
+        citySlug,
+        nameEn,
+        nameVi,
+        km,
+        sortOrder,
+        noteEn,
+        noteVi,
+        quoteOnly,
+        active,
+      },
     });
   }
 
@@ -654,12 +682,16 @@ export async function saveDeliveryZoneAction(formData: FormData) {
   revalidatePath("/vi/delivery");
   revalidatePath("/en/checkout");
   revalidatePath("/vi/checkout");
-  redirect("/admin/delivery?zones=1");
+  redirect(`/admin/delivery?city=${citySlug}&zones=1`);
 }
 
 export async function deleteDeliveryZoneAction(formData: FormData) {
   await requireAdmin();
   const id = String(formData.get("id") || "");
+  const citySlug =
+    String(formData.get("citySlug") || "").trim() === "dalat"
+      ? "dalat"
+      : "danang";
   if (id) {
     await prisma.deliveryZone.delete({ where: { id } });
   }
@@ -667,7 +699,7 @@ export async function deleteDeliveryZoneAction(formData: FormData) {
   revalidatePath("/vi/delivery");
   revalidatePath("/en/checkout");
   revalidatePath("/vi/checkout");
-  redirect("/admin/delivery?zones=1");
+  redirect(`/admin/delivery?city=${citySlug}&zones=1`);
 }
 
 export async function saveAddonAction(formData: FormData) {

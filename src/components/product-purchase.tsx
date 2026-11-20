@@ -141,7 +141,9 @@ export function ProductPurchase({
                     +{formatVnd(addon.price, locale)}
                   </span>
                 </button>
-                {on && addon.requiresNote ? (
+                {on &&
+                addon.requiresNote &&
+                addon.slug !== "handwritten-card" ? (
                   <input
                     type="text"
                     value={notes[addon.id] || ""}
@@ -154,6 +156,11 @@ export function ProductPurchase({
                     placeholder={dictionary.product.addonNotePlaceholder}
                     className="mt-2 min-h-11 w-full rounded-full border border-forest/15 bg-white/80 px-4 py-2.5 text-sm outline-none focus:border-citrus"
                   />
+                ) : null}
+                {on && addon.slug === "handwritten-card" ? (
+                  <p className="mt-2 text-xs leading-5 text-moss">
+                    {dictionary.product.handwrittenCardCheckoutHint}
+                  </p>
                 ) : null}
               </li>
             );

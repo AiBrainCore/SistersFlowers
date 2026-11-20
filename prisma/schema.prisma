@@ -368,8 +368,9 @@ model Inquiry {
   createdAt DateTime @default(now())
 }
 
+/// Per-city fee ladder. Primary key = city slug (`dalat` | `danang`).
 model DeliverySettings {
-  id         String   @id @default("default")
+  id         String   @id
   studioName String   @default("Da Lat")
   includedKm Int      @default(8)
   baseFee    Int      @default(30000)
@@ -389,6 +390,8 @@ model BuilderSettings {
 
 model DeliveryZone {
   id        String   @id @default(cuid())
+  /// City this zone belongs to (`dalat` | `danang`).
+  citySlug  String   @default("dalat")
   nameEn    String
   nameVi    String
   km        Int
@@ -399,6 +402,8 @@ model DeliveryZone {
   sortOrder Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([citySlug, active])
 }
 
 model Addon {

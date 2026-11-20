@@ -60,6 +60,14 @@ export function ProductCard({
         <h3 className="serif line-clamp-2 text-lg leading-snug text-forest sm:text-xl">
           {product.names[locale]}
         </h3>
+        {product.sku ? (
+          <p className="text-[10px] tracking-[0.1em] text-moss/75 uppercase">
+            SKU{" "}
+            <span className="font-medium tracking-[0.04em] text-forest/85 normal-case">
+              {product.sku}
+            </span>
+          </p>
+        ) : null}
         <p className="mt-auto">
           <SalePrice
             price={priced.price}
