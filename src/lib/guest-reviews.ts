@@ -83,15 +83,16 @@ function studioBySlug(slug: "dalat" | "danang") {
 }
 
 /**
- * Studio review / Maps targets.
+ * Studio review / Maps targets — Google only (never Facebook, never fuzzy name search).
  *
- * Da Lat — verified GBP “Sisters Flowers Shop”
- *   https://www.google.com/maps/place/?q=place_id:ChIJD3G8K7YTcTERRCQM8wSngQc
- *   (also 0x317113b62bbc710f:0x781a704f30c2444)
+ * Da Lat — GBP “Sisters Flowers Shop” (Thi Sách / Chi Lăng)
+ *   place_id: ChIJD3G8K7YTcTERRCQM8wSngQc
+ *   ftid: 0x317113b62bbc710f:0x781a704f30c2444
  *
- * Da Nang — no public Sisters GBP under that name (Maps searches for
- * 0327453536 / sistersflowers.Danang / 53 Lương Nhữ Hộc all resolve to Da Lat
- * or unrelated shops). Keep Facebook until a Da Nang Place ID exists.
+ * Da Nang — GBP “Sisters Flowers Shop” (53 Lương Nhữ Hộc)
+ *   place_id: ChIJR3OPOi4ZQjERSv5_hslH2oQ
+ *   ftid: 0x3142192e3a8f7347:0x84da47c9867ffe4a
+ *   maps: …/data=!4m8!4m7!1m0!1m5!1m1!1s0x3142192e3a8f7347:0x84da47c9867ffe4a!2m2!1d108.2117846!2d16.0414349
  */
 export const STUDIO_GOOGLE_PROFILES: StudioGoogleProfile[] = [
   {
@@ -104,26 +105,23 @@ export const STUDIO_GOOGLE_PROFILES: StudioGoogleProfile[] = [
   },
   {
     slug: "danang",
+    placeId: "ChIJR3OPOi4ZQjERSv5_hslH2oQ",
+    // New listing — no public rating count yet; CTAs still open Google.
     mapsUrl: studioMapsUrl(studioBySlug("danang")),
     facebookUrl: studioBySlug("danang").socials.facebook,
   },
 ];
 
-/** Google listing URL only when Place ID is known. */
+/** Google listing URL — Place ID required (never fuzzy brand search). */
 export function studioGoogleListingUrl(profile: StudioGoogleProfile) {
   if (!profile.placeId) return null;
   return `https://www.google.com/maps/search/?api=1&query=Sisters+Flowers+Shop&query_place_id=${encodeURIComponent(profile.placeId)}`;
 }
 
-/**
- * Write-a-review: Google writereview when Place ID is set;
- * otherwise Facebook page (never fuzzy Maps search).
- */
+/** Write-a-review on Google when Place ID is set. */
 export function studioReviewCtaUrl(profile: StudioGoogleProfile) {
-  if (profile.placeId) {
-    return `https://search.google.com/local/writereview?placeid=${encodeURIComponent(profile.placeId)}`;
-  }
-  return profile.facebookUrl;
+  if (!profile.placeId) return null;
+  return `https://search.google.com/local/writereview?placeid=${encodeURIComponent(profile.placeId)}`;
 }
 
 export function studioReviewCtaIsGoogle(profile: StudioGoogleProfile) {

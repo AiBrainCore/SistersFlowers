@@ -8,10 +8,7 @@ Quotes live in `src/lib/guest-reviews.ts`, not in `src/i18n/messages/*`.
 
 ## Where can guests write a review?
 
-There is **no on-site review form** yet.
-
-- **With Google Place ID set** → CTA opens Google `writereview` for that listing.
-- **Without Place ID** → CTA opens the studio **Facebook** page (safe fallback).
+There is **no on-site review form**. Homepage CTAs open **Google** only (see listing + `writereview`) for each studio Place ID.
 
 ### Never fuzzy-search the brand on Google Maps
 
@@ -19,34 +16,29 @@ Do **not** use links like:
 
 `https://www.google.com/maps/search/?api=1&query=Sisters+Flowers+Da+Nang`
 
-Google may resolve that to a **different flower shop** (e.g. Lily’s Flower). Directions use **lat/lng pins** from `STUDIO_CONTACTS`. Google ratings / writereview only after a real `placeId`.
+Google may resolve that to a **different flower shop**. Directions use **lat/lng pins** from `STUDIO_CONTACTS`. Ratings / writereview use the studio `placeId`.
 
-## Using Google’s 20+ reviews
+## Place IDs
 
-| Approach | What you get | Notes |
-| --- | --- | --- |
-| **Curated pool (current)** | Any 5★ quotes you paste, original language; daily rotate 3 | Paste real Google wording as you collect it |
-| **Places API Place Details** | Up to **5** reviews per place + rating/count | Paid SKU; needs Place ID |
-| **Embed widgets** | Often more reviews via their cache | Third-party |
+| City | GBP | Place ID | Maps ftid |
+| --- | --- | --- | --- |
+| **Da Lat** | Sisters Flowers Shop · Thi Sách / Chi Lăng · ~4.8★ / 21 | `ChIJD3G8K7YTcTERRCQM8wSngQc` | `0x317113b62bbc710f:0x781a704f30c2444` |
+| **Da Nang** | Sisters Flowers Shop · 53 Lương Nhữ Hộc · phone 032 745 3536 | `ChIJR3OPOi4ZQjERSv5_hslH2oQ` | `0x3142192e3a8f7347:0x84da47c9867ffe4a` |
 
-### Current Place IDs
+Da Nang share / directions example (ftid in the URL):
 
-| City | Status | Place ID |
-| --- | --- | --- |
-| **Da Lat** | Live GBP “Sisters Flowers Shop” (~4.8★ / 21) | `ChIJD3G8K7YTcTERRCQM8wSngQc` |
-| **Da Nang** | No public Sisters listing found under that name | — (Facebook CTA until created) |
+`…/Sisters+Flowers+Shop,+53+Lương+Nhữ+Hộc…/data=!4m8!4m7!1m0!1m5!1m1!1s0x3142192e3a8f7347:0x84da47c9867ffe4a!2m2!1d108.2117846!2d16.0414349`
 
-Searches for Da Nang phone `0327453536`, Facebook `sistersflowers.Danang`, and `53 Lương Nhữ Hộc` do **not** open a Sisters GBP — only Da Lat or unrelated florists. Create/claim a Da Nang Google Business Profile, then paste its Place ID into `STUDIO_GOOGLE_PROFILES`.
+Writereview:
 
-### Adding Place IDs (required for Google badges)
+`https://search.google.com/local/writereview?placeid=<Place ID>`
 
-1. Open the **correct** Sisters listing in Google Maps (your GBP).
-2. Use [Place ID Finder](https://developers.google.com/maps/documentation/javascript/examples/places-placeid-finder) or copy the place link and extract the id.
+### Adding / updating a Place ID
+
+1. Open the **correct** Sisters listing in Google Maps (check address + phone).
+2. Copy the `1s0x…:0x…` ftid from the share / directions URL, or use [Place ID Finder](https://developers.google.com/maps/documentation/javascript/examples/places-placeid-finder).
 3. Set `placeId` (and optional `rating` / `reviewCount`) on that city in `STUDIO_GOOGLE_PROFILES`.
-4. Writereview becomes:  
-   `https://search.google.com/local/writereview?placeid=…`
-
-Until then the homepage shows Facebook CTAs and address pins — not competitor listings.
+4. Keep `STUDIO_CONTACTS` lat/lng aligned with the GBP pin.
 
 ### Adding a real Google quote
 

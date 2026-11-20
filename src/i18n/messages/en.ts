@@ -150,11 +150,13 @@ export const en = {
     reviewsViaGoogle: "Google",
     reviewsSeeGoogle: "Open Google reviews",
     reviewsSeeGoogleReviews: "See Google Reviews",
-    reviewsSeeFacebook: "See on Facebook",
     reviewsWritePrompt: "Been a guest? Leave a short review for the next person.",
     reviewsLeaveGoogle: "Leave a Google review",
-    reviewsLeaveFacebook: "Leave a Facebook review",
-    reviewsFacebookFallback: "Reviews on our Facebook page for now",
+    reviewsGoogleNewListing: "Google Reviews — be the first to write one",
+    // Legacy keys kept so older builds do not crash if a stale bundle loads.
+    reviewsSeeFacebook: "See Google Reviews",
+    reviewsLeaveFacebook: "Leave a Google review",
+    reviewsFacebookFallback: "Google Reviews — be the first to write one",
     // Names kept for footer studio cards
     dalatName: "Da Lat",
     dalatStatus: "Open now",
