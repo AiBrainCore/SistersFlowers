@@ -2,13 +2,36 @@ import type { Metadata } from "next";
 import { locales, type Locale } from "@/i18n/config";
 import { BRAND } from "@/lib/brand";
 
-/** Public site origin for Hostinger (set in production env). */
-const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
-  "http://localhost:3000";
+/** Canonical production origin — never use localhost in live auth/email links. */
+export const PUBLIC_SITE_ORIGIN = "https://sistersflowers.vn";
 
+function resolveSiteOrigin(): string {
+  const candidates = [
+    process.env.MAIL_PUBLIC_SITE_URL,
+    process.env.NEXT_PUBLIC_SITE_URL,
+  ];
+  for (const raw of candidates) {
+    const value = raw?.trim().replace(/\/$/, "");
+    if (!value) continue;
+    if (/localhost|127\.0\.0\.1/i.test(value)) continue;
+    return value;
+  }
+  // Local dev only: allow localhost when explicitly permitted or not in production.
+  if (
+    process.env.ALLOW_LOCALHOST_SITE_URL === "1" ||
+    process.env.NODE_ENV !== "production"
+  ) {
+    const local =
+      process.env.NEXT_PUBLIC_SITE_URL?.trim().replace(/\/$/, "") ||
+      "http://localhost:3000";
+    return local;
+  }
+  return PUBLIC_SITE_ORIGIN;
+}
+
+/** Absolute public URL for redirects, emails, and SEO. */
 export function siteUrl(path = "") {
-  const base = SITE_URL.replace(/\/$/, "");
+  const base = resolveSiteOrigin();
   const clean = path.startsWith("/") ? path : `/${path}`;
   return `${base}${clean === "/" ? "" : clean}`;
 }

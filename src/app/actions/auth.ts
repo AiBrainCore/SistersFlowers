@@ -8,8 +8,9 @@ import {
   setCustomerSessionCookie,
 } from "@/lib/customer-session";
 import { sendMail } from "@/lib/mail/send";
-import { buildWelcomeEmail } from "@/lib/mail/templates";
+import { buildVerifyEmail } from "@/lib/mail/templates";
 import { siteUrl } from "@/lib/seo";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { supabaseConfigured } from "@/lib/supabase/env";
 
@@ -19,6 +20,11 @@ function localeOrVi(raw: string): Locale {
   return raw === "en" ? "en" : "vi";
 }
 
+/**
+ * Register with email/password.
+ * Uses Auth admin generateLink (no Supabase default mail) + branded SF verify email.
+ * Welcome mail is sent only after the customer confirms (auth/callback).
+ */
 export async function registerWithEmailAction(formData: FormData): Promise<AuthResult> {
   if (!supabaseConfigured()) {
     return { ok: false, error: "auth_not_configured" };
@@ -34,15 +40,19 @@ export async function registerWithEmailAction(formData: FormData): Promise<AuthR
     return { ok: false, error: "invalid_input" };
   }
 
-  const supabase = await createSupabaseServerClient();
-  if (!supabase) return { ok: false, error: "auth_not_configured" };
+  const admin = createSupabaseAdminClient();
+  if (!admin) {
+    return { ok: false, error: "auth_not_configured" };
+  }
 
-  const { data, error } = await supabase.auth.signUp({
+  const redirectTo = siteUrl(`/auth/callback?locale=${locale}`);
+  const { data, error } = await admin.auth.admin.generateLink({
+    type: "signup",
     email,
     password,
     options: {
       data: { full_name: name, locale },
-      emailRedirectTo: siteUrl(`/auth/callback?locale=${locale}`),
+      redirectTo,
     },
   });
 
@@ -50,32 +60,44 @@ export async function registerWithEmailAction(formData: FormData): Promise<AuthR
     return { ok: false, error: error.message };
   }
 
-  if (data.user) {
-    await prisma.customer.upsert({
-      where: { authUserId: data.user.id },
-      create: {
-        authUserId: data.user.id,
-        email,
-        name: name || null,
-        preferredLocale: locale,
-        provider: "email",
-      },
-      update: {
-        email,
-        name: name || undefined,
-        preferredLocale: locale,
-      },
-    });
+  const user = data.user;
+  const actionLink = data.properties?.action_link;
+  if (!user || !actionLink) {
+    return { ok: false, error: "signup_link_failed" };
+  }
 
-    // Branded welcome (Supabase also sends its own verify email when enabled).
-    const welcome = buildWelcomeEmail(locale, name || undefined, email);
-    await sendMail({
-      to: email,
-      from: "info",
-      subject: welcome.subject,
-      html: welcome.html,
-      transactional: false,
-    });
+  await prisma.customer.upsert({
+    where: { authUserId: user.id },
+    create: {
+      authUserId: user.id,
+      email,
+      name: name || null,
+      preferredLocale: locale,
+      provider: "email",
+      emailVerifiedAt: null,
+    },
+    update: {
+      email,
+      name: name || undefined,
+      preferredLocale: locale,
+      provider: "email",
+    },
+  });
+
+  const verify = buildVerifyEmail(locale, actionLink, email);
+  const sent = await sendMail({
+    to: email,
+    from: "info",
+    subject: verify.subject,
+    html: verify.html,
+    transactional: true,
+    eventKey: `auth:${user.id}:verify`,
+    relatedType: "customer",
+    relatedId: user.id,
+  });
+
+  if (!sent.ok || ("skipped" in sent && sent.skipped)) {
+    return { ok: false, error: "verify_email_failed" };
   }
 
   return { ok: true };
