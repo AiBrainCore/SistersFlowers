@@ -22,6 +22,8 @@ export type CartItem = {
   image: string;
   price: number;
   name: string;
+  /** Catalog SKU when known (products) */
+  sku?: string;
   /** Bouquet size id: sm | md | lg | grand */
   size?: string;
   note?: string;
@@ -139,6 +141,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         image: product.image,
         price: unitPrice,
         name: `${product.names[locale]}${sizeSuffix}`,
+        sku: product.sku || undefined,
         size,
       });
 

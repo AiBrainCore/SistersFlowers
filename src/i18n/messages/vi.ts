@@ -258,10 +258,11 @@ export const vi = {
     total: "Tạm tính",
     checkout: "Tiếp tục đặt hàng",
     remove: "Gỡ",
-    note: "Phí giao sẽ được tiệm xác nhận sau khi bạn gửi đơn.",
+    note: "Đây chỉ là tiền hoa. Phí giao được tính khi đặt hàng theo khu vực của bạn — khu xa hơn có thể cần báo giá từ studio.",
     bouquetLabel: "Bó hoa",
     addonLabel: "Quà kèm",
     partnerLabel: "Trải nghiệm",
+    qtyLabel: "SL",
   },
   checkout: {
     kicker: "Đặt hàng",

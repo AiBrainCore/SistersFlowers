@@ -53,68 +53,97 @@ export function CartDrawer({
             </div>
           ) : (
             <ul className="space-y-5">
-              {items.map((item) => (
-                <li key={item.key} className="flex gap-4">
-                  <div className="relative h-20 w-16 overflow-hidden rounded-sm bg-cream">
-                    {item.image ? (
-                      <Image
-                        src={item.image}
-                        alt={item.name}
-                        fill
-                        className="object-cover"
-                        sizes="64px"
-                      />
-                    ) : null}
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-[10px] tracking-[0.14em] text-moss uppercase">
-                      {item.type === "addon"
-                        ? item.addonKind === "partner"
-                          ? dictionary.cart.partnerLabel
-                          : dictionary.cart.addonLabel
-                        : dictionary.cart.bouquetLabel}
-                    </p>
-                    <p className="serif text-lg leading-tight">{item.name}</p>
-                    {item.partnerName ? (
-                      <p className="mt-1 text-[10px] tracking-[0.1em] text-rose uppercase">
-                        {item.partnerName}
+              {items.map((item) => {
+                const isAddon = item.type === "addon";
+                const maxQty = isAddon ? 99 : 5;
+                return (
+                  <li
+                    key={item.key}
+                    className="flex gap-3 border-b border-forest/8 pb-5 last:border-0 last:pb-0"
+                  >
+                    <div className="relative h-20 w-16 shrink-0 overflow-hidden rounded-sm bg-cream">
+                      {item.image ? (
+                        <Image
+                          src={item.image}
+                          alt={item.name}
+                          fill
+                          className="object-cover"
+                          sizes="64px"
+                        />
+                      ) : null}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[10px] tracking-[0.14em] text-moss uppercase">
+                        {item.type === "addon"
+                          ? item.addonKind === "partner"
+                            ? dictionary.cart.partnerLabel
+                            : dictionary.cart.addonLabel
+                          : dictionary.cart.bouquetLabel}
                       </p>
-                    ) : null}
-                    {item.note ? (
-                      <p className="mt-1 text-xs text-moss italic">“{item.note}”</p>
-                    ) : null}
-                    <p className="mt-1 text-xs text-moss">
-                      {formatVnd(item.price, locale)}
-                    </p>
-                    <div className="mt-2 flex items-center gap-3">
+                      <p className="serif text-lg leading-tight">{item.name}</p>
+                      {item.sku ? (
+                        <p className="mt-0.5 text-[11px] tracking-[0.06em] text-moss tabular-nums">
+                          SKU {item.sku}
+                        </p>
+                      ) : null}
+                      {item.partnerName ? (
+                        <p className="mt-1 text-[10px] tracking-[0.1em] text-rose uppercase">
+                          {item.partnerName}
+                        </p>
+                      ) : null}
+                      {item.note ? (
+                        <p className="mt-1 text-xs text-moss italic">
+                          “{item.note}”
+                        </p>
+                      ) : null}
+                      <p className="mt-1 text-sm text-forest">
+                        {formatVnd(item.price * item.qty, locale)}
+                        {item.qty > 1 ? (
+                          <span className="ml-1 text-xs text-moss">
+                            ({formatVnd(item.price, locale)} × {item.qty})
+                          </span>
+                        ) : null}
+                      </p>
+                    </div>
+                    <div className="flex shrink-0 flex-col items-end justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          className="flex h-9 w-9 items-center justify-center rounded-full border border-forest/20 text-base"
+                          onClick={() => setQty(item.key, item.qty - 1)}
+                          aria-label="Decrease"
+                        >
+                          −
+                        </button>
+                        <span
+                          className="min-w-6 text-center text-sm tabular-nums"
+                          aria-label={dictionary.cart.qtyLabel}
+                        >
+                          {item.qty}
+                        </span>
+                        <button
+                          type="button"
+                          className="flex h-9 w-9 items-center justify-center rounded-full border border-forest/20 text-base disabled:opacity-40"
+                          onClick={() =>
+                            setQty(item.key, Math.min(maxQty, item.qty + 1))
+                          }
+                          disabled={item.qty >= maxQty}
+                          aria-label="Increase"
+                        >
+                          +
+                        </button>
+                      </div>
                       <button
                         type="button"
-                        className="h-7 w-7 rounded-full border border-forest/20 text-sm"
-                        onClick={() => setQty(item.key, item.qty - 1)}
-                        aria-label="Decrease"
+                        className="text-[11px] tracking-[0.12em] text-rose uppercase"
+                        onClick={() => remove(item.key)}
                       >
-                        −
-                      </button>
-                      <span className="text-sm tabular-nums">{item.qty}</span>
-                      <button
-                        type="button"
-                        className="h-7 w-7 rounded-full border border-forest/20 text-sm"
-                        onClick={() => setQty(item.key, item.qty + 1)}
-                        aria-label="Increase"
-                      >
-                        +
+                        {dictionary.cart.remove}
                       </button>
                     </div>
-                    <button
-                      type="button"
-                      className="mt-2 text-[11px] tracking-[0.12em] text-rose uppercase"
-                      onClick={() => remove(item.key)}
-                    >
-                      {dictionary.cart.remove}
-                    </button>
-                  </div>
-                </li>
-              ))}
+                  </li>
+                );
+              })}
             </ul>
           )}
         </div>
