@@ -258,10 +258,11 @@ export const en = {
     total: "Subtotal",
     checkout: "Continue to checkout",
     remove: "Remove",
-    note: "Delivery fee is confirmed with the studio after you send the order.",
+    note: "This is products only. Delivery fee is calculated at checkout from your area — farther zones may need a studio quote.",
     bouquetLabel: "Bouquet",
     addonLabel: "Extra",
     partnerLabel: "Treat",
+    qtyLabel: "Qty",
   },
   checkout: {
     kicker: "Checkout",
