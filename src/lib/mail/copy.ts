@@ -58,7 +58,7 @@ const orderCustomer: Record<Locale, OrderCustomerCopy> = {
     phoneLabel: "Điện thoại",
     dateLabel: "Ngày / giờ giao",
     notesLabel: "Ghi chú",
-    cta: "Xem cửa hàng",
+    cta: "Xem đơn hàng",
     footer: "Đà Nẵng & Đà Lạt · sistersflowers.vn",
   },
   en: {
@@ -79,7 +79,7 @@ const orderCustomer: Record<Locale, OrderCustomerCopy> = {
     phoneLabel: "Phone",
     dateLabel: "Delivery date / time",
     notesLabel: "Notes",
-    cta: "Browse the shop",
+    cta: "View your order",
     footer: "Da Nang & Da Lat · sistersflowers.vn",
   },
 };

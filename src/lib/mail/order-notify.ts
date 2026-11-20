@@ -18,7 +18,10 @@ export async function notifyOrderEmails(
   payload: OrderMailPayload & { orderId?: string; citySlug?: string | null },
 ) {
   const customer = buildOrderCustomerEmail(payload);
-  const studio = buildOrderStudioEmail(payload);
+  const studio = buildOrderStudioEmail({
+    ...payload,
+    orderId: payload.orderId,
+  });
   const results = [];
   const studioTo = studioInboxForCity(payload.citySlug);
 

@@ -78,7 +78,7 @@ async function main() {
   } = templates;
 
   const sampleItems = [
-    { name: "Celebration garden", qty: 1, price: 450000 },
+    { name: "Celebration garden", qty: 1, price: 450000, sku: "SF-BQ-CEL-MD" },
   ];
 
   const samples = [
