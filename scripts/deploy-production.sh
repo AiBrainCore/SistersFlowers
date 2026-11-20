@@ -20,6 +20,7 @@ MODE="${1:-auto}"
 if [ "${FORCE_DEPLOY:-0}" = "1" ]; then
   MODE="force"
 fi
+SCRIPT_SELF="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/$(basename "${BASH_SOURCE[0]}")"
 
 clear_stale_lock() {
   if [ ! -f "$LOCK_FILE" ]; then
@@ -38,12 +39,15 @@ clear_stale_lock() {
   fi
 }
 
-clear_stale_lock
-
-exec 9>"$LOCK_FILE"
-if ! flock -n 9; then
-  echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) deploy already running — skip" | tee -a "$LOG_FILE"
-  exit 0
+# Re-exec after git sync inherits fd 9 (flock). Skip re-open so we keep the lock.
+if [ "${SF_DEPLOY_LOCK_HELD:-0}" != "1" ]; then
+  clear_stale_lock
+  exec 9>"$LOCK_FILE"
+  if ! flock -n 9; then
+    echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) deploy already running — skip" | tee -a "$LOG_FILE"
+    exit 0
+  fi
+  export SF_DEPLOY_LOCK_HELD=1
 fi
 echo "$$" >"$LOCK_PID_FILE"
 trap 'rm -f "$LOCK_PID_FILE"' EXIT
@@ -57,14 +61,17 @@ trap 'rm -f "$LOCK_PID_FILE"' EXIT
   REMOTE=$(git rev-parse "origin/$BRANCH")
 
   NEED_BUILD=0
+  DID_RESET=0
   if [ "$LOCAL" != "$REMOTE" ]; then
     echo "Updating $LOCAL -> $REMOTE"
     git reset --hard "origin/$BRANCH"
     NEED_BUILD=1
+    DID_RESET=1
   elif [ "$MODE" = "force" ]; then
     echo "Git already at $LOCAL — force rebuild"
     git reset --hard "origin/$BRANCH"
     NEED_BUILD=1
+    DID_RESET=1
   elif [ ! -f .next/BUILD_ID ] || [ ! -d .next/static ]; then
     echo "Missing .next build artifacts — rebuilding"
     NEED_BUILD=1
@@ -72,6 +79,16 @@ trap 'rm -f "$LOCK_PID_FILE"' EXIT
     echo "Already up to date ($LOCAL) with .next present"
     echo "===== deploy noop ====="
     exit 0
+  fi
+
+  # Bash already loaded this file before git reset. Re-exec once so script
+  # changes (e.g. sidecar .next.new) apply on the same deploy that pulls them.
+  if [ "$DID_RESET" = "1" ] && [ -z "${SF_DEPLOY_BOOTSTRAPPED:-}" ]; then
+    echo "Re-exec after git sync so deploy script updates apply"
+    export SF_DEPLOY_BOOTSTRAPPED=1
+    export SF_DEPLOY_LOCK_HELD=1
+    export FORCE_DEPLOY
+    exec bash "$SCRIPT_SELF" "$MODE"
   fi
 
   if [ -f scripts/ensure-auth-env.mjs ]; then
