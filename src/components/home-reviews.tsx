@@ -67,22 +67,24 @@ function CityReviewActions({
 }) {
   const t = dictionary.home;
   const label = profile.slug === "dalat" ? t.dalatName : t.danangName;
-  const isGoogle = studioReviewCtaIsGoogle(profile);
-  const seeHref = studioGoogleListingUrl(profile) || profile.facebookUrl;
+  const seeHref = studioGoogleListingUrl(profile);
   const leaveHref = studioReviewCtaUrl(profile);
+  // Both studios must be Google Place IDs — skip the card if misconfigured.
+  if (!seeHref || !leaveHref || !studioReviewCtaIsGoogle(profile)) return null;
+
+  const hasRating =
+    typeof profile.rating === "number" && (profile.reviewCount ?? 0) > 0;
 
   return (
     <div className="glass flex h-full flex-col gap-3 rounded-2xl border border-citrus/15 p-4 shadow-[0_10px_28px_rgba(44,41,38,0.06)] sm:p-5">
       <div className="flex items-start gap-3">
-        {isGoogle ? <GoogleMark className="mt-0.5 h-6 w-6 shrink-0" /> : null}
+        <GoogleMark className="mt-0.5 h-6 w-6 shrink-0" />
         <div className="min-w-0 flex-1">
           <p className="serif text-lg text-forest">{label}</p>
-          {isGoogle &&
-          typeof profile.rating === "number" &&
-          (profile.reviewCount ?? 0) > 0 ? (
+          {hasRating ? (
             <p className="mt-1 text-sm text-moss">
               <span className="font-medium text-citrus">
-                {profile.rating.toFixed(1)} ★
+                {profile.rating!.toFixed(1)} ★
               </span>
               <span>
                 {" "}
@@ -90,7 +92,7 @@ function CityReviewActions({
               </span>
             </p>
           ) : (
-            <p className="mt-1 text-sm text-moss">{t.reviewsFacebookFallback}</p>
+            <p className="mt-1 text-sm text-moss">{t.reviewsGoogleNewListing}</p>
           )}
         </div>
       </div>
@@ -101,7 +103,7 @@ function CityReviewActions({
         rel="noopener noreferrer"
         className="inline-flex min-h-11 items-center justify-center rounded-full border border-forest/15 bg-white px-4 text-center text-xs tracking-[0.1em] text-forest uppercase transition hover:border-citrus/40"
       >
-        {isGoogle ? t.reviewsSeeGoogleReviews : t.reviewsSeeFacebook}
+        {t.reviewsSeeGoogleReviews}
       </a>
       <a
         href={leaveHref}
@@ -109,7 +111,7 @@ function CityReviewActions({
         rel="noopener noreferrer"
         className="inline-flex min-h-11 items-center justify-center rounded-full bg-citrus px-4 text-center text-xs tracking-[0.1em] text-ivory uppercase transition hover:bg-citrus/90"
       >
-        {isGoogle ? t.reviewsLeaveGoogle : t.reviewsLeaveFacebook}
+        {t.reviewsLeaveGoogle}
       </a>
     </div>
   );

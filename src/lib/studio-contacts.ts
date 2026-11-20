@@ -46,10 +46,10 @@ export const STUDIO_CONTACTS: StudioContact[] = [
     nameVi: "Đà Nẵng",
     addressEn: "53 Luong Nhu Hoc, Hoa Cuong Bac, Hai Chau, Da Nang",
     addressVi: "53 Lương Nhữ Hộc, Hòa Cường Bắc, Hải Châu, Đà Nẵng",
-    // Pin on Lương Nhữ Hộc · Hòa Cường — not a business-name search
-    // (fuzzy “Sisters Flowers Da Nang” was resolving to unrelated shops).
-    lat: 16.04196,
-    lng: 108.21157,
+    // Pin from live GBP “Sisters Flowers Shop” @ 53 Lương Nhữ Hộc
+    // (Maps ftid 0x3142192e3a8f7347:0x84da47c9867ffe4a).
+    lat: 16.0414349,
+    lng: 108.2117846,
     image: "/home/studio-danang.jpg",
     primaryDigits: "84327453536",
     phones: [
