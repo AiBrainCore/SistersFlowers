@@ -11,7 +11,7 @@ Never paste passwords into chat, pull requests, or committed files.
 | --- | --- |
 | `secrets/server.env` | VPS / domain panel / deploy |
 | `secrets/supabase.env` | Supabase URL, keys, DB password |
-| `secrets/mail.env` | P.A Vietnam / maychuemail SMTP passwords (never commit). Quote values with spaces (e.g. `MAIL_FROM_NAME`). |
+| `secrets/mail.env` | P.A Vietnam / maychuemail SMTP passwords (never commit). Template: `secrets/mail.env.example` — copy to `mail.env` and fill the password only. Quote values with `$` / `!`. |
 | `secrets/openai.env` | `OPENAI_API_KEY` for catalog vision/copy enrichment. Template: `secrets/openai.env.example` |
 | `.env.local` (repo root) | Local Next.js overrides |
 
