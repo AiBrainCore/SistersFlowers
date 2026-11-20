@@ -3,7 +3,9 @@ import { Reveal } from "@/components/reveal";
 import {
   pickGuestReviews,
   STUDIO_GOOGLE_PROFILES,
-  studioGoogleWriteReviewUrl,
+  studioGoogleListingUrl,
+  studioReviewCtaIsGoogle,
+  studioReviewCtaUrl,
   type GuestReview,
   type StudioGoogleProfile,
 } from "@/lib/guest-reviews";
@@ -27,7 +29,7 @@ function StarRow({ stars }: { stars: number }) {
   );
 }
 
-function GoogleBadge({
+function StudioLinkBadge({
   profile,
   dictionary,
 }: {
@@ -36,25 +38,43 @@ function GoogleBadge({
 }) {
   const t = dictionary.home;
   const label = profile.slug === "dalat" ? t.dalatName : t.danangName;
+  const listingUrl = studioGoogleListingUrl(profile);
+  const showGoogleRating =
+    Boolean(listingUrl) &&
+    typeof profile.rating === "number" &&
+    (profile.reviewCount ?? 0) > 0;
 
+  if (showGoogleRating && listingUrl) {
+    return (
+      <a
+        href={listingUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="glass inline-flex min-h-11 items-center gap-2 rounded-full border border-citrus/20 px-3.5 py-2 text-sm text-forest shadow-[0_8px_20px_rgba(44,41,38,0.06)] transition hover:border-citrus/40"
+      >
+        <span className="serif text-citrus">{profile.rating!.toFixed(1)}</span>
+        <span className="text-citrus" aria-hidden>
+          ★
+        </span>
+        <span className="text-moss">
+          {label} · {profile.reviewCount}+ {t.reviewsOnGoogle}
+        </span>
+        <span className="sr-only">{t.reviewsSeeGoogle}</span>
+      </a>
+    );
+  }
+
+  // No Place ID yet — pin our address / Facebook, never a fuzzy brand search.
   return (
     <a
-      href={profile.mapsUrl}
+      href={profile.facebookUrl}
       target="_blank"
       rel="noopener noreferrer"
       className="glass inline-flex min-h-11 items-center gap-2 rounded-full border border-citrus/20 px-3.5 py-2 text-sm text-forest shadow-[0_8px_20px_rgba(44,41,38,0.06)] transition hover:border-citrus/40"
     >
-      <span className="serif text-citrus">{profile.rating.toFixed(1)}</span>
-      <span className="text-citrus" aria-hidden>
-        ★
-      </span>
       <span className="text-moss">
-        {label}
-        {profile.reviewCount > 0
-          ? ` · ${profile.reviewCount}+ ${t.reviewsOnGoogle}`
-          : ` · ${t.reviewsOnGoogle}`}
+        {label} · Facebook
       </span>
-      <span className="sr-only">{t.reviewsSeeGoogle}</span>
     </a>
   );
 }
@@ -95,8 +115,9 @@ export function HomeReviews({ dictionary }: { dictionary: Dictionary }) {
   const reviews = pickGuestReviews(3);
   const writeLinks = STUDIO_GOOGLE_PROFILES.map((profile) => ({
     profile,
-    href: studioGoogleWriteReviewUrl(profile),
+    href: studioReviewCtaUrl(profile),
     label: profile.slug === "dalat" ? t.dalatName : t.danangName,
+    isGoogle: studioReviewCtaIsGoogle(profile),
   }));
 
   return (
@@ -114,7 +135,7 @@ export function HomeReviews({ dictionary }: { dictionary: Dictionary }) {
           </p>
           <div className="mt-6 flex flex-wrap gap-2.5">
             {STUDIO_GOOGLE_PROFILES.map((profile) => (
-              <GoogleBadge
+              <StudioLinkBadge
                 key={profile.slug}
                 profile={profile}
                 dictionary={dictionary}
@@ -138,7 +159,7 @@ export function HomeReviews({ dictionary }: { dictionary: Dictionary }) {
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
             <p className="text-sm text-moss">{t.reviewsWritePrompt}</p>
             <div className="flex flex-wrap gap-2">
-              {writeLinks.map(({ profile, href, label }) => (
+              {writeLinks.map(({ profile, href, label, isGoogle }) => (
                 <a
                   key={profile.slug}
                   href={href}
@@ -146,7 +167,8 @@ export function HomeReviews({ dictionary }: { dictionary: Dictionary }) {
                   rel="noopener noreferrer"
                   className="inline-flex min-h-11 items-center rounded-full bg-citrus px-4 text-xs tracking-[0.12em] text-ivory uppercase"
                 >
-                  {t.reviewsLeaveGoogle} · {label}
+                  {isGoogle ? t.reviewsLeaveGoogle : t.reviewsLeaveFacebook} ·{" "}
+                  {label}
                 </a>
               ))}
             </div>

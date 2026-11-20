@@ -4,13 +4,13 @@
  * Quotes stay in the language the guest wrote them — they are NOT i18n strings.
  * Switching EN/VI only changes the section chrome (title, CTAs), never the quote text.
  *
- * Where guests write reviews today: Google Business Profile (Maps) for each studio.
- * There is no on-site review form yet. Google Places API returns at most ~5 reviews
- * per place (not the full 20+), so we curate a 5★ pool here and link out for “see all /
- * leave a review”. Paste real Google quotes into GUEST_REVIEW_POOL as you collect them.
+ * Google Maps links MUST use Place IDs or lat/lng pins — never fuzzy
+ * “Sisters Flowers Da Nang” search (Google can resolve that to a competitor).
  *
  * @see docs/guest-reviews.md
  */
+
+import { STUDIO_CONTACTS, studioMapsUrl } from "@/lib/studio-contacts";
 
 export type GuestReviewSource = "google" | "studio";
 
@@ -28,13 +28,18 @@ export type GuestReview = {
 
 export type StudioGoogleProfile = {
   slug: "dalat" | "danang";
-  /** Optional Place ID — unlocks writereview deep link + future Places API sync. */
+  /**
+   * Google Place ID (ChIJ…) from Maps → Share / Place ID Finder.
+   * Required before we show Google rating badges or writereview links.
+   * Without it we never fuzzy-search the brand name (wrong shops).
+   */
   placeId?: string;
-  /** Manual snapshot until Places API is wired (update when Maps numbers change). */
-  rating: number;
-  reviewCount: number;
-  /** Public Maps search / listing URL. */
+  /** Only show when placeId is set and numbers match the live listing. */
+  rating?: number;
+  reviewCount?: number;
+  /** Address pin for directions (lat/lng) — not a business-name search. */
   mapsUrl: string;
+  facebookUrl: string;
 };
 
 /** Curated 5★ notes. Prefer real Google / guest wording; keep original language. */
@@ -73,38 +78,55 @@ export const GUEST_REVIEW_POOL: GuestReview[] = [
   // { id: "google-dalat-…", quote: "…", name: "…", meta: "Google · Đà Lạt", stars: 5, source: "google", studio: "dalat" },
 ];
 
+function studioBySlug(slug: "dalat" | "danang") {
+  return STUDIO_CONTACTS.find((s) => s.slug === slug)!;
+}
+
 /**
- * Google listing snapshots. Fill `placeId` from Maps → Share → Place ID
- * (or Google Business Profile) when ready for writereview deep links / API sync.
- * Rating/count are manual until Places API is enabled.
+ * Studio review / Maps targets.
+ * Set `placeId` from the correct Sisters GBP listing before enabling Google badges.
  */
 export const STUDIO_GOOGLE_PROFILES: StudioGoogleProfile[] = [
   {
     slug: "dalat",
-    rating: 4.8,
-    reviewCount: 22,
-    mapsUrl:
-      "https://www.google.com/maps/search/?api=1&query=" +
-      encodeURIComponent("Sisters Flowers 04 Chi Lang Ward 9 Da Lat"),
+    // placeId: "ChIJ…", // paste Da Lat Sisters Place ID
+    // rating: 4.8,
+    // reviewCount: 22,
+    mapsUrl: studioMapsUrl(studioBySlug("dalat")),
+    facebookUrl: studioBySlug("dalat").socials.facebook,
   },
   {
     slug: "danang",
-    // Update rating/count from the live Maps listing (or set placeId + sync later).
-    rating: 5,
-    reviewCount: 0,
-    mapsUrl:
-      "https://www.google.com/maps/search/?api=1&query=" +
-      encodeURIComponent(
-        "Sisters Flowers 53 Luong Nhu Hoc Hoa Cuong Bac Da Nang",
-      ),
+    // placeId: "ChIJ…", // paste Da Nang Sisters Place ID — do NOT fuzzy-search
+    mapsUrl: studioMapsUrl(studioBySlug("danang")),
+    facebookUrl: studioBySlug("danang").socials.facebook,
   },
 ];
 
-export function studioGoogleWriteReviewUrl(profile: StudioGoogleProfile) {
+/** Google listing URL only when Place ID is known. */
+export function studioGoogleListingUrl(profile: StudioGoogleProfile) {
+  if (!profile.placeId) return null;
+  return `https://www.google.com/maps/search/?api=1&query_place_id=${encodeURIComponent(profile.placeId)}`;
+}
+
+/**
+ * Write-a-review: Google writereview when Place ID is set;
+ * otherwise Facebook page (never fuzzy Maps search).
+ */
+export function studioReviewCtaUrl(profile: StudioGoogleProfile) {
   if (profile.placeId) {
     return `https://search.google.com/local/writereview?placeid=${encodeURIComponent(profile.placeId)}`;
   }
-  return profile.mapsUrl;
+  return profile.facebookUrl;
+}
+
+export function studioReviewCtaIsGoogle(profile: StudioGoogleProfile) {
+  return Boolean(profile.placeId);
+}
+
+/** @deprecated use studioReviewCtaUrl */
+export function studioGoogleWriteReviewUrl(profile: StudioGoogleProfile) {
+  return studioReviewCtaUrl(profile);
 }
 
 /** Deterministic daily pick so SSR and client stay in sync. */

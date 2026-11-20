@@ -52,8 +52,8 @@ export function studioWhatsAppUrl(studio: StudioContact) {
   return digits ? `https://wa.me/${digits}` : "https://wa.me/84327453536";
 }
 
-export function studioMapsLink(studio: StudioContact, locale: Locale = "en") {
-  return studioMapsUrl(studioAddress(studio, locale));
+export function studioMapsLink(studio: StudioContact, _locale: Locale = "en") {
+  return studioMapsUrl(studio);
 }
 
 /** Brand socials — city-aware TikTok/Facebook when studio is known. */

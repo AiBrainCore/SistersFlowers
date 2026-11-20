@@ -37,7 +37,7 @@ export function StudioCard({
   const name = locale === "vi" ? studio.nameVi : studio.nameEn;
   const address = locale === "vi" ? studio.addressVi : studio.addressEn;
   const primaryPhone = studioPrimaryPhone(studio);
-  const mapsHref = studioMapsUrl(address);
+  const mapsHref = studioMapsUrl(studio);
   const waDigits = studioWhatsAppDigits(studio);
 
   const socialLinks = [

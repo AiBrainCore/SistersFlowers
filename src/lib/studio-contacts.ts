@@ -24,6 +24,9 @@ export type StudioContact = {
   nameVi: string;
   addressEn: string;
   addressVi: string;
+  /** WGS84 pin for Maps directions (never fuzzy business-name search). */
+  lat: number;
+  lng: number;
   /** Studio atmosphere photo for footer / contact cards */
   image: string;
   /**
@@ -43,6 +46,10 @@ export const STUDIO_CONTACTS: StudioContact[] = [
     nameVi: "Đà Nẵng",
     addressEn: "53 Luong Nhu Hoc, Hoa Cuong Bac, Hai Chau, Da Nang",
     addressVi: "53 Lương Nhữ Hộc, Hòa Cường Bắc, Hải Châu, Đà Nẵng",
+    // Pin on Lương Nhữ Hộc · Hòa Cường — not a business-name search
+    // (fuzzy “Sisters Flowers Da Nang” was resolving to unrelated shops).
+    lat: 16.04196,
+    lng: 108.21157,
     image: "/home/studio-danang.jpg",
     primaryDigits: "84327453536",
     phones: [
@@ -61,6 +68,8 @@ export const STUDIO_CONTACTS: StudioContact[] = [
     nameVi: "Đà Lạt",
     addressEn: "04 Chi Lang, Ward 9, Da Lat, Lam Dong",
     addressVi: "Số 04 Chi Lăng, P. 9, TP. Đà Lạt, Lâm Đồng",
+    lat: 11.95423,
+    lng: 108.46948,
     image: "/home/studio-dalat.jpg",
     primaryDigits: "84904985761",
     phones: [
@@ -75,8 +84,14 @@ export const STUDIO_CONTACTS: StudioContact[] = [
   },
 ];
 
-/** Google Maps search URL for a studio address (opens exact place search). */
-export function studioMapsUrl(address: string) {
+/** Maps pin for a studio — lat/lng only (never fuzzy business-name search). */
+export function studioMapsUrl(studio: Pick<StudioContact, "lat" | "lng" | "addressEn">) {
+  const q = `${studio.lat},${studio.lng}`;
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`;
+}
+
+/** @deprecated Prefer studioMapsUrl(studio) with lat/lng. */
+export function studioAddressMapsUrl(address: string) {
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
 }
 
