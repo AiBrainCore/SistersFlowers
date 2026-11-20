@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { AdminShell } from "@/app/admin/_shell";
 import {
   deleteDeliveryZoneAction,
@@ -7,6 +8,7 @@ import {
 import {
   getDeliveryConfig,
   listAllDeliveryZones,
+  normalizeDeliveryCity,
 } from "@/lib/delivery-settings";
 import { formatVnd } from "@/data/products";
 import { calcDeliveryFee } from "@/lib/delivery";
@@ -15,15 +17,46 @@ import { getAdminT } from "@/lib/admin-locale";
 export default async function AdminDeliveryPage({
   searchParams,
 }: {
-  searchParams: Promise<{ saved?: string; zones?: string; error?: string }>;
+  searchParams: Promise<{
+    saved?: string;
+    zones?: string;
+    error?: string;
+    city?: string;
+  }>;
 }) {
-  const config = await getDeliveryConfig();
-  const zones = await listAllDeliveryZones();
-  const { saved, zones: zonesSaved, error } = await searchParams;
+  const { saved, zones: zonesSaved, error, city: cityParam } = await searchParams;
+  const citySlug = normalizeDeliveryCity(cityParam);
+  const config = await getDeliveryConfig(citySlug);
+  const zones = await listAllDeliveryZones(citySlug);
   const { locale, t } = await getAdminT();
+  const cityLabel = citySlug === "dalat" ? "Da Lat" : "Da Nang";
 
   return (
     <AdminShell title={t.delivery.title}>
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 16 }}>
+        {(
+          [
+            ["danang", "Da Nang"],
+            ["dalat", "Da Lat"],
+          ] as const
+        ).map(([slug, label]) => (
+          <Link
+            key={slug}
+            href={`/admin/delivery?city=${slug}`}
+            className="admin-btn"
+            style={{
+              textDecoration: "none",
+              opacity: citySlug === slug ? 1 : 0.55,
+              background: citySlug === slug ? undefined : "transparent",
+              border: "1px solid rgba(0,0,0,0.12)",
+              color: "inherit",
+            }}
+          >
+            {label}
+          </Link>
+        ))}
+      </div>
+
       {saved ? (
         <p style={{ marginBottom: 16, color: "#5c6b52" }}>{t.delivery.pricingSaved}</p>
       ) : null}
@@ -37,7 +70,7 @@ export default async function AdminDeliveryPage({
       ) : null}
 
       <h2 style={{ fontFamily: "serif", fontSize: 28, marginBottom: 12 }}>
-        {t.delivery.areasTitle}
+        {t.delivery.areasTitle} · {cityLabel}
       </h2>
       <p style={{ fontSize: 14, opacity: 0.75, maxWidth: 640, lineHeight: 1.6 }}>
         {t.delivery.areasIntro}
@@ -54,6 +87,7 @@ export default async function AdminDeliveryPage({
               style={{ maxWidth: 820 }}
             >
               <input type="hidden" name="id" value={zone.id} />
+              <input type="hidden" name="citySlug" value={citySlug} />
               <div
                 style={{
                   display: "flex",
@@ -146,17 +180,18 @@ export default async function AdminDeliveryPage({
         className="admin-card"
         style={{ marginTop: 24, maxWidth: 820 }}
       >
+        <input type="hidden" name="citySlug" value={citySlug} />
         <h3 style={{ marginTop: 0, fontFamily: "serif", fontSize: 22 }}>
-          {t.delivery.addZone}
+          {t.delivery.addZone} · {cityLabel}
         </h3>
         <div className="admin-grid-2">
           <label className="admin-field">
             <span>{t.common.nameEn}</span>
-            <input name="nameEn" required placeholder="Da Lat centre" />
+            <input name="nameEn" required placeholder={`${cityLabel} centre`} />
           </label>
           <label className="admin-field">
             <span>{t.common.nameVi}</span>
-            <input name="nameVi" required placeholder="Trung tâm Đà Lạt" />
+            <input name="nameVi" required />
           </label>
         </div>
         <div className="admin-grid-2">
@@ -195,9 +230,10 @@ export default async function AdminDeliveryPage({
       </form>
 
       <h2 style={{ fontFamily: "serif", fontSize: 28, margin: "40px 0 12px" }}>
-        {t.delivery.rulesTitle}
+        {t.delivery.rulesTitle} · {cityLabel}
       </h2>
       <form action={saveDeliverySettingsAction} className="admin-card" style={{ maxWidth: 720 }}>
+        <input type="hidden" name="citySlug" value={citySlug} />
         <label className="admin-field">
           <span>{t.delivery.studioName}</span>
           <input name="studioName" defaultValue={config.studioName} required />

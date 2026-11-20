@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -13,6 +13,7 @@ import { submitOrderAction } from "@/app/actions/orders";
 import { DeliveryCalculator } from "@/components/delivery-calculator";
 import { DeliveryCityBar } from "@/components/delivery-city-bar";
 import type { DeliveryConfig, DeliveryZonePublic } from "@/lib/delivery";
+import { DELIVERY_TIME_SLOTS } from "@/lib/delivery-time-slots";
 import {
   clearCheckoutHints,
   readCheckoutHints,
@@ -21,11 +22,13 @@ import {
 export function CheckoutForm({
   locale,
   dictionary,
+  citySlug,
   deliveryConfig,
   zones,
 }: {
   locale: Locale;
   dictionary: Dictionary;
+  citySlug: string;
   deliveryConfig: DeliveryConfig;
   zones: DeliveryZonePublic[];
 }) {
@@ -34,7 +37,7 @@ export function CheckoutForm({
   const { activeCity } = useLocation();
   const [status, setStatus] = useState<"idle" | "sending" | "error">("idle");
   const [error, setError] = useState("");
-  const [deliveryKm, setDeliveryKm] = useState(12);
+  const [deliveryKm, setDeliveryKm] = useState(zones[0]?.km ?? 12);
   const [deliveryFee, setDeliveryFee] = useState<number | null>(
     deliveryConfig.baseFee,
   );
@@ -59,6 +62,11 @@ export function CheckoutForm({
     }>
   >([]);
 
+  const hasHandwrittenCard = useMemo(
+    () => items.some((item) => item.type === "addon" && item.slug === "handwritten-card"),
+    [items],
+  );
+
   useEffect(() => {
     queueMicrotask(() => {
       const saved = readCheckoutHints();
@@ -69,7 +77,7 @@ export function CheckoutForm({
   }, []);
 
   useEffect(() => {
-    const city = activeCity?.slug || "";
+    const city = activeCity?.slug || citySlug || "";
     let cancelled = false;
     fetch(`/api/payments/methods?city=${encodeURIComponent(city)}`)
       .then((r) => r.json())
@@ -100,7 +108,7 @@ export function CheckoutForm({
     return () => {
       cancelled = true;
     };
-  }, [activeCity?.slug]);
+  }, [activeCity?.slug, citySlug]);
 
   const onDeliveryChange = useCallback(
     (value: { km: number; fee: number | null; zone: string }) => {
@@ -128,7 +136,7 @@ export function CheckoutForm({
       customerName: String(form.get("customerName") || ""),
       phone: String(form.get("phone") || ""),
       email: String(form.get("email") || "") || undefined,
-      citySlug: activeCity?.slug,
+      citySlug: activeCity?.slug || citySlug,
       zone: deliveryZone || String(form.get("deliveryZone") || ""),
       deliveryKm: fulfillment === "pickup" ? undefined : deliveryKm,
       deliveryFee: fulfillment === "pickup" ? 0 : deliveryFee ?? undefined,
@@ -136,10 +144,9 @@ export function CheckoutForm({
       deliveryDate: String(form.get("deliveryDate") || "") || undefined,
       deliveryTime: String(form.get("deliveryTime") || "") || undefined,
       notes: String(form.get("notes") || "") || undefined,
+      cardMessage: String(form.get("cardMessage") || "") || undefined,
       recipientName: String(form.get("recipientName") || "") || undefined,
       recipientPhone: String(form.get("recipientPhone") || "") || undefined,
-      hotelName: String(form.get("hotelName") || "") || undefined,
-      roomNumber: String(form.get("roomNumber") || "") || undefined,
       fulfillment,
       paymentMethod,
       anonymousSender: form.get("anonymousSender") === "on",
@@ -224,13 +231,14 @@ export function CheckoutForm({
         </fieldset>
 
         <Field label={dictionary.checkout.name} name="customerName" required />
-        <div className="grid gap-5 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
           <Field label={dictionary.checkout.phone} name="phone" required />
           <Field label={dictionary.checkout.email} name="email" type="email" />
         </div>
         {fulfillment === "delivery" ? (
           <>
             <DeliveryCalculator
+              key={`${citySlug}-zones`}
               locale={locale}
               dictionary={dictionary}
               config={deliveryConfig}
@@ -238,7 +246,12 @@ export function CheckoutForm({
               compact
               onChange={onDeliveryChange}
             />
-            <Field label={dictionary.checkout.address} name="address" required />
+            <Field
+              label={dictionary.checkout.address}
+              name="address"
+              required
+              defaultValue={hints.hotelName || undefined}
+            />
           </>
         ) : (
           <Field
@@ -247,9 +260,25 @@ export function CheckoutForm({
             defaultValue="Pickup at studio"
           />
         )}
-        <div className="grid gap-5 sm:grid-cols-2">
+        <div className="grid grid-cols-2 gap-3 sm:gap-5">
           <Field label={dictionary.checkout.date} name="deliveryDate" type="date" />
-          <Field label={dictionary.checkout.time} name="deliveryTime" />
+          <label className="block">
+            <span className="text-[11px] tracking-[0.16em] text-moss uppercase">
+              {dictionary.checkout.time}
+            </span>
+            <select
+              name="deliveryTime"
+              defaultValue=""
+              className="mt-2 min-h-11 w-full rounded-full border border-forest/15 bg-white/70 px-4 py-3 text-sm outline-none focus:border-rose"
+            >
+              <option value="">{dictionary.checkout.timeAny}</option>
+              {DELIVERY_TIME_SLOTS.map((slot) => (
+                <option key={slot} value={slot}>
+                  {slot}
+                </option>
+              ))}
+            </select>
+          </label>
         </div>
         <Field
           label={dictionary.checkout.recipient}
@@ -260,17 +289,6 @@ export function CheckoutForm({
           label={dictionary.checkout.recipientPhone}
           name="recipientPhone"
         />
-        <div className="grid gap-5 sm:grid-cols-2">
-          <Field
-            label={dictionary.checkout.hotel}
-            name="hotelName"
-            defaultValue={hints.hotelName}
-          />
-          <Field label={dictionary.checkout.room} name="roomNumber" />
-        </div>
-        <p className="text-xs leading-6 text-moss">
-          {dictionary.checkout.hotelHint}
-        </p>
         <label className="flex min-h-11 items-center gap-2 text-sm text-forest">
           <input type="checkbox" name="anonymousSender" className="h-4 w-4" />
           {dictionary.checkout.anonymousSender}
@@ -281,12 +299,26 @@ export function CheckoutForm({
           </span>
           <textarea
             name="notes"
-            rows={4}
+            rows={3}
             defaultValue={hints.notes}
             placeholder={dictionary.checkout.notesPlaceholder}
             className="mt-2 w-full rounded-2xl border border-forest/15 bg-white/70 px-4 py-3 text-sm outline-none focus:border-rose"
           />
         </label>
+
+        {hasHandwrittenCard ? (
+          <label className="block">
+            <span className="text-[11px] tracking-[0.16em] text-moss uppercase">
+              {dictionary.checkout.cardMessage}
+            </span>
+            <textarea
+              name="cardMessage"
+              rows={3}
+              placeholder={dictionary.checkout.cardMessagePlaceholder}
+              className="mt-2 w-full rounded-2xl border border-forest/15 bg-white/70 px-4 py-3 text-sm outline-none focus:border-rose"
+            />
+          </label>
+        ) : null}
 
         <fieldset className="grid gap-2">
           <legend className="text-[11px] tracking-[0.16em] text-moss uppercase">
@@ -338,7 +370,7 @@ export function CheckoutForm({
         </button>
       </form>
 
-      <aside className="rounded-3xl bg-cream/70 p-6 h-fit">
+      <aside className="h-fit rounded-3xl bg-cream/70 p-6">
         <h2 className="serif text-2xl">{dictionary.checkout.summary}</h2>
         <ul className="mt-6 space-y-4">
           {items.map((item) => (
@@ -350,6 +382,14 @@ export function CheckoutForm({
               </div>
               <div className="flex-1 text-sm">
                 <p className="serif text-lg leading-tight">{item.name}</p>
+                {item.sku ? (
+                  <p className="mt-0.5 text-[11px] tracking-[0.08em] text-moss/80">
+                    {dictionary.product.skuLabel}{" "}
+                    <span className="font-medium tracking-[0.04em] text-forest">
+                      {item.sku}
+                    </span>
+                  </p>
+                ) : null}
                 {item.note ? (
                   <p className="text-xs text-moss italic">“{item.note}”</p>
                 ) : null}
@@ -392,7 +432,7 @@ export function CheckoutForm({
         <p className="mt-4 text-xs leading-6 text-moss">{dictionary.checkout.payNote}</p>
         <Link
           href={`/${locale}/shop`}
-          className="mt-4 inline-block text-[11px] tracking-[0.14em] uppercase border-b border-forest pb-0.5"
+          className="mt-4 inline-block border-b border-forest pb-0.5 text-[11px] tracking-[0.14em] uppercase"
         >
           {dictionary.checkout.backShop}
         </Link>
@@ -424,7 +464,7 @@ function Field({
         type={type}
         required={required}
         defaultValue={defaultValue}
-        className="mt-2 w-full rounded-full border border-forest/15 bg-white/70 px-4 py-3 text-sm outline-none focus:border-rose"
+        className="mt-2 min-h-11 w-full rounded-full border border-forest/15 bg-white/70 px-4 py-3 text-sm outline-none focus:border-rose"
       />
     </label>
   );

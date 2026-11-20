@@ -88,8 +88,8 @@ Project: `vztzjqodazcolxfcljsf` · region `ap-southeast-1`
 ### Customer email signup flow (branded)
 
 1. App registers via **Auth admin `generateLink({ type: "signup" })`** — Supabase does **not** send its default confirm mail
-2. App sends **Sisters Flowers** HTML verify mail (`info@…`, VI/EN by register locale)
-3. After the customer taps confirm → `/auth/callback` → **welcome** mail once
+2. App sends **Sisters Flowers** HTML verify mail (`info@…`, VI/EN by register locale) with a link to **`https://sistersflowers.vn/auth/confirm?token_hash=…`** (not `*.supabase.co/auth/v1/verify`)
+3. `/auth/confirm` runs `verifyOtp({ token_hash, type: "signup" })`, then **welcome** mail once
 
 Requires `SUPABASE_SERVICE_ROLE_KEY` on the VPS (same secret used for catalog uploads).
 
@@ -107,8 +107,10 @@ node --env-file=secrets/supabase-service.env --env-file=.env.local \
    - Site URL: `https://sistersflowers.vn`
    - Redirect URLs allowlist:
      - `https://sistersflowers.vn/auth/callback`
+     - `https://sistersflowers.vn/auth/confirm`
      - `https://sistersflowers.vn/**`
      - `http://localhost:3000/auth/callback` (local only)
+     - `http://localhost:3000/auth/confirm` (local only)
 3. You do **not** need Supabase Auth SMTP for signup confirm anymore (app sends verify/welcome). Optional SMTP there only if you still use Supabase-built recovery templates.
 
 App env (VPS + local) — deploy also runs `scripts/ensure-auth-env.mjs`:
