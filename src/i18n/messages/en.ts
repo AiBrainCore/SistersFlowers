@@ -144,14 +144,17 @@ export const en = {
     reviewsKicker: "From guests",
     reviewsTitle: "Trusted for local delivery.",
     reviewsBody:
-      "Guest notes stay in the language they wrote — we don’t rewrite them when you switch EN/VI. More stories live on our Google profiles.",
+      "A few notes from recent orders — hotels, homes, and celebrations across Vietnam. Read more on Google Reviews.",
     reviewsOnGoogle: "on Google",
+    reviewsOnGoogleReviews: "Google Reviews",
     reviewsViaGoogle: "Google",
     reviewsSeeGoogle: "Open Google reviews",
-    reviewsWritePrompt:
-      "Been a guest? A short review on our studio page helps the next person trust us.",
+    reviewsSeeGoogleReviews: "See Google Reviews",
+    reviewsSeeFacebook: "See on Facebook",
+    reviewsWritePrompt: "Been a guest? Leave a short review for the next person.",
     reviewsLeaveGoogle: "Leave a Google review",
     reviewsLeaveFacebook: "Leave a Facebook review",
+    reviewsFacebookFallback: "Reviews on our Facebook page for now",
     // Names kept for footer studio cards
     dalatName: "Da Lat",
     dalatStatus: "Open now",
