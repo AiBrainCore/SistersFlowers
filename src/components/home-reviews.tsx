@@ -10,6 +10,35 @@ import {
   type StudioGoogleProfile,
 } from "@/lib/guest-reviews";
 
+/** Multicolor “G” so guests recognize Google Reviews at a glance. */
+function GoogleMark({ className = "h-5 w-5" }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 48 48"
+      aria-hidden
+      focusable="false"
+    >
+      <path
+        fill="#FFC107"
+        d="M43.6 20.1H42V20H24v8h11.3C33.7 32.7 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 8 3l5.7-5.7C34.2 6.1 29.4 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.6-.4-3.9z"
+      />
+      <path
+        fill="#FF3D00"
+        d="M6.3 14.7 12.9 19.6C14.7 15.1 19 12 24 12c3.1 0 5.8 1.1 8 3l5.7-5.7C34.2 6.1 29.4 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"
+      />
+      <path
+        fill="#4CAF50"
+        d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.3 35.3 26.8 36 24 36c-5.3 0-9.7-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"
+      />
+      <path
+        fill="#1976D2"
+        d="M43.6 20.1H42V20H24v8h11.3c-.8 2.2-2.3 4.1-4.1 5.5l.1.1 6.2 5.2C39.2 36.3 44 31.5 44 24c0-1.3-.1-2.6-.4-3.9z"
+      />
+    </svg>
+  );
+}
+
 function StarRow({ stars }: { stars: number }) {
   return (
     <p
@@ -29,7 +58,7 @@ function StarRow({ stars }: { stars: number }) {
   );
 }
 
-function StudioLinkBadge({
+function CityReviewActions({
   profile,
   dictionary,
 }: {
@@ -38,44 +67,51 @@ function StudioLinkBadge({
 }) {
   const t = dictionary.home;
   const label = profile.slug === "dalat" ? t.dalatName : t.danangName;
-  const listingUrl = studioGoogleListingUrl(profile);
-  const showGoogleRating =
-    Boolean(listingUrl) &&
-    typeof profile.rating === "number" &&
-    (profile.reviewCount ?? 0) > 0;
+  const isGoogle = studioReviewCtaIsGoogle(profile);
+  const seeHref = studioGoogleListingUrl(profile) || profile.facebookUrl;
+  const leaveHref = studioReviewCtaUrl(profile);
 
-  if (showGoogleRating && listingUrl) {
-    return (
+  return (
+    <div className="glass flex h-full flex-col gap-3 rounded-2xl border border-citrus/15 p-4 shadow-[0_10px_28px_rgba(44,41,38,0.06)] sm:p-5">
+      <div className="flex items-start gap-3">
+        {isGoogle ? <GoogleMark className="mt-0.5 h-6 w-6 shrink-0" /> : null}
+        <div className="min-w-0 flex-1">
+          <p className="serif text-lg text-forest">{label}</p>
+          {isGoogle &&
+          typeof profile.rating === "number" &&
+          (profile.reviewCount ?? 0) > 0 ? (
+            <p className="mt-1 text-sm text-moss">
+              <span className="font-medium text-citrus">
+                {profile.rating.toFixed(1)} ★
+              </span>
+              <span>
+                {" "}
+                · {profile.reviewCount}+ {t.reviewsOnGoogleReviews}
+              </span>
+            </p>
+          ) : (
+            <p className="mt-1 text-sm text-moss">{t.reviewsFacebookFallback}</p>
+          )}
+        </div>
+      </div>
+
       <a
-        href={listingUrl}
+        href={seeHref}
         target="_blank"
         rel="noopener noreferrer"
-        className="glass inline-flex min-h-11 items-center gap-2 rounded-full border border-citrus/20 px-3.5 py-2 text-sm text-forest shadow-[0_8px_20px_rgba(44,41,38,0.06)] transition hover:border-citrus/40"
+        className="inline-flex min-h-11 items-center justify-center rounded-full border border-forest/15 bg-white px-4 text-center text-xs tracking-[0.1em] text-forest uppercase transition hover:border-citrus/40"
       >
-        <span className="serif text-citrus">{profile.rating!.toFixed(1)}</span>
-        <span className="text-citrus" aria-hidden>
-          ★
-        </span>
-        <span className="text-moss">
-          {label} · {profile.reviewCount}+ {t.reviewsOnGoogle}
-        </span>
-        <span className="sr-only">{t.reviewsSeeGoogle}</span>
+        {isGoogle ? t.reviewsSeeGoogleReviews : t.reviewsSeeFacebook}
       </a>
-    );
-  }
-
-  // No Place ID yet — pin our address / Facebook, never a fuzzy brand search.
-  return (
-    <a
-      href={profile.facebookUrl}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="glass inline-flex min-h-11 items-center gap-2 rounded-full border border-citrus/20 px-3.5 py-2 text-sm text-forest shadow-[0_8px_20px_rgba(44,41,38,0.06)] transition hover:border-citrus/40"
-    >
-      <span className="text-moss">
-        {label} · Facebook
-      </span>
-    </a>
+      <a
+        href={leaveHref}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-flex min-h-11 items-center justify-center rounded-full bg-citrus px-4 text-center text-xs tracking-[0.1em] text-ivory uppercase transition hover:bg-citrus/90"
+      >
+        {isGoogle ? t.reviewsLeaveGoogle : t.reviewsLeaveFacebook}
+      </a>
+    </div>
   );
 }
 
@@ -113,12 +149,6 @@ function ReviewCard({
 export function HomeReviews({ dictionary }: { dictionary: Dictionary }) {
   const t = dictionary.home;
   const reviews = pickGuestReviews(3);
-  const writeLinks = STUDIO_GOOGLE_PROFILES.map((profile) => ({
-    profile,
-    href: studioReviewCtaUrl(profile),
-    label: profile.slug === "dalat" ? t.dalatName : t.danangName,
-    isGoogle: studioReviewCtaIsGoogle(profile),
-  }));
 
   return (
     <section className="border-y border-forest/8 bg-cream/40">
@@ -133,15 +163,6 @@ export function HomeReviews({ dictionary }: { dictionary: Dictionary }) {
           <p className="mt-4 max-w-lg text-base leading-7 text-moss">
             {t.reviewsBody}
           </p>
-          <div className="mt-6 flex flex-wrap gap-2.5">
-            {STUDIO_GOOGLE_PROFILES.map((profile) => (
-              <StudioLinkBadge
-                key={profile.slug}
-                profile={profile}
-                dictionary={dictionary}
-              />
-            ))}
-          </div>
         </Reveal>
 
         <div className="mt-10 grid gap-4 md:grid-cols-3 md:gap-5">
@@ -156,20 +177,15 @@ export function HomeReviews({ dictionary }: { dictionary: Dictionary }) {
         </div>
 
         <Reveal>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+          <div className="mt-10">
             <p className="text-sm text-moss">{t.reviewsWritePrompt}</p>
-            <div className="flex flex-wrap gap-2">
-              {writeLinks.map(({ profile, href, label, isGoogle }) => (
-                <a
+            <div className="mt-4 grid gap-3 sm:grid-cols-2 sm:gap-4">
+              {STUDIO_GOOGLE_PROFILES.map((profile) => (
+                <CityReviewActions
                   key={profile.slug}
-                  href={href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex min-h-11 items-center rounded-full bg-citrus px-4 text-xs tracking-[0.12em] text-ivory uppercase"
-                >
-                  {isGoogle ? t.reviewsLeaveGoogle : t.reviewsLeaveFacebook} ·{" "}
-                  {label}
-                </a>
+                  profile={profile}
+                  dictionary={dictionary}
+                />
               ))}
             </div>
           </div>
