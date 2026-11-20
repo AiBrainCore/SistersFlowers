@@ -46,6 +46,8 @@ Searches for Da Nang phone `0327453536`, Facebook `sistersflowers.Danang`, and `
 4. Writereview becomes:  
    `https://search.google.com/local/writereview?placeid=…`
 
+Until then the homepage shows Facebook CTAs and address pins — not competitor listings.
+
 ### Adding a real Google quote
 
 Append to `GUEST_REVIEW_POOL` with `source: "google"`, verbatim text, guest first name (or initials), and `meta` like `Google · Đà Lạt`. Prefer 5★ only for the homepage rotation.
