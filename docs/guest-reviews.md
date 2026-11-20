@@ -43,3 +43,7 @@ Writereview:
 ### Adding a real Google quote
 
 Append to `GUEST_REVIEW_POOL` with `source: "google"`, verbatim text, guest first name (or initials), and `meta` like `Google · Đà Lạt`. Prefer 5★ only for the homepage rotation.
+
+## Deploy note
+
+Force-rebuild after deploy-script fixes so homepage Google CTAs match `main`.
