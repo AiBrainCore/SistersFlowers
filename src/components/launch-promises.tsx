@@ -13,7 +13,7 @@ type PromiseItem = {
 };
 
 function PromiseIcon({ kind }: { kind: PromiseItem["icon"] }) {
-  const className = "h-5 w-5 text-citrus";
+  const className = "h-6 w-6 text-citrus sm:h-7 sm:w-7";
   if (kind === "photo") return <IconBloom className={className} />;
   if (kind === "sameDay") return <IconTruck className={className} />;
   return <IconHeart className={className} />;
@@ -28,31 +28,27 @@ export function LaunchPromises({
 }) {
   return (
     <div
-      className={`rounded-[1.75rem] border border-forest/8 bg-white/75 p-5 shadow-[0_16px_40px_rgba(44,41,38,0.06)] sm:rounded-[2rem] sm:p-8 ${className}`.trim()}
+      className={`grid gap-3 sm:grid-cols-3 sm:gap-4 ${className}`.trim()}
       role="list"
     >
-      <div className="grid gap-6 sm:grid-cols-3 sm:gap-8">
-        {items.map((item, index) => (
-          <Reveal key={item.title} delay={index as 0 | 1 | 2}>
-            <div
-              role="listitem"
-              className={`flex flex-col gap-3 ${
-                index > 0 ? "sm:border-l sm:border-citrus/20 sm:pl-6" : ""
-              }`}
-            >
-              <span className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-cream ring-1 ring-citrus/20">
-                <PromiseIcon kind={item.icon} />
-              </span>
-              <div>
-                <h3 className="serif text-xl leading-snug text-forest sm:text-[1.35rem]">
-                  {item.title}
-                </h3>
-                <p className="mt-2 text-sm leading-6 text-moss">{item.body}</p>
-              </div>
+      {items.map((item, index) => (
+        <Reveal key={item.title} delay={index as 0 | 1 | 2}>
+          <div
+            role="listitem"
+            className="glass flex h-full flex-col gap-3 rounded-2xl border border-citrus/15 px-4 py-4 shadow-[0_12px_32px_rgba(44,41,38,0.07)] sm:px-5 sm:py-5"
+          >
+            <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-cream/90 ring-1 ring-citrus/25 sm:h-13 sm:w-13">
+              <PromiseIcon kind={item.icon} />
+            </span>
+            <div>
+              <h3 className="serif text-lg leading-snug text-forest sm:text-xl">
+                {item.title}
+              </h3>
+              <p className="mt-1.5 text-sm leading-6 text-moss">{item.body}</p>
             </div>
-          </Reveal>
-        ))}
-      </div>
+          </div>
+        </Reveal>
+      ))}
     </div>
   );
 }

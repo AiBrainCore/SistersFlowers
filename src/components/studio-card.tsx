@@ -70,8 +70,8 @@ export function StudioCard({
 
   return (
     <article
-      className={`overflow-hidden rounded-2xl border border-citrus/15 bg-white/80 ${
-        emphasize ? "shadow-[0_16px_40px_rgba(44,41,38,0.08)]" : ""
+      className={`overflow-hidden rounded-2xl border border-citrus/15 bg-white/85 shadow-[0_12px_32px_rgba(44,41,38,0.06)] ${
+        emphasize ? "shadow-[0_16px_40px_rgba(44,41,38,0.1)]" : ""
       }`}
     >
       <div
@@ -81,11 +81,15 @@ export function StudioCard({
       >
         <Image
           src={studio.image}
-          alt=""
+          alt={
+            locale === "vi"
+              ? `Studio Sisters Flowers — ${name}`
+              : `Sisters Flowers studio — ${name}`
+          }
           fill
           className="object-cover object-center"
           sizes="(min-width: 640px) 40vw, 92vw"
-          quality={70}
+          quality={68}
           loading="lazy"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-paper/95 via-paper/15 to-transparent" />

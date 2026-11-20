@@ -78,10 +78,14 @@ export function ShopByOccasion({
               >
                 <Image
                   src={card.image}
-                  alt=""
+                  alt={
+                    locale === "vi"
+                      ? `Hoa ${name} — Sisters Flowers`
+                      : `${name} flowers — Sisters Flowers`
+                  }
                   fill
                   sizes="(min-width: 768px) 18vw, 42vw"
-                  quality={70}
+                  quality={68}
                   loading="lazy"
                   className={`object-cover transition duration-700 ease-out ${
                     calm

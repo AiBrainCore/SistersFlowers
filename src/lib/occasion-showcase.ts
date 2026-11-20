@@ -1,47 +1,46 @@
 /**
- * Curated Shop-by-Occasion visuals — real Sisters studio photos,
- * chosen for occasion mood (not random product assignment).
- * Links still use Catalog 2.0 category slugs.
+ * Curated Shop-by-Occasion visuals — Sisters studio photos by mood.
+ * Links use Catalog 2.0 category slugs.
  */
 export const OCCASION_SHOWCASE = [
   {
     slug: "birthday",
-    image: "/bouquets/shown/w-01.jpg",
+    image: "/home/occasion-birthday.jpg",
     mood: "playful" as const,
   },
   {
     slug: "romance",
-    image: "/bouquets/shown/w-06.jpg",
+    image: "/home/occasion-romance.jpg",
     mood: "warm" as const,
   },
   {
     slug: "congratulations",
-    image: "/bouquets/shown/w-09.jpg",
+    image: "/home/occasion-congrats.jpg",
     mood: "playful" as const,
   },
   {
     slug: "anniversary",
-    image: "/bouquets/shown/w-08.jpg",
+    image: "/home/occasion-anniversary.jpg",
     mood: "warm" as const,
   },
   {
     slug: "wedding",
-    image: "/bouquets/shown/w-04.jpg",
+    image: "/home/occasion-wedding.jpg",
     mood: "refined" as const,
   },
   {
     slug: "graduation",
-    image: "/bouquets/shown/w-03.jpg",
+    image: "/home/occasion-graduation.jpg",
     mood: "playful" as const,
   },
   {
     slug: "condolences",
-    image: "/bouquets/shown/w-18.jpg",
+    image: "/home/occasion-condolences.jpg",
     mood: "calm" as const,
   },
   {
     slug: "everyday",
-    image: "/bouquets/shown/w-07.jpg",
+    image: "/home/occasion-everyday.jpg",
     mood: "refined" as const,
   },
 ] as const;

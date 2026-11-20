@@ -235,6 +235,7 @@ function mapError(code: string | null | undefined, t: Dictionary["account"]) {
   if (!code) return null;
   if (code === "auth_not_configured") return t.errorAuthConfig;
   if (code === "invalid_input") return t.errorInvalid;
+  if (code === "verify_email_failed") return t.errorVerifyEmail;
   if (code === "zalo_not_configured") return t.errorZaloConfig;
   if (code.startsWith("zalo_")) return t.errorZalo;
   return code;

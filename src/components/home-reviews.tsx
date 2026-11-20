@@ -23,17 +23,14 @@ export function HomeReviews({ dictionary }: { dictionary: Dictionary }) {
             {t.reviewsBody}
           </p>
         </Reveal>
-        <div className="mt-10 grid gap-6 md:grid-cols-3">
+        <div className="mt-10 grid gap-4 md:grid-cols-3 md:gap-5">
           {reviews.map((review, index) => (
-            <Reveal
-              key={review.name}
-              delay={(index + 1) as 1 | 2 | 3}
-            >
-              <blockquote className="flex h-full flex-col border-t border-citrus/35 pt-5">
+            <Reveal key={review.name} delay={(index + 1) as 1 | 2 | 3}>
+              <blockquote className="glass flex h-full flex-col rounded-2xl border border-citrus/15 p-5 shadow-[0_14px_36px_rgba(44,41,38,0.07)] sm:p-6">
                 <p className="flex-1 text-sm leading-7 text-forest">
                   “{review.quote}”
                 </p>
-                <footer className="mt-5">
+                <footer className="mt-5 border-t border-citrus/20 pt-4">
                   <p className="text-sm font-medium text-forest">{review.name}</p>
                   <p className="mt-0.5 text-xs tracking-[0.04em] text-moss">
                     {review.meta}

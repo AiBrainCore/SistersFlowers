@@ -97,6 +97,14 @@ export async function registerWithEmailAction(formData: FormData): Promise<AuthR
   });
 
   if (!sent.ok || ("skipped" in sent && sent.skipped)) {
+    // Roll back so the guest can retry register (no orphan Auth user).
+    await admin.auth.admin.deleteUser(user.id).catch((err) => {
+      console.error("[auth] rollback deleteUser", err);
+    });
+    await prisma.customer
+      .deleteMany({ where: { authUserId: user.id } })
+      .catch(() => undefined);
+    console.error("[auth] verify email not sent", sent);
     return { ok: false, error: "verify_email_failed" };
   }
 
