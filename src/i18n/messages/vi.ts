@@ -56,6 +56,8 @@ export const vi = {
     ordersEmpty: "Chưa có đơn — cửa hàng sẵn sàng khi bạn cần.",
     errorAuthConfig: "Đăng nhập chưa được cấu hình trên máy chủ này.",
     errorInvalid: "Nhập email hợp lệ và mật khẩu (từ 8 ký tự).",
+    errorVerifyEmail:
+      "Không gửi được email xác nhận. Vui lòng thử lại sau ít phút.",
     errorZaloConfig: "Đăng nhập Zalo chưa được cấu hình.",
     errorZalo: "Đăng nhập Zalo thất bại. Hãy thử email hoặc Google.",
   },

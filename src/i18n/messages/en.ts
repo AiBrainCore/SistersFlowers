@@ -55,6 +55,8 @@ export const en = {
     ordersEmpty: "No orders yet — the shop is ready when you are.",
     errorAuthConfig: "Account login is not configured on this server yet.",
     errorInvalid: "Enter a valid email and password (8+ characters).",
+    errorVerifyEmail:
+      "We could not send the confirmation email. Please try again in a moment.",
     errorZaloConfig: "Zalo login is not configured yet.",
     errorZalo: "Zalo login failed. Please try email or Google.",
   },

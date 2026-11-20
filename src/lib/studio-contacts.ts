@@ -43,7 +43,7 @@ export const STUDIO_CONTACTS: StudioContact[] = [
     nameVi: "Đà Nẵng",
     addressEn: "53 Luong Nhu Hoc, Hoa Cuong Bac, Hai Chau, Da Nang",
     addressVi: "53 Lương Nhữ Hộc, Hòa Cường Bắc, Hải Châu, Đà Nẵng",
-    image: "/bouquets/shown/w-01.jpg",
+    image: "/home/studio-danang.jpg",
     primaryDigits: "84327453536",
     phones: [
       { display: "032 745 3536", digits: "84327453536" },
@@ -61,7 +61,7 @@ export const STUDIO_CONTACTS: StudioContact[] = [
     nameVi: "Đà Lạt",
     addressEn: "04 Chi Lang, Ward 9, Da Lat, Lam Dong",
     addressVi: "Số 04 Chi Lăng, P. 9, TP. Đà Lạt, Lâm Đồng",
-    image: "/bouquets/shown/w-06.jpg",
+    image: "/home/studio-dalat.jpg",
     primaryDigits: "84904985761",
     phones: [
       { display: "0904 985 761", digits: "84904985761" },

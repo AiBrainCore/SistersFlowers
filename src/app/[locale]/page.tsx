@@ -25,8 +25,8 @@ import {
 import { HERO_BOUQUETS, type HeroBouquetItem } from "@/lib/hero-bouquets";
 import { STUDIO_CONTACTS } from "@/lib/studio-contacts";
 
-const studioImage = "/bouquets/b-12.jpg";
-const personalImage = "/bouquets/b-08.jpg";
+const studioImage = "/home/culture-vietnam.jpg";
+const personalImage = "/home/personal-custom.jpg";
 
 /** Matches ImmersiveHero main bouquet stage — keep in sync for LCP preload. */
 const HERO_LCP_SIZES =
@@ -138,11 +138,15 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
           <div className="relative min-h-[380px] sm:min-h-[480px]">
             <Image
               src={studioImage}
-              alt=""
+              alt={
+                locale === "vi"
+                  ? "Bó hoa Sisters Flowers gói tay tại Việt Nam"
+                  : "Hand-wrapped Sisters Flowers bouquet from Vietnam"
+              }
               fill
               className="object-cover"
               sizes="(min-width: 1024px) 50vw, 100vw"
-              quality={70}
+              quality={68}
               loading="lazy"
             />
           </div>
@@ -189,18 +193,22 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
         <div className="absolute inset-0">
           <Image
             src={personalImage}
-            alt=""
+            alt={
+              locale === "vi"
+                ? "Puokštė pagal užsakymą Sisters Flowers"
+                : "Custom Sisters Flowers bouquet"
+            }
             fill
             className="object-cover"
             sizes="100vw"
-            quality={70}
+            quality={68}
             loading="lazy"
           />
           <div className="absolute inset-0 bg-forest/45" />
         </div>
         <div className="relative mx-auto flex min-h-[420px] max-w-6xl items-end px-4 py-14 sm:px-5 sm:py-20">
           <Reveal>
-            <div className="glass max-w-md rounded-[1.75rem] p-6 sm:p-8">
+            <div className="glass max-w-md rounded-[1.75rem] p-6 shadow-[0_20px_50px_rgba(44,41,38,0.18)] sm:p-8">
               <h2 className="serif text-3xl text-forest sm:text-4xl">
                 {t.home.personalTitle}
               </h2>
