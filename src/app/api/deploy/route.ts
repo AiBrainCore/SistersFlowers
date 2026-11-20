@@ -49,6 +49,8 @@ export async function POST(req: Request) {
 
   // Break stale locks in the wrapper so recovery works even before the new
   // deploy-production.sh is pulled (hung npm holding flock bricks /_next/static).
+  // Force mode inside the script waits on flock (up to 2m) so a cron noop
+  // cannot drop this webhook.
   const wrapper = [
     "set -e",
     `LOCK='${LOCK_FILE}'`,

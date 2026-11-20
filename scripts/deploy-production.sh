@@ -21,6 +21,11 @@ if [ "${FORCE_DEPLOY:-0}" = "1" ]; then
   MODE="force"
 fi
 SCRIPT_SELF="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/$(basename "${BASH_SOURCE[0]}")"
+# Hash before git reset — compare after pull to decide whether to re-exec.
+if [ -z "${SF_DEPLOY_SCRIPT_HASH:-}" ]; then
+  SF_DEPLOY_SCRIPT_HASH="$(sha256sum "$SCRIPT_SELF" 2>/dev/null | awk '{print $1}')"
+  export SF_DEPLOY_SCRIPT_HASH
+fi
 
 clear_stale_lock() {
   if [ ! -f "$LOCK_FILE" ]; then
@@ -43,7 +48,13 @@ clear_stale_lock() {
 if [ "${SF_DEPLOY_LOCK_HELD:-0}" != "1" ]; then
   clear_stale_lock
   exec 9>"$LOCK_FILE"
-  if ! flock -n 9; then
+  if [ "$MODE" = "force" ]; then
+    # GitHub webhook must not lose to a short cron noop — wait up to 2 minutes.
+    if ! flock -w 120 9; then
+      echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) force deploy: lock busy >120s — abort" | tee -a "$LOG_FILE"
+      exit 1
+    fi
+  elif ! flock -n 9; then
     echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) deploy already running — skip" | tee -a "$LOG_FILE"
     exit 0
   fi
@@ -90,15 +101,18 @@ trap 'rm -f "$LOCK_PID_FILE"' EXIT
     exit 0
   fi
 
-  # Bash already loaded this file before git reset. Re-exec once so script
-  # changes (e.g. sidecar .next.new) apply on the same deploy that pulls them.
+  # Re-exec only when this script changed on disk — otherwise we keep NEED_BUILD
+  # in the same bash process and rebuild immediately (avoids auto-noop races).
   if [ "$DID_RESET" = "1" ] && [ -z "${SF_DEPLOY_BOOTSTRAPPED:-}" ]; then
-    echo "Re-exec after git sync so deploy script updates apply"
-    export SF_DEPLOY_BOOTSTRAPPED=1
-    export SF_DEPLOY_LOCK_HELD=1
-    export SF_DEPLOY_NEED_BUILD=1
-    export FORCE_DEPLOY
-    exec bash "$SCRIPT_SELF" "$MODE"
+    SCRIPT_HASH_NOW="$(sha256sum "$SCRIPT_SELF" 2>/dev/null | awk '{print $1}')"
+    if [ -n "${SF_DEPLOY_SCRIPT_HASH:-}" ] && [ -n "$SCRIPT_HASH_NOW" ] && [ "$SF_DEPLOY_SCRIPT_HASH" != "$SCRIPT_HASH_NOW" ]; then
+      echo "Deploy script changed on disk — re-exec so updates apply"
+      export SF_DEPLOY_BOOTSTRAPPED=1
+      export SF_DEPLOY_LOCK_HELD=1
+      export SF_DEPLOY_NEED_BUILD=1
+      export FORCE_DEPLOY
+      exec bash "$SCRIPT_SELF" "$MODE"
+    fi
   fi
 
   if [ -f scripts/ensure-auth-env.mjs ]; then
