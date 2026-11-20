@@ -39,6 +39,7 @@ yarn-error.log*
 !/secrets/README.md
 !/secrets/supabase-service.env.example
 !/secrets/openai.env.example
+!/secrets/mail.env.example
 .server-credentials*
 *.ssh-config.local
 
