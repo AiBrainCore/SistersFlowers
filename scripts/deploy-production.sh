@@ -62,13 +62,22 @@ trap 'rm -f "$LOCK_PID_FILE"' EXIT
 
   NEED_BUILD=0
   DID_RESET=0
+  # Survives re-exec: auto mode after git reset must still rebuild .next
+  # (otherwise LOCAL==REMOTE + existing .next → false noop with stale assets).
+  if [ "${SF_DEPLOY_NEED_BUILD:-0}" = "1" ]; then
+    NEED_BUILD=1
+  fi
   if [ "$LOCAL" != "$REMOTE" ]; then
     echo "Updating $LOCAL -> $REMOTE"
     git reset --hard "origin/$BRANCH"
     NEED_BUILD=1
     DID_RESET=1
-  elif [ "$MODE" = "force" ]; then
-    echo "Git already at $LOCAL — force rebuild"
+  elif [ "$MODE" = "force" ] || [ "$NEED_BUILD" = "1" ]; then
+    if [ "$MODE" = "force" ]; then
+      echo "Git already at $LOCAL — force rebuild"
+    else
+      echo "Git already at $LOCAL — rebuild required after sync"
+    fi
     git reset --hard "origin/$BRANCH"
     NEED_BUILD=1
     DID_RESET=1
@@ -87,6 +96,7 @@ trap 'rm -f "$LOCK_PID_FILE"' EXIT
     echo "Re-exec after git sync so deploy script updates apply"
     export SF_DEPLOY_BOOTSTRAPPED=1
     export SF_DEPLOY_LOCK_HELD=1
+    export SF_DEPLOY_NEED_BUILD=1
     export FORCE_DEPLOY
     exec bash "$SCRIPT_SELF" "$MODE"
   fi
