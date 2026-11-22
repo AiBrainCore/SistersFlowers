@@ -4,13 +4,16 @@ Separate **Implemented** · **Configured** · **Live & verified**.
 
 ## VietQR (priority launch)
 
-- [ ] Receiving account created in Admin → Payments (no hardcoded numbers in repo)
-- [ ] Bank BIN / name / number / holder verified against VietinBank evidence
-- [ ] Account marked **Verified**
+Shop flow (no online deposit): **QR → full transfer → customer “I’ve paid” → staff Confirm paid → production**.
+
+- [ ] Receiving account created in **Admin → Payments** (no hardcoded numbers in repo)
+- [ ] **City scope = Da Lat** (and/or Da Nang) so each city checkout gets the right QR
+- [ ] Bank BIN / name / number / holder verified against bank evidence
+- [ ] Account marked **Verified** + **Active**
 - [ ] Method `vietqr` **enabled** and Coming soon **off**
 - [ ] Test transfer of small amount with transfer content `SF…`
-- [ ] Staff confirm-paid path verified on a test order
-- [ ] Customer email / WhatsApp still work when SMTP present
+- [ ] Staff **Confirm paid** → order becomes `confirmed`, studio + customer mails fire
+- [ ] Customer emails: placed · payment accepted · ready pickup / ready ship · dispatched · completed
 - [ ] Production DB is durable Postgres (Supabase) — never ephemeral SQLite disk
 
 ## payOS

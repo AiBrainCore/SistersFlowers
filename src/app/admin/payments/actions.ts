@@ -218,11 +218,12 @@ export async function confirmShopPaymentAction(formData: FormData) {
       );
 
       if (order.email) {
+        // Shop: full payment confirmed → clear “payment accepted” (not deposit).
         await notifyOrderStatusEmail({
           orderId: order.id,
           reference: order.reference,
           locale: order.locale === "en" ? "en" : "vi",
-          status: "accepted",
+          status: "payment_accepted",
           customerName: order.customerName,
           email: order.email,
           citySlug,
@@ -408,18 +409,21 @@ export async function updateShopOrderStatusAction(formData: FormData) {
   ]);
 
   try {
+    // Shop storefront: full payment first — no customer emails for preparing noise.
     const mailStatus =
       status === "confirmed"
         ? "accepted"
-        : status === "ready_for_pickup" || status === "ready_for_dispatch"
-          ? "ready"
-          : status === "out_for_delivery"
-            ? "dispatched"
-            : status === "completed" || status === "delivered"
-              ? "completed"
-              : status === "cancelled"
-                ? "cancelled"
-                : null;
+        : status === "ready_for_pickup"
+          ? "ready_pickup"
+          : status === "ready_for_dispatch"
+            ? "ready_ship"
+            : status === "out_for_delivery"
+              ? "dispatched"
+              : status === "completed" || status === "delivered"
+                ? "completed"
+                : status === "cancelled"
+                  ? "cancelled"
+                  : null;
     if (mailStatus && order.email) {
       const { notifyOrderStatusEmail } = await import(
         "@/lib/mail/order-notify"
@@ -454,12 +458,16 @@ export async function setDeliveryQuoteAction(formData: FormData) {
 
   const order = await prisma.order.findUnique({
     where: { id: orderId },
-    include: { paymentIntents: true },
+    include: {
+      paymentIntents: true,
+      branch: { include: { city: true } },
+    },
   });
   if (!order) redirect("/admin/orders");
 
   const payableTotal = order.subtotal + fee;
   const method = order.paymentMethod || "whatsapp";
+  const citySlug = order.branch?.city.slug || null;
 
   await prisma.$transaction([
     prisma.order.update({
@@ -504,6 +512,7 @@ export async function setDeliveryQuoteAction(formData: FormData) {
         amount: payableTotal,
         method,
         branchId: order.branchId,
+        citySlug,
         locale: order.locale,
         siteUrl:
           process.env.NEXT_PUBLIC_SITE_URL || process.env.MAIL_PUBLIC_SITE_URL,

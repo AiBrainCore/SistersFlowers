@@ -129,7 +129,16 @@ export async function notifyOrderStatusEmail(input: {
   email?: string | null;
   citySlug?: string | null;
 }) {
-  const customerFacing = ["accepted", "ready", "dispatched", "completed", "cancelled"];
+  const customerFacing = [
+    "accepted",
+    "payment_accepted",
+    "ready",
+    "ready_pickup",
+    "ready_ship",
+    "dispatched",
+    "completed",
+    "cancelled",
+  ];
   if (!customerFacing.includes(input.status) || !input.email) return null;
 
   const mail = buildOrderStatusEmail({

@@ -285,7 +285,10 @@ export function buildOrderStatusEmail(input: {
       input.locale === "vi" ? "Chi nhánh" : "Branch",
     ),
     ["Ref", escapeHtml(input.reference)],
-    ["Status", escapeHtml(input.status)],
+    [
+      input.locale === "vi" ? "Trạng thái" : "Status",
+      escapeHtml(c.heading),
+    ],
   ];
   const body = [
     mailHeading(c.heading),

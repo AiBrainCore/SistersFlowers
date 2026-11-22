@@ -4,8 +4,17 @@ export async function resolvePaymentAccount(input?: {
   citySlug?: string | null;
   branchId?: string | null;
 }) {
-  const citySlug = input?.citySlug || null;
+  let citySlug = input?.citySlug || null;
   const branchId = input?.branchId || null;
+
+  // City-scoped accounts (e.g. Da Lat VietQR) must still match when only branchId is known.
+  if (!citySlug && branchId) {
+    const branch = await prisma.branch.findUnique({
+      where: { id: branchId },
+      select: { city: { select: { slug: true } } },
+    });
+    citySlug = branch?.city.slug || null;
+  }
 
   const accounts = await prisma.paymentAccount.findMany({
     where: { active: true },
