@@ -528,11 +528,11 @@ export const en = {
     awaiting: "Waiting for payment confirmation",
     paid: "Payment received",
     instructions:
-      "Open your banking app, scan the QR or transfer the exact amount with the transfer content above. When the studio sees the money in their bank, they confirm the order and start your bouquet — viewing the QR is not payment.",
+      "One phone: tap Save QR, open your banking app → Scan QR → choose from Photos / gallery (Quét ảnh), then confirm. Or copy account number + amount + transfer content and transfer manually. When the studio sees the money, they confirm and start your bouquet — only viewing the QR is not payment.",
     trackTitle: "Order status",
     trackPay: "Payment",
     trackFulfillment: "Studio progress",
-    saveQr: "Save QR image",
+    saveQr: "Save QR (then scan in bank app)",
   },
   contact: {
     kicker: "Contact",

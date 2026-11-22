@@ -528,11 +528,11 @@ export const vi = {
     awaiting: "Đang chờ xác nhận thanh toán",
     paid: "Đã nhận thanh toán",
     instructions:
-      "Mở app ngân hàng, quét QR hoặc chuyển đúng số tiền kèm nội dung trên. Khi studio thấy tiền vào tài khoản, họ xác nhận đơn và bắt đầu làm hoa — chỉ xem QR chưa phải đã thanh toán.",
+      "Một máy: bấm Lưu ảnh QR → mở app ngân hàng → Quét QR / Quét ảnh (chọn ảnh vừa lưu) → xác nhận. Hoặc sao chép số tài khoản + số tiền + nội dung chuyển khoản và chuyển tay. Khi studio thấy tiền vào, họ xác nhận và bắt đầu làm hoa — chỉ xem QR chưa phải đã thanh toán.",
     trackTitle: "Trạng thái đơn",
     trackPay: "Thanh toán",
     trackFulfillment: "Tiến độ studio",
-    saveQr: "Lưu ảnh QR",
+    saveQr: "Lưu ảnh QR (rồi quét trong app ngân hàng)",
   },
   contact: {
     kicker: "Liên hệ",
