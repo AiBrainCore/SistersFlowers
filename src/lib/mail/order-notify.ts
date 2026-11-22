@@ -6,7 +6,6 @@ import {
   buildOrderCustomerEmail,
   buildOrderStatusEmail,
   buildOrderStudioEmail,
-  buildStudioPaymentClaimedEmail,
   buildStudioPaymentConfirmedEmail,
   type InquiryMailPayload,
   type OrderMailPayload,
@@ -64,33 +63,6 @@ export async function notifyOrderEmails(
   );
 
   return results;
-}
-
-/** Studio inbox: guest claims VietQR transfer done. */
-export async function notifyStudioPaymentClaimed(input: {
-  orderId: string;
-  reference: string;
-  customerName: string;
-  phone: string;
-  amount: number;
-  transferRef?: string | null;
-  citySlug?: string | null;
-  fulfillment?: string | null;
-}) {
-  const mail = buildStudioPaymentClaimedEmail(input);
-  const studioTo = studioInboxForCity(input.citySlug);
-  return sendMail({
-    to: studioTo,
-    from: "orders",
-    subject: mail.subject,
-    html: mail.html,
-    replyTo: MAILBOX.replyTo,
-    citySlug: input.citySlug,
-    transactional: true,
-    eventKey: `order:${input.orderId}:payment-claim:studio`,
-    relatedType: "order",
-    relatedId: input.orderId,
-  });
 }
 
 /** Studio inbox: bank confirmed — start production. */
