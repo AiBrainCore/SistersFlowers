@@ -42,40 +42,81 @@ export type StudioGoogleProfile = {
   facebookUrl: string;
 };
 
-/** Curated 5★ notes. Prefer real Google / guest wording; keep original language. */
+/**
+ * Real Google Business 5★ quotes (verbatim, original language).
+ * Homepage shows 3/day via pickGuestReviews — mixed across cities when possible.
+ * City CTAs below the cards still open each studio’s own Google listing.
+ */
 export const GUEST_REVIEW_POOL: GuestReview[] = [
   {
-    id: "emma-danang-hotel",
+    id: "google-dalat-thu-nguyen",
     quote:
-      "Ordered from abroad for a hotel surprise in Da Nang. Clear English replies, photo before delivery, and it arrived on time.",
-    name: "Emma",
-    meta: "Hotel delivery · Da Nang",
+      "Hoa đẹp,phối hoa siêu ưng. C chủ deth nhiệt tình,tư vấn hoa cho chồng mình niềm nở và mình cực kì ưng hoa ở đây. Chồng mình lựa bó nào mình cũng ưng. Shopp 10đ nhé",
+    name: "Thu",
+    meta: "Đà Lạt",
     stars: 5,
-    source: "studio",
-    studio: "danang",
-  },
-  {
-    id: "minh-dalat-birthday",
-    quote:
-      "Beautiful handcrafted bouquet. The studio confirmed the address and time on WhatsApp — easy from start to finish.",
-    name: "Minh",
-    meta: "Birthday · Da Lat",
-    stars: 5,
-    source: "studio",
+    source: "google",
     studio: "dalat",
   },
   {
-    id: "james-danang-welcome",
+    id: "google-dalat-meo-mun",
     quote:
-      "We needed flowers for a guest arrival. Reception coordination was smooth and the wrap looked exactly like the photo.",
-    name: "James",
-    meta: "Hotel welcome · Da Nang",
+      "Lần đầu mình mua hoa tại shop để tặng bạn. Rất ưng ý lại đặt bó nữa về chưng lên bàn cho đẹp. Cô chủ dễ thương, cắm hoa đẹp. Shop trang trí cũng xinh nữa. Sẽ quay lại ủng hộ",
+    name: "Mèo Mun",
+    meta: "Đà Lạt",
     stars: 5,
-    source: "studio",
+    source: "google",
+    studio: "dalat",
+  },
+  {
+    id: "google-dalat-sandy",
+    quote:
+      "Shop dễ thương, nhiệt tình. Sản phẩm mình nhận được vượt cả sự mong đợi, giá cả thì rất phải chăng. Một shop hoa xinh đẹp giữa lòng Đà Lạt. Mọi người lên Đà Lạt có đặt hoa thì ủng hộ shop nha.",
+    name: "Sandy",
+    meta: "Đà Lạt",
+    stars: 5,
+    source: "google",
+    studio: "dalat",
+  },
+  {
+    id: "google-dalat-nhung",
+    quote: "Chủ shop nhiệt tình, hoa đẹp lắm ạ",
+    name: "Nhung",
+    meta: "Đà Lạt",
+    stars: 5,
+    source: "google",
+    studio: "dalat",
+  },
+  {
+    id: "google-dalat-phuong",
+    quote:
+      "Hoa tươi, mix màu dễ thương đúng ý mình, chủ shop nhiệt tình, ship nhanh. 10 điểm cho sự chỉnh chu này, sẽ ủng hộ dài dài",
+    name: "Phương",
+    meta: "Đà Lạt",
+    stars: 5,
+    source: "google",
+    studio: "dalat",
+  },
+  {
+    id: "google-danang-albert",
+    quote:
+      "Beautiful flowers, lovely atmosphere, and friendly staff. Highly recommend!",
+    name: "Albert",
+    meta: "Đà Nẵng",
+    stars: 5,
+    source: "google",
     studio: "danang",
   },
-  // Paste real Google Business quotes below (verbatim, original language), e.g.:
-  // { id: "google-dalat-…", quote: "…", name: "…", meta: "Google · Đà Lạt", stars: 5, source: "google", studio: "dalat" },
+  {
+    id: "google-danang-thu-tinh",
+    quote:
+      "Shop hoa xinh lắm luôn, ngay mặt đường dễ tìm, chủ shop tư vấn rất nhiệt tình, mình sẽ qua lại nữa… mua được bó hoa xinh xỉu",
+    name: "Thu Tình",
+    meta: "Đà Nẵng",
+    stars: 5,
+    source: "google",
+    studio: "danang",
+  },
 ];
 
 function studioBySlug(slug: "dalat" | "danang") {
@@ -106,7 +147,8 @@ export const STUDIO_GOOGLE_PROFILES: StudioGoogleProfile[] = [
   {
     slug: "danang",
     placeId: "ChIJR3OPOi4ZQjERSv5_hslH2oQ",
-    // New listing — no public rating count yet; CTAs still open Google.
+    rating: 5.0,
+    reviewCount: 2,
     mapsUrl: studioMapsUrl(studioBySlug("danang")),
     facebookUrl: studioBySlug("danang").socials.facebook,
   },
@@ -133,7 +175,10 @@ export function studioGoogleWriteReviewUrl(profile: StudioGoogleProfile) {
   return studioReviewCtaUrl(profile);
 }
 
-/** Deterministic daily pick so SSR and client stay in sync. */
+/**
+ * Deterministic daily pick so SSR and client stay in sync.
+ * When both cities have quotes, prefer at least one from each in the first slots.
+ */
 export function pickGuestReviews(
   count = 3,
   dayKey = utcDayKey(new Date()),
@@ -142,7 +187,25 @@ export function pickGuestReviews(
   if (pool.length <= count) return pool.slice();
 
   const order = seededOrder(pool.length, dayKey);
-  return order.slice(0, count).map((i) => pool[i]!);
+  const picked: GuestReview[] = [];
+  const used = new Set<number>();
+
+  for (const studio of ["dalat", "danang"] as const) {
+    if (picked.length >= count) break;
+    const idx = order.find((i) => !used.has(i) && pool[i]!.studio === studio);
+    if (idx === undefined) continue;
+    used.add(idx);
+    picked.push(pool[idx]!);
+  }
+
+  for (const i of order) {
+    if (picked.length >= count) break;
+    if (used.has(i)) continue;
+    used.add(i);
+    picked.push(pool[i]!);
+  }
+
+  return picked;
 }
 
 function utcDayKey(date: Date) {
