@@ -135,43 +135,9 @@ export async function markIntentPaid(input: {
   actor?: string;
   note?: string;
 }) {
-  const intent = await prisma.paymentIntent.findUnique({
-    where: { id: input.intentId },
-    include: { order: true },
-  });
-  if (!intent) throw new Error("intent_not_found");
-  if (intent.status === "paid") return intent;
-
-  const now = new Date();
-  await prisma.$transaction([
-    prisma.paymentIntent.update({
-      where: { id: intent.id },
-      data: { status: "paid", paidAt: now },
-    }),
-    prisma.order.update({
-      where: { id: intent.orderId },
-      data: { paymentStatus: "paid" },
-    }),
-    prisma.orderPayment.create({
-      data: {
-        orderId: intent.orderId,
-        kind: "full",
-        method: intent.method,
-        amount: intent.amount,
-        note: input.note || `Confirmed ${intent.reference}`,
-        seenAt: now,
-      },
-    }),
-    prisma.orderStatusHistory.create({
-      data: {
-        orderId: intent.orderId,
-        fromStatus: intent.order.paymentStatus,
-        toStatus: "paid",
-        note: input.note || "Payment confirmed",
-        actor: input.actor || "admin",
-      },
-    }),
-  ]);
-
-  return prisma.paymentIntent.findUnique({ where: { id: intent.id } });
+  const { markIntentPaidAndAdvance } = await import(
+    "@/lib/payments/confirm-flow"
+  );
+  const result = await markIntentPaidAndAdvance(input);
+  return result.intent;
 }
