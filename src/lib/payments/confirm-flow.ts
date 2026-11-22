@@ -4,60 +4,9 @@ import { prisma } from "@/lib/db";
 const ADVANCE_ON_PAID = new Set(["new", "awaiting_payment"]);
 
 /**
- * Customer tapped “I've paid” after VietQR transfer.
- * Does NOT mark the order paid — studio must still confirm the bank credit.
- */
-export async function markCustomerReportedPaid(input: {
-  trackingToken: string;
-}) {
-  const order = await prisma.order.findFirst({
-    where: { trackingToken: input.trackingToken },
-    include: {
-      paymentIntents: { orderBy: { createdAt: "desc" }, take: 1 },
-      branch: { include: { city: true } },
-      items: true,
-    },
-  });
-  if (!order) throw new Error("order_not_found");
-
-  const intent = order.paymentIntents[0] || null;
-  if (!intent) throw new Error("intent_not_found");
-  if (intent.status === "paid" || order.paymentStatus === "paid") {
-    return { order, intent, already: "paid" as const };
-  }
-  if (intent.status === "processing") {
-    return { order, intent, already: "processing" as const };
-  }
-  if (intent.status !== "pending") {
-    throw new Error("intent_not_pending");
-  }
-
-  const now = new Date();
-  await prisma.$transaction([
-    prisma.paymentIntent.update({
-      where: { id: intent.id },
-      data: { status: "processing" },
-    }),
-    prisma.orderStatusHistory.create({
-      data: {
-        orderId: order.id,
-        fromStatus: intent.status,
-        toStatus: "processing",
-        note: "Customer reported bank transfer completed",
-        actor: "customer",
-      },
-    }),
-  ]);
-
-  const updated = await prisma.paymentIntent.findUniqueOrThrow({
-    where: { id: intent.id },
-  });
-  return { order, intent: updated, already: null };
-}
-
-/**
- * Studio confirmed money arrived. Marks intent+order paid and advances
- * fulfillment to "confirmed" when the order was waiting on payment.
+ * Studio confirmed money arrived (bank app / statement). Marks intent+order paid
+ * and advances fulfillment to "confirmed" when the order was waiting on payment.
+ * Guests do not self-report payment — staff Confirm paid is the only path.
  */
 export async function markIntentPaidAndAdvance(input: {
   intentId: string;

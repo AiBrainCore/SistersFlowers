@@ -6,7 +6,6 @@ import { getStorefrontDictionary } from "@/lib/storefront";
 import { prisma } from "@/lib/db";
 import { formatVnd } from "@/data/products";
 import { PaymentCopyButton } from "@/components/payment-copy-button";
-import { PaymentReportedButton } from "@/components/payment-reported-button";
 
 export const dynamic = "force-dynamic";
 
@@ -32,7 +31,6 @@ export default async function OrderPayPage({
   const intent = order.paymentIntents[0] || null;
   const paid =
     order.paymentStatus === "paid" || intent?.status === "paid";
-  const verifying = !paid && intent?.status === "processing";
   const snapshot = intent?.accountSnapshot
     ? (JSON.parse(intent.accountSnapshot) as {
         bankName?: string;
@@ -48,11 +46,7 @@ export default async function OrderPayPage({
       </p>
       <h1 className="serif mt-3 text-4xl text-forest">{t.payments.payTitle}</h1>
       <p className="mt-3 text-sm text-moss">
-        {paid
-          ? t.payments.paid
-          : verifying
-            ? t.payments.verifying
-            : t.payments.awaiting}
+        {paid ? t.payments.paid : t.payments.awaiting}
       </p>
 
       <div className="mt-8 rounded-3xl border border-forest/10 bg-white/80 p-5">
@@ -124,26 +118,10 @@ export default async function OrderPayPage({
           </dl>
         ) : null}
 
-        {!paid && !verifying ? (
+        {!paid ? (
           <p className="mt-6 text-xs leading-6 text-moss">
             {t.payments.instructions}
           </p>
-        ) : null}
-
-        {!paid && verifying ? (
-          <p className="mt-6 rounded-2xl border border-citrus/25 bg-citrus/5 px-4 py-3 text-sm leading-6 text-forest">
-            {t.payments.ivePaidDone}
-          </p>
-        ) : null}
-
-        {!paid && !verifying && intent?.method === "vietqr" ? (
-          <PaymentReportedButton
-            trackingToken={token}
-            label={t.payments.ivePaid}
-            doneLabel={t.payments.ivePaidDone}
-            busyLabel={t.payments.ivePaidBusy}
-            errorLabel={t.payments.ivePaidError}
-          />
         ) : null}
       </div>
 
@@ -173,7 +151,6 @@ export default async function OrderPayPage({
         ))}
       </ul>
 
-      {/* brand mark for trust */}
       <div className="mt-12 flex justify-center opacity-70">
         <Image
           src="/brand/mark-citrus.png"
