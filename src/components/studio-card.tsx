@@ -18,6 +18,14 @@ type SocialLabels = {
   zalo: string;
 };
 
+const SOCIAL_ICONS: Record<string, string | null> = {
+  facebook: "/brand/social/facebook.png",
+  messenger: null,
+  tiktok: "/brand/social/tiktok.png",
+  whatsapp: "/brand/social/whatsapp.png",
+  zalo: "/brand/social/zalo.png",
+};
+
 export function StudioCard({
   studio,
   locale,
@@ -30,7 +38,7 @@ export function StudioCard({
   locale: Locale;
   directionsLabel: string;
   callLabel: string;
-  /** When set, show phone list heading + social chips (contact page). */
+  /** Contact headings + accessible names for social chips. */
   socialLabels?: SocialLabels;
   emphasize?: boolean;
 }) {
@@ -108,12 +116,12 @@ export function StudioCard({
           {address}
         </a>
 
-        {socialLabels ? (
+        {emphasize && socialLabels ? (
           <p className="mt-5 text-[10px] tracking-[0.16em] text-citrus uppercase">
             {socialLabels.phones}
           </p>
         ) : null}
-        <ul className={`${socialLabels ? "mt-2" : "mt-3"} space-y-0.5`}>
+        <ul className={`${emphasize && socialLabels ? "mt-2" : "mt-3"} space-y-0.5`}>
           {studio.phones.map((phone) => (
             <li key={phone.digits}>
               <a
@@ -126,26 +134,80 @@ export function StudioCard({
           ))}
         </ul>
 
-        {socialLabels ? (
-          <div className="mt-5">
+        <div className={emphasize && socialLabels ? "mt-5" : "mt-4"}>
+          {emphasize && socialLabels ? (
             <p className="text-[10px] tracking-[0.16em] text-citrus uppercase">
               {socialLabels.social}
             </p>
-            <div className="mt-2.5 flex flex-wrap gap-2">
-              {socialLinks.map((item) => (
+          ) : null}
+          <div
+            className={`flex flex-wrap items-center gap-2 ${
+              emphasize && socialLabels ? "mt-2.5" : ""
+            }`}
+            aria-label={socialLabels?.social || "Social"}
+          >
+            {socialLinks.map((item) => {
+              const icon = SOCIAL_ICONS[item.key];
+              // Homepage Find us: compact icon circles (Messenger as short chip).
+              if (!emphasize) {
+                if (icon) {
+                  return (
+                    <a
+                      key={item.key}
+                      href={item.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      aria-label={item.label}
+                      title={item.label}
+                      className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-forest/12 bg-cream/80 transition hover:border-citrus/40 hover:bg-white"
+                    >
+                      <Image
+                        src={icon}
+                        alt=""
+                        width={22}
+                        height={22}
+                        className="h-[22px] w-[22px] object-contain"
+                      />
+                    </a>
+                  );
+                }
+                return (
+                  <a
+                    key={item.key}
+                    href={item.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={item.label}
+                    title={item.label}
+                    className="inline-flex h-11 items-center rounded-full border border-forest/12 bg-cream/80 px-3 text-[10px] tracking-[0.12em] text-forest uppercase transition hover:border-citrus/40 hover:text-citrus"
+                  >
+                    {item.label}
+                  </a>
+                );
+              }
+              return (
                 <a
                   key={item.key}
                   href={item.href}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex min-h-10 items-center rounded-full border border-forest/15 bg-cream/70 px-3.5 text-[11px] tracking-[0.1em] text-forest uppercase transition hover:border-citrus/45 hover:text-citrus"
+                  className="inline-flex min-h-10 items-center gap-2 rounded-full border border-forest/15 bg-cream/70 px-3.5 text-[11px] tracking-[0.1em] text-forest uppercase transition hover:border-citrus/45 hover:text-citrus"
                 >
+                  {icon ? (
+                    <Image
+                      src={icon}
+                      alt=""
+                      width={16}
+                      height={16}
+                      className="h-4 w-4 object-contain"
+                    />
+                  ) : null}
                   {item.label}
                 </a>
-              ))}
-            </div>
+              );
+            })}
           </div>
-        ) : null}
+        </div>
 
         <div className="mt-5 flex flex-wrap gap-2">
           <a

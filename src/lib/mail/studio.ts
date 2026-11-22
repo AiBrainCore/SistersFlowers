@@ -2,6 +2,7 @@ import type { Locale } from "@/i18n/config";
 import {
   STUDIO_CONTACTS,
   studioMapsUrl,
+  studioZaloUrl,
   type StudioContact,
 } from "@/lib/studio-contacts";
 
@@ -104,7 +105,7 @@ export function mailSocialLinks(citySlug?: string | null) {
       label: "Zalo",
       href:
         process.env.MAIL_SOCIAL_ZALO?.trim() ||
-        "https://zalo.me/84327453536",
+        (studio ? studioZaloUrl(studio) : "https://zalo.me/84327453536"),
       cid: "sf-social-zalo",
       path: "/brand/social/zalo.png",
     },
