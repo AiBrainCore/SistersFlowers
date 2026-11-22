@@ -493,7 +493,7 @@ export const en = {
     phone: "Call",
     address: "Visit",
     studios: "Find us",
-    directions: "Directions",
+    directions: "Maps",
     call: "Call",
     seo: "Sisters Flowers is a flower studio in Da Nang and Da Lat, Vietnam. In our studios we craft fresh bouquets, wedding arrangements, and distinctive gifts that delight from the first moment.",
     seoExtra:
