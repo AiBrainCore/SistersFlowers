@@ -514,7 +514,8 @@ model PaymentIntent {
   method            String
   amount            Int
   currency          String    @default("VND")
-  /// pending | processing | paid | failed | expired | cancelled
+  /// pending | paid | failed | expired | cancelled
+  /// (legacy rows may still show "processing" from the removed guest “I’ve paid” path)
   status            String    @default("pending")
   /// Short bank transfer / provider reference
   reference         String

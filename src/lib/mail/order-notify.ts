@@ -6,7 +6,6 @@ import {
   buildOrderCustomerEmail,
   buildOrderStatusEmail,
   buildOrderStudioEmail,
-  buildStudioPaymentClaimedEmail,
   buildStudioPaymentConfirmedEmail,
   type InquiryMailPayload,
   type OrderMailPayload,
@@ -66,33 +65,6 @@ export async function notifyOrderEmails(
   return results;
 }
 
-/** Studio inbox: guest claims VietQR transfer done. */
-export async function notifyStudioPaymentClaimed(input: {
-  orderId: string;
-  reference: string;
-  customerName: string;
-  phone: string;
-  amount: number;
-  transferRef?: string | null;
-  citySlug?: string | null;
-  fulfillment?: string | null;
-}) {
-  const mail = buildStudioPaymentClaimedEmail(input);
-  const studioTo = studioInboxForCity(input.citySlug);
-  return sendMail({
-    to: studioTo,
-    from: "orders",
-    subject: mail.subject,
-    html: mail.html,
-    replyTo: MAILBOX.replyTo,
-    citySlug: input.citySlug,
-    transactional: true,
-    eventKey: `order:${input.orderId}:payment-claim:studio`,
-    relatedType: "order",
-    relatedId: input.orderId,
-  });
-}
-
 /** Studio inbox: bank confirmed — start production. */
 export async function notifyStudioPaymentConfirmed(input: {
   orderId: string;
@@ -129,7 +101,16 @@ export async function notifyOrderStatusEmail(input: {
   email?: string | null;
   citySlug?: string | null;
 }) {
-  const customerFacing = ["accepted", "ready", "dispatched", "completed", "cancelled"];
+  const customerFacing = [
+    "accepted",
+    "payment_accepted",
+    "ready",
+    "ready_pickup",
+    "ready_ship",
+    "dispatched",
+    "completed",
+    "cancelled",
+  ];
   if (!customerFacing.includes(input.status) || !input.email) return null;
 
   const mail = buildOrderStatusEmail({

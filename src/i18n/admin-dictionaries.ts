@@ -360,7 +360,7 @@ const en = {
   payments: {
     title: "Payments",
     intro:
-      "Configure receiving accounts and which methods customers can select. VietQR stays off until an account is verified. payOS stays off until server credentials exist. Coming-soon methods never create fake payments.",
+      "Shop orders: full VietQR payment → Confirm paid → production (no online deposit). Add a verified bank account per city (e.g. City = Da Lat) so Da Lat checkouts show the right QR. Enable the VietQR method below. payOS stays off until server credentials exist.",
     error: "Could not save — check required fields.",
     providers: "Provider readiness",
     needsVerifiedAccount: "needs a verified bank account + method enabled",
@@ -370,7 +370,7 @@ const en = {
     methodsTitle: "Payment methods",
     accountsTitle: "Bank accounts",
     accountsIntro:
-      "Do not hardcode live numbers in code. Snapshot on each payment intent is kept even if you change the default later.",
+      "Da Lat online QR: add account → City = Da Lat → fill BIN / number / holder → check Verified + Active → enable VietQR method. Snapshot is frozen per order even if you change the default later.",
     addAccount: "Add receiving account",
     label: "Label",
     bankCode: "Bank BIN / code",
@@ -824,7 +824,7 @@ const vi: typeof en = {
   payments: {
     title: "Thanh toán",
     intro:
-      "Cấu hình tài khoản nhận tiền và phương thức khách chọn được. VietQR tắt đến khi tài khoản được xác minh. payOS tắt đến khi có credentials server. Phương thức Coming soon không tạo thanh toán giả.",
+      "Đơn shop: thanh toán VietQR đủ → Confirm paid → làm hoa (không nhận cọc online). Thêm tài khoản đã xác minh theo thành phố (vd. City = Đà Lạt) để checkout Đà Lạt ra đúng QR. Bật phương thức VietQR bên dưới. payOS tắt đến khi có credentials server.",
     error: "Không lưu được — kiểm tra trường bắt buộc.",
     providers: "Sẵn sàng nhà cung cấp",
     needsVerifiedAccount: "cần tài khoản ngân hàng đã xác minh + bật phương thức",
@@ -834,7 +834,7 @@ const vi: typeof en = {
     methodsTitle: "Phương thức thanh toán",
     accountsTitle: "Tài khoản ngân hàng",
     accountsIntro:
-      "Không hardcode số thật trong code. Mỗi payment intent giữ snapshot tài khoản dù sau này đổi mặc định.",
+      "QR Đà Lạt online: thêm TK → City = Đà Lạt → điền BIN / số / chủ TK → Verified + Active → bật VietQR. Mỗi đơn giữ snapshot TK dù sau đổi mặc định.",
     addAccount: "Thêm tài khoản nhận",
     label: "Nhãn",
     bankCode: "Mã BIN ngân hàng",

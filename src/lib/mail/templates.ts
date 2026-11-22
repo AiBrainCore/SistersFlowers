@@ -285,7 +285,10 @@ export function buildOrderStatusEmail(input: {
       input.locale === "vi" ? "Chi nhánh" : "Branch",
     ),
     ["Ref", escapeHtml(input.reference)],
-    ["Status", escapeHtml(input.status)],
+    [
+      input.locale === "vi" ? "Trạng thái" : "Status",
+      escapeHtml(c.heading),
+    ],
   ];
   const body = [
     mailHeading(c.heading),
@@ -305,55 +308,6 @@ export function buildOrderStatusEmail(input: {
       citySlug: input.citySlug,
       locale: input.locale,
       toEmail: input.email,
-    }),
-  };
-}
-
-/** Studio: customer says they transferred — verify bank, then Confirm paid. */
-export function buildStudioPaymentClaimedEmail(input: {
-  orderId: string;
-  reference: string;
-  customerName: string;
-  phone: string;
-  amount: number;
-  transferRef?: string | null;
-  citySlug?: string | null;
-  fulfillment?: string | null;
-}) {
-  const city = cityLabel(input.citySlug, "en") || "—";
-  const rows: Array<[string, string]> = [
-    [
-      "Branch",
-      `<strong style="color:#C24712;">${escapeHtml(city)}</strong>`,
-    ],
-    ["Reference", escapeHtml(input.reference)],
-    ["Customer", escapeHtml(input.customerName)],
-    ["Phone", escapeHtml(input.phone)],
-    ["Amount", escapeHtml(formatVnd(input.amount, "en"))],
-    ["Transfer content", escapeHtml(input.transferRef || "—")],
-    ["Fulfillment", escapeHtml(input.fulfillment || "—")],
-  ];
-  const body = [
-    mailHeading("Customer reports payment"),
-    mailParagraph(
-      escapeHtml(
-        "The guest tapped “I’ve paid” after VietQR. Check the bank account, then Confirm paid in admin so production can start.",
-      ),
-    ),
-    mailDetailTable(rows),
-    mailButton(studioOrderUrl(input.orderId), "Open order · confirm paid"),
-  ].join("\n");
-  return {
-    subject: withCityTag(
-      `Payment claim ${input.reference} — verify bank`,
-      input.citySlug,
-    ),
-    html: renderMailLayout({
-      bodyHtml: body,
-      preheader: `Verify transfer for ${input.reference}`,
-      citySlug: input.citySlug,
-      locale: "en",
-      toEmail: MAILBOX.studioInbox,
     }),
   };
 }

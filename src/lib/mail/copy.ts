@@ -49,7 +49,7 @@ const orderCustomer: Record<Locale, OrderCustomerCopy> = {
         ? `Xin chào ${name || "bạn"}, cảm ơn bạn đã đặt hoa tại Sisters Flowers — chi nhánh ${branch}.`
         : `Xin chào ${name || "bạn"}, cảm ơn bạn đã đặt hoa tại Sisters Flowers.`,
     statusNote:
-      "Studio sẽ sớm xác nhận chi tiết và hướng dẫn thanh toán. Đây chưa phải biên lai thanh toán. Nếu cần gấp — nhắn Zalo hoặc WhatsApp.",
+      "Thanh toán đủ bằng VietQR trên trang thanh toán. Khi studio thấy tiền vào tài khoản, họ xác nhận và bắt đầu làm hoa — đơn online không nhận trả trước một phần. Nếu cần gấp — nhắn Zalo hoặc WhatsApp.",
     branchLabel: "Chi nhánh",
     itemsLabel: "Sản phẩm",
     totalLabel: "Tạm tính",
@@ -70,7 +70,7 @@ const orderCustomer: Record<Locale, OrderCustomerCopy> = {
         ? `Hi ${name || "there"}, thank you for ordering with Sisters Flowers — ${branch} branch.`
         : `Hi ${name || "there"}, thank you for ordering with Sisters Flowers.`,
     statusNote:
-      "The studio will confirm details and arrange payment shortly. This is not a payment receipt yet. For anything urgent, message us on Zalo or WhatsApp.",
+      "Pay the full amount with the VietQR on your pay page. When the studio sees the transfer in their bank, they confirm and start your bouquet — no deposit / partial pay for online shop orders. For anything urgent, message Zalo or WhatsApp.",
     branchLabel: "Branch",
     itemsLabel: "Items",
     totalLabel: "Subtotal",
@@ -138,51 +138,194 @@ export function authCopy(locale: Locale) {
   return auth[locale] ?? auth.vi;
 }
 
-const statusLabels: Record<Locale, Record<string, string>> = {
+const statusCopy: Record<
+  Locale,
+  Record<
+    string,
+    {
+      subject: (ref: string) => string;
+      heading: string;
+      intro: (name: string, branch?: string | null) => string;
+      support: string;
+    }
+  >
+> = {
   en: {
-    accepted: "accepted by the studio",
-    ready: "ready for delivery / pickup",
-    dispatched: "on the way",
-    completed: "completed",
-    cancelled: "cancelled",
+    accepted: {
+      subject: (ref) => `Sisters Flowers — order ${ref} accepted`,
+      heading: "Order accepted",
+      intro: (name, branch) =>
+        branch
+          ? `Hi ${name || "there"}, the ${branch} studio accepted your order and will prepare it after payment is complete.`
+          : `Hi ${name || "there"}, the studio accepted your order and will prepare it after payment is complete.`,
+      support:
+        "Questions? Reply to this email, or message us on Zalo or WhatsApp for anything urgent.",
+    },
+    payment_accepted: {
+      subject: (ref) => `Sisters Flowers — payment received ${ref}`,
+      heading: "Payment received",
+      intro: (name, branch) =>
+        branch
+          ? `Hi ${name || "there"}, we received your full payment for order at ${branch}. The studio is starting your bouquet now.`
+          : `Hi ${name || "there"}, we received your full payment. The studio is starting your bouquet now.`,
+      support:
+        "This confirms the transfer — not a VAT invoice. Questions? Reply or message Zalo / WhatsApp.",
+    },
+    ready: {
+      subject: (ref) => `Sisters Flowers — order ${ref} ready`,
+      heading: "Your order is ready",
+      intro: (name, branch) =>
+        branch
+          ? `Hi ${name || "there"}, your ${branch} order is ready.`
+          : `Hi ${name || "there"}, your order is ready.`,
+      support:
+        "Questions? Reply to this email, or message us on Zalo or WhatsApp for anything urgent.",
+    },
+    ready_pickup: {
+      subject: (ref) => `Sisters Flowers — ready for pickup ${ref}`,
+      heading: "Ready for pickup",
+      intro: (name, branch) =>
+        branch
+          ? `Hi ${name || "there"}, your bouquet is ready at the ${branch} studio — you can collect it now.`
+          : `Hi ${name || "there"}, your bouquet is ready at the studio — you can collect it now.`,
+      support:
+        "Bring your order reference when you arrive. Questions? Zalo or WhatsApp.",
+    },
+    ready_ship: {
+      subject: (ref) => `Sisters Flowers — ready to deliver ${ref}`,
+      heading: "Ready for delivery",
+      intro: (name, branch) =>
+        branch
+          ? `Hi ${name || "there"}, your ${branch} bouquet is packed and ready — we are arranging delivery.`
+          : `Hi ${name || "there"}, your bouquet is packed and ready — we are arranging delivery.`,
+      support:
+        "You will get another note when it is on the way. Questions? Zalo or WhatsApp.",
+    },
+    dispatched: {
+      subject: (ref) => `Sisters Flowers — on the way ${ref}`,
+      heading: "On the way",
+      intro: (name, branch) =>
+        branch
+          ? `Hi ${name || "there"}, your ${branch} order is out for delivery.`
+          : `Hi ${name || "there"}, your order is out for delivery.`,
+      support:
+        "Questions? Reply to this email, or message us on Zalo or WhatsApp for anything urgent.",
+    },
+    completed: {
+      subject: (ref) => `Sisters Flowers — order ${ref} completed`,
+      heading: "Order completed",
+      intro: (name, branch) =>
+        branch
+          ? `Hi ${name || "there"}, your ${branch} order is complete. Thank you.`
+          : `Hi ${name || "there"}, your order is complete. Thank you.`,
+      support:
+        "Questions? Reply to this email, or message us on Zalo or WhatsApp for anything urgent.",
+    },
+    cancelled: {
+      subject: (ref) => `Sisters Flowers — order ${ref} cancelled`,
+      heading: "Order cancelled",
+      intro: (name, branch) =>
+        branch
+          ? `Hi ${name || "there"}, your ${branch} order was cancelled.`
+          : `Hi ${name || "there"}, your order was cancelled.`,
+      support:
+        "Questions? Reply to this email, or message us on Zalo or WhatsApp for anything urgent.",
+    },
   },
   vi: {
-    accepted: "đã được studio xác nhận",
-    ready: "đã sẵn sàng giao / nhận",
-    dispatched: "đang trên đường giao",
-    completed: "đã hoàn tất",
-    cancelled: "đã hủy",
+    accepted: {
+      subject: (ref) => `Sisters Flowers — đã nhận đơn ${ref}`,
+      heading: "Đơn đã được nhận",
+      intro: (name, branch) =>
+        branch
+          ? `Xin chào ${name || "bạn"}, studio ${branch} đã nhận đơn và sẽ làm hoa sau khi thanh toán đủ.`
+          : `Xin chào ${name || "bạn"}, studio đã nhận đơn và sẽ làm hoa sau khi thanh toán đủ.`,
+      support:
+        "Cần hỗ trợ? Trả lời email này, hoặc nếu gấp — nhắn Zalo hoặc WhatsApp.",
+    },
+    payment_accepted: {
+      subject: (ref) => `Sisters Flowers — đã nhận thanh toán ${ref}`,
+      heading: "Đã nhận thanh toán",
+      intro: (name, branch) =>
+        branch
+          ? `Xin chào ${name || "bạn"}, chúng tôi đã nhận đủ thanh toán cho đơn ${branch}. Studio bắt đầu làm bó hoa ngay.`
+          : `Xin chào ${name || "bạn"}, chúng tôi đã nhận đủ thanh toán. Studio bắt đầu làm bó hoa ngay.`,
+      support:
+        "Đây là xác nhận chuyển khoản — chưa phải hóa đơn VAT. Cần hỗ trợ? Zalo / WhatsApp.",
+    },
+    ready: {
+      subject: (ref) => `Sisters Flowers — đơn ${ref} sẵn sàng`,
+      heading: "Đơn đã sẵn sàng",
+      intro: (name, branch) =>
+        branch
+          ? `Xin chào ${name || "bạn"}, đơn ${branch} của bạn đã sẵn sàng.`
+          : `Xin chào ${name || "bạn"}, đơn hàng của bạn đã sẵn sàng.`,
+      support:
+        "Cần hỗ trợ? Trả lời email này, hoặc nếu gấp — nhắn Zalo hoặc WhatsApp.",
+    },
+    ready_pickup: {
+      subject: (ref) => `Sisters Flowers — sẵn sàng nhận ${ref}`,
+      heading: "Sẵn sàng nhận tại studio",
+      intro: (name, branch) =>
+        branch
+          ? `Xin chào ${name || "bạn"}, bó hoa đã sẵn sàng tại studio ${branch} — bạn có thể đến nhận.`
+          : `Xin chào ${name || "bạn"}, bó hoa đã sẵn sàng tại studio — bạn có thể đến nhận.`,
+      support: "Mang theo mã đơn khi đến. Cần hỗ trợ? Zalo hoặc WhatsApp.",
+    },
+    ready_ship: {
+      subject: (ref) => `Sisters Flowers — sẵn sàng giao ${ref}`,
+      heading: "Sẵn sàng giao hàng",
+      intro: (name, branch) =>
+        branch
+          ? `Xin chào ${name || "bạn"}, bó hoa ${branch} đã đóng gói xong — chúng tôi đang sắp xếp giao.`
+          : `Xin chào ${name || "bạn"}, bó hoa đã đóng gói xong — chúng tôi đang sắp xếp giao.`,
+      support:
+        "Bạn sẽ nhận thêm tin khi đơn đang trên đường. Cần hỗ trợ? Zalo / WhatsApp.",
+    },
+    dispatched: {
+      subject: (ref) => `Sisters Flowers — đang giao ${ref}`,
+      heading: "Đang trên đường giao",
+      intro: (name, branch) =>
+        branch
+          ? `Xin chào ${name || "bạn"}, đơn ${branch} đang được giao.`
+          : `Xin chào ${name || "bạn"}, đơn hàng đang được giao.`,
+      support:
+        "Cần hỗ trợ? Trả lời email này, hoặc nếu gấp — nhắn Zalo hoặc WhatsApp.",
+    },
+    completed: {
+      subject: (ref) => `Sisters Flowers — hoàn tất ${ref}`,
+      heading: "Đơn đã hoàn tất",
+      intro: (name, branch) =>
+        branch
+          ? `Xin chào ${name || "bạn"}, đơn ${branch} đã hoàn tất. Cảm ơn bạn.`
+          : `Xin chào ${name || "bạn"}, đơn hàng đã hoàn tất. Cảm ơn bạn.`,
+      support:
+        "Cần hỗ trợ? Trả lời email này, hoặc nếu gấp — nhắn Zalo hoặc WhatsApp.",
+    },
+    cancelled: {
+      subject: (ref) => `Sisters Flowers — đã hủy ${ref}`,
+      heading: "Đơn đã hủy",
+      intro: (name, branch) =>
+        branch
+          ? `Xin chào ${name || "bạn"}, đơn ${branch} đã được hủy.`
+          : `Xin chào ${name || "bạn"}, đơn hàng đã được hủy.`,
+      support:
+        "Cần hỗ trợ? Trả lời email này, hoặc nếu gấp — nhắn Zalo hoặc WhatsApp.",
+    },
   },
 };
 
 export function orderStatusCopy(locale: Locale, status: string) {
-  const label =
-    statusLabels[locale]?.[status] ||
-    statusLabels.en[status] ||
-    status;
-  if (locale === "en") {
-    return {
-      subject: (ref: string) => `Sisters Flowers — order ${ref} update`,
-      heading: "Order status update",
-      intro: (name: string, branch?: string | null) =>
-        branch
-          ? `Hi ${name || "there"}, your ${branch} order is now ${label}.`
-          : `Hi ${name || "there"}, your order is now ${label}.`,
-      support:
-        "Questions? Reply to this email, or message us on Zalo or WhatsApp for anything urgent.",
-      footer: "Da Nang & Da Lat · sistersflowers.vn",
-    };
-  }
+  const pack =
+    statusCopy[locale]?.[status] ||
+    statusCopy.en[status] ||
+    statusCopy.en.accepted;
   return {
-    subject: (ref: string) => `Sisters Flowers — cập nhật đơn ${ref}`,
-    heading: "Cập nhật trạng thái đơn",
-    intro: (name: string, branch?: string | null) =>
-      branch
-        ? `Xin chào ${name || "bạn"}, đơn ${branch} của bạn hiện ${label}.`
-        : `Xin chào ${name || "bạn"}, đơn hàng của bạn hiện ${label}.`,
-    support:
-      "Cần hỗ trợ? Trả lời email này, hoặc nếu gấp — nhắn Zalo hoặc WhatsApp.",
-    footer: "Đà Nẵng & Đà Lạt · sistersflowers.vn",
+    ...pack,
+    footer:
+      locale === "vi"
+        ? "Đà Nẵng & Đà Lạt · sistersflowers.vn"
+        : "Da Nang & Da Lat · sistersflowers.vn",
   };
 }
 

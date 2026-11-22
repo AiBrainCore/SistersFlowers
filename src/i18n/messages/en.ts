@@ -524,15 +524,9 @@ export const en = {
     copy: "Copy",
     copied: "Copied",
     awaiting: "Waiting for payment confirmation",
-    verifying: "Thanks — the studio is verifying your transfer",
     paid: "Payment received",
     instructions:
-      "Open your banking app, scan the QR or transfer the exact amount with the transfer content above. The studio confirms when money arrives — viewing the QR is not payment.",
-    ivePaid: "I’ve paid",
-    ivePaidBusy: "Sending…",
-    ivePaidDone:
-      "We told the studio you paid. They will confirm when the bank shows the transfer, then start your bouquet.",
-    ivePaidError: "Could not notify the studio — try again or message WhatsApp.",
+      "Open your banking app, scan the QR or transfer the exact amount with the transfer content above. When the studio sees the money in their bank, they confirm the order and start your bouquet — viewing the QR is not payment.",
     trackTitle: "Order status",
     trackPay: "Payment",
     trackFulfillment: "Studio progress",

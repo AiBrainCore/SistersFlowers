@@ -49,32 +49,6 @@ export async function listOpsAlerts(limit = 40): Promise<OpsAlert[]> {
     });
   }
 
-  const paymentClaims = await prisma.paymentIntent.findMany({
-    where: {
-      status: "processing",
-      order: { paymentStatus: { not: "paid" }, status: { not: "cancelled" } },
-    },
-    orderBy: { updatedAt: "asc" },
-    take: 20,
-    select: {
-      id: true,
-      updatedAt: true,
-      order: { select: { id: true, reference: true } },
-    },
-  });
-  for (const intent of paymentClaims) {
-    alerts.push({
-      id: `claim:${intent.id}`,
-      severity: "high",
-      kind: "payment_claim_unconfirmed",
-      orderId: intent.order.id,
-      reference: intent.order.reference,
-      messageEn: "Customer reported paid — verify bank",
-      messageVi: "Khách báo đã trả — kiểm tra ngân hàng",
-      createdAt: intent.updatedAt,
-    });
-  }
-
   const awaitingQuote = await prisma.order.findMany({
     where: { status: "awaiting_delivery_quote" },
     orderBy: { createdAt: "asc" },
