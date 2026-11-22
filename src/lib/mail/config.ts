@@ -5,13 +5,19 @@
  * Must be a publicly reachable https host — never localhost — so Gmail/Apple Mail can load assets.
  */
 export function mailPublicSiteUrl(path = "") {
-  const base = (
-    process.env.MAIL_PUBLIC_SITE_URL?.trim() ||
-    (process.env.NEXT_PUBLIC_SITE_URL?.includes("localhost")
-      ? ""
-      : process.env.NEXT_PUBLIC_SITE_URL?.trim()) ||
-    "https://sistersflowers.vn"
-  ).replace(/\/$/, "");
+  const candidates = [
+    process.env.MAIL_PUBLIC_SITE_URL,
+    process.env.NEXT_PUBLIC_SITE_URL,
+  ];
+  let base = "https://sistersflowers.vn";
+  for (const raw of candidates) {
+    const value = raw?.trim().replace(/\/$/, "");
+    if (!value) continue;
+    // Never put localhost into HTML emails / auth confirm links.
+    if (/localhost|127\.0\.0\.1/i.test(value)) continue;
+    base = value;
+    break;
+  }
   const clean = path.startsWith("/") ? path : path ? `/${path}` : "";
   return `${base}${clean}`;
 }

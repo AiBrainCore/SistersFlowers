@@ -24,7 +24,21 @@ function upsert(text, key, value) {
   return `${base}${line}\n`;
 }
 
+/** Drop flags that force localhost into customer auth/email links. */
+function stripLocalhostAuthFlags(text) {
+  return text
+    .split("\n")
+    .filter((line) => {
+      const trimmed = line.trim();
+      if (!trimmed || trimmed.startsWith("#")) return true;
+      if (/^ALLOW_LOCALHOST_SITE_URL=/i.test(trimmed)) return false;
+      return true;
+    })
+    .join("\n");
+}
+
 let text = existsSync(envPath) ? readFileSync(envPath, "utf8") : "";
+text = stripLocalhostAuthFlags(text);
 for (const [key, value] of Object.entries(UPDATES)) {
   text = upsert(text, key, value);
 }
@@ -34,4 +48,6 @@ if (!/^CUSTOMER_SESSION_SECRET=/m.test(text)) {
 }
 
 writeFileSync(envPath, text, "utf8");
-console.log(`ensure-auth-env: updated ${envPath}`);
+console.log(
+  `ensure-auth-env: updated ${envPath} (site URL → sistersflowers.vn, stripped ALLOW_LOCALHOST_SITE_URL)`,
+);
