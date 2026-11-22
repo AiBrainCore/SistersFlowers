@@ -74,59 +74,64 @@ export default async function AdminOrderDetailPage({
         </p>
       ) : null}
 
-      <div className="admin-grid-2" style={{ alignItems: "start" }}>
-        <div className="admin-card">
-          <h2 style={{ fontFamily: "serif", marginTop: 0 }}>
-            {t.orders.customer}
-          </h2>
-          <p style={{ fontSize: 13, opacity: 0.75, marginTop: 0 }}>
-            {t.orders.createdAt}:{" "}
-            <strong>
+      <div className="admin-grid-2" style={{ alignItems: "stretch" }}>
+        <div className="admin-card admin-card-stack">
+          <div>
+            <h2 style={{ fontFamily: "serif", margin: "0 0 6px" }}>
+              {t.orders.customer}
+            </h2>
+            <p style={{ fontSize: 13, opacity: 0.7, margin: 0 }}>
+              {t.orders.createdAt}:{" "}
               {order.createdAt.toLocaleString(
                 loc === "vi" ? "vi-VN" : "en-GB",
               )}
-            </strong>
-          </p>
+            </p>
+          </div>
 
-          <h3 style={{ fontSize: 15, marginBottom: 6 }}>{t.orders.buyer}</h3>
-          <p style={{ marginTop: 0 }}>
-            <strong>{order.customerName}</strong>
-            <br />
-            {order.phone}
-            {order.email ? (
-              <>
+          <div className="admin-party-grid">
+            <section className="admin-party">
+              <h3>{t.orders.buyer}</h3>
+              <p>
+                <strong>{order.customerName}</strong>
                 <br />
-                {order.email}
-              </>
-            ) : null}
-            {order.anonymousSender ? (
-              <>
-                <br />
-                <span style={{ color: "#C24712" }}>
-                  {t.orders.anonymousSender}
-                </span>
-              </>
-            ) : null}
-          </p>
-
-          <h3 style={{ fontSize: 15, marginBottom: 6 }}>{t.orders.receiver}</h3>
-          <p style={{ marginTop: 0 }}>
-            {hasSeparateReceiver ? (
-              <>
-                <strong>{order.recipientName || "—"}</strong>
-                {order.recipientPhone ? (
+                {order.phone}
+                {order.email ? (
                   <>
                     <br />
-                    {order.recipientPhone}
+                    {order.email}
                   </>
                 ) : null}
-              </>
-            ) : (
-              <span style={{ opacity: 0.7 }}>{t.orders.sameAsBuyer}</span>
-            )}
-          </p>
+                {order.anonymousSender ? (
+                  <>
+                    <br />
+                    <span style={{ color: "#C24712" }}>
+                      {t.orders.anonymousSender}
+                    </span>
+                  </>
+                ) : null}
+              </p>
+            </section>
+            <section className="admin-party">
+              <h3>{t.orders.receiver}</h3>
+              <p>
+                {hasSeparateReceiver ? (
+                  <>
+                    <strong>{order.recipientName || "—"}</strong>
+                    {order.recipientPhone ? (
+                      <>
+                        <br />
+                        {order.recipientPhone}
+                      </>
+                    ) : null}
+                  </>
+                ) : (
+                  <span style={{ opacity: 0.7 }}>{t.orders.sameAsBuyer}</span>
+                )}
+              </p>
+            </section>
+          </div>
 
-          <p style={{ fontSize: 14 }}>
+          <div className="admin-meta-block">
             <strong>
               {order.fulfillment === "pickup"
                 ? loc === "vi"
@@ -136,103 +141,101 @@ export default async function AdminOrderDetailPage({
                   ? "Giao tận nơi"
                   : "Delivery"}
             </strong>
-            {order.zone ? ` · ${order.zone}` : ""}
-            <br />
-            {order.address}
-          </p>
+            {order.zone ? `${order.zone}` : null}
+            <div>{order.address}</div>
+          </div>
 
-          <p style={{ fontSize: 14 }}>
+          <div className="admin-meta-block">
             <strong>{t.orders.deliveryWhen}</strong>
-            <br />
             {order.deliveryDate || "—"}
             {order.deliveryTime ? ` · ${order.deliveryTime}` : ""}
-          </p>
+          </div>
 
           {order.hotelName || order.roomNumber ? (
-            <p style={{ fontSize: 14 }}>
+            <div className="admin-meta-block">
               <strong>{t.orders.hotelRoom}</strong>
-              <br />
               {[order.hotelName, order.roomNumber].filter(Boolean).join(" · ")}
-            </p>
+            </div>
           ) : null}
 
-          <p
+          <div
+            className="admin-meta-block"
             style={{
-              fontSize: 14,
               padding: "12px 14px",
               borderRadius: 12,
               background: order.cardMessage
                 ? "rgba(194, 71, 18, 0.08)"
-                : "transparent",
+                : "rgba(31, 42, 36, 0.04)",
               border: order.cardMessage
                 ? "1px solid rgba(194, 71, 18, 0.25)"
-                : "none",
+                : "1px solid rgba(31, 42, 36, 0.08)",
             }}
           >
             <strong>{t.orders.cardMessage}</strong>
-            <br />
             {order.cardMessage ? (
               <em style={{ fontSize: 15 }}>“{order.cardMessage}”</em>
             ) : (
               <span style={{ opacity: 0.65 }}>{t.orders.noCard}</span>
             )}
-          </p>
+          </div>
 
           {order.notes ? (
-            <p style={{ fontSize: 14 }}>
+            <div className="admin-meta-block">
               <strong>{t.orders.notes}</strong>
-              <br />
               {order.notes}
-            </p>
+            </div>
           ) : null}
 
-          <p style={{ fontSize: 13 }}>
-            Branch:{" "}
+          <p style={{ fontSize: 13, margin: 0, opacity: 0.75 }}>
             {order.branch
               ? `${order.branch.city.nameEn} — ${order.branch.nameEn}`
               : "—"}
+            {order.trackingToken ? (
+              <>
+                {" · "}
+                <Link
+                  href={`/en/order/track/${order.trackingToken}`}
+                  target="_blank"
+                >
+                  {t.orders.track}
+                </Link>
+                {intent?.method === "vietqr" ? (
+                  <>
+                    {" · "}
+                    <Link
+                      href={`/en/order/pay/${order.trackingToken}`}
+                      target="_blank"
+                    >
+                      VietQR
+                    </Link>
+                  </>
+                ) : null}
+              </>
+            ) : null}
           </p>
-          {order.trackingToken ? (
-            <p style={{ fontSize: 13 }}>
-              <Link
-                href={`/en/order/track/${order.trackingToken}`}
-                target="_blank"
-              >
-                {t.orders.track}
-              </Link>
-              {intent?.method === "vietqr" ? (
-                <>
-                  {" · "}
-                  <Link
-                    href={`/en/order/pay/${order.trackingToken}`}
-                    target="_blank"
-                  >
-                    VietQR
-                  </Link>
-                </>
-              ) : null}
-            </p>
-          ) : null}
         </div>
 
-        <div className="admin-card">
-          <h2 style={{ fontFamily: "serif", marginTop: 0 }}>
-            {t.orders.payment}
-          </h2>
-          <p>
-            Status: <strong>{order.paymentStatus}</strong>
+        <div className="admin-card admin-card-stack">
+          <h2 style={{ fontFamily: "serif", margin: 0 }}>{t.orders.payment}</h2>
+          <div className="admin-meta-block">
+            <strong>{t.common.status}</strong>
+            {order.paymentStatus}
             {order.paymentMethod ? ` · ${order.paymentMethod}` : ""}
-          </p>
-          <p>
+          </div>
+          <div className="admin-meta-block">
+            <strong>{t.orders.total}</strong>
             Subtotal {formatVnd(order.subtotal, locale)}
             <br />
             Delivery {formatVnd(order.deliveryFee ?? 0, locale)}
             <br />
-            <strong>Total {formatVnd(order.deliveryTotal, locale)}</strong>
-          </p>
+            <span style={{ fontSize: 18, fontWeight: 700 }}>
+              {formatVnd(order.deliveryTotal, locale)}
+            </span>
+          </div>
           {intent ? (
-            <p style={{ fontSize: 13 }}>
-              Intent: {intent.method} · {intent.status} · {intent.reference}
+            <p style={{ fontSize: 13, margin: 0, opacity: 0.75 }}>
+              {intent.method} · {intent.status}
+              {intent.reference ? ` · ${intent.reference}` : ""}
             </p>
           ) : null}
           {order.paymentStatus !== "paid" ? (
@@ -247,7 +250,7 @@ export default async function AdminOrderDetailPage({
             </form>
           ) : null}
           {!order.acknowledgedAt && order.paymentStatus === "paid" ? (
-            <form action={acknowledgeOrderAction} style={{ marginTop: 8 }}>
+            <form action={acknowledgeOrderAction}>
               <input type="hidden" name="orderId" value={order.id} />
               <button type="submit" className="admin-btn secondary">
                 {t.orders.acknowledge}
@@ -256,11 +259,7 @@ export default async function AdminOrderDetailPage({
           ) : null}
 
           {order.status === "awaiting_delivery_quote" ? (
-            <form
-              action={setDeliveryQuoteAction}
-              style={{ marginTop: 16 }}
-              className="admin-grid-2"
-            >
+            <form action={setDeliveryQuoteAction} className="admin-grid-2">
               <input type="hidden" name="orderId" value={order.id} />
               <label className="admin-field">
                 <span>{t.orders.quoteFee}</span>
@@ -327,31 +326,33 @@ export default async function AdminOrderDetailPage({
         </div>
       </div>
 
-      <div className="admin-grid-2" style={{ marginTop: 16, alignItems: "start" }}>
-        <form action={saveFulfillmentChecklistAction} className="admin-card">
-          <h2 style={{ fontFamily: "serif", marginTop: 0 }}>
-            {t.orders.checklist}
-          </h2>
+      <div
+        className="admin-grid-2"
+        style={{ marginTop: 16, alignItems: "stretch" }}
+      >
+        <form
+          action={saveFulfillmentChecklistAction}
+          className="admin-card admin-card-stack"
+        >
+          <h2 style={{ fontFamily: "serif", margin: 0 }}>{t.orders.checklist}</h2>
           <input type="hidden" name="orderId" value={order.id} />
-          {CHECKLIST_FIELDS.map((field) => (
-            <label
-              key={field}
-              className="admin-field"
-              style={{ display: "flex", gap: 8, alignItems: "center" }}
-            >
-              <input
-                type="checkbox"
-                name={field}
-                defaultChecked={Boolean(checklist?.[field])}
-              />
-              <span>
-                {locale === "vi"
-                  ? CHECKLIST_LABELS[field].vi
-                  : CHECKLIST_LABELS[field].en}
-              </span>
-            </label>
-          ))}
-          <label className="admin-field">
+          <div className="admin-check-list">
+            {CHECKLIST_FIELDS.map((field) => (
+              <label key={field} className="admin-check">
+                <input
+                  type="checkbox"
+                  name={field}
+                  defaultChecked={Boolean(checklist?.[field])}
+                />
+                <span>
+                  {locale === "vi"
+                    ? CHECKLIST_LABELS[field].vi
+                    : CHECKLIST_LABELS[field].en}
+                </span>
+              </label>
+            ))}
+          </div>
+          <label className="admin-field" style={{ marginBottom: 0 }}>
             <span>{t.orders.checklistOverride}</span>
             <input
               name="overrideNote"
@@ -359,14 +360,16 @@ export default async function AdminOrderDetailPage({
               placeholder="Authorized override reason"
             />
           </label>
-          <p style={{ fontSize: 12, opacity: 0.7 }}>
+          <p style={{ fontSize: 12, opacity: 0.7, margin: 0 }}>
             {complete
               ? t.orders.checklistComplete
               : t.orders.checklistIncomplete}
           </p>
-          <button type="submit" className="admin-btn">
-            {t.common.save}
-          </button>
+          <div>
+            <button type="submit" className="admin-btn">
+              {t.common.save}
+            </button>
+          </div>
         </form>
 
         <div className="admin-card">
