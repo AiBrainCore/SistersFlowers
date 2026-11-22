@@ -14,6 +14,7 @@ export function StudiosSection({
   studios: StudioContact[];
 }) {
   const t = dictionary.footer;
+  const c = dictionary.contact;
 
   return (
     <section
@@ -39,6 +40,15 @@ export function StudiosSection({
               locale={locale}
               directionsLabel={t.directions}
               callLabel={t.call}
+              socialLabels={{
+                phones: c.phonesLabel,
+                social: c.socialLabel,
+                facebook: c.facebook,
+                messenger: c.messenger,
+                tiktok: c.tiktok,
+                whatsapp: c.whatsapp,
+                zalo: c.zalo,
+              }}
             />
           ))}
         </div>
