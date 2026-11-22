@@ -154,6 +154,21 @@ export default async function AdminOrderDetailPage({
           {intent ? (
             <p style={{ fontSize: 13 }}>
               Intent: {intent.method} · {intent.status} · {intent.reference}
+              {intent.status === "processing" ? (
+                <span
+                  style={{
+                    display: "inline-block",
+                    marginLeft: 8,
+                    padding: "2px 8px",
+                    borderRadius: 999,
+                    background: "#C24712",
+                    color: "#fff",
+                    fontSize: 11,
+                  }}
+                >
+                  Customer reported paid — verify bank
+                </span>
+              ) : null}
             </p>
           ) : null}
           {order.paymentStatus !== "paid" ? (
@@ -163,7 +178,9 @@ export default async function AdminOrderDetailPage({
                 <input type="hidden" name="intentId" value={intent.id} />
               ) : null}
               <button type="submit" className="admin-btn">
-                {t.orders.confirmPaid}
+                {intent?.status === "processing"
+                  ? "Confirm paid (bank OK) · start production"
+                  : t.orders.confirmPaid}
               </button>
             </form>
           ) : null}

@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { ensurePaymentMethodSettings } from "@/lib/payments/catalog";
-import { markIntentPaid } from "@/lib/payments/intents";
+import { markIntentPaidAndAdvance } from "@/lib/payments/confirm-flow";
 
 async function requireAdmin() {
   if (!(await isAdminAuthenticated())) {
@@ -128,19 +128,30 @@ export async function confirmShopPaymentAction(formData: FormData) {
   const intentId = String(formData.get("intentId") || "");
   if (!orderId) redirect("/admin/orders");
 
+  let advancedTo: string | null = null;
+  let paidAmount = 0;
+
   if (intentId) {
-    await markIntentPaid({
+    const result = await markIntentPaidAndAdvance({
       intentId,
       actor: "admin",
       note: "Manual bank confirmation",
     });
+    advancedTo = result.advancedTo;
+    paidAmount = result.intent.amount;
   } else {
     const order = await prisma.order.findUnique({ where: { id: orderId } });
     if (order && order.paymentStatus !== "paid") {
-      await prisma.$transaction([
+      const fromStatus = order.status;
+      const shouldAdvance =
+        fromStatus === "new" || fromStatus === "awaiting_payment";
+      const ops = [
         prisma.order.update({
           where: { id: orderId },
-          data: { paymentStatus: "paid" },
+          data: {
+            paymentStatus: "paid",
+            ...(shouldAdvance ? { status: "confirmed" } : {}),
+          },
         }),
         prisma.orderPayment.create({
           data: {
@@ -161,7 +172,23 @@ export async function confirmShopPaymentAction(formData: FormData) {
             actor: "admin",
           },
         }),
-      ]);
+      ];
+      if (shouldAdvance) {
+        ops.push(
+          prisma.orderStatusHistory.create({
+            data: {
+              orderId,
+              fromStatus,
+              toStatus: "confirmed",
+              note: "Auto-advanced after payment confirmed — ready for production",
+              actor: "admin",
+            },
+          }),
+        );
+      }
+      await prisma.$transaction(ops);
+      advancedTo = shouldAdvance ? "confirmed" : null;
+      paidAmount = order.deliveryTotal;
     }
   }
 
@@ -170,17 +197,37 @@ export async function confirmShopPaymentAction(formData: FormData) {
       where: { id: orderId },
       include: { branch: { include: { city: true } } },
     });
-    if (order?.email) {
-      const { notifyOrderStatusEmail } = await import("@/lib/mail/order-notify");
-      await notifyOrderStatusEmail({
+    if (order) {
+      const citySlug = order.branch?.city.slug || null;
+      const {
+        notifyOrderStatusEmail,
+        notifyStudioPaymentConfirmed,
+      } = await import("@/lib/mail/order-notify");
+
+      await notifyStudioPaymentConfirmed({
         orderId: order.id,
         reference: order.reference,
-        locale: order.locale === "en" ? "en" : "vi",
-        status: "accepted",
         customerName: order.customerName,
-        email: order.email,
-        citySlug: order.branch?.city.slug || null,
-      });
+        phone: order.phone,
+        amount: paidAmount || order.deliveryTotal,
+        citySlug,
+        fulfillment: order.fulfillment,
+        advancedTo,
+      }).catch((error) =>
+        console.error("[payments] studio paid mail", error),
+      );
+
+      if (order.email) {
+        await notifyOrderStatusEmail({
+          orderId: order.id,
+          reference: order.reference,
+          locale: order.locale === "en" ? "en" : "vi",
+          status: "accepted",
+          customerName: order.customerName,
+          email: order.email,
+          citySlug,
+        });
+      }
     }
   } catch (error) {
     console.error("[payments] confirm notify", error);

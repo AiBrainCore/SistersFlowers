@@ -524,9 +524,15 @@ export const vi = {
     copy: "Sao chép",
     copied: "Đã sao chép",
     awaiting: "Đang chờ xác nhận thanh toán",
+    verifying: "Cảm ơn — studio đang kiểm tra chuyển khoản của bạn",
     paid: "Đã nhận thanh toán",
     instructions:
       "Mở app ngân hàng, quét QR hoặc chuyển đúng số tiền kèm nội dung trên. Studio xác nhận khi tiền về — chỉ xem QR chưa phải đã thanh toán.",
+    ivePaid: "Tôi đã chuyển khoản",
+    ivePaidBusy: "Đang gửi…",
+    ivePaidDone:
+      "Đã báo studio bạn đã thanh toán. Họ xác nhận khi tiền vào tài khoản rồi bắt đầu làm bó hoa.",
+    ivePaidError: "Không gửi được — thử lại hoặc nhắn WhatsApp.",
     trackTitle: "Trạng thái đơn",
     trackPay: "Thanh toán",
     trackFulfillment: "Tiến độ studio",
