@@ -4,7 +4,7 @@ Separate **Implemented** · **Configured** · **Live & verified**.
 
 ## VietQR (priority launch)
 
-Shop flow (no online deposit): **QR → full transfer → customer “I’ve paid” → staff Confirm paid → production**.
+Shop flow (no online deposit): **QR → full transfer → staff sees bank credit → Confirm paid → production**. Guests do not self-report payment.
 
 - [ ] Receiving account created in **Admin → Payments** (no hardcoded numbers in repo)
 - [ ] **City scope = Da Lat** (and/or Da Nang) so each city checkout gets the right QR

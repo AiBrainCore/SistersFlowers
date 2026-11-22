@@ -49,7 +49,7 @@ const orderCustomer: Record<Locale, OrderCustomerCopy> = {
         ? `Xin chào ${name || "bạn"}, cảm ơn bạn đã đặt hoa tại Sisters Flowers — chi nhánh ${branch}.`
         : `Xin chào ${name || "bạn"}, cảm ơn bạn đã đặt hoa tại Sisters Flowers.`,
     statusNote:
-      "Thanh toán đủ bằng VietQR trên trang thanh toán, rồi bấm “Tôi đã chuyển khoản”. Studio xác nhận tiền vào mới bắt đầu làm hoa — đơn online không nhận trả trước một phần. Nếu cần gấp — nhắn Zalo hoặc WhatsApp.",
+      "Thanh toán đủ bằng VietQR trên trang thanh toán. Khi studio thấy tiền vào tài khoản, họ xác nhận và bắt đầu làm hoa — đơn online không nhận trả trước một phần. Nếu cần gấp — nhắn Zalo hoặc WhatsApp.",
     branchLabel: "Chi nhánh",
     itemsLabel: "Sản phẩm",
     totalLabel: "Tạm tính",
@@ -70,7 +70,7 @@ const orderCustomer: Record<Locale, OrderCustomerCopy> = {
         ? `Hi ${name || "there"}, thank you for ordering with Sisters Flowers — ${branch} branch.`
         : `Hi ${name || "there"}, thank you for ordering with Sisters Flowers.`,
     statusNote:
-      "Pay the full amount with the VietQR on your pay page, then tap “I’ve paid”. After the studio confirms the transfer, they start your bouquet — no deposit / partial pay for online shop orders. For anything urgent, message Zalo or WhatsApp.",
+      "Pay the full amount with the VietQR on your pay page. When the studio sees the transfer in their bank, they confirm and start your bouquet — no deposit / partial pay for online shop orders. For anything urgent, message Zalo or WhatsApp.",
     branchLabel: "Branch",
     itemsLabel: "Items",
     totalLabel: "Subtotal",
