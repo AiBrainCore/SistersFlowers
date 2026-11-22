@@ -538,7 +538,8 @@ export const en = {
     intro:
       "Two Sisters Flowers studios in Da Nang and Da Lat — call, chat on Messenger or WhatsApp, or follow us on Facebook and TikTok. English and Vietnamese welcome.",
     phonesLabel: "Phone",
-    socialLabel: "Social",
+    socialLabel: "Chat with us",
+    chatHint: "Chat with the studio",
     facebook: "Facebook",
     messenger: "Messenger",
     tiktok: "TikTok",
