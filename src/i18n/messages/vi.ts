@@ -290,7 +290,7 @@ export const vi = {
     submit: "Gửi đơn",
     sending: "Đang gửi…",
     payNote:
-      "Chọn phương thức thanh toán đang mở bên dưới. Phí giao và tổng cuối được xác nhận trước khi bạn trả. WhatsApp vẫn dùng được nếu muốn xác nhận với studio.",
+      "Chọn phương thức thanh toán đang mở bên dưới (thường là VietQR). Phí giao và tổng cuối được xác nhận trước khi bạn trả. Cần hỏi thêm? Nhắn studio qua Zalo hoặc WhatsApp.",
     promisePhoto: "Ảnh trước khi giao",
     promiseSameDay: "Giao trong ngày khi còn sức chứa",
     promisePay: "Thanh toán đúng số tiền hiển thị",
@@ -305,9 +305,11 @@ export const vi = {
     grandTotal: "Tổng ước tính",
     successTitle: "Đã nhận đơn.",
     successBody:
-      "Tiệm đã có đơn. Mở WhatsApp để xác nhận chi tiết, giờ giao và thanh toán. Bạn có thể nhờ gửi ảnh bó đã hoàn thiện trước khi giao.",
+      "Tiệm đã có đơn. Thanh toán bằng VietQR trên trang thanh toán khi hiện QR. Cần hỗ trợ — nhắn Zalo hoặc WhatsApp; bạn có thể nhờ gửi ảnh bó đã hoàn thiện trước khi giao.",
     reference: "Mã đơn",
-    openWhatsapp: "Xác nhận qua WhatsApp",
+    openWhatsapp: "WhatsApp",
+    openZalo: "Zalo",
+    contactStudio: "Nhắn studio",
     vouchersTitle: "Mã trải nghiệm của bạn",
     vouchersHint:
       "Đưa mã này khi đến nơi. Tận hưởng món quà — nếu hóa đơn cao hơn, chỉ cần trả phần chênh.",

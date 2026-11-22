@@ -51,7 +51,7 @@ export function CheckoutForm({
   const [fulfillment, setFulfillment] = useState<"delivery" | "pickup">(
     "delivery",
   );
-  const [paymentMethod, setPaymentMethod] = useState("whatsapp");
+  const [paymentMethod, setPaymentMethod] = useState("vietqr");
   const [payMethods, setPayMethods] = useState<
     Array<{
       id: string;
@@ -83,26 +83,28 @@ export function CheckoutForm({
       .then((r) => r.json())
       .then((data) => {
         if (cancelled) return;
-        const methods = (data.methods || []) as typeof payMethods;
+        const methods = ((data.methods || []) as typeof payMethods).filter(
+          (m) => m.id !== "whatsapp",
+        );
         setPayMethods(methods);
         const first =
           methods.find((m) => m.selectable)?.id ||
-          methods.find((m) => m.id === "whatsapp")?.id ||
-          "whatsapp";
+          methods.find((m) => m.id === "vietqr")?.id ||
+          "vietqr";
         setPaymentMethod(first);
       })
       .catch(() => {
         if (!cancelled) {
           setPayMethods([
             {
-              id: "whatsapp",
-              nameEn: "Confirm on WhatsApp",
-              nameVi: "Xác nhận qua WhatsApp",
+              id: "vietqr",
+              nameEn: "VietQR bank transfer",
+              nameVi: "Chuyển khoản VietQR",
               selectable: true,
               comingSoon: false,
             },
           ]);
-          setPaymentMethod("whatsapp");
+          setPaymentMethod("vietqr");
         }
       });
     return () => {

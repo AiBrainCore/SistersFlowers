@@ -8,6 +8,11 @@ import {
 import { formatVnd } from "@/data/products";
 import { prisma } from "@/lib/db";
 import { getAdminT } from "@/lib/admin-locale";
+import {
+  DELIVERY_BOOKING_STATUSES,
+  deliveryBookingStatusLabel,
+  shopOrderStatusLabel,
+} from "@/lib/payments/order-status-labels";
 
 export default async function AdminOrdersPage({
   searchParams,
@@ -15,6 +20,7 @@ export default async function AdminOrdersPage({
   searchParams: Promise<{ paid?: string; delivery?: string }>;
 }) {
   const { locale, t } = await getAdminT();
+  const loc = locale === "en" ? "en" : "vi";
   const { paid, delivery } = await searchParams;
   const orders = await prisma.order.findMany({
     where: { source: "shop" },
@@ -94,15 +100,6 @@ export default async function AdminOrdersPage({
                           </Link>
                         </div>
                       ) : null}
-                      {order.whatsappUrl ? (
-                        <a
-                          href={order.whatsappUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          WhatsApp
-                        </a>
-                      ) : null}
                     </td>
                     <td>
                       {order.customerName}
@@ -115,13 +112,33 @@ export default async function AdminOrdersPage({
                       <div style={{ fontSize: 12, opacity: 0.7 }}>
                         {order.address}
                       </div>
-                      {order.recipientName ? (
-                        <div style={{ fontSize: 12 }}>
-                          → {order.recipientName}
+                      {(order.deliveryDate || order.deliveryTime) && (
+                        <div style={{ fontSize: 12, marginTop: 4 }}>
+                          {t.orders.deliveryWhen}: {order.deliveryDate || "—"}
+                          {order.deliveryTime ? ` · ${order.deliveryTime}` : ""}
+                        </div>
+                      )}
+                      {order.recipientName || order.recipientPhone ? (
+                        <div style={{ fontSize: 12, marginTop: 4 }}>
+                          {t.orders.receiver}: {order.recipientName || "—"}
                           {order.recipientPhone
                             ? ` · ${order.recipientPhone}`
                             : ""}
-                          {order.anonymousSender ? " · anon" : ""}
+                          {order.anonymousSender
+                            ? ` · ${t.orders.anonymousSender}`
+                            : ""}
+                        </div>
+                      ) : null}
+                      {order.cardMessage ? (
+                        <div
+                          style={{
+                            fontSize: 12,
+                            marginTop: 4,
+                            color: "#C24712",
+                            fontStyle: "italic",
+                          }}
+                        >
+                          {t.orders.cardMessage}: “{order.cardMessage}”
                         </div>
                       ) : null}
                     </td>
@@ -200,20 +217,11 @@ export default async function AdminOrdersPage({
                               "awaiting_arrangement"
                             }
                           >
-                            <option value="awaiting_arrangement">
-                              awaiting_arrangement
-                            </option>
-                            <option value="courier_requested">
-                              courier_requested
-                            </option>
-                            <option value="courier_assigned">
-                              courier_assigned
-                            </option>
-                            <option value="collected">collected</option>
-                            <option value="in_transit">in_transit</option>
-                            <option value="delivered">delivered</option>
-                            <option value="failed">failed</option>
-                            <option value="returned">returned</option>
+                            {DELIVERY_BOOKING_STATUSES.map((status) => (
+                              <option key={status} value={status}>
+                                {deliveryBookingStatusLabel(status, loc)}
+                              </option>
+                            ))}
                           </select>
                           <input
                             type="hidden"
@@ -224,7 +232,7 @@ export default async function AdminOrdersPage({
                           />
                           <input
                             name="bookingRef"
-                            placeholder="Booking ref"
+                            placeholder={t.orders.bookingRef}
                             defaultValue={
                               order.deliveryBooking?.bookingRef || ""
                             }
@@ -232,7 +240,7 @@ export default async function AdminOrdersPage({
                           />
                           <input
                             name="actualCost"
-                            placeholder="Actual Grab cost VND"
+                            placeholder={t.orders.actualCost}
                             defaultValue={
                               order.deliveryBooking?.actualCost ?? ""
                             }
@@ -252,21 +260,26 @@ export default async function AdminOrdersPage({
                       <form action={updateOrderStatusAction}>
                         <input type="hidden" name="id" value={order.id} />
                         <select name="status" defaultValue={order.status}>
-                          <option value="new">new</option>
-                          <option value="confirmed">confirmed</option>
-                          <option value="preparing">preparing</option>
-                          <option value="ready_for_pickup">
-                            ready_for_pickup
-                          </option>
-                          <option value="ready_for_dispatch">
-                            ready_for_dispatch
-                          </option>
-                          <option value="out_for_delivery">
-                            out_for_delivery
-                          </option>
-                          <option value="delivered">delivered</option>
-                          <option value="completed">completed</option>
-                          <option value="cancelled">cancelled</option>
+                          {(
+                            [
+                              "new",
+                              "awaiting_delivery_quote",
+                              "awaiting_payment",
+                              "confirmed",
+                              "preparing",
+                              "ready_for_pickup",
+                              "ready_for_dispatch",
+                              "out_for_delivery",
+                              "delivered",
+                              "completed",
+                              "cancelled",
+                              "exception",
+                            ] as const
+                          ).map((status) => (
+                            <option key={status} value={status}>
+                              {shopOrderStatusLabel(status, loc)}
+                            </option>
+                          ))}
                         </select>
                         <button
                           type="submit"

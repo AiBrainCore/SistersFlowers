@@ -290,7 +290,7 @@ export const en = {
     submit: "Place order",
     sending: "Sending…",
     payNote:
-      "Choose an active payment method below. Delivery fee and final total are confirmed before you pay. WhatsApp remains available if you prefer to confirm with the studio.",
+      "Choose an active payment method below (usually VietQR). Delivery fee and final total are confirmed before you pay. Questions? Message the studio on Zalo or WhatsApp.",
     promisePhoto: "Photo before delivery",
     promiseSameDay: "Same-day windows when capacity allows",
     promisePay: "Pay the exact total shown",
@@ -305,9 +305,11 @@ export const en = {
     grandTotal: "Estimated total",
     successTitle: "Order received.",
     successBody:
-      "The studio has your order. Open WhatsApp to confirm details, timing and payment. Ask for a photo of the finished bouquet before delivery if you would like one.",
+      "The studio has your order. Pay with the VietQR on your pay page when shown. For questions, message us on Zalo or WhatsApp — ask for a photo of the finished bouquet before delivery if you would like one.",
     reference: "Reference",
-    openWhatsapp: "Confirm on WhatsApp",
+    openWhatsapp: "WhatsApp",
+    openZalo: "Zalo",
+    contactStudio: "Message the studio",
     vouchersTitle: "Your treat codes",
     vouchersHint:
       "Show this code when you arrive. Enjoy your treat — if the bill is higher, just pay the difference.",
