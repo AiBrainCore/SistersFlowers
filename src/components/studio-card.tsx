@@ -79,6 +79,7 @@ export function StudioCard({
   callLabel,
   socialLabels,
   emphasize = false,
+  showCallButton = true,
 }: {
   studio: StudioContact;
   locale: Locale;
@@ -87,6 +88,8 @@ export function StudioCard({
   /** Contact headings + accessible names for social chips. */
   socialLabels?: SocialLabels;
   emphasize?: boolean;
+  /** Find us cards hide Call — phone numbers are already tappable. */
+  showCallButton?: boolean;
 }) {
   const name = locale === "vi" ? studio.nameVi : studio.nameEn;
   const address = locale === "vi" ? studio.addressVi : studio.addressEn;
@@ -159,65 +162,55 @@ export function StudioCard({
       <div className={`px-5 pb-5 ${emphasize ? "pt-5" : "pt-4"}`}>
         {!emphasize ? (
           <>
-            <div className="flex items-start gap-4">
-              <div className="min-w-0 flex-1">
+            <a
+              href={mapsHref}
+              target="_blank"
+              rel="noreferrer"
+              className="block text-sm leading-6 text-forest transition hover:text-citrus"
+            >
+              {address}
+            </a>
+            <ul className="mt-3 space-y-0.5">
+              {studio.phones.map((phone) => (
+                <li key={phone.digits}>
+                  <a
+                    href={`tel:+${phone.digits}`}
+                    className="inline-flex min-h-10 items-center text-base font-medium tabular-nums tracking-wide text-forest hover:text-citrus sm:text-[1.05rem]"
+                  >
+                    {phone.display}
+                  </a>
+                </li>
+              ))}
+            </ul>
+
+            <p className="mt-3 text-xs leading-5 text-moss">{chatHint}</p>
+            <nav
+              aria-label={chatHint}
+              className="mt-2.5 flex flex-wrap items-center gap-2"
+            >
+              {socialLinks.map((item) => (
                 <a
-                  href={mapsHref}
+                  key={item.key}
+                  href={item.href}
                   target="_blank"
                   rel="noreferrer"
-                  className="block text-sm leading-6 text-forest transition hover:text-citrus"
+                  aria-label={item.label}
+                  title={item.label}
+                  className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-forest/10 bg-[#fff8f2] shadow-[0_1px_0_rgba(44,41,38,0.04)] transition hover:-translate-y-0.5 hover:border-citrus/35 hover:bg-white hover:shadow-[0_6px_16px_rgba(44,41,38,0.1)] active:translate-y-0"
                 >
-                  {address}
+                  <SocialGlyph kind={item.key} size={22} />
                 </a>
-                <ul className="mt-3 space-y-0.5">
-                  {studio.phones.map((phone) => (
-                    <li key={phone.digits}>
-                      <a
-                        href={`tel:+${phone.digits}`}
-                        className="inline-flex min-h-10 items-center text-base font-medium tabular-nums tracking-wide text-forest hover:text-citrus sm:text-[1.05rem]"
-                      >
-                        {phone.display}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-                <p className="mt-3 text-xs leading-5 text-moss">{chatHint}</p>
-              </div>
+              ))}
+            </nav>
 
-              <nav
-                aria-label={chatHint}
-                className="flex shrink-0 flex-col items-center gap-2"
-              >
-                {socialLinks.map((item) => (
-                  <a
-                    key={item.key}
-                    href={item.href}
-                    target="_blank"
-                    rel="noreferrer"
-                    aria-label={item.label}
-                    title={item.label}
-                    className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-forest/10 bg-[#fff8f2] shadow-[0_1px_0_rgba(44,41,38,0.04)] transition hover:-translate-y-0.5 hover:border-citrus/35 hover:bg-white hover:shadow-[0_6px_16px_rgba(44,41,38,0.1)] active:translate-y-0"
-                  >
-                    <SocialGlyph kind={item.key} size={22} />
-                  </a>
-                ))}
-              </nav>
-            </div>
-
-            <div className="mt-5 flex flex-wrap gap-2">
+            <div className="mt-4">
               <a
                 href={mapsHref}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full bg-citrus px-4 text-[11px] tracking-[0.14em] text-ivory uppercase transition hover:bg-citrus/90 sm:flex-none"
+                className="inline-flex min-h-11 w-full items-center justify-center rounded-full bg-citrus px-4 text-[11px] tracking-[0.14em] text-ivory uppercase transition hover:bg-citrus/90 sm:w-auto"
               >
                 {directionsLabel}
-              </a>
-              <a
-                href={`tel:+${primaryPhone.digits}`}
-                className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full border border-forest/20 bg-white/60 px-4 text-[11px] tracking-[0.14em] text-forest uppercase transition hover:border-citrus/40 sm:flex-none"
-              >
-                {callLabel}
               </a>
             </div>
           </>
@@ -286,12 +279,14 @@ export function StudioCard({
               >
                 {directionsLabel}
               </a>
-              <a
-                href={`tel:+${primaryPhone.digits}`}
-                className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full border border-forest/20 bg-white/60 px-4 text-[11px] tracking-[0.14em] text-forest uppercase transition hover:border-citrus/40 sm:flex-none"
-              >
-                {callLabel}
-              </a>
+              {showCallButton ? (
+                <a
+                  href={`tel:+${primaryPhone.digits}`}
+                  className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full border border-forest/20 bg-white/60 px-4 text-[11px] tracking-[0.14em] text-forest uppercase transition hover:border-citrus/40 sm:flex-none"
+                >
+                  {callLabel}
+                </a>
+              ) : null}
             </div>
           </>
         )}
