@@ -70,7 +70,7 @@ export default async function OrderPayPage({
             <a
               href={intent.qrImageUrl}
               download={`sf-${order.reference}-qr.png`}
-              className="text-sm text-citrus underline-offset-2 hover:underline"
+              className="inline-flex min-h-11 items-center justify-center rounded-full bg-citrus px-5 text-sm text-white"
             >
               {t.payments.saveQr}
             </a>
