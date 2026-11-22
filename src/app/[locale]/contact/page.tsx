@@ -60,6 +60,7 @@ export default async function ContactPage({
               socialLabels={{
                 phones: c.phonesLabel,
                 social: c.socialLabel,
+                chatHint: c.chatHint,
                 facebook: c.facebook,
                 messenger: c.messenger,
                 tiktok: c.tiktok,

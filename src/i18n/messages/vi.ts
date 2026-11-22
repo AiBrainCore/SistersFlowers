@@ -538,7 +538,8 @@ export const vi = {
     intro:
       "Hai studio Sisters Flowers tại Đà Nẵng và Đà Lạt — gọi điện, nhắn Messenger hoặc WhatsApp, theo dõi Facebook và TikTok. English và tiếng Việt đều được chào đón.",
     phonesLabel: "Điện thoại",
-    socialLabel: "Mạng xã hội",
+    socialLabel: "Nhắn tin cho chúng tôi",
+    chatHint: "Nhắn tin cho studio",
     facebook: "Facebook",
     messenger: "Messenger",
     tiktok: "TikTok",
