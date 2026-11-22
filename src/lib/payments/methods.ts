@@ -110,10 +110,11 @@ export const PAYMENT_METHODS: PaymentMethodDef[] = [
   },
   {
     id: "whatsapp",
-    nameEn: "Confirm on WhatsApp",
-    nameVi: "Xác nhận qua WhatsApp",
+    nameEn: "Chat Zalo / WhatsApp (not a payment)",
+    nameVi: "Chat Zalo / WhatsApp (không phải thanh toán)",
     defaultComingSoon: false,
-    defaultEnabled: true,
+    /** Disabled: shop pays via VietQR; guests contact studio on Zalo or WhatsApp. */
+    defaultEnabled: false,
     sortOrder: 90,
     icon: "/brand/payments/whatsapp.svg",
     provider: "whatsapp",

@@ -17,6 +17,12 @@ import {
   CHECKLIST_LABELS,
   checklistComplete,
 } from "@/lib/payments/checklist";
+import {
+  DELIVERY_BOOKING_STATUSES,
+  SHOP_ORDER_STATUSES,
+  deliveryBookingStatusLabel,
+  shopOrderStatusLabel,
+} from "@/lib/payments/order-status-labels";
 
 export const dynamic = "force-dynamic";
 
@@ -30,6 +36,7 @@ export default async function AdminOrderDetailPage({
   const { id } = await params;
   const { err, saved } = await searchParams;
   const { locale, t } = await getAdminT();
+  const loc = locale === "en" ? "en" : "vi";
 
   const order = await prisma.order.findUnique({
     where: { id },
@@ -49,6 +56,9 @@ export default async function AdminOrderDetailPage({
   const checklist = order.fulfillmentChecklist;
   const complete = checklist ? checklistComplete(checklist) : false;
   const intent = order.paymentIntents[0];
+  const hasSeparateReceiver = Boolean(
+    order.recipientName || order.recipientPhone,
+  );
 
   return (
     <AdminShell title={`${t.orders.ref} ${order.reference}`}>
@@ -69,7 +79,17 @@ export default async function AdminOrderDetailPage({
           <h2 style={{ fontFamily: "serif", marginTop: 0 }}>
             {t.orders.customer}
           </h2>
-          <p>
+          <p style={{ fontSize: 13, opacity: 0.75, marginTop: 0 }}>
+            {t.orders.createdAt}:{" "}
+            <strong>
+              {order.createdAt.toLocaleString(
+                loc === "vi" ? "vi-VN" : "en-GB",
+              )}
+            </strong>
+          </p>
+
+          <h3 style={{ fontSize: 15, marginBottom: 6 }}>{t.orders.buyer}</h3>
+          <p style={{ marginTop: 0 }}>
             <strong>{order.customerName}</strong>
             <br />
             {order.phone}
@@ -79,34 +99,93 @@ export default async function AdminOrderDetailPage({
                 {order.email}
               </>
             ) : null}
-          </p>
-          <p style={{ fontSize: 14 }}>
-            {order.fulfillment} · {order.zone}
-            <br />
-            {order.address}
-            {order.deliveryDate ? (
+            {order.anonymousSender ? (
               <>
                 <br />
-                {order.deliveryDate}
-                {order.deliveryTime ? ` · ${order.deliveryTime}` : ""}
+                <span style={{ color: "#C24712" }}>
+                  {t.orders.anonymousSender}
+                </span>
               </>
             ) : null}
           </p>
-          {order.recipientName ? (
+
+          <h3 style={{ fontSize: 15, marginBottom: 6 }}>{t.orders.receiver}</h3>
+          <p style={{ marginTop: 0 }}>
+            {hasSeparateReceiver ? (
+              <>
+                <strong>{order.recipientName || "—"}</strong>
+                {order.recipientPhone ? (
+                  <>
+                    <br />
+                    {order.recipientPhone}
+                  </>
+                ) : null}
+              </>
+            ) : (
+              <span style={{ opacity: 0.7 }}>{t.orders.sameAsBuyer}</span>
+            )}
+          </p>
+
+          <p style={{ fontSize: 14 }}>
+            <strong>
+              {order.fulfillment === "pickup"
+                ? loc === "vi"
+                  ? "Nhận tại studio"
+                  : "Pickup"
+                : loc === "vi"
+                  ? "Giao tận nơi"
+                  : "Delivery"}
+            </strong>
+            {order.zone ? ` · ${order.zone}` : ""}
+            <br />
+            {order.address}
+          </p>
+
+          <p style={{ fontSize: 14 }}>
+            <strong>{t.orders.deliveryWhen}</strong>
+            <br />
+            {order.deliveryDate || "—"}
+            {order.deliveryTime ? ` · ${order.deliveryTime}` : ""}
+          </p>
+
+          {order.hotelName || order.roomNumber ? (
             <p style={{ fontSize: 14 }}>
-              Recipient: {order.recipientName}
-              {order.recipientPhone ? ` · ${order.recipientPhone}` : ""}
-              {order.anonymousSender ? " · anonymous sender" : ""}
+              <strong>{t.orders.hotelRoom}</strong>
+              <br />
+              {[order.hotelName, order.roomNumber].filter(Boolean).join(" · ")}
             </p>
           ) : null}
-          {order.cardMessage ? (
-            <p style={{ fontStyle: "italic", fontSize: 14 }}>
-              Card: “{order.cardMessage}”
-            </p>
-          ) : null}
+
+          <p
+            style={{
+              fontSize: 14,
+              padding: "12px 14px",
+              borderRadius: 12,
+              background: order.cardMessage
+                ? "rgba(194, 71, 18, 0.08)"
+                : "transparent",
+              border: order.cardMessage
+                ? "1px solid rgba(194, 71, 18, 0.25)"
+                : "none",
+            }}
+          >
+            <strong>{t.orders.cardMessage}</strong>
+            <br />
+            {order.cardMessage ? (
+              <em style={{ fontSize: 15 }}>“{order.cardMessage}”</em>
+            ) : (
+              <span style={{ opacity: 0.65 }}>{t.orders.noCard}</span>
+            )}
+          </p>
+
           {order.notes ? (
-            <p style={{ fontSize: 14, opacity: 0.8 }}>Notes: {order.notes}</p>
+            <p style={{ fontSize: 14 }}>
+              <strong>{t.orders.notes}</strong>
+              <br />
+              {order.notes}
+            </p>
           ) : null}
+
           <p style={{ fontSize: 13 }}>
             Branch:{" "}
             {order.branch
@@ -185,7 +264,13 @@ export default async function AdminOrderDetailPage({
               <input type="hidden" name="orderId" value={order.id} />
               <label className="admin-field">
                 <span>{t.orders.quoteFee}</span>
-                <input name="deliveryFee" type="number" required min={0} step={1000} />
+                <input
+                  name="deliveryFee"
+                  type="number"
+                  required
+                  min={0}
+                  step={1000}
+                />
               </label>
               <div style={{ alignSelf: "end" }}>
                 <button type="submit" className="admin-btn">
@@ -286,31 +371,29 @@ export default async function AdminOrderDetailPage({
 
         <div className="admin-card">
           <h2 style={{ fontFamily: "serif", marginTop: 0 }}>
-            {t.common.status}
+            {t.orders.orderStatus}
           </h2>
           <form action={updateShopOrderStatusAction}>
             <input type="hidden" name="orderId" value={order.id} />
-            <select name="status" defaultValue={order.status}>
-              <option value="new">new</option>
-              <option value="awaiting_delivery_quote">
-                awaiting_delivery_quote
-              </option>
-              <option value="awaiting_payment">awaiting_payment</option>
-              <option value="confirmed">confirmed</option>
-              <option value="preparing">preparing</option>
-              <option value="ready_for_pickup">ready_for_pickup</option>
-              <option value="ready_for_dispatch">ready_for_dispatch</option>
-              <option value="out_for_delivery">out_for_delivery</option>
-              <option value="delivered">delivered</option>
-              <option value="completed">completed</option>
-              <option value="cancelled">cancelled</option>
-              <option value="exception">exception</option>
-            </select>
-            <button
-              type="submit"
-              className="admin-btn secondary"
-              style={{ marginTop: 8, display: "block" }}
-            >
+            <div className="admin-choice-row" style={{ marginBottom: 12 }}>
+              {SHOP_ORDER_STATUSES.map((status) => (
+                <label
+                  key={status}
+                  className={`admin-choice${
+                    order.status === status ? " on" : ""
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="status"
+                    value={status}
+                    defaultChecked={order.status === status}
+                  />
+                  {shopOrderStatusLabel(status, loc)}
+                </label>
+              ))}
+            </div>
+            <button type="submit" className="admin-btn secondary">
               {t.common.update}
             </button>
           </form>
@@ -327,56 +410,61 @@ export default async function AdminOrderDetailPage({
                 name="provider"
                 value={order.deliveryBooking?.provider || "grab_manual"}
               />
+              <p style={{ fontSize: 13, marginBottom: 8 }}>
+                {t.orders.deliveryStatus}
+              </p>
+              <div className="admin-choice-row" style={{ marginBottom: 12 }}>
+                {DELIVERY_BOOKING_STATUSES.map((status) => {
+                  const current =
+                    order.deliveryBooking?.status || "awaiting_arrangement";
+                  return (
+                    <label
+                      key={status}
+                      className={`admin-choice${
+                        current === status ? " on" : ""
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="status"
+                        value={status}
+                        defaultChecked={current === status}
+                      />
+                      {deliveryBookingStatusLabel(status, loc)}
+                    </label>
+                  );
+                })}
+              </div>
               <label className="admin-field">
-                <span>Status</span>
-                <select
-                  name="status"
-                  defaultValue={
-                    order.deliveryBooking?.status || "awaiting_arrangement"
-                  }
-                >
-                  <option value="awaiting_arrangement">
-                    awaiting_arrangement
-                  </option>
-                  <option value="courier_requested">courier_requested</option>
-                  <option value="courier_assigned">courier_assigned</option>
-                  <option value="collected">collected</option>
-                  <option value="in_transit">in_transit</option>
-                  <option value="delivered">delivered</option>
-                  <option value="failed">failed</option>
-                  <option value="returned">returned</option>
-                </select>
-              </label>
-              <label className="admin-field">
-                <span>Booking ref</span>
+                <span>{t.orders.bookingRef}</span>
                 <input
                   name="bookingRef"
                   defaultValue={order.deliveryBooking?.bookingRef || ""}
                 />
               </label>
               <label className="admin-field">
-                <span>Courier</span>
+                <span>{t.orders.courier}</span>
                 <input
                   name="courierName"
                   defaultValue={order.deliveryBooking?.courierName || ""}
                 />
               </label>
               <label className="admin-field">
-                <span>Courier phone</span>
+                <span>{t.orders.courierPhone}</span>
                 <input
                   name="courierPhone"
                   defaultValue={order.deliveryBooking?.courierPhone || ""}
                 />
               </label>
               <label className="admin-field">
-                <span>Actual courier cost (VND)</span>
+                <span>{t.orders.actualCost}</span>
                 <input
                   name="actualCost"
                   defaultValue={order.deliveryBooking?.actualCost ?? ""}
                 />
               </label>
               <label className="admin-field">
-                <span>Notes</span>
+                <span>{t.orders.notes}</span>
                 <input
                   name="notes"
                   defaultValue={order.deliveryBooking?.notes || ""}
@@ -392,11 +480,17 @@ export default async function AdminOrderDetailPage({
 
       <div className="admin-card" style={{ marginTop: 16 }}>
         <h2 style={{ fontFamily: "serif", marginTop: 0 }}>Timeline</h2>
-        <ul style={{ margin: 0, paddingLeft: 18, fontSize: 13, lineHeight: 1.7 }}>
+        <ul
+          style={{ margin: 0, paddingLeft: 18, fontSize: 13, lineHeight: 1.7 }}
+        >
           {order.statusHistory.map((h) => (
             <li key={h.id}>
-              {h.createdAt.toLocaleString(locale === "vi" ? "vi-VN" : "en-GB")}{" "}
-              · {h.fromStatus || "—"} → <strong>{h.toStatus}</strong>
+              {h.createdAt.toLocaleString(loc === "vi" ? "vi-VN" : "en-GB")} ·{" "}
+              {h.fromStatus
+                ? shopOrderStatusLabel(h.fromStatus, loc)
+                : "—"}{" "}
+              →{" "}
+              <strong>{shopOrderStatusLabel(h.toStatus, loc)}</strong>
               {h.note ? ` · ${h.note}` : ""} · {h.actor}
             </li>
           ))}

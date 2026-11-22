@@ -33,7 +33,7 @@ export async function submitOrderAction(
 
   const fulfillment =
     payload.fulfillment === "pickup" ? "pickup" : "delivery";
-  const paymentMethod = (payload.paymentMethod || "whatsapp").trim();
+  const paymentMethod = (payload.paymentMethod || "vietqr").trim();
 
   const { repriceCheckoutItems } = await import("@/lib/payments/pricing");
   const priced = await repriceCheckoutItems({
@@ -299,6 +299,14 @@ export async function submitOrderAction(
       deliveryDate: payload.deliveryDate?.trim() || null,
       deliveryTime: payload.deliveryTime?.trim() || null,
       notes: payload.notes?.trim() || null,
+      fulfillment,
+      paymentMethod,
+      recipientName: payload.recipientName?.trim() || null,
+      recipientPhone: payload.recipientPhone?.trim() || null,
+      cardMessage: payload.cardMessage?.trim() || null,
+      anonymousSender: Boolean(payload.anonymousSender),
+      hotelName: payload.hotelName?.trim() || null,
+      roomNumber: payload.roomNumber?.trim() || null,
       subtotal,
       deliveryFee: order.deliveryFee,
       deliveryTotal: payableTotal,

@@ -466,7 +466,7 @@ export async function setDeliveryQuoteAction(formData: FormData) {
   if (!order) redirect("/admin/orders");
 
   const payableTotal = order.subtotal + fee;
-  const method = order.paymentMethod || "whatsapp";
+  const method = order.paymentMethod || "vietqr";
   const citySlug = order.branch?.city.slug || null;
 
   await prisma.$transaction([

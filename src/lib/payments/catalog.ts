@@ -30,7 +30,15 @@ export async function ensurePaymentMethodSettings() {
         comingSoon: m.defaultComingSoon,
         sortOrder: m.sortOrder,
       },
-      update: {},
+      // Keep WhatsApp off as a checkout “payment” — chat is Zalo/WhatsApp in contact UI.
+      update:
+        m.id === "whatsapp"
+          ? {
+              enabled: false,
+              comingSoon: false,
+              sortOrder: m.sortOrder,
+            }
+          : { sortOrder: m.sortOrder },
     });
   }
 }
@@ -65,6 +73,11 @@ export async function listPaymentMethodsForDisplay(input?: {
     }
     if (m.provider === "stub") {
       selectable = false;
+    }
+    // Never offer WhatsApp as a payment method at checkout.
+    if (m.id === "whatsapp") {
+      selectable = false;
+      reason = "chat_not_payment";
     }
 
     return {

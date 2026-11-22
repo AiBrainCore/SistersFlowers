@@ -45,6 +45,14 @@ export type OrderMailPayload = {
   deliveryDate?: string | null;
   deliveryTime?: string | null;
   notes?: string | null;
+  fulfillment?: string | null;
+  paymentMethod?: string | null;
+  recipientName?: string | null;
+  recipientPhone?: string | null;
+  cardMessage?: string | null;
+  anonymousSender?: boolean | null;
+  hotelName?: string | null;
+  roomNumber?: string | null;
   subtotal: number;
   deliveryFee?: number | null;
   deliveryTotal: number;
@@ -166,6 +174,19 @@ export function buildOrderStudioEmail(
   const c = orderStudioCopy();
   const studio = studioContactForCity(payload.citySlug);
   const city = cityLabel(payload.citySlug, "en") || "—";
+  const when =
+    [payload.deliveryDate, payload.deliveryTime].filter(Boolean).join(" · ") ||
+    "—";
+  const receiver =
+    payload.recipientName || payload.recipientPhone
+      ? [
+          payload.recipientName || "—",
+          payload.recipientPhone || null,
+        ]
+          .filter(Boolean)
+          .join(" · ")
+      : "Same as buyer (no separate recipient)";
+  const card = payload.cardMessage?.trim();
   const rows: Array<[string, string]> = [
     [
       "Branch",
@@ -173,21 +194,44 @@ export function buildOrderStudioEmail(
     ],
     ["Reference", escapeHtml(payload.reference)],
     ["Locale", escapeHtml(payload.locale)],
-    ["Customer", escapeHtml(payload.customerName)],
-    ["Phone", escapeHtml(payload.phone)],
-    ["Email", escapeHtml(payload.email || "—")],
+    ["Fulfillment", escapeHtml(payload.fulfillment || "delivery")],
+    ["Payment method", escapeHtml(payload.paymentMethod || "—")],
+    [
+      "Buyer (payer)",
+      `${escapeHtml(payload.customerName)}<br/>${escapeHtml(payload.phone)}${
+        payload.email ? `<br/>${escapeHtml(payload.email)}` : ""
+      }${
+        payload.anonymousSender
+          ? `<br/><em style="color:#C24712;">Anonymous to recipient</em>`
+          : ""
+      }`,
+    ],
+    ["Receiver (gift)", escapeHtml(receiver)],
     ["Address", escapeHtml(payload.address)],
     ["Zone", escapeHtml(payload.zone || "—")],
-    [
-      "When",
+    ["Delivery when", escapeHtml(when)],
+  ];
+  if (payload.hotelName || payload.roomNumber) {
+    rows.push([
+      "Hotel / room",
       escapeHtml(
-        [payload.deliveryDate, payload.deliveryTime].filter(Boolean).join(" · ") ||
+        [payload.hotelName, payload.roomNumber].filter(Boolean).join(" · ") ||
           "—",
       ),
-    ],
+    ]);
+  }
+  if (card) {
+    rows.push([
+      "Handwritten card",
+      `<strong style="color:#C24712;">WRITE THIS ON THE CARD</strong><br/><em style="font-size:15px;">“${escapeHtml(card)}”</em>`,
+    ]);
+  } else {
+    rows.push(["Handwritten card", "— (none ordered / no text)"]);
+  }
+  rows.push(
     ["Notes", escapeHtml(payload.notes || "—")],
     ["Total", escapeHtml(formatVnd(payload.deliveryTotal, "en"))],
-  ];
+  );
   if (studio) {
     rows.splice(1, 0, [
       "Studio desk",
@@ -195,9 +239,16 @@ export function buildOrderStudioEmail(
     ]);
   }
 
+  const cardBanner = card
+    ? mailParagraph(
+        `<strong style="color:#C24712;">Handwritten card required</strong> — text is in the table below. Do not skip.`,
+      )
+    : "";
+
   const body = [
     mailHeading(c.heading(city === "—" ? null : city)),
     mailParagraph(escapeHtml(c.intro(city === "—" ? null : city))),
+    cardBanner,
     mailDetailTable(rows),
     `<p style="margin:16px 0 6px;font-size:13px;color:#6b635c;text-align:center;">Items</p>`,
     `<table role="presentation" width="100%" cellpadding="0" cellspacing="0">${itemsHtml(payload.items, "en")}</table>`,

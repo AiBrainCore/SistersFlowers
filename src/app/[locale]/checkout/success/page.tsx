@@ -6,6 +6,11 @@ import { getStorefrontDictionary } from "@/lib/storefront";
 import { BRAND } from "@/lib/brand";
 import { formatVnd } from "@/data/products";
 import { prisma } from "@/lib/db";
+import {
+  STUDIO_CONTACTS,
+  studioWhatsAppDigits,
+  studioZaloUrl,
+} from "@/lib/studio-contacts";
 
 export const dynamic = "force-dynamic";
 
@@ -20,6 +25,22 @@ export default async function CheckoutSuccessPage({
   const reference = typeof query.ref === "string" ? query.ref : "";
   const whatsapp = typeof query.wa === "string" ? query.wa : "";
   const trackToken = typeof query.track === "string" ? query.track : "";
+
+  const order =
+    reference.length > 0
+      ? await prisma.order.findFirst({
+          where: { reference },
+          include: { branch: { include: { city: true } } },
+        })
+      : null;
+
+  const citySlug = order?.branch?.city.slug || null;
+  const studio =
+    STUDIO_CONTACTS.find((s) => s.slug === citySlug) || STUDIO_CONTACTS[0]!;
+  const zaloUrl = studioZaloUrl(studio);
+  const waUrl =
+    whatsapp ||
+    `https://wa.me/${studioWhatsAppDigits(studio)}`;
 
   const vouchers =
     reference.length > 0
@@ -89,21 +110,30 @@ export default async function CheckoutSuccessPage({
         </div>
       ) : null}
 
-      <div className="mt-10 flex flex-wrap justify-center gap-3">
-        {whatsapp ? (
-          <a
-            href={whatsapp}
-            target="_blank"
-            rel="noreferrer"
-            className="rounded-full bg-forest px-8 py-3 text-[12px] tracking-[0.18em] text-ivory uppercase"
-          >
-            {t.checkout.openWhatsapp}
-          </a>
-        ) : null}
+      <p className="mt-10 text-[11px] tracking-[0.18em] text-moss uppercase">
+        {t.checkout.contactStudio}
+      </p>
+      <div className="mt-3 flex flex-wrap justify-center gap-3">
+        <a
+          href={zaloUrl}
+          target="_blank"
+          rel="noreferrer"
+          className="rounded-full bg-citrus px-8 py-3 text-[12px] tracking-[0.18em] text-white uppercase"
+        >
+          {t.checkout.openZalo}
+        </a>
+        <a
+          href={waUrl}
+          target="_blank"
+          rel="noreferrer"
+          className="rounded-full bg-forest px-8 py-3 text-[12px] tracking-[0.18em] text-ivory uppercase"
+        >
+          {t.checkout.openWhatsapp}
+        </a>
         {trackToken ? (
           <Link
             href={`/${locale}/order/track/${trackToken}`}
-            className="rounded-full bg-citrus px-8 py-3 text-[12px] tracking-[0.18em] text-white uppercase"
+            className="rounded-full border border-forest/25 px-8 py-3 text-[12px] tracking-[0.18em] uppercase"
           >
             {t.payments.trackTitle}
           </Link>
