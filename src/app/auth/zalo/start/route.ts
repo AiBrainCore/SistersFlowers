@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { siteUrl } from "@/lib/seo";
+import { mailPublicSiteUrl } from "@/lib/mail/config";
 import {
   createCodeChallenge,
   createCodeVerifier,
@@ -30,7 +30,7 @@ export async function GET(request: Request) {
     maxAge: 600,
   });
 
-  const redirectUri = siteUrl("/auth/zalo/callback");
+  const redirectUri = mailPublicSiteUrl("/auth/zalo/callback");
   const authorize = zaloAuthorizeUrl({
     redirectUri,
     codeChallenge: challenge,

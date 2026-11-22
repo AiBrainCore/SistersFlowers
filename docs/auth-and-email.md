@@ -124,7 +124,7 @@ NEXT_PUBLIC_SITE_URL=https://sistersflowers.vn
 MAIL_PUBLIC_SITE_URL=https://sistersflowers.vn
 ```
 
-`siteUrl()` ignores `localhost` in production and falls back to `https://sistersflowers.vn`.
+Auth verify / OAuth redirects use `mailPublicSiteUrl()` (not `siteUrl()`), which **always** skips `localhost` / `127.0.0.1` and falls back to `https://sistersflowers.vn`. Deploy `ensure-auth-env.mjs` forces both site URL env vars to production and strips `ALLOW_LOCALHOST_SITE_URL`.
 
 ## Zalo login
 

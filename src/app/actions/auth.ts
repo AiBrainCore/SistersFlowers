@@ -7,9 +7,9 @@ import {
   clearCustomerSessionCookie,
   setCustomerSessionCookie,
 } from "@/lib/customer-session";
+import { mailPublicSiteUrl } from "@/lib/mail/config";
 import { sendMail } from "@/lib/mail/send";
 import { buildVerifyEmail } from "@/lib/mail/templates";
-import { siteUrl } from "@/lib/seo";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { supabaseConfigured } from "@/lib/supabase/env";
@@ -18,6 +18,19 @@ export type AuthResult = { ok: true } | { ok: false; error: string };
 
 function localeOrVi(raw: string): Locale {
   return raw === "en" ? "en" : "vi";
+}
+
+/**
+ * Customer-facing auth links must never be localhost — even if NEXT_PUBLIC_SITE_URL
+ * is still set to http://localhost:3000 on a misconfigured VPS or local NODE_ENV.
+ * mailPublicSiteUrl always falls back to https://sistersflowers.vn.
+ */
+function authPublicUrl(path: string) {
+  const url = mailPublicSiteUrl(path);
+  if (/localhost|127\.0\.0\.1/i.test(url)) {
+    throw new Error("auth_public_url_localhost");
+  }
+  return url;
 }
 
 /**
@@ -45,7 +58,7 @@ export async function registerWithEmailAction(formData: FormData): Promise<AuthR
     return { ok: false, error: "auth_not_configured" };
   }
 
-  const redirectTo = siteUrl(`/auth/callback?locale=${locale}`);
+  const redirectTo = authPublicUrl(`/auth/callback?locale=${locale}`);
   const { data, error } = await admin.auth.admin.generateLink({
     type: "signup",
     email,
@@ -68,7 +81,9 @@ export async function registerWithEmailAction(formData: FormData): Promise<AuthR
 
   // Stay on sistersflowers.vn — never send guests through supabase.co/auth/v1/verify
   // (browsers show a scary “redirect notice” for that intermediate hop).
-  const verifyUrl = siteUrl(
+  // Never use siteUrl() here: it may still resolve to localhost in local NODE_ENV
+  // or when ALLOW_LOCALHOST_SITE_URL=1 leaks onto the VPS.
+  const verifyUrl = authPublicUrl(
     `/auth/confirm?token_hash=${encodeURIComponent(hashedToken)}&type=signup&locale=${locale}`,
   );
 
@@ -154,7 +169,7 @@ export async function startGoogleOAuthAction(
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
-      redirectTo: siteUrl(`/auth/callback?locale=${locale}`),
+      redirectTo: authPublicUrl(`/auth/callback?locale=${locale}`),
     },
   });
   if (error || !data.url) {
