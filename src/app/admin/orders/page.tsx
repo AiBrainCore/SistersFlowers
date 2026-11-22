@@ -1,15 +1,10 @@
 import Link from "next/link";
 import { AdminShell } from "@/app/admin/_shell";
-import { updateOrderStatusAction } from "@/app/admin/actions";
-import {
-  confirmShopPaymentAction,
-  updateDeliveryBookingAction,
-} from "@/app/admin/payments/actions";
+import { confirmShopPaymentAction } from "@/app/admin/payments/actions";
 import { formatVnd } from "@/data/products";
 import { prisma } from "@/lib/db";
 import { getAdminT } from "@/lib/admin-locale";
 import {
-  DELIVERY_BOOKING_STATUSES,
   deliveryBookingStatusLabel,
   shopOrderStatusLabel,
 } from "@/lib/payments/order-status-labels";
@@ -35,268 +30,216 @@ export default async function AdminOrdersPage({
 
   return (
     <AdminShell title={t.orders.title}>
-      {paid ? (
+      {paid || delivery ? (
         <p style={{ marginBottom: 16, color: "#5c6b52" }}>{t.common.saved}</p>
       ) : null}
-      {delivery ? (
-        <p style={{ marginBottom: 16, color: "#5c6b52" }}>{t.common.saved}</p>
-      ) : null}
-      <div className="admin-card" style={{ padding: 0, overflow: "hidden" }}>
-        <table className="admin-table">
-          <thead>
-            <tr>
-              <th>{t.orders.ref}</th>
-              <th>{t.orders.customer}</th>
-              <th>{t.orders.items}</th>
-              <th>{t.orders.total}</th>
-              <th>{t.orders.payment}</th>
-              <th>{t.common.status}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {orders.length === 0 ? (
-              <tr>
-                <td colSpan={6} style={{ padding: 24, opacity: 0.7 }}>
-                  {t.orders.empty}
-                </td>
-              </tr>
-            ) : (
-              orders.map((order) => {
-                const intent = order.paymentIntents[0];
-                return (
-                  <tr key={order.id}>
-                    <td>
-                      <strong>
-                        <Link href={`/admin/orders/${order.id}`}>
-                          {order.reference}
-                        </Link>
-                      </strong>
-                      <div style={{ fontSize: 11, opacity: 0.6 }}>
-                        {order.createdAt.toLocaleString(
-                          locale === "vi" ? "vi-VN" : "en-GB",
-                        )}
-                      </div>
-                      <div style={{ marginTop: 4 }}>
-                        <Link href={`/admin/orders/${order.id}`}>
-                          {t.orders.open}
-                        </Link>
-                      </div>
-                      <div style={{ fontSize: 11, opacity: 0.7 }}>
-                        {order.fulfillment}
-                        {order.branch
-                          ? ` · ${order.branch.city.nameEn}`
-                          : ""}
-                        {order.paymentMethod
-                          ? ` · ${order.paymentMethod}`
-                          : ""}
-                      </div>
-                      {order.trackingToken ? (
-                        <div style={{ marginTop: 4 }}>
-                          <Link
-                            href={`/en/order/track/${order.trackingToken}`}
-                            target="_blank"
-                          >
-                            {t.orders.track}
-                          </Link>
-                        </div>
-                      ) : null}
-                    </td>
-                    <td>
-                      {order.customerName}
-                      <div style={{ fontSize: 12 }}>{order.phone}</div>
-                      {order.email ? (
-                        <div style={{ fontSize: 12, opacity: 0.7 }}>
-                          {order.email}
-                        </div>
-                      ) : null}
-                      <div style={{ fontSize: 12, opacity: 0.7 }}>
-                        {order.address}
-                      </div>
-                      {(order.deliveryDate || order.deliveryTime) && (
-                        <div style={{ fontSize: 12, marginTop: 4 }}>
-                          {t.orders.deliveryWhen}: {order.deliveryDate || "—"}
-                          {order.deliveryTime ? ` · ${order.deliveryTime}` : ""}
-                        </div>
+
+      {orders.length === 0 ? (
+        <div className="admin-card" style={{ padding: 24, opacity: 0.7 }}>
+          {t.orders.empty}
+        </div>
+      ) : (
+        <div style={{ display: "grid", gap: 12 }}>
+          {orders.map((order) => {
+            const intent = order.paymentIntents[0];
+            const city =
+              loc === "vi"
+                ? order.branch?.city.nameVi || order.branch?.city.nameEn
+                : order.branch?.city.nameEn;
+            const itemSummary = order.items
+              .slice(0, 2)
+              .map((item) => `${item.qty}× ${item.name}`)
+              .join(" · ");
+            const moreItems =
+              order.items.length > 2
+                ? ` +${order.items.length - 2}`
+                : "";
+            const when = [order.deliveryDate, order.deliveryTime]
+              .filter(Boolean)
+              .join(" · ");
+            const receiver =
+              order.recipientName || order.recipientPhone
+                ? [order.recipientName, order.recipientPhone]
+                    .filter(Boolean)
+                    .join(" · ")
+                : null;
+
+            return (
+              <article key={order.id} className="admin-card admin-order-row">
+                <div style={{ minWidth: 0 }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexWrap: "wrap",
+                      gap: "6px 12px",
+                      alignItems: "baseline",
+                    }}
+                  >
+                    <Link
+                      href={`/admin/orders/${order.id}`}
+                      style={{
+                        fontWeight: 700,
+                        fontSize: 16,
+                        textDecoration: "none",
+                        color: "inherit",
+                      }}
+                    >
+                      {order.reference}
+                    </Link>
+                    <span style={{ fontSize: 12, opacity: 0.55 }}>
+                      {order.createdAt.toLocaleString(
+                        loc === "vi" ? "vi-VN" : "en-GB",
+                        {
+                          day: "2-digit",
+                          month: "2-digit",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        },
                       )}
-                      {order.recipientName || order.recipientPhone ? (
-                        <div style={{ fontSize: 12, marginTop: 4 }}>
-                          {t.orders.receiver}: {order.recipientName || "—"}
-                          {order.recipientPhone
-                            ? ` · ${order.recipientPhone}`
-                            : ""}
-                          {order.anonymousSender
-                            ? ` · ${t.orders.anonymousSender}`
-                            : ""}
-                        </div>
-                      ) : null}
-                      {order.cardMessage ? (
-                        <div
-                          style={{
-                            fontSize: 12,
-                            marginTop: 4,
-                            color: "#C24712",
-                            fontStyle: "italic",
-                          }}
-                        >
-                          {t.orders.cardMessage}: “{order.cardMessage}”
-                        </div>
-                      ) : null}
-                    </td>
-                    <td>
-                      {order.items.map((item) => (
-                        <div
-                          key={item.id}
-                          style={{ fontSize: 13, marginBottom: 6 }}
-                        >
-                          {item.qty}× {item.name}
-                          {item.kind !== "product" ? (
-                            <span style={{ opacity: 0.6 }}> · {item.kind}</span>
-                          ) : null}
-                          {item.note ? (
-                            <div
-                              style={{
-                                fontSize: 11,
-                                fontStyle: "italic",
-                                opacity: 0.7,
-                              }}
-                            >
-                              “{item.note}”
-                            </div>
-                          ) : null}
-                        </div>
-                      ))}
-                    </td>
-                    <td>{formatVnd(order.deliveryTotal, locale)}</td>
-                    <td>
-                      <div style={{ fontSize: 13 }}>
-                        <strong>{order.paymentStatus}</strong>
-                      </div>
+                    </span>
+                    {city ? (
+                      <span style={{ fontSize: 12, opacity: 0.7 }}>{city}</span>
+                    ) : null}
+                  </div>
+
+                  <p style={{ margin: "8px 0 0", fontSize: 14, lineHeight: 1.45 }}>
+                    <strong>{order.customerName}</strong>
+                    <span style={{ opacity: 0.7 }}> · {order.phone}</span>
+                  </p>
+
+                  {receiver ? (
+                    <p
+                      style={{
+                        margin: "4px 0 0",
+                        fontSize: 13,
+                        lineHeight: 1.4,
+                        opacity: 0.85,
+                      }}
+                    >
+                      → {receiver}
+                    </p>
+                  ) : null}
+
+                  {when ? (
+                    <p
+                      style={{
+                        margin: "4px 0 0",
+                        fontSize: 13,
+                        opacity: 0.75,
+                      }}
+                    >
+                      {when}
+                    </p>
+                  ) : null}
+
+                  {order.cardMessage ? (
+                    <p
+                      style={{
+                        margin: "6px 0 0",
+                        fontSize: 13,
+                        color: "#C24712",
+                        lineHeight: 1.35,
+                      }}
+                    >
+                      {t.orders.cardMessage}: “{order.cardMessage}”
+                    </p>
+                  ) : null}
+
+                  <p
+                    style={{
+                      margin: "8px 0 0",
+                      fontSize: 13,
+                      opacity: 0.7,
+                      lineHeight: 1.4,
+                    }}
+                  >
+                    {itemSummary}
+                    {moreItems}
+                  </p>
+                </div>
+
+                <div style={{ fontSize: 13, lineHeight: 1.55 }}>
+                  <div>
+                    <span style={{ opacity: 0.6 }}>{t.orders.payment}</span>
+                    <br />
+                    <strong>{order.paymentStatus}</strong>
+                    {intent?.method ? (
+                      <span style={{ opacity: 0.65 }}> · {intent.method}</span>
+                    ) : order.paymentMethod ? (
+                      <span style={{ opacity: 0.65 }}>
+                        {" "}
+                        · {order.paymentMethod}
+                      </span>
+                    ) : null}
+                  </div>
+                  <div style={{ marginTop: 8 }}>
+                    <span style={{ opacity: 0.6 }}>{t.orders.orderStatus}</span>
+                    <br />
+                    <strong>{shopOrderStatusLabel(order.status, loc)}</strong>
+                  </div>
+                  {order.fulfillment === "delivery" && order.deliveryBooking ? (
+                    <div style={{ marginTop: 8 }}>
+                      <span style={{ opacity: 0.6 }}>
+                        {t.orders.deliveryOps}
+                      </span>
+                      <br />
+                      {deliveryBookingStatusLabel(
+                        order.deliveryBooking.status,
+                        loc,
+                      )}
+                    </div>
+                  ) : (
+                    <div style={{ marginTop: 8, opacity: 0.7 }}>
+                      {order.fulfillment === "pickup"
+                        ? loc === "vi"
+                          ? "Nhận tại studio"
+                          : "Pickup"
+                        : null}
+                    </div>
+                  )}
+                </div>
+
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "flex-end",
+                    gap: 10,
+                    minWidth: 120,
+                  }}
+                >
+                  <strong style={{ fontSize: 16 }}>
+                    {formatVnd(order.deliveryTotal, locale)}
+                  </strong>
+                  <Link
+                    href={`/admin/orders/${order.id}`}
+                    className="admin-btn secondary"
+                    style={{ textAlign: "center", textDecoration: "none" }}
+                  >
+                    {t.orders.open}
+                  </Link>
+                  {order.paymentStatus !== "paid" ? (
+                    <form action={confirmShopPaymentAction}>
+                      <input type="hidden" name="orderId" value={order.id} />
                       {intent ? (
-                        <div style={{ fontSize: 11, opacity: 0.7 }}>
-                          {intent.method} · {intent.status}
-                          {intent.reference ? ` · ${intent.reference}` : ""}
-                        </div>
+                        <input
+                          type="hidden"
+                          name="intentId"
+                          value={intent.id}
+                        />
                       ) : null}
-                      {order.paymentStatus !== "paid" ? (
-                        <form
-                          action={confirmShopPaymentAction}
-                          style={{ marginTop: 8 }}
-                        >
-                          <input type="hidden" name="orderId" value={order.id} />
-                          {intent ? (
-                            <input
-                              type="hidden"
-                              name="intentId"
-                              value={intent.id}
-                            />
-                          ) : null}
-                          <button type="submit" className="admin-btn">
-                            {t.orders.confirmPaid}
-                          </button>
-                        </form>
-                      ) : null}
-                      {order.fulfillment === "delivery" ? (
-                        <form
-                          action={updateDeliveryBookingAction}
-                          style={{ marginTop: 12 }}
-                        >
-                          <input type="hidden" name="orderId" value={order.id} />
-                          <div
-                            style={{
-                              fontSize: 11,
-                              marginBottom: 4,
-                              opacity: 0.7,
-                            }}
-                          >
-                            {t.orders.deliveryOps}
-                          </div>
-                          <select
-                            name="status"
-                            defaultValue={
-                              order.deliveryBooking?.status ||
-                              "awaiting_arrangement"
-                            }
-                          >
-                            {DELIVERY_BOOKING_STATUSES.map((status) => (
-                              <option key={status} value={status}>
-                                {deliveryBookingStatusLabel(status, loc)}
-                              </option>
-                            ))}
-                          </select>
-                          <input
-                            type="hidden"
-                            name="provider"
-                            value={
-                              order.deliveryBooking?.provider || "grab_manual"
-                            }
-                          />
-                          <input
-                            name="bookingRef"
-                            placeholder={t.orders.bookingRef}
-                            defaultValue={
-                              order.deliveryBooking?.bookingRef || ""
-                            }
-                            style={{ display: "block", marginTop: 4, width: "100%" }}
-                          />
-                          <input
-                            name="actualCost"
-                            placeholder={t.orders.actualCost}
-                            defaultValue={
-                              order.deliveryBooking?.actualCost ?? ""
-                            }
-                            style={{ display: "block", marginTop: 4, width: "100%" }}
-                          />
-                          <button
-                            type="submit"
-                            className="admin-btn secondary"
-                            style={{ marginTop: 6 }}
-                          >
-                            {t.common.update}
-                          </button>
-                        </form>
-                      ) : null}
-                    </td>
-                    <td>
-                      <form action={updateOrderStatusAction}>
-                        <input type="hidden" name="id" value={order.id} />
-                        <select name="status" defaultValue={order.status}>
-                          {(
-                            [
-                              "new",
-                              "awaiting_delivery_quote",
-                              "awaiting_payment",
-                              "confirmed",
-                              "preparing",
-                              "ready_for_pickup",
-                              "ready_for_dispatch",
-                              "out_for_delivery",
-                              "delivered",
-                              "completed",
-                              "cancelled",
-                              "exception",
-                            ] as const
-                          ).map((status) => (
-                            <option key={status} value={status}>
-                              {shopOrderStatusLabel(status, loc)}
-                            </option>
-                          ))}
-                        </select>
-                        <button
-                          type="submit"
-                          className="admin-btn secondary"
-                          style={{ marginTop: 8 }}
-                        >
-                          {t.common.update}
-                        </button>
-                      </form>
-                    </td>
-                  </tr>
-                );
-              })
-            )}
-          </tbody>
-        </table>
-      </div>
+                      <button type="submit" className="admin-btn">
+                        {t.orders.confirmPaid}
+                      </button>
+                    </form>
+                  ) : null}
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      )}
+
     </AdminShell>
   );
 }

@@ -176,6 +176,21 @@
   font-weight: 600;
 }
 
+/** Compact shop-order list cards (detail page holds Grab / status editors). */
+.admin-order-row {
+  padding: 16px 18px;
+  display: grid;
+  gap: 12px 20px;
+  grid-template-columns: minmax(0, 1.5fr) minmax(140px, 0.9fr) auto;
+  align-items: start;
+}
+
+@media (max-width: 860px) {
+  .admin-order-row {
+    grid-template-columns: 1fr;
+  }
+}
+
 .admin-btn {
   display: inline-block;
   border: 0;
