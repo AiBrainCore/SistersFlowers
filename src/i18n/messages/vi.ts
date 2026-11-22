@@ -493,7 +493,7 @@ export const vi = {
     phone: "Gọi",
     address: "Đến",
     studios: "Ghé thăm",
-    directions: "Chỉ đường",
+    directions: "Bản đồ",
     call: "Gọi",
     seo: "Sisters Flowers là studio hoa tại Đà Nẵng và Đà Lạt, Việt Nam. Tại studio chúng tôi tạo những bó hoa tươi, hoa cưới và món quà đặc biệt — làm vui ngay từ khoảnh khắc đầu tiên.",
     seoExtra:

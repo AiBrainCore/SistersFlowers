@@ -184,31 +184,30 @@ export function StudioCard({
             </ul>
 
             <p className="mt-3 text-xs leading-5 text-moss">{chatHint}</p>
-            <nav
-              aria-label={chatHint}
-              className="mt-2.5 flex flex-wrap items-center gap-2"
-            >
-              {socialLinks.map((item) => (
-                <a
-                  key={item.key}
-                  href={item.href}
-                  target="_blank"
-                  rel="noreferrer"
-                  aria-label={item.label}
-                  title={item.label}
-                  className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-forest/10 bg-[#fff8f2] shadow-[0_1px_0_rgba(44,41,38,0.04)] transition hover:-translate-y-0.5 hover:border-citrus/35 hover:bg-white hover:shadow-[0_6px_16px_rgba(44,41,38,0.1)] active:translate-y-0"
-                >
-                  <SocialGlyph kind={item.key} size={22} />
-                </a>
-              ))}
-            </nav>
-
-            <div className="mt-4">
+            <div className="mt-2 flex flex-wrap items-center gap-2">
+              <nav
+                aria-label={chatHint}
+                className="flex flex-wrap items-center gap-2"
+              >
+                {socialLinks.map((item) => (
+                  <a
+                    key={item.key}
+                    href={item.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={item.label}
+                    title={item.label}
+                    className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-forest/10 bg-[#fff8f2] shadow-[0_1px_0_rgba(44,41,38,0.04)] transition hover:-translate-y-0.5 hover:border-citrus/35 hover:bg-white hover:shadow-[0_6px_16px_rgba(44,41,38,0.1)] active:translate-y-0"
+                  >
+                    <SocialGlyph kind={item.key} size={22} />
+                  </a>
+                ))}
+              </nav>
               <a
                 href={mapsHref}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex min-h-11 w-full items-center justify-center rounded-full bg-citrus px-4 text-[11px] tracking-[0.14em] text-ivory uppercase transition hover:bg-citrus/90 sm:w-auto"
+                className="inline-flex h-11 shrink-0 items-center justify-center rounded-full bg-citrus px-4 text-[11px] tracking-[0.14em] text-ivory uppercase transition hover:bg-citrus/90"
               >
                 {directionsLabel}
               </a>
