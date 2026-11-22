@@ -40,6 +40,7 @@ export function StudiosSection({
               locale={locale}
               directionsLabel={t.directions}
               callLabel={t.call}
+              showCallButton={false}
               socialLabels={{
                 phones: c.phonesLabel,
                 social: c.socialLabel,
