@@ -18,6 +18,9 @@ const en = {
     viewShop: "View shop",
     logout: "Log out",
     language: "Language",
+    menu: "Admin",
+    menuOpen: "Menu",
+    menuClose: "Close",
   },
   common: {
     save: "Save",
@@ -506,6 +509,9 @@ const vi: typeof en = {
     viewShop: "Xem cửa hàng",
     logout: "Đăng xuất",
     language: "Ngôn ngữ",
+    menu: "Admin",
+    menuOpen: "Menu",
+    menuClose: "Đóng",
   },
   common: {
     save: "Lưu",

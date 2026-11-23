@@ -239,23 +239,27 @@ export default async function AdminOrderDetailPage({
             </p>
           ) : null}
           {order.paymentStatus !== "paid" ? (
-            <form action={confirmShopPaymentAction}>
-              <input type="hidden" name="orderId" value={order.id} />
-              {intent ? (
-                <input type="hidden" name="intentId" value={intent.id} />
-              ) : null}
-              <button type="submit" className="admin-btn">
-                {t.orders.confirmPaid}
-              </button>
-            </form>
+            <div className="admin-sticky-actions">
+              <form action={confirmShopPaymentAction} className="admin-sticky-actions-form">
+                <input type="hidden" name="orderId" value={order.id} />
+                {intent ? (
+                  <input type="hidden" name="intentId" value={intent.id} />
+                ) : null}
+                <button type="submit" className="admin-btn admin-btn-block">
+                  {t.orders.confirmPaid}
+                </button>
+              </form>
+            </div>
           ) : null}
           {!order.acknowledgedAt && order.paymentStatus === "paid" ? (
-            <form action={acknowledgeOrderAction}>
-              <input type="hidden" name="orderId" value={order.id} />
-              <button type="submit" className="admin-btn secondary">
-                {t.orders.acknowledge}
-              </button>
-            </form>
+            <div className="admin-sticky-actions">
+              <form action={acknowledgeOrderAction} className="admin-sticky-actions-form">
+                <input type="hidden" name="orderId" value={order.id} />
+                <button type="submit" className="admin-btn secondary admin-btn-block">
+                  {t.orders.acknowledge}
+                </button>
+              </form>
+            </div>
           ) : null}
 
           {order.status === "awaiting_delivery_quote" ? (
