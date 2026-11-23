@@ -40,6 +40,15 @@ describe("payment methods catalog", () => {
     }
   });
 
+  it("defaults VietQR + cash on for storefront", () => {
+    for (const id of ["vietqr", "cod", "cash_pickup"] as const) {
+      const m = PAYMENT_METHODS.find((row) => row.id === id);
+      assert.ok(m, id);
+      assert.equal(m!.defaultEnabled, true);
+      assert.equal(m!.defaultComingSoon, false);
+    }
+  });
+
   it("whatsapp stays off — chat is not a checkout payment method", () => {
     const wa = PAYMENT_METHODS.find((m) => m.id === "whatsapp");
     assert.ok(wa);

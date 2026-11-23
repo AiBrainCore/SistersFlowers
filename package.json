@@ -18,7 +18,8 @@
     "catalog:upright-orient": "node scripts/upright-bouquet-orient.mjs",
     "catalog:seed-attributes": "node scripts/seed-catalog-attributes.mjs",
     "catalog:enrich-ai": "node scripts/enrich-catalog-ai.mjs",
-    "journal:seed-v3": "node scripts/seed-journal-v3.mjs"
+    "journal:seed-v3": "node scripts/seed-journal-v3.mjs",
+    "payments:storefront-defaults": "node scripts/apply-storefront-payments.mjs"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

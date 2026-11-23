@@ -30,16 +30,46 @@ export async function ensurePaymentMethodSettings() {
         comingSoon: m.defaultComingSoon,
         sortOrder: m.sortOrder,
       },
-      // Keep WhatsApp off as a checkout “payment” — chat is Zalo/WhatsApp in contact UI.
       update:
         m.id === "whatsapp"
           ? {
+              // Keep WhatsApp off as a checkout “payment” — chat is Zalo/WhatsApp in contact UI.
               enabled: false,
               comingSoon: false,
               sortOrder: m.sortOrder,
             }
-          : { sortOrder: m.sortOrder },
+          : m.provider === "stub"
+            ? {
+                // Wallets/cards stay Soon until a real adapter exists (admin cannot “enable” a stub).
+                enabled: false,
+                comingSoon: true,
+                sortOrder: m.sortOrder,
+              }
+            : { sortOrder: m.sortOrder },
     });
+  }
+}
+
+/** One-shot: turn on VietQR + cash; keep unfinished methods Soon. Safe to re-run. */
+export async function applyStorefrontPaymentDefaults() {
+  await ensurePaymentMethodSettings();
+  const live = ["vietqr", "cod", "cash_pickup"] as const;
+  for (const methodId of live) {
+    await prisma.paymentMethodSetting.update({
+      where: { methodId },
+      data: { enabled: true, comingSoon: false },
+    });
+  }
+  for (const m of PAYMENT_METHODS) {
+    if (m.provider === "stub" || m.id === "payos" || m.id === "whatsapp") {
+      await prisma.paymentMethodSetting.update({
+        where: { methodId: m.id },
+        data: {
+          enabled: false,
+          comingSoon: m.id !== "whatsapp",
+        },
+      });
+    }
   }
 }
 
