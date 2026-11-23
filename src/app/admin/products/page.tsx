@@ -219,7 +219,7 @@ export default async function AdminProductsPage({
                     alt=""
                     fill
                     className="object-cover"
-                    sizes="120px"
+                    sizes="(max-width: 900px) 72px, 200px"
                     unoptimized
                   />
                 </div>
