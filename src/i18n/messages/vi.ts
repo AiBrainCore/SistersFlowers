@@ -533,6 +533,9 @@ export const vi = {
     trackPay: "Thanh toán",
     trackFulfillment: "Tiến độ studio",
     saveQr: "Lưu ảnh QR (rồi quét trong app ngân hàng)",
+    savingQr: "Đang lưu…",
+    saveQrError:
+      "Không lưu được ảnh QR. Thử lại, hoặc nhấn giữ ảnh QR và chọn Lưu ảnh.",
   },
   contact: {
     kicker: "Liên hệ",

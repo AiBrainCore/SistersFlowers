@@ -6,6 +6,7 @@ import { getStorefrontDictionary } from "@/lib/storefront";
 import { prisma } from "@/lib/db";
 import { formatVnd } from "@/data/products";
 import { PaymentCopyButton } from "@/components/payment-copy-button";
+import { SaveQrButton } from "@/components/save-qr-button";
 
 export const dynamic = "force-dynamic";
 
@@ -67,13 +68,13 @@ export default async function OrderPayPage({
               height={280}
               className="rounded-2xl border border-forest/10 bg-white"
             />
-            <a
-              href={intent.qrImageUrl}
-              download={`sf-${order.reference}-qr.png`}
-              className="inline-flex min-h-11 items-center justify-center rounded-full bg-citrus px-5 text-sm text-white"
-            >
-              {t.payments.saveQr}
-            </a>
+            <SaveQrButton
+              qrImageUrl={intent.qrImageUrl}
+              fileName={`sf-${order.reference}-qr.png`}
+              label={t.payments.saveQr}
+              savingLabel={t.payments.savingQr}
+              errorLabel={t.payments.saveQrError}
+            />
           </div>
         ) : null}
 

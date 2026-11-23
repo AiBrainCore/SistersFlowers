@@ -533,6 +533,9 @@ export const en = {
     trackPay: "Payment",
     trackFulfillment: "Studio progress",
     saveQr: "Save QR (then scan in bank app)",
+    savingQr: "Saving…",
+    saveQrError:
+      "Could not save the QR. Try again, or long-press the QR image and choose Save Image.",
   },
   contact: {
     kicker: "Contact",
