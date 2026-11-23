@@ -350,9 +350,170 @@
 
 .admin-studio-day {
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
   align-items: end;
   padding: 10px 12px;
+  margin: 0;
+}
+
+.admin-studio-status-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 10px;
+}
+
+.admin-studio-status-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(31, 42, 36, 0.14);
+  background: #fffdf8;
+  color: inherit;
+  text-decoration: none;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+}
+
+.admin-studio-status-chip.on {
+  background: #b0542c;
+  border-color: #b0542c;
+  color: #fffdf8;
+}
+
+.admin-studio-count {
+  margin: 0 0 12px;
+  font-size: 13px;
+  opacity: 0.7;
+}
+
+.admin-studio-order-list {
+  display: grid;
+  gap: 12px;
+}
+
+.admin-studio-order {
+  padding: 14px;
+  display: grid;
+  gap: 10px;
+}
+
+.admin-studio-order-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.admin-studio-order-code {
+  font-size: 16px;
+}
+
+.admin-studio-order-when {
+  margin: 4px 0 0;
+  font-size: 12px;
+  opacity: 0.65;
+}
+
+.admin-studio-order-city {
+  flex: 0 0 auto;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.75;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(176, 84, 44, 0.1);
+  color: #b0542c;
+}
+
+.admin-studio-order-facts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 12px;
+  margin: 0;
+}
+
+.admin-studio-order-facts > div {
+  min-width: 0;
+}
+
+.admin-studio-order-facts dt {
+  margin: 0;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.55;
+}
+
+.admin-studio-order-facts dd {
+  margin: 2px 0 0;
+  font-size: 14px;
+  line-height: 1.35;
+  word-break: break-word;
+}
+
+.admin-studio-order-address {
+  grid-column: 1 / -1;
+}
+
+.admin-studio-order-items {
+  font-size: 13px;
+  line-height: 1.4;
+  opacity: 0.85;
+}
+
+.admin-studio-order-card {
+  margin-top: 4px;
+  color: #c24712;
+  font-size: 12px;
+}
+
+.admin-studio-order-foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.admin-studio-order-money {
+  display: grid;
+  gap: 2px;
+}
+
+.admin-studio-order-money span {
+  font-size: 12px;
+  opacity: 0.65;
+}
+
+.admin-studio-order-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.admin-studio-order-badges span {
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(31, 42, 36, 0.06);
+}
+
+.admin-studio-order-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.admin-studio-order-actions form {
   margin: 0;
 }
 

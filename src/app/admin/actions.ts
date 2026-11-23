@@ -1032,12 +1032,29 @@ export async function createStudioOrderAction(formData: FormData) {
   redirect(`/admin/studio-orders?created=${order.saleCode || order.reference}`);
 }
 
+function studioOrdersReturnPath(
+  formData: FormData,
+  extra?: Record<string, string>,
+) {
+  const params = new URLSearchParams();
+  const day = String(formData.get("day") || "").trim();
+  const status = String(formData.get("status") || "").trim();
+  if (day) params.set("day", day);
+  if (status) params.set("status", status);
+  if (extra) {
+    for (const [key, value] of Object.entries(extra)) {
+      if (value) params.set(key, value);
+    }
+  }
+  const q = params.toString();
+  return q ? `/admin/studio-orders?${q}` : "/admin/studio-orders";
+}
+
 export async function advanceStudioOrderAction(formData: FormData) {
   await requireAdmin();
   const studio = await import("@/lib/studio-orders");
 
   const id = String(formData.get("id") || "");
-  const day = String(formData.get("day") || "");
   if (!id) redirect("/admin/studio-orders");
 
   const order = await prisma.order.findUnique({ where: { id } });
@@ -1048,15 +1065,11 @@ export async function advanceStudioOrderAction(formData: FormData) {
   const current = order.status as (typeof studio.STUDIO_STATUSES)[number];
   const next = studio.STUDIO_NEXT[current];
   if (!next) {
-    redirect(day ? `/admin/studio-orders?day=${day}` : "/admin/studio-orders");
+    redirect(studioOrdersReturnPath(formData));
   }
 
   if (next === "making" && !studio.canStartMaking(order.paymentStatus)) {
-    redirect(
-      day
-        ? `/admin/studio-orders?day=${day}&needPayment=1`
-        : "/admin/studio-orders?needPayment=1",
-    );
+    redirect(studioOrdersReturnPath(formData, { needPayment: "1" }));
   }
 
   await prisma.$transaction([
@@ -1075,13 +1088,12 @@ export async function advanceStudioOrderAction(formData: FormData) {
   ]);
 
   revalidatePath("/admin/studio-orders");
-  redirect(day ? `/admin/studio-orders?day=${day}` : "/admin/studio-orders");
+  redirect(studioOrdersReturnPath(formData));
 }
 
 export async function markStudioPaymentAction(formData: FormData) {
   await requireAdmin();
   const id = String(formData.get("id") || "");
-  const day = String(formData.get("day") || "");
   const mode = String(formData.get("mode") || "paid");
   const amount = Math.max(0, Math.round(Number(formData.get("amount") || 0) || 0));
 
@@ -1129,7 +1141,7 @@ export async function markStudioPaymentAction(formData: FormData) {
   ]);
 
   revalidatePath("/admin/studio-orders");
-  redirect(day ? `/admin/studio-orders?day=${day}` : "/admin/studio-orders");
+  redirect(studioOrdersReturnPath(formData));
 }
 
 export async function saveJournalPostAction(formData: FormData) {
