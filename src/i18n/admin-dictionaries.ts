@@ -63,7 +63,6 @@ const en = {
     customers: "Customers",
     openVouchers: "Open vouchers",
     inquiries: "Inquiries",
-    hint: "Partner money vouchers: guest shows code → partner checks /voucher → Mark as used → you remit face − commission.",
   },
   customers: {
     title: "Customers",
@@ -278,18 +277,18 @@ const en = {
   vouchers: {
     title: "Vouchers",
     intro:
-      "Money vouchers issued at checkout. Partner checks codes at /voucher. After redeem, pay partner face value − commission % (shown as Remit).",
+      "Spa / salon / partner gift codes sold with a bouquet. The guest shows the code; the partner opens /voucher, marks it used, then you pay them the face value minus your commission (Remit).",
     code: "Code",
     partnerValue: "Partner / value",
     customer: "Customer",
     settle: "Settle",
-    empty: "No vouchers yet. They appear when an order includes a partner money voucher.",
+    empty: "No vouchers yet. They appear when an order includes a partner gift voucher.",
     markUsed: "Mark used",
     remit: "Remit",
     face: "Face",
     until: "Until",
     order: "Order",
-    redeemedOk: "Voucher marked as used. Remit the partner amount when you settle.",
+    redeemedOk: "Voucher marked as used. Pay the partner the Remit amount when you settle.",
     redeemError: "Could not redeem",
   },
   delivery: {
@@ -559,7 +558,6 @@ const vi: typeof en = {
     customers: "Khách hàng",
     openVouchers: "Phiếu chưa dùng",
     inquiries: "Yêu cầu",
-    hint: "Phiếu tiền đối tác: khách đưa mã → đối tác kiểm tại /voucher → Đánh dấu đã dùng → bạn chuyển face − hoa hồng.",
   },
   customers: {
     title: "Khách hàng",
@@ -775,18 +773,18 @@ const vi: typeof en = {
   vouchers: {
     title: "Phiếu",
     intro:
-      "Phiếu tiền tạo khi checkout. Đối tác kiểm mã tại /voucher. Sau khi dùng, trả đối tác mệnh giá − % (cột Remit).",
+      "Phiếu quà spa / salon / đối tác bán kèm bó hoa. Khách đưa mã; đối tác mở /voucher, đánh dấu đã dùng, rồi bạn trả họ mệnh giá trừ hoa hồng (cột Remit).",
     code: "Mã",
     partnerValue: "Đối tác / giá trị",
     customer: "Khách",
     settle: "Thanh toán",
-    empty: "Chưa có phiếu. Xuất hiện khi đơn có phiếu đối tác.",
+    empty: "Chưa có phiếu. Xuất hiện khi đơn có phiếu quà đối tác.",
     markUsed: "Đánh dấu đã dùng",
     remit: "Chuyển",
     face: "Mệnh giá",
     until: "Đến",
     order: "Đơn",
-    redeemedOk: "Đã đánh dấu dùng. Hãy chuyển tiền đối tác khi quyết toán.",
+    redeemedOk: "Đã đánh dấu dùng. Trả đối tác số Remit khi quyết toán.",
     redeemError: "Không redeem được",
   },
   delivery: {

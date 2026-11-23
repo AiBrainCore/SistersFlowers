@@ -1222,6 +1222,58 @@
   grid-template-columns: 1.4fr 0.7fr 1fr;
 }
 
+/** Dashboard tiles — stay 2×3 on phone (do not collapse to 1 col). */
+.admin-dash-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-bottom: 8px;
+}
+
+.admin-dash-tile {
+  padding: 14px;
+  min-width: 0;
+  display: grid;
+  gap: 6px;
+  align-content: start;
+}
+
+.admin-dash-label {
+  margin: 0;
+  opacity: 0.65;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  line-height: 1.3;
+}
+
+.admin-dash-value {
+  font-family: serif;
+  font-size: 36px;
+  margin: 0;
+  line-height: 1.1;
+}
+
+.admin-dash-value-sm {
+  font-size: 22px;
+}
+
+.admin-dash-tile .admin-btn {
+  justify-self: start;
+  margin-top: 4px;
+}
+
+@media (min-width: 901px) {
+  .admin-dash-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .admin-dash-value {
+    font-size: 42px;
+  }
+}
+
 .admin-section {
   margin: 8px 0 18px;
   padding: 16px;
@@ -1732,6 +1784,23 @@
   .admin-grid-3,
   .admin-party-grid {
     grid-template-columns: 1fr;
+  }
+
+  .admin-dash-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .admin-dash-tile {
+    padding: 12px;
+  }
+
+  .admin-dash-value {
+    font-size: 28px;
+  }
+
+  .admin-dash-value-sm {
+    font-size: 18px;
   }
 
   /* Wide data tables: allow one outer page scroll, not nested panes */

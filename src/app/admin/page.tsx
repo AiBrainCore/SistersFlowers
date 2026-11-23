@@ -50,67 +50,50 @@ export default async function AdminDashboardPage() {
         </div>
       ) : null}
 
-      <div className="admin-grid-2" style={{ marginBottom: 24 }}>
-        <div className="admin-card">
-          <p style={{ margin: 0, opacity: 0.65, fontSize: 12, letterSpacing: "0.14em", textTransform: "uppercase" }}>
-            {t.dashboard.products}
-          </p>
-          <p style={{ fontFamily: "serif", fontSize: 42, margin: "8px 0" }}>{products}</p>
-          <Link href="/admin/products" className="admin-btn secondary">
+      <div className="admin-dash-grid">
+        <div className="admin-card admin-dash-tile">
+          <p className="admin-dash-label">{t.dashboard.products}</p>
+          <p className="admin-dash-value">{products}</p>
+          <Link href="/admin/products" className="admin-btn secondary admin-btn-sm">
             {t.common.manage}
           </Link>
         </div>
-        <div className="admin-card">
-          <p style={{ margin: 0, opacity: 0.65, fontSize: 12, letterSpacing: "0.14em", textTransform: "uppercase" }}>
-            {t.dashboard.orders}
-          </p>
-          <p style={{ fontFamily: "serif", fontSize: 42, margin: "8px 0" }}>{orders}</p>
-          <Link href="/admin/orders" className="admin-btn secondary">
+        <div className="admin-card admin-dash-tile">
+          <p className="admin-dash-label">{t.dashboard.orders}</p>
+          <p className="admin-dash-value">{orders}</p>
+          <Link href="/admin/orders" className="admin-btn secondary admin-btn-sm">
             {t.common.view}
           </Link>
         </div>
-        <div className="admin-card">
-          <p style={{ margin: 0, opacity: 0.65, fontSize: 12, letterSpacing: "0.14em", textTransform: "uppercase" }}>
-            {t.dashboard.customers}
-          </p>
-          <p style={{ fontFamily: "serif", fontSize: 42, margin: "8px 0" }}>{customers}</p>
-          <Link href="/admin/customers" className="admin-btn secondary">
+        <div className="admin-card admin-dash-tile">
+          <p className="admin-dash-label">{t.dashboard.customers}</p>
+          <p className="admin-dash-value">{customers}</p>
+          <Link href="/admin/customers" className="admin-btn secondary admin-btn-sm">
             {t.common.manage}
           </Link>
         </div>
-        <div className="admin-card">
-          <p style={{ margin: 0, opacity: 0.65, fontSize: 12, letterSpacing: "0.14em", textTransform: "uppercase" }}>
-            {t.dashboard.openVouchers}
-          </p>
-          <p style={{ fontFamily: "serif", fontSize: 42, margin: "8px 0" }}>{vouchersOpen}</p>
-          <Link href="/admin/vouchers" className="admin-btn secondary">
+        <div className="admin-card admin-dash-tile">
+          <p className="admin-dash-label">{t.dashboard.openVouchers}</p>
+          <p className="admin-dash-value">{vouchersOpen}</p>
+          <Link href="/admin/vouchers" className="admin-btn secondary admin-btn-sm">
             {t.nav.vouchers}
           </Link>
         </div>
-        <div className="admin-card">
-          <p style={{ margin: 0, opacity: 0.65, fontSize: 12, letterSpacing: "0.14em", textTransform: "uppercase" }}>
-            {t.dashboard.inquiries}
-          </p>
-          <p style={{ fontFamily: "serif", fontSize: 42, margin: "8px 0" }}>{inquiries}</p>
-          <Link href="/admin/inquiries" className="admin-btn secondary">
+        <div className="admin-card admin-dash-tile">
+          <p className="admin-dash-label">{t.dashboard.inquiries}</p>
+          <p className="admin-dash-value">{inquiries}</p>
+          <Link href="/admin/inquiries" className="admin-btn secondary admin-btn-sm">
             {t.common.view}
           </Link>
         </div>
-        <div className="admin-card">
-          <p style={{ margin: 0, opacity: 0.65, fontSize: 12, letterSpacing: "0.14em", textTransform: "uppercase" }}>
-            {t.orders.reports}
-          </p>
-          <p style={{ fontFamily: "serif", fontSize: 22, margin: "8px 0" }}>
-            CSV · margins
-          </p>
-          <Link href="/admin/reports" className="admin-btn secondary">
+        <div className="admin-card admin-dash-tile">
+          <p className="admin-dash-label">{t.orders.reports}</p>
+          <p className="admin-dash-value admin-dash-value-sm">CSV</p>
+          <Link href="/admin/reports" className="admin-btn secondary admin-btn-sm">
             {t.common.view}
           </Link>
         </div>
       </div>
-      <p style={{ fontSize: 14, opacity: 0.75, maxWidth: 520, lineHeight: 1.7 }}>
-        {t.dashboard.hint}
-      </p>
     </AdminShell>
   );
 }
