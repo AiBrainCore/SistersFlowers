@@ -12,7 +12,7 @@ export const metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  viewportFit: "cover",
+  /* Avoid viewport-fit=cover — safe-area padding made the orange topbar jump height on iOS. */
 };
 
 export default function AdminRootLayout({ children }: { children: ReactNode }) {
