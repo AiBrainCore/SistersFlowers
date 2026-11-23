@@ -1,10 +1,7 @@
-import Image from "next/image";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
-import { logoutAction } from "@/app/admin/actions";
 import { getAdminT } from "@/lib/admin-locale";
-import { AdminLangSwitch } from "@/components/admin-lang-switch";
+import { AdminNav } from "@/components/admin/admin-nav";
 
 export async function AdminShell({
   children,
@@ -21,47 +18,31 @@ export async function AdminShell({
 
   return (
     <div className="admin-shell">
-      <aside className="admin-nav">
-        <Link href="/admin" className="admin-nav-brand" aria-label="Sisters Flowers">
-          <Image
-            src="/brand/mark-white.png"
-            alt="Sisters Flowers"
-            width={44}
-            height={44}
-            priority
-          />
-        </Link>
-        <nav className="admin-nav-links">
-          <Link href="/admin">{t.nav.dashboard}</Link>
-          <Link href="/admin/products">{t.nav.products}</Link>
-          <Link href="/admin/addons">{t.nav.addons}</Link>
-          <Link href="/admin/vouchers">{t.nav.vouchers}</Link>
-          <Link href="/admin/delivery">{t.nav.delivery}</Link>
-          <Link href="/admin/payments">{t.nav.payments}</Link>
-          <Link href="/admin/reports">{t.nav.reports}</Link>
-          <Link href="/admin/builder">{t.nav.builder}</Link>
-          <Link href="/admin/studio-orders">{t.nav.studio}</Link>
-          <Link href="/admin/orders">{t.nav.orders}</Link>
-          <Link href="/admin/customers">{t.nav.customers}</Link>
-          <Link href="/admin/inquiries">{t.nav.inquiries}</Link>
-          <Link href="/admin/journal">{t.nav.journal}</Link>
-        </nav>
-        <div className="admin-nav-foot">
-          <Link href={`/${locale}/shop`} className="admin-nav-shop">
-            {t.nav.viewShop}
-          </Link>
-          <div className="admin-nav-tools">
-            <AdminLangSwitch locale={locale} />
-            <form action={logoutAction}>
-              <button type="submit" className="admin-btn secondary admin-logout">
-                {t.nav.logout}
-              </button>
-            </form>
-          </div>
-        </div>
-      </aside>
+      <AdminNav
+        locale={locale}
+        labels={{
+          dashboard: t.nav.dashboard,
+          products: t.nav.products,
+          addons: t.nav.addons,
+          vouchers: t.nav.vouchers,
+          delivery: t.nav.delivery,
+          payments: t.nav.payments,
+          reports: t.nav.reports,
+          builder: t.nav.builder,
+          studio: t.nav.studio,
+          orders: t.nav.orders,
+          customers: t.nav.customers,
+          inquiries: t.nav.inquiries,
+          journal: t.nav.journal,
+          viewShop: t.nav.viewShop,
+          logout: t.nav.logout,
+          menu: t.nav.menu,
+          menuOpen: t.nav.menuOpen,
+          menuClose: t.nav.menuClose,
+        }}
+      />
       <main className="admin-main">
-        <h1 style={{ fontFamily: "serif", fontSize: 36, marginTop: 0 }}>{title}</h1>
+        <h1 className="admin-page-title">{title}</h1>
         {children}
       </main>
     </div>
