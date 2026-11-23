@@ -100,8 +100,12 @@ export function ProductsBulkPricing({
     ] ?? 600_000;
 
   return (
-    <section className="admin-bulk-panel">
-      <h2 className="admin-bulk-title">{t.products.bulkTitle}</h2>
+    <details className="admin-bulk-panel" open={Boolean(notice) || undefined}>
+      <summary className="admin-bulk-summary">
+        <span className="admin-bulk-summary-title">{t.products.bulkTitle}</span>
+        <span className="admin-bulk-summary-hint">{t.products.bulkToggleHint}</span>
+      </summary>
+      <div className="admin-bulk-body">
       <p className="admin-bulk-hint">{t.products.bulkHint}</p>
       <p className="admin-bulk-rules">{t.products.bulkRules}</p>
       {notice ? <p className="admin-products-saved">{notice}</p> : null}
@@ -281,6 +285,7 @@ export function ProductsBulkPricing({
           </button>
         </BulkConfirmForm>
       </div>
-    </section>
+      </div>
+    </details>
   );
 }
