@@ -30,7 +30,7 @@ export function GET() {
 - WhatsApp: https://wa.me/84327453536
 
 ## Policy
-- Content-Signal: search=yes, ai-train=no
+- Content-Signal: search=yes, ai-input=yes, ai-train=yes
 - Sitemap: ${siteUrl("/sitemap.xml")}
 `;
 

@@ -1,19 +1,21 @@
-import { siteUrl } from "@/lib/seo";
+import { PUBLIC_SITE_ORIGIN } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
-/** Explicit text robots.txt — Sitemap + crawl rules for Search Console. */
+/**
+ * Explicit text robots.txt.
+ * Content-Signal is emitted as plain text (not via Next.js MetadataRoute.Robots).
+ * Do not add a separate Googlebot Allow:/ group — it would override * Disallows.
+ * Sitemap always points at the public origin (never localhost).
+ */
 export function GET() {
-  const sitemap = siteUrl("/sitemap.xml");
   const body = `# Sisters Flowers
 User-agent: *
 Allow: /
+
 Disallow: /admin
-Disallow: /admin/
 Disallow: /api
-Disallow: /api/
 Disallow: /account
-Disallow: /account/
 Disallow: /en/account
 Disallow: /vi/account
 Disallow: /en/checkout
@@ -28,13 +30,10 @@ Disallow: /vi/hero-3d
 Disallow: /en/hero-preview
 Disallow: /vi/hero-preview
 
-User-agent: Googlebot
-Allow: /
+# Public content usage permissions
+Content-Signal: search=yes, ai-input=yes, ai-train=yes
 
-# Content usage signal for search / AI crawlers
-Content-Signal: search=yes, ai-train=no
-
-Sitemap: ${sitemap}
+Sitemap: ${PUBLIC_SITE_ORIGIN}/sitemap.xml
 `;
 
   return new Response(body, {
