@@ -13,6 +13,7 @@ import {
   isProductTypeSlug,
   type ProductTypeSlug,
 } from "@/lib/product-types";
+import { CHECKOUT_TEST_PRODUCT_SLUG } from "@/lib/checkout-test-product";
 
 export type BulkPriceScope = "all" | "published" | "hidden";
 /** Which product types a bulk op touches — never mix by accident. */
@@ -36,8 +37,13 @@ function typeWhere(type: BulkTypeScope) {
   return { productType: type };
 }
 
+/** Never let bulk markup rewrite the 1,000₫ checkout smoke-test SKU. */
 function productWhere(scope: BulkPriceScope, type: BulkTypeScope) {
-  return { ...scopeWhere(scope), ...typeWhere(type) };
+  return {
+    ...scopeWhere(scope),
+    ...typeWhere(type),
+    slug: { not: CHECKOUT_TEST_PRODUCT_SLUG },
+  };
 }
 
 function scopeSql(scope: BulkPriceScope): Prisma.Sql {
@@ -52,7 +58,7 @@ function typeSql(type: BulkTypeScope): Prisma.Sql {
 }
 
 function whereSql(scope: BulkPriceScope, type: BulkTypeScope): Prisma.Sql {
-  return Prisma.sql`(${scopeSql(scope)}) AND (${typeSql(type)})`;
+  return Prisma.sql`(${scopeSql(scope)}) AND (${typeSql(type)}) AND ("slug" <> ${CHECKOUT_TEST_PRODUCT_SLUG})`;
 }
 
 /** Round VND bump: GREATEST(1000, ROUND(col * factor / 1000) * 1000). */

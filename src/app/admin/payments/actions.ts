@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
+import { setCheckoutTestProductEnabled } from "@/lib/checkout-test-product";
 import { ensurePaymentMethodSettings } from "@/lib/payments/catalog";
 import { markIntentPaidAndAdvance } from "@/lib/payments/confirm-flow";
 
@@ -11,6 +12,21 @@ async function requireAdmin() {
   if (!(await isAdminAuthenticated())) {
     redirect("/admin/login");
   }
+}
+
+/** Publish / hide the 1,000₫ staff checkout smoke-test product. */
+export async function setCheckoutTestProductAction(formData: FormData) {
+  await requireAdmin();
+  const enabled = String(formData.get("enabled") || "") === "1";
+  await setCheckoutTestProductEnabled(enabled);
+  console.info("[payments-audit]", `checkout-test:enabled=${enabled}`);
+  revalidatePath("/admin/payments");
+  revalidatePath("/admin/products");
+  redirect(
+    enabled
+      ? "/admin/payments?saved=checkout-test-on"
+      : "/admin/payments?saved=checkout-test-off",
+  );
 }
 
 export async function savePaymentMethodSettingsAction(formData: FormData) {

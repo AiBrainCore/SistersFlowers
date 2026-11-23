@@ -1,16 +1,23 @@
+import Link from "next/link";
 import { AdminShell } from "@/app/admin/_shell";
 import {
   deletePaymentAccountAction,
   savePaymentAccountAction,
   savePaymentMethodSettingsAction,
+  setCheckoutTestProductAction,
 } from "@/app/admin/payments/actions";
 import { getAdminT } from "@/lib/admin-locale";
+import {
+  CHECKOUT_TEST_PRODUCT_PRICE_VND,
+  getCheckoutTestProductStatus,
+} from "@/lib/checkout-test-product";
 import { prisma } from "@/lib/db";
 import {
   ensurePaymentMethodSettings,
   listPaymentMethodsForDisplay,
 } from "@/lib/payments/catalog";
 import { payosConfigured } from "@/lib/payments/payos";
+import { formatVnd } from "@/data/products";
 
 export const dynamic = "force-dynamic";
 
@@ -19,10 +26,10 @@ export default async function AdminPaymentsPage({
 }: {
   searchParams: Promise<{ saved?: string; error?: string }>;
 }) {
-  const { t } = await getAdminT();
+  const { locale, t } = await getAdminT();
   const { saved, error } = await searchParams;
   await ensurePaymentMethodSettings();
-  const [methods, accounts, cities, branches] = await Promise.all([
+  const [methods, accounts, cities, branches, checkoutTest] = await Promise.all([
     listPaymentMethodsForDisplay(),
     prisma.paymentAccount.findMany({ orderBy: { createdAt: "desc" } }),
     prisma.city.findMany({ orderBy: { sortOrder: "asc" } }),
@@ -30,6 +37,7 @@ export default async function AdminPaymentsPage({
       include: { city: true },
       orderBy: { nameEn: "asc" },
     }),
+    getCheckoutTestProductStatus(),
   ]);
   const payosReady = payosConfigured();
 
@@ -45,6 +53,62 @@ export default async function AdminPaymentsPage({
       <p style={{ maxWidth: 720, lineHeight: 1.6, opacity: 0.8, marginBottom: 24 }}>
         {t.payments.intro}
       </p>
+
+      <div
+        className="admin-card"
+        style={{
+          marginBottom: 24,
+          borderColor: checkoutTest.enabled ? "#c24712" : undefined,
+          borderWidth: checkoutTest.enabled ? 1 : undefined,
+          borderStyle: checkoutTest.enabled ? "solid" : undefined,
+        }}
+      >
+        <h2 style={{ fontFamily: "serif", fontSize: 24, marginTop: 0 }}>
+          {t.payments.checkoutTestTitle}
+        </h2>
+        <p style={{ maxWidth: 720, lineHeight: 1.6, opacity: 0.85, marginTop: 0 }}>
+          {t.payments.checkoutTestIntro}
+        </p>
+        <p style={{ margin: "0 0 12px", fontSize: 14 }}>
+          <strong>
+            {checkoutTest.enabled
+              ? t.payments.checkoutTestOn
+              : t.payments.checkoutTestOff}
+          </strong>
+          {" · "}
+          {t.payments.checkoutTestSku}: {checkoutTest.sku}
+          {" · "}
+          {formatVnd(
+            checkoutTest.price || CHECKOUT_TEST_PRODUCT_PRICE_VND,
+            locale,
+          )}
+        </p>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 10, alignItems: "center" }}>
+          {checkoutTest.enabled ? (
+            <>
+              <form action={setCheckoutTestProductAction}>
+                <input type="hidden" name="enabled" value="0" />
+                <button type="submit" className="admin-btn secondary">
+                  {t.payments.checkoutTestDisable}
+                </button>
+              </form>
+              <Link
+                href={`/${locale}/shop/${checkoutTest.slug}`}
+                className="admin-btn"
+              >
+                {t.payments.checkoutTestOpen}
+              </Link>
+            </>
+          ) : (
+            <form action={setCheckoutTestProductAction}>
+              <input type="hidden" name="enabled" value="1" />
+              <button type="submit" className="admin-btn">
+                {t.payments.checkoutTestEnable}
+              </button>
+            </form>
+          )}
+        </div>
+      </div>
 
       <div className="admin-card" style={{ marginBottom: 24 }}>
         <h2 style={{ fontFamily: "serif", fontSize: 24, marginTop: 0 }}>

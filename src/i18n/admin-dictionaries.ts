@@ -406,6 +406,15 @@ const en = {
     notSelectable: "Not selectable",
     comingSoon: "Coming soon",
     sortOrder: "Sort order",
+    checkoutTestTitle: "Checkout test product (1,000₫)",
+    checkoutTestIntro:
+      "One staff SKU to walk shop → cart → VietQR end-to-end. Use studio pickup so the total stays 1,000₫ (delivery would add ~25–30k). Prefer 1,000₫ over 1₫ — many bank apps reject tiny transfers. Turn off when finished so guests do not see it.",
+    checkoutTestOn: "Enabled — visible in shop",
+    checkoutTestOff: "Disabled — hidden from shop",
+    checkoutTestEnable: "Enable test product",
+    checkoutTestDisable: "Disable test product",
+    checkoutTestOpen: "Open in shop",
+    checkoutTestSku: "SKU",
   },
   studio: {
     title: "Orders",
@@ -886,6 +895,15 @@ const vi: typeof en = {
     notSelectable: "Chưa chọn được",
     comingSoon: "Sắp có",
     sortOrder: "Thứ tự",
+    checkoutTestTitle: "Sản phẩm kiểm tra thanh toán (1.000đ)",
+    checkoutTestIntro:
+      "Một SKU nội bộ để đi hết shop → giỏ → VietQR. Chọn lấy tại studio để tổng còn 1.000đ (giao hàng sẽ cộng ~25–30k). Dùng 1.000đ thay vì 1đ — nhiều app ngân hàng từ chối số tiền quá nhỏ. Tắt khi xong để khách không thấy.",
+    checkoutTestOn: "Đang bật — hiện trên cửa hàng",
+    checkoutTestOff: "Đang tắt — ẩn khỏi cửa hàng",
+    checkoutTestEnable: "Bật sản phẩm kiểm tra",
+    checkoutTestDisable: "Tắt sản phẩm kiểm tra",
+    checkoutTestOpen: "Mở trên cửa hàng",
+    checkoutTestSku: "SKU",
   },
   studio: {
     title: "Đơn hàng",
