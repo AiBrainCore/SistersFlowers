@@ -48,34 +48,16 @@ export default async function AdminStudioOrdersPage({
     <AdminShell title={t.studio.title}>
       <p style={{ maxWidth: 640, opacity: 0.8, marginTop: 0 }}>{t.studio.intro}</p>
 
-      <div
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: 12,
-          alignItems: "center",
-          marginBottom: 16,
-        }}
-      >
+      <div className="admin-studio-toolbar">
         <Link href="/admin/studio-orders/new" className="admin-btn">
           {t.studio.new}
         </Link>
-        <form
-          method="get"
-          className="admin-card"
-          style={{
-            display: "flex",
-            gap: 12,
-            alignItems: "end",
-            padding: "12px 14px",
-            margin: 0,
-          }}
-        >
-          <label className="admin-field" style={{ marginBottom: 0, minWidth: 180 }}>
+        <form method="get" className="admin-card admin-studio-day">
+          <label className="admin-field" style={{ marginBottom: 0 }}>
             <span>{t.studio.date}</span>
             <input type="date" name="day" defaultValue={day} />
           </label>
-          <button type="submit" className="admin-btn secondary">
+          <button type="submit" className="admin-btn secondary admin-btn-sm">
             {t.studio.list}
           </button>
         </form>

@@ -158,81 +158,66 @@ export default async function AdminOrdersPage({
                   </p>
                 </div>
 
-                <div style={{ fontSize: 13, lineHeight: 1.55 }}>
-                  <div>
-                    <span style={{ opacity: 0.6 }}>{t.orders.payment}</span>
-                    <br />
+                <div className="admin-order-meta">
+                  <p>
+                    <span>{t.orders.payment}</span>
                     <strong>{order.paymentStatus}</strong>
                     {intent?.method ? (
-                      <span style={{ opacity: 0.65 }}> · {intent.method}</span>
+                      <em> · {intent.method}</em>
                     ) : order.paymentMethod ? (
-                      <span style={{ opacity: 0.65 }}>
-                        {" "}
-                        · {order.paymentMethod}
-                      </span>
+                      <em> · {order.paymentMethod}</em>
                     ) : null}
-                  </div>
-                  <div style={{ marginTop: 8 }}>
-                    <span style={{ opacity: 0.6 }}>{t.orders.orderStatus}</span>
-                    <br />
+                  </p>
+                  <p>
+                    <span>{t.orders.orderStatus}</span>
                     <strong>{shopOrderStatusLabel(order.status, loc)}</strong>
-                  </div>
+                  </p>
                   {order.fulfillment === "delivery" && order.deliveryBooking ? (
-                    <div style={{ marginTop: 8 }}>
-                      <span style={{ opacity: 0.6 }}>
-                        {t.orders.deliveryOps}
+                    <p>
+                      <span>{t.orders.deliveryOps}</span>
+                      <strong>
+                        {deliveryBookingStatusLabel(
+                          order.deliveryBooking.status,
+                          loc,
+                        )}
+                      </strong>
+                    </p>
+                  ) : order.fulfillment === "pickup" ? (
+                    <p>
+                      <span>
+                        {loc === "vi" ? "Nhận tại studio" : "Pickup"}
                       </span>
-                      <br />
-                      {deliveryBookingStatusLabel(
-                        order.deliveryBooking.status,
-                        loc,
-                      )}
-                    </div>
-                  ) : (
-                    <div style={{ marginTop: 8, opacity: 0.7 }}>
-                      {order.fulfillment === "pickup"
-                        ? loc === "vi"
-                          ? "Nhận tại studio"
-                          : "Pickup"
-                        : null}
-                    </div>
-                  )}
+                    </p>
+                  ) : null}
                 </div>
 
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "flex-end",
-                    gap: 10,
-                    minWidth: 120,
-                  }}
-                >
-                  <strong style={{ fontSize: 16 }}>
+                <div className="admin-order-actions">
+                  <strong className="admin-order-total">
                     {formatVnd(order.deliveryTotal, locale)}
                   </strong>
-                  <Link
-                    href={`/admin/orders/${order.id}`}
-                    className="admin-btn secondary"
-                    style={{ textAlign: "center", textDecoration: "none" }}
-                  >
-                    {t.orders.open}
-                  </Link>
-                  {order.paymentStatus !== "paid" ? (
-                    <form action={confirmShopPaymentAction}>
-                      <input type="hidden" name="orderId" value={order.id} />
-                      {intent ? (
-                        <input
-                          type="hidden"
-                          name="intentId"
-                          value={intent.id}
-                        />
-                      ) : null}
-                      <button type="submit" className="admin-btn">
-                        {t.orders.confirmPaid}
-                      </button>
-                    </form>
-                  ) : null}
+                  <div className="admin-order-action-btns">
+                    <Link
+                      href={`/admin/orders/${order.id}`}
+                      className="admin-btn secondary admin-btn-sm"
+                    >
+                      {t.orders.open}
+                    </Link>
+                    {order.paymentStatus !== "paid" ? (
+                      <form action={confirmShopPaymentAction}>
+                        <input type="hidden" name="orderId" value={order.id} />
+                        {intent ? (
+                          <input
+                            type="hidden"
+                            name="intentId"
+                            value={intent.id}
+                          />
+                        ) : null}
+                        <button type="submit" className="admin-btn admin-btn-sm">
+                          {t.orders.confirmPaid}
+                        </button>
+                      </form>
+                    ) : null}
+                  </div>
                 </div>
               </article>
             );

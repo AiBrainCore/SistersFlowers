@@ -131,59 +131,46 @@ export default async function AdminPaymentsPage({
       <h2 style={{ fontFamily: "serif", fontSize: 28, marginBottom: 12 }}>
         {t.payments.methodsTitle}
       </h2>
-      <div style={{ display: "grid", gap: 12, marginBottom: 32 }}>
+      <div className="admin-pay-methods">
         {methods.map((m) => (
           <form
             key={m.id}
             action={savePaymentMethodSettingsAction}
-            className="admin-card"
-            style={{ maxWidth: 820 }}
+            className="admin-card admin-pay-method"
           >
             <input type="hidden" name="methodId" value={m.id} />
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                gap: 12,
-                flexWrap: "wrap",
-                alignItems: "center",
-              }}
-            >
+            <div className="admin-pay-method-head">
               <strong>
-                {m.nameEn} / {m.nameVi}
-                <span style={{ opacity: 0.55, fontWeight: 400 }}> · {m.id}</span>
+                {m.nameEn}
+                <span> · {m.id}</span>
               </strong>
-              <span style={{ fontSize: 12, opacity: 0.7 }}>
+              <em>
                 {m.selectable
                   ? t.payments.selectable
                   : m.comingSoon
                     ? t.payments.comingSoon
                     : t.payments.notSelectable}
                 {m.reason ? ` (${m.reason})` : ""}
-              </span>
+              </em>
             </div>
-            <div className="admin-grid-2" style={{ marginTop: 12 }}>
-              <label className="admin-field">
-                <span>
-                  <input
-                    type="checkbox"
-                    name="enabled"
-                    defaultChecked={m.enabled}
-                  />{" "}
-                  {t.common.active}
-                </span>
+            <div className="admin-pay-method-row">
+              <label className="admin-pay-toggle">
+                <input
+                  type="checkbox"
+                  name="enabled"
+                  defaultChecked={m.enabled}
+                />
+                {t.common.active}
               </label>
-              <label className="admin-field">
-                <span>
-                  <input
-                    type="checkbox"
-                    name="comingSoon"
-                    defaultChecked={m.comingSoon}
-                  />{" "}
-                  {t.payments.comingSoon}
-                </span>
+              <label className="admin-pay-toggle">
+                <input
+                  type="checkbox"
+                  name="comingSoon"
+                  defaultChecked={m.comingSoon}
+                />
+                {t.payments.comingSoon}
               </label>
-              <label className="admin-field">
+              <label className="admin-pay-sort">
                 <span>{t.payments.sortOrder}</span>
                 <input
                   type="number"
@@ -191,10 +178,10 @@ export default async function AdminPaymentsPage({
                   defaultValue={m.sortOrder}
                 />
               </label>
+              <button type="submit" className="admin-btn admin-btn-sm">
+                {t.common.save}
+              </button>
             </div>
-            <button type="submit" className="admin-btn" style={{ marginTop: 12 }}>
-              {t.common.save}
-            </button>
           </form>
         ))}
       </div>
