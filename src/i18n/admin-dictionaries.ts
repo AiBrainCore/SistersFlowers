@@ -384,7 +384,8 @@ const en = {
     needsVerifiedAccount: "needs a verified bank account + method enabled",
     payosConfigured: "env credentials present (live activation still gated)",
     payosMissing: "credentials not set — adapter disabled",
-    comingSoonNote: "MoMo / ZaloPay / cards / PayPal remain Coming soon until a real adapter is approved.",
+    comingSoonNote:
+      "Storefront shows VietQR (banks & MoMo scan the same QR) plus cash. Separate MoMo / ZaloPay / cards / PayPal stay Coming soon until a real adapter exists.",
     methodsTitle: "Payment methods",
     accountsTitle: "Bank accounts",
     accountsIntro:
@@ -880,7 +881,8 @@ const vi: typeof en = {
     needsVerifiedAccount: "cần tài khoản ngân hàng đã xác minh + bật phương thức",
     payosConfigured: "đã có env (kích hoạt live vẫn bị khóa)",
     payosMissing: "chưa có credentials — adapter tắt",
-    comingSoonNote: "MoMo / ZaloPay / thẻ / PayPal vẫn Coming soon đến khi có adapter thật và duyệt.",
+    comingSoonNote:
+      "Shop hiện VietQR (ngân hàng & MoMo quét cùng một QR) và tiền mặt. MoMo / ZaloPay / thẻ / PayPal riêng vẫn Coming soon đến khi có adapter thật.",
     methodsTitle: "Phương thức thanh toán",
     accountsTitle: "Tài khoản ngân hàng",
     accountsIntro:

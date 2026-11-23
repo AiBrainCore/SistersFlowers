@@ -30,10 +30,11 @@ export type PaymentMethodDef = {
 export const PAYMENT_METHODS: PaymentMethodDef[] = [
   {
     id: "vietqr",
-    nameEn: "VietQR bank transfer",
-    nameVi: "Chuyển khoản VietQR",
+    /** One QR — bank apps and MoMo Quét QR (no separate MoMo merchant QR). */
+    nameEn: "VietQR — banks & MoMo",
+    nameVi: "VietQR — ngân hàng & MoMo",
     defaultComingSoon: false,
-    defaultEnabled: false,
+    defaultEnabled: true,
     sortOrder: 10,
     icon: "/brand/payments/vietqr.svg",
     provider: "vietqr",
@@ -93,7 +94,7 @@ export const PAYMENT_METHODS: PaymentMethodDef[] = [
     nameEn: "Cash at pickup",
     nameVi: "Tiền mặt khi nhận tại studio",
     defaultComingSoon: false,
-    defaultEnabled: false,
+    defaultEnabled: true,
     sortOrder: 70,
     icon: "/brand/payments/cash.svg",
     provider: "manual",
@@ -103,7 +104,7 @@ export const PAYMENT_METHODS: PaymentMethodDef[] = [
     nameEn: "Cash on delivery",
     nameVi: "Thanh toán khi giao",
     defaultComingSoon: false,
-    defaultEnabled: false,
+    defaultEnabled: true,
     sortOrder: 80,
     icon: "/brand/payments/cod.svg",
     provider: "manual",

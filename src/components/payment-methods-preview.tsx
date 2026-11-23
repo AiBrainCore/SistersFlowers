@@ -13,7 +13,8 @@ export async function PaymentMethodsPreview({
 }) {
   const methods = await listPaymentMethodsForDisplay({ citySlug });
   const t = dictionary.payments;
-  const visible = methods.filter((m) => m.id !== "whatsapp");
+  // Only methods customers can actually use (VietQR + cash).
+  const visible = methods.filter((m) => m.id !== "whatsapp" && m.selectable);
 
   return (
     <div className="mt-5 rounded-2xl border border-forest/10 bg-white/70 px-3.5 py-3">

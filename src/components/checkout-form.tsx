@@ -83,8 +83,9 @@ export function CheckoutForm({
       .then((r) => r.json())
       .then((data) => {
         if (cancelled) return;
+        // Storefront: only working methods (VietQR + cash). Hide Soon stubs.
         const methods = ((data.methods || []) as typeof payMethods).filter(
-          (m) => m.id !== "whatsapp",
+          (m) => m.id !== "whatsapp" && m.selectable,
         );
         setPayMethods(methods);
         const first =
@@ -98,8 +99,8 @@ export function CheckoutForm({
           setPayMethods([
             {
               id: "vietqr",
-              nameEn: "VietQR bank transfer",
-              nameVi: "Chuyển khoản VietQR",
+              nameEn: "VietQR — banks & MoMo",
+              nameVi: "VietQR — ngân hàng & MoMo",
               selectable: true,
               comingSoon: false,
             },
