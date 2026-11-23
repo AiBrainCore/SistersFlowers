@@ -40,10 +40,10 @@ describe("payment methods catalog", () => {
     }
   });
 
-  it("whatsapp remains default-enabled for legacy flow", () => {
+  it("whatsapp stays off — chat is not a checkout payment method", () => {
     const wa = PAYMENT_METHODS.find((m) => m.id === "whatsapp");
     assert.ok(wa);
-    assert.equal(wa!.defaultEnabled, true);
+    assert.equal(wa!.defaultEnabled, false);
   });
 });
 
