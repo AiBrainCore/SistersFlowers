@@ -5,7 +5,6 @@ import { getStorefrontDictionary } from "@/lib/storefront";
 import { getProductBySlug, listPublishedProducts } from "@/lib/products";
 import { listActiveAddons } from "@/lib/addons";
 import { ProductPurchase } from "@/components/product-purchase";
-import { PaymentMethodsPreview } from "@/components/payment-methods-preview";
 import { ProductCard } from "@/components/product-card";
 import { ProductImage } from "@/components/product-image";
 import { SalePrice } from "@/components/sale-price";
@@ -164,11 +163,6 @@ export default async function ProductPage({
               locale={locale}
               dictionary={t}
               addons={addons}
-              citySlug={activeCity.slug}
-            />
-            <PaymentMethodsPreview
-              locale={locale as Locale}
-              dictionary={t}
               citySlug={activeCity.slug}
             />
           </div>
