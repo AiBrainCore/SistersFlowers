@@ -595,6 +595,16 @@ export function ProductForm({
         <span style={{ margin: 0 }}>{t.products.publishedShop}</span>
       </label>
 
+      <label className="admin-field" style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <input
+          type="checkbox"
+          name="googleShopping"
+          defaultChecked={product?.googleShopping ?? true}
+          style={{ width: "auto" }}
+        />
+        <span style={{ margin: 0 }}>{t.products.googleShopping}</span>
+      </label>
+
       <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginTop: 8 }}>
         <button type="submit" className="admin-btn">
           {t.products.save}

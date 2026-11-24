@@ -27,6 +27,7 @@ export async function AdminShell({
           vouchers: t.nav.vouchers,
           delivery: t.nav.delivery,
           payments: t.nav.payments,
+          shopping: t.nav.shopping,
           reports: t.nav.reports,
           builder: t.nav.builder,
           studio: t.nav.studio,

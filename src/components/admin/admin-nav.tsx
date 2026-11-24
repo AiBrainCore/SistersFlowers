@@ -15,6 +15,7 @@ export type AdminNavLabels = {
   vouchers: string;
   delivery: string;
   payments: string;
+  shopping: string;
   reports: string;
   builder: string;
   studio: string;
@@ -36,6 +37,7 @@ const LINKS: { href: string; key: keyof AdminNavLabels }[] = [
   { href: "/admin/vouchers", key: "vouchers" },
   { href: "/admin/delivery", key: "delivery" },
   { href: "/admin/payments", key: "payments" },
+  { href: "/admin/shopping", key: "shopping" },
   { href: "/admin/reports", key: "reports" },
   { href: "/admin/builder", key: "builder" },
   { href: "/admin/studio-orders", key: "studio" },

@@ -50,6 +50,8 @@ export type Product = {
   aiStatus?: string;
   attributes?: ProductAttributePublic[];
   published?: boolean;
+  /** Include in Google Merchant product feed (default true). */
+  googleShopping?: boolean;
   sortOrder?: number;
   createdAt?: Date;
   updatedAt?: Date;
@@ -101,6 +103,7 @@ export type ProductRecord = {
   contentLocked?: boolean | null;
   aiStatus?: string | null;
   published: boolean;
+  googleShopping?: boolean | null;
   sortOrder: number;
   createdAt?: Date;
   updatedAt?: Date;
@@ -188,6 +191,7 @@ export function toProduct(record: ProductRecord): Product {
       confidence: row.confidence,
     })),
     published: record.published,
+    googleShopping: record.googleShopping !== false,
     sortOrder: record.sortOrder,
     createdAt: record.createdAt,
     updatedAt: record.updatedAt,

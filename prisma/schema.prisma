@@ -71,6 +71,8 @@ model Product {
   /// SHA-256 of analyzed image bytes — skip re-vision when unchanged.
   imageHash     String?
   published  Boolean           @default(true)
+  /// Include in Google Merchant / Shopping product feed.
+  googleShopping Boolean       @default(true)
   sortOrder  Int               @default(0)
   createdAt  DateTime          @default(now())
   updatedAt  DateTime          @updatedAt
@@ -80,9 +82,25 @@ model Product {
   analysis   ProductAnalysis?
 
   @@index([productType, published])
+  @@index([googleShopping, published])
   @@index([sourceKey])
   @@index([aiStatus])
   @@index([contentSource])
+}
+
+/// Singleton-ish Merchant Center feed defaults (one row id = "default").
+model GoogleMerchantSetting {
+  id                     String   @id @default("default")
+  enabled                Boolean  @default(true)
+  /// Feed content language: vi | en
+  defaultLocale          String   @default("vi")
+  defaultCitySlug        String   @default("danang")
+  brand                  String   @default("Sisters Flowers")
+  /// Google product taxonomy path or numeric ID.
+  googleProductCategory  String   @default("Arts & Entertainment > Party & Celebration > Gift Giving > Fresh Cut Flowers")
+  /// Optional flat shipping amount in VND (null = omit; configure in Merchant Center).
+  shippingFlatVnd        Int?
+  updatedAt              DateTime @updatedAt
 }
 
 /// Shared taxonomy for filters (flower, color, style, arrangement).
