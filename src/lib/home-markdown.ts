@@ -18,7 +18,7 @@ Handcrafted flower bouquets and gifts — delivery in Da Nang and Da Lat, Vietna
 
 ## Studios
 - Da Nang — 53 Luong Nhu Hoc, Hoa Cuong Bac, Hai Chau — 0904 985 761 / 032 745 3536
-- Da Lat — 04 Chi Lang, Ward 9 — 0904 985 761 / 0964 889 329
+- Da Lat — 27T Thi Sach Street, Cam Ly — 0904 985 761 / 0964 889 329
 - WhatsApp: https://wa.me/84327453536
 
 Prices are listed on ${shop} in VND (no login required).

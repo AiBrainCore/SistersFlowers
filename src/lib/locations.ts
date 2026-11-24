@@ -77,8 +77,8 @@ const SEED_CITIES = [
       nameVi: "Sisters Flowers Đà Lạt",
       status: "open" as const,
       isPrimary: true,
-      addressEn: "04 Chi Lang, Ward 9, Da Lat, Lam Dong",
-      addressVi: "Số 04 Chi Lăng, P. 9, TP. Đà Lạt, Lâm Đồng",
+      addressEn: "27T Thi Sach Street, Cam Ly, Da Lat, Lam Dong",
+      addressVi: "27T Đường Thi Sách, Cam Ly - Đà Lạt, Lâm Đồng",
     },
   },
 ] as const;

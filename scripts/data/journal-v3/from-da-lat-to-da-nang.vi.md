@@ -4,7 +4,7 @@ Có một đường thẳng lặng lẽ chạy giữa sương cao nguyên và á
 
 ## Vì sao Đà Lạt đi trước
 
-Đà Lạt dạy chúng tôi hoa ứng xử thế nào khi không khí đủ mát để cánh hoa giữ được bình tĩnh. Thành phố dạy nhịp chợ sớm, sự kiên nhẫn của người trồng cắt cành lúc bình minh, và kỷ luật bó hoa sao cho vẫn còn uống nước khi rời tay chúng tôi. Studio cao nguyên tại 04 Chi Lăng là nơi đôi tay thương hiệu học nghề: dao, nơ, hoa của ngày, và sự tự tin lặng lẽ khi cắm hoa cho những người sẽ còn gặp lại.
+Đà Lạt dạy chúng tôi hoa ứng xử thế nào khi không khí đủ mát để cánh hoa giữ được bình tĩnh. Thành phố dạy nhịp chợ sớm, sự kiên nhẫn của người trồng cắt cành lúc bình minh, và kỷ luật bó hoa sao cho vẫn còn uống nước khi rời tay chúng tôi. Studio cao nguyên tại Đường Thi Sách là nơi đôi tay thương hiệu học nghề: dao, nơ, hoa của ngày, và sự tự tin lặng lẽ khi cắm hoa cho những người sẽ còn gặp lại.
 
 Khách đã biết chúng tôi như một tiệm hoa địa phương — không phải ảnh catalogue, mà là nơi hoa được chuẩn bị như studio trong phố vẫn làm. Niềm tin ấy là gốc rễ chúng tôi không cắt.
 

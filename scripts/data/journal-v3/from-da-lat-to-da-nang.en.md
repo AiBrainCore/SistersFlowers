@@ -4,7 +4,7 @@ This is not a franchise story. It is a studio story told in two cities.
 
 ## Why Da Lat came first
 
-Da Lat taught us how flowers behave when the air is cool enough to keep petals calm. It taught us the rhythm of early markets, the patience of growers who cut stems at dawn, and the discipline of wrapping a bouquet so it still drinks water when it leaves our hands. Our highland studio at 04 Chi Lang is where the brand’s hands learned their craft: knife, ribbon, the day’s harvest, and the quiet confidence of arranging for people we would see again.
+Da Lat taught us how flowers behave when the air is cool enough to keep petals calm. It taught us the rhythm of early markets, the patience of growers who cut stems at dawn, and the discipline of wrapping a bouquet so it still drinks water when it leaves our hands. Our highland studio on Thi Sach Street is where the brand’s hands learned their craft: knife, ribbon, the day’s harvest, and the quiet confidence of arranging for people we would see again.
 
 Customers already knew us as a local florist — not a catalogue of stock photos, but a place where flowers are prepared the way a neighborhood studio prepares them. That trust is the root we refuse to cut.
 

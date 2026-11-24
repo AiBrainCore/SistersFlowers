@@ -160,7 +160,7 @@ export const en = {
     // Names kept for footer studio cards
     dalatName: "Da Lat",
     dalatStatus: "Open now",
-    dalatNote: "04 Chi Lang, Ward 9, Da Lat, Lam Dong",
+    dalatNote: "27T Thi Sach Street, Cam Ly, Da Lat, Lam Dong",
     dalatCta: "Shop Da Lat",
     danangName: "Da Nang",
     danangStatus: "Open now",
