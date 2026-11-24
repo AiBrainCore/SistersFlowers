@@ -298,7 +298,7 @@ export const en = {
     submit: "Place order",
     sending: "Sending…",
     payNote:
-      "Choose an active payment method below (usually VietQR). Delivery fee and final total are confirmed before you pay. Questions? Message the studio on Zalo or WhatsApp.",
+      "Pay by VietQR (banks & MoMo) before the studio makes your bouquet. Delivery fee and final total are confirmed before you pay. Questions? Message the studio on Zalo or WhatsApp.",
     fulfillment: "Receive",
     fulfillmentDelivery: "Delivery",
     fulfillmentPickup: "Pickup",
