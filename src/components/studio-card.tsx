@@ -242,17 +242,11 @@ export function StudioCard({
               ))}
             </ul>
 
-            <div className="mt-5">
-              {socialLabels ? (
-                <p className="text-[10px] tracking-[0.16em] text-citrus uppercase">
-                  {socialLabels.social}
-                </p>
-              ) : null}
-              <div
-                className={`flex flex-wrap items-center gap-2 ${
-                  socialLabels ? "mt-2.5" : ""
-                }`}
+            <p className="mt-5 text-xs leading-5 text-moss">{chatHint}</p>
+            <div className="mt-2 flex flex-wrap items-center gap-2">
+              <nav
                 aria-label={socialLabels?.social || chatHint}
+                className="flex flex-wrap items-center gap-2"
               >
                 {socialLinks.map((item) => (
                   <a
@@ -260,28 +254,26 @@ export function StudioCard({
                     href={item.href}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex min-h-10 items-center gap-2 rounded-full border border-forest/15 bg-cream/70 px-3.5 text-[11px] tracking-[0.1em] text-forest uppercase transition hover:border-citrus/45 hover:text-citrus"
+                    aria-label={item.label}
+                    title={item.label}
+                    className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-forest/10 bg-[#fff8f2] shadow-[0_1px_0_rgba(44,41,38,0.04)] transition hover:-translate-y-0.5 hover:border-citrus/35 hover:bg-white hover:shadow-[0_6px_16px_rgba(44,41,38,0.1)] active:translate-y-0"
                   >
-                    <SocialGlyph kind={item.key} size={16} />
-                    {item.label}
+                    <SocialGlyph kind={item.key} size={22} />
                   </a>
                 ))}
-              </div>
-            </div>
-
-            <div className="mt-5 flex flex-wrap gap-2">
+              </nav>
               <a
                 href={mapsHref}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full bg-citrus px-4 text-[11px] tracking-[0.14em] text-ivory uppercase transition hover:bg-citrus/90 sm:flex-none"
+                className="inline-flex h-11 shrink-0 items-center justify-center rounded-full bg-citrus px-4 text-[11px] tracking-[0.14em] text-ivory uppercase transition hover:bg-citrus/90"
               >
                 {directionsLabel}
               </a>
               {showCallButton ? (
                 <a
                   href={`tel:+${primaryPhone.digits}`}
-                  className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full border border-forest/20 bg-white/60 px-4 text-[11px] tracking-[0.14em] text-forest uppercase transition hover:border-citrus/40 sm:flex-none"
+                  className="inline-flex h-11 shrink-0 items-center justify-center rounded-full border border-forest/20 bg-white/60 px-4 text-[11px] tracking-[0.14em] text-forest uppercase transition hover:border-citrus/40"
                 >
                   {callLabel}
                 </a>

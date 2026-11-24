@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { isLocale, type Locale } from "@/i18n/config";
@@ -57,6 +56,7 @@ export default async function ContactPage({
               directionsLabel={t.footer.directions}
               callLabel={t.footer.call}
               emphasize
+              showCallButton={false}
               socialLabels={{
                 phones: c.phonesLabel,
                 social: c.socialLabel,
@@ -70,29 +70,6 @@ export default async function ContactPage({
             />
           ))}
         </div>
-
-        <p className="mt-12 text-sm text-moss">
-          <Link
-            href={`/${locale}/about`}
-            className="underline decoration-citrus/40 underline-offset-4 hover:text-citrus"
-          >
-            {t.nav.about}
-          </Link>
-          {" · "}
-          <Link
-            href={`/${locale}/shop`}
-            className="underline decoration-citrus/40 underline-offset-4 hover:text-citrus"
-          >
-            {t.nav.shop}
-          </Link>
-          {" · "}
-          <Link
-            href={`/${locale}/delivery`}
-            className="underline decoration-citrus/40 underline-offset-4 hover:text-citrus"
-          >
-            {t.nav.delivery}
-          </Link>
-        </p>
       </section>
     </div>
   );
