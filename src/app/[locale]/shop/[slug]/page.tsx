@@ -9,7 +9,7 @@ import {
 import { listActiveAddons } from "@/lib/addons";
 import { ProductPurchase } from "@/components/product-purchase";
 import { ProductCard } from "@/components/product-card";
-import { ProductImage } from "@/components/product-image";
+import { ProductGallery } from "@/components/product-gallery";
 import { SalePrice } from "@/components/sale-price";
 import { buildPageMetadata, productJsonLd, siteUrl } from "@/lib/seo";
 import { hasAnySizePrice } from "@/lib/product-sizes";
@@ -97,19 +97,18 @@ export default async function ProductPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <section className="grid lg:grid-cols-2">
-        <div className="relative min-h-[52vh] overflow-hidden lg:min-h-[calc(100vh-4.5rem)]">
-          <ProductImage
-            src={product.image}
-            fallback={product.imageFallback}
-            alt={product.names[locale]}
-            fill
-            className="object-cover object-center transition duration-700 hover:scale-[1.02] motion-reduce:hover:scale-100"
-            sizes="(min-width: 1024px) 50vw, 100vw"
-            priority
-          />
-        </div>
-        <div className="relative flex flex-col justify-center bg-[linear-gradient(160deg,rgba(251,249,245,0.96)_0%,rgba(243,235,224,0.88)_55%,rgba(240,212,204,0.45)_100%)] px-4 py-12 sm:px-10 sm:py-16 lg:px-14">
+      <section className="grid lg:grid-cols-2 lg:items-stretch">
+        <ProductGallery
+          images={[
+            {
+              src: product.image,
+              fallback: product.imageFallback,
+              alt:
+                product.imageAlt?.[locale]?.trim() || product.names[locale],
+            },
+          ]}
+        />
+        <div className="relative flex flex-col justify-center bg-[linear-gradient(160deg,rgba(251,249,245,0.96)_0%,rgba(243,235,224,0.88)_55%,rgba(240,212,204,0.45)_100%)] px-4 py-10 sm:px-10 sm:py-14 lg:px-14">
           <div className="glass max-w-lg rounded-[1.75rem] p-6 sm:p-8">
             <p className="text-[11px] tracking-[0.24em] text-citrus uppercase">
               {t.product.handmade}
