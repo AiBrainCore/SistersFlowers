@@ -10,8 +10,9 @@ export type ProductGalleryImage = {
 };
 
 /**
- * Studio-frame PDP media — fixed max box so it never outgrows the buy card
- * or slips under the sticky header. No sticky positioning.
+ * Studio-frame PDP media.
+ * Desktop: stretch to match the buy-card column height (fills empty space under photo).
+ * Mobile: 3:4 framed image, full content width.
  */
 export function ProductGallery({ images }: { images: ProductGalleryImage[] }) {
   const slides = images.filter((img) => img.src?.trim());
@@ -21,20 +22,9 @@ export function ProductGallery({ images }: { images: ProductGalleryImage[] }) {
   if (!current) return null;
 
   return (
-    <div className="w-full">
-      {/*
-        Hard size cap: ~18rem wide → ~24rem tall at 3:4, stays under typical buy panel.
-        max-h + w-auto keeps mat visible on all sides inside the figure.
-      */}
-      <figure className="mx-auto box-border w-full max-w-[18rem] rounded-[1.35rem] border border-[#B58B65]/50 bg-white p-2.5 shadow-[0_14px_32px_rgba(44,41,38,0.1)] sm:max-w-[20rem] sm:p-3">
-        <div
-          className="relative mx-auto overflow-hidden rounded-[1rem] bg-cream"
-          style={{
-            aspectRatio: "3 / 4",
-            width: "100%",
-            maxHeight: "min(52vh, 26rem)",
-          }}
-        >
+    <div className="flex h-full min-h-[20rem] w-full flex-col">
+      <figure className="box-border flex min-h-0 w-full flex-1 flex-col rounded-[1.5rem] border border-[#B58B65]/50 bg-white p-3 shadow-[0_14px_32px_rgba(44,41,38,0.1)] sm:p-3.5">
+        <div className="relative min-h-[22rem] w-full flex-1 overflow-hidden rounded-[1.15rem] bg-cream aspect-[3/4] lg:aspect-auto lg:min-h-[28rem]">
           <ProductImage
             src={current.src}
             fallback={current.fallback}
@@ -43,13 +33,13 @@ export function ProductGallery({ images }: { images: ProductGalleryImage[] }) {
             priority
             quality={72}
             className="object-cover object-center"
-            sizes="(min-width: 640px) 20rem, 18rem"
+            sizes="(min-width: 1024px) 40vw, 92vw"
           />
         </div>
       </figure>
 
       {slides.length > 1 ? (
-        <ul className="mx-auto mt-3 flex max-w-[20rem] gap-2 overflow-x-auto pb-1">
+        <ul className="mt-3 flex gap-2 overflow-x-auto pb-1">
           {slides.slice(0, 4).map((img, index) => {
             const on = index === active;
             return (
