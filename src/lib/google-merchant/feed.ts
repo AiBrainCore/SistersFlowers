@@ -32,7 +32,19 @@ export type MerchantFeedItem = {
   size?: string;
   customLabel0?: string;
   identifierExists: false;
+  /**
+   * Keep products on online Shopping / free listings only.
+   * Without a local inventory (warehouse) feed, Local destinations
+   * throw “missing local inventory data” on every item.
+   */
+  excludedDestinations: string[];
 };
+
+/** Destinations that need a separate store inventory feed — not ready yet. */
+export const MERCHANT_EXCLUDE_LOCAL_DESTINATIONS = [
+  "Free_local_listings",
+  "Local_inventory_ads",
+] as const;
 
 export type MerchantFeedIssue = {
   sku: string;
@@ -244,6 +256,7 @@ export async function buildGoogleMerchantFeed(
         size: input.size ? sizeLabel(input.size, locale) : undefined,
         customLabel0: citySlug,
         identifierExists: false,
+        excludedDestinations: [...MERCHANT_EXCLUDE_LOCAL_DESTINATIONS],
       });
     };
 
@@ -363,6 +376,11 @@ export function merchantFeedToXml(
         `<g:custom_label_0>${xmlEscape(item.customLabel0)}</g:custom_label_0>`,
       );
     }
+    for (const dest of item.excludedDestinations) {
+      lines.push(
+        `<g:excluded_destination>${xmlEscape(dest)}</g:excluded_destination>`,
+      );
+    }
     if (meta.shippingFlatVnd != null && meta.shippingFlatVnd >= 0) {
       lines.push(`<g:shipping>`);
       lines.push(`<g:country>VN</g:country>`);
@@ -379,6 +397,7 @@ export function merchantFeedToXml(
 }
 
 export function merchantFeedToTsv(result: MerchantFeedResult) {
+  // Repeated excluded_destination columns (Google TSV convention).
   const header = [
     "id",
     "item_group_id",
@@ -396,9 +415,12 @@ export function merchantFeedToTsv(result: MerchantFeedResult) {
     "product_type",
     "size",
     "custom_label_0",
+    "excluded_destination",
+    "excluded_destination",
   ];
   const rows = [header.join("\t")];
   for (const item of result.items) {
+    const dests = item.excludedDestinations;
     rows.push(
       [
         item.id,
@@ -417,6 +439,8 @@ export function merchantFeedToTsv(result: MerchantFeedResult) {
         item.productType,
         item.size || "",
         item.customLabel0 || "",
+        dests[0] || "",
+        dests[1] || "",
       ].join("\t"),
     );
   }
