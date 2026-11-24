@@ -97,19 +97,19 @@ export default async function ProductPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <section className="grid lg:grid-cols-2 lg:items-start">
-        <ProductGallery
-          images={[
-            {
-              src: product.image,
-              fallback: product.imageFallback,
-              alt:
-                product.imageAlt?.[locale]?.trim() || product.names[locale],
-            },
-          ]}
-        />
-        <div className="relative flex justify-center bg-[linear-gradient(160deg,rgba(251,249,245,0.96)_0%,rgba(243,235,224,0.88)_55%,rgba(240,212,204,0.45)_100%)] px-5 py-8 sm:px-8 sm:py-10 lg:justify-start lg:px-10 lg:py-10">
-          <div className="glass w-full max-w-md rounded-[1.5rem] p-5 sm:p-6 lg:max-w-lg">
+      <section className="border-b border-forest/5 bg-[linear-gradient(165deg,#fff8f2_0%,#f3ebe0_50%,#f7efe6_100%)]">
+        <div className="mx-auto grid max-w-6xl gap-8 px-4 py-8 sm:px-5 sm:py-10 lg:grid-cols-2 lg:items-start lg:gap-10 lg:py-12">
+          <ProductGallery
+            images={[
+              {
+                src: product.image,
+                fallback: product.imageFallback,
+                alt:
+                  product.imageAlt?.[locale]?.trim() || product.names[locale],
+              },
+            ]}
+          />
+          <div className="glass w-full rounded-[1.5rem] p-5 sm:p-6">
             <p className="text-[11px] tracking-[0.24em] text-citrus uppercase">
               {t.product.handmade}
             </p>
