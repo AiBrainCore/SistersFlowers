@@ -10,9 +10,8 @@ export type ProductGalleryImage = {
 };
 
 /**
- * Studio-frame PDP media: cream mat, wood/citrus frame, 3:4 main,
- * sticky on desktop so buy panel scroll doesn’t leave a tiny floating photo.
- * Thumb row ready for up to 4 photos (hidden until 2+ exist).
+ * Studio-frame PDP media: equal white mat on all sides (no bottom clip),
+ * sticky on desktop. Thumbs when 2–4 images exist.
  */
 export function ProductGallery({ images }: { images: ProductGalleryImage[] }) {
   const slides = images.filter((img) => img.src?.trim());
@@ -22,10 +21,14 @@ export function ProductGallery({ images }: { images: ProductGalleryImage[] }) {
   if (!current) return null;
 
   return (
-    <div className="bg-[linear-gradient(165deg,#fff8f2_0%,#f3ebe0_55%,#efe4d6_100%)] px-4 py-6 sm:px-6 sm:py-8 lg:sticky lg:top-[4.5rem] lg:self-start lg:px-8 lg:py-10 lg:h-[calc(100vh-4.5rem)] lg:overflow-y-auto">
-      <div className="mx-auto flex w-full max-w-[36rem] flex-col justify-center lg:h-full lg:max-w-none">
-        <figure className="overflow-hidden rounded-[1.5rem] border border-[#B58B65]/50 bg-white p-2.5 shadow-[0_18px_40px_rgba(44,41,38,0.1)] sm:p-3">
-          <div className="relative aspect-[3/4] overflow-hidden rounded-[1.15rem] bg-cream">
+    <div className="bg-[linear-gradient(165deg,#fff8f2_0%,#f3ebe0_55%,#efe4d6_100%)] px-4 py-6 sm:px-6 sm:py-8 lg:sticky lg:top-[4.5rem] lg:self-start lg:px-8 lg:py-10">
+      <div className="mx-auto w-full max-w-[36rem] lg:max-w-none">
+        {/*
+          Mat must live on the figure with overflow visible.
+          overflow-hidden + viewport height on a parent was clipping the bottom mat.
+        */}
+        <figure className="box-border rounded-[1.5rem] border border-[#B58B65]/50 bg-white p-3 shadow-[0_18px_40px_rgba(44,41,38,0.1)] sm:p-3.5">
+          <div className="relative aspect-[3/4] overflow-hidden rounded-[1.1rem] bg-cream">
             <ProductImage
               src={current.src}
               fallback={current.fallback}
