@@ -181,6 +181,7 @@ export async function saveProductAction(formData: FormData) {
   const contentLocked = formData.get("contentLocked") === "on";
   const sortOrder = Number(formData.get("sortOrder") || 0);
   const published = formData.get("published") === "on";
+  const googleShopping = formData.get("googleShopping") === "on";
   const existingImage = String(formData.get("existingImage") || "");
 
   if (!nameEn || !nameVi || !price || !slug) {
@@ -275,6 +276,7 @@ export async function saveProductAction(formData: FormData) {
         ...seoData,
         sortOrder,
         published,
+        googleShopping,
       },
     });
   } else {
@@ -311,6 +313,7 @@ export async function saveProductAction(formData: FormData) {
         ...seoData,
         sortOrder,
         published,
+        googleShopping,
       },
     });
     productId = created.id;
