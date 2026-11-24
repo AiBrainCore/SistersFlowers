@@ -21,7 +21,12 @@ Query params:
 - Bouquet size ladder → separate items (`SKU-sm`, `SKU-md`, `SKU-lg`) sharing `item_group_id` = SKU
 - Non-ladder types → one item per SKU
 - Required Google fields: `id`, `title`, `description`, `link`, `image_link`, `availability`, `condition`, `price` (`N VND`), `brand`, `identifier_exists=no`, `google_product_category`, `product_type`
+- `excluded_destination`: `Free_local_listings` + `Local_inventory_ads` (until a local warehouse / store inventory feed exists — otherwise Merchant flags every SKU “missing local inventory data”)
 - Checkout test SKU `SF-TEST` is never exported
+
+## Local listings note
+
+Studios exist, but **do not** enable Free local listings / Local inventory ads until you upload a local inventory feed (`store_code`, `id`, `availability`/`quantity`). Until then, keep Local destinations off in Merchant Center **or** rely on the feed exclusions above. Online Shopping / free listings stay on.
 
 ## Admin
 
