@@ -93,8 +93,9 @@ export const PAYMENT_METHODS: PaymentMethodDef[] = [
     id: "cash_pickup",
     nameEn: "Cash at pickup",
     nameVi: "Tiền mặt khi nhận tại studio",
+    /** Off online — guests can no-show after the bouquet is made. Studio walk-ins only. */
     defaultComingSoon: false,
-    defaultEnabled: true,
+    defaultEnabled: false,
     sortOrder: 70,
     icon: "/brand/payments/cash.svg",
     provider: "manual",

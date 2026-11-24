@@ -90,15 +90,13 @@ export function CheckoutForm({
       .then((r) => r.json())
       .then((data) => {
         if (cancelled) return;
-        // Storefront: VietQR always; cash only at pickup. Never COD online.
+        // Storefront: prepaid VietQR only. Cash/COD invite no-shows and unpaid work.
         const methods = ((data.methods || []) as typeof payMethods).filter(
-          (m) => {
-            if (!m.selectable || m.id === "whatsapp" || m.id === "cod") {
-              return false;
-            }
-            if (m.id === "cash_pickup") return fulfillment === "pickup";
-            return true;
-          },
+          (m) =>
+            m.selectable &&
+            m.id !== "whatsapp" &&
+            m.id !== "cod" &&
+            m.id !== "cash_pickup",
         );
         setPayMethods(methods);
         setPaymentMethod((current) => {
@@ -127,7 +125,7 @@ export function CheckoutForm({
     return () => {
       cancelled = true;
     };
-  }, [activeCity?.slug, citySlug, fulfillment]);
+  }, [activeCity?.slug, citySlug]);
 
   const onDeliveryChange = useCallback(
     (value: { km: number; fee: number | null; zone: string }) => {

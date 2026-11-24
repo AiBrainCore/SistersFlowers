@@ -280,7 +280,7 @@ export const en = {
     kicker: "Checkout",
     title: "Where should the bouquet go?",
     intro:
-      "Fill in the details below. Pay by VietQR (banks & MoMo) — cash only if you pick up at the studio. We’ll confirm flowers and delivery timing with you.",
+      "Fill in the details below. Pay by VietQR (banks & MoMo) before we make the bouquet. We’ll confirm flowers and delivery timing with you.",
     name: "Your name",
     phone: "Phone / Zalo / WhatsApp",
     email: "Email",

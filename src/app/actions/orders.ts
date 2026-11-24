@@ -35,14 +35,11 @@ export async function submitOrderAction(
     payload.fulfillment === "pickup" ? "pickup" : "delivery";
   const paymentMethod = (payload.paymentMethod || "vietqr").trim();
 
-  // Online shop: no COD. Cash only when the guest picks up at the studio.
-  if (paymentMethod === "cod") {
-    return { ok: false, error: "Cash on delivery is not available online" };
-  }
-  if (paymentMethod === "cash_pickup" && fulfillment !== "pickup") {
+  // Online shop: prepaid only. Cash/COD invite no-shows and unpaid bouquets.
+  if (paymentMethod === "cod" || paymentMethod === "cash_pickup") {
     return {
       ok: false,
-      error: "Cash at pickup is only available for studio pickup",
+      error: "Online orders require VietQR payment before the studio makes the bouquet",
     };
   }
 
