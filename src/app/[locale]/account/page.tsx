@@ -1,12 +1,21 @@
 import Link from "next/link";
 import { redirect, notFound } from "next/navigation";
 import { logoutAction } from "@/app/actions/auth";
+import { AccountProfileForm } from "@/components/account-profile-form";
 import { AccountShell } from "@/components/account-shell";
 import { isLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
 import { getCurrentCustomer } from "@/lib/customer-session";
 import { prisma } from "@/lib/db";
 import { getActiveCity } from "@/lib/locations";
+
+function displayPhone(phone: string | null | undefined) {
+  if (!phone) return "";
+  if (phone.startsWith("84") && phone.length >= 10) {
+    return `0${phone.slice(2)}`;
+  }
+  return phone;
+}
 
 export default async function AccountPage({
   params,
@@ -60,6 +69,21 @@ export default async function AccountPage({
             </button>
           </form>
         </div>
+
+        <section className="border-b border-forest/8 px-5 py-6 sm:px-7 sm:py-8">
+          <h2 className="text-lg font-semibold text-forest">{t.profileTitle}</h2>
+          <div className="mt-4">
+            <AccountProfileForm
+              dictionary={dictionary}
+              initial={{
+                name: customer.name || "",
+                email: customer.email || "",
+                phone: displayPhone(customer.phone),
+                address: customer.address || "",
+              }}
+            />
+          </div>
+        </section>
 
         <section className="px-5 py-6 sm:px-7 sm:py-8">
           <div className="flex flex-wrap items-center justify-between gap-3">

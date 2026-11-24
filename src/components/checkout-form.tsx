@@ -36,6 +36,7 @@ export function CheckoutForm({
     name?: string;
     email?: string;
     phone?: string;
+    address?: string;
   };
 }) {
   const router = useRouter();
@@ -281,14 +282,18 @@ export function CheckoutForm({
               onChange={onDeliveryChange}
             />
             <Field
+              key="address-delivery"
               label={dictionary.checkout.address}
               name="address"
               required
-              defaultValue={hints.hotelName || undefined}
+              defaultValue={
+                hints.hotelName || defaults?.address || undefined
+              }
             />
           </>
         ) : (
           <Field
+            key="address-pickup"
             label={dictionary.checkout.address}
             name="address"
             defaultValue="Pickup at studio"

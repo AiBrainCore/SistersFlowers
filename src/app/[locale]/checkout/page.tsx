@@ -11,6 +11,14 @@ import { getCurrentCustomer } from "@/lib/customer-session";
 
 export const dynamic = "force-dynamic";
 
+function formatCheckoutPhone(phone: string | null | undefined) {
+  if (!phone) return undefined;
+  if (phone.startsWith("84") && phone.length >= 10) {
+    return `0${phone.slice(2)}`;
+  }
+  return phone;
+}
+
 export default async function CheckoutPage({
   params,
 }: PageProps<"/[locale]/checkout">) {
@@ -42,7 +50,8 @@ export default async function CheckoutPage({
           defaults={{
             name: customer?.name || undefined,
             email: customer?.email || undefined,
-            phone: customer?.phone || undefined,
+            phone: formatCheckoutPhone(customer?.phone),
+            address: customer?.address || undefined,
           }}
         />
       </div>
