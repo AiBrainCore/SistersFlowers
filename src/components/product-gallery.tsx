@@ -10,9 +10,9 @@ export type ProductGalleryImage = {
 };
 
 /**
- * Studio-frame PDP media.
- * Desktop: stretch to match the buy-card column height (fills empty space under photo).
- * Mobile: 3:4 framed image, full content width.
+ * Studio-frame PDP media — deliberately LARGE on desktop.
+ * Fills the left grid column width and stretches to the buy-card height.
+ * No max-width caps; no aspect-ratio lock on lg (that kept the frame tiny).
  */
 export function ProductGallery({ images }: { images: ProductGalleryImage[] }) {
   const slides = images.filter((img) => img.src?.trim());
@@ -22,9 +22,13 @@ export function ProductGallery({ images }: { images: ProductGalleryImage[] }) {
   if (!current) return null;
 
   return (
-    <div className="flex h-full min-h-[20rem] w-full flex-col">
-      <figure className="box-border flex min-h-0 w-full flex-1 flex-col rounded-[1.5rem] border border-[#B58B65]/50 bg-white p-3 shadow-[0_14px_32px_rgba(44,41,38,0.1)] sm:p-3.5">
-        <div className="relative min-h-[22rem] w-full flex-1 overflow-hidden rounded-[1.15rem] bg-cream aspect-[3/4] lg:aspect-auto lg:min-h-[28rem]">
+    <div className="flex h-full min-h-[28rem] w-full flex-col self-stretch lg:min-h-[40rem]">
+      <figure className="box-border flex h-full min-h-[inherit] w-full flex-1 flex-col rounded-[1.5rem] border border-[#B58B65]/50 bg-white p-3 shadow-[0_14px_32px_rgba(44,41,38,0.1)] sm:p-3.5">
+        {/*
+          Mobile: tall framed photo (min 28rem).
+          Desktop: 100% of left column height (≥40rem) + full column width.
+        */}
+        <div className="relative min-h-[28rem] w-full flex-1 overflow-hidden rounded-[1.15rem] bg-cream lg:min-h-[40rem]">
           <ProductImage
             src={current.src}
             fallback={current.fallback}
@@ -33,7 +37,7 @@ export function ProductGallery({ images }: { images: ProductGalleryImage[] }) {
             priority
             quality={72}
             className="object-cover object-center"
-            sizes="(min-width: 1024px) 40vw, 92vw"
+            sizes="(min-width: 1024px) 45vw, 100vw"
           />
         </div>
       </figure>
