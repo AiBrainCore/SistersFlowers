@@ -274,8 +274,8 @@ export const en = {
     intro:
       "Fill in the details below. Pay by VietQR (banks & MoMo) or cash. We’ll confirm flowers and delivery timing with you.",
     name: "Your name",
-    phone: "Phone / WhatsApp",
-    email: "Email (optional)",
+    phone: "Phone / Zalo / WhatsApp",
+    email: "Email",
     zone: "Delivery zone",
     address: "Delivery address",
     date: "Delivery date",
@@ -291,9 +291,9 @@ export const en = {
     sending: "Sending…",
     payNote:
       "Choose an active payment method below (usually VietQR). Delivery fee and final total are confirmed before you pay. Questions? Message the studio on Zalo or WhatsApp.",
-    fulfillment: "Fulfillment",
+    fulfillment: "Receive",
     fulfillmentDelivery: "Delivery",
-    fulfillmentPickup: "Pickup at studio",
+    fulfillmentPickup: "Pickup",
     paymentMethod: "Payment method",
     recipientPhone: "Recipient phone",
     anonymousSender: "Keep my name private from the recipient",
@@ -586,8 +586,8 @@ export const en = {
     contactCta: "Contact Sisters Flowers",
   },
   location: {
-    deliveringIn: "Delivering in",
-    chooseCity: "Choose delivery city",
+    deliveringIn: "Location",
+    chooseCity: "Choose city",
     deliveryToday: "Delivery today",
     openNow: "Available",
     comingSoon: "Coming soon",

@@ -25,12 +25,18 @@ export function CheckoutForm({
   citySlug,
   deliveryConfig,
   zones,
+  defaults,
 }: {
   locale: Locale;
   dictionary: Dictionary;
   citySlug: string;
   deliveryConfig: DeliveryConfig;
   zones: DeliveryZonePublic[];
+  defaults?: {
+    name?: string;
+    email?: string;
+    phone?: string;
+  };
 }) {
   const router = useRouter();
   const { items, subtotal, clear, hydrated } = useCart();
@@ -201,9 +207,18 @@ export function CheckoutForm({
   const effectiveFee = fulfillment === "pickup" ? 0 : deliveryFee;
   const grandTotal = subtotal + (effectiveFee ?? 0);
 
+  const submitLabel =
+    status === "sending"
+      ? dictionary.checkout.sending
+      : dictionary.checkout.submit;
+
   return (
-    <div className="grid gap-12 lg:grid-cols-[1.1fr_0.9fr]">
-      <form onSubmit={onSubmit} className="grid gap-5">
+    <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
+      <form
+        id="checkout-form"
+        onSubmit={onSubmit}
+        className="grid gap-5"
+      >
         <DeliveryCityBar locale={locale} dictionary={dictionary} />
 
         <fieldset className="grid gap-2">
@@ -233,10 +248,26 @@ export function CheckoutForm({
           </div>
         </fieldset>
 
-        <Field label={dictionary.checkout.name} name="customerName" required />
+        <Field
+          label={dictionary.checkout.name}
+          name="customerName"
+          required
+          defaultValue={defaults?.name}
+        />
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-          <Field label={dictionary.checkout.phone} name="phone" required />
-          <Field label={dictionary.checkout.email} name="email" type="email" />
+          <Field
+            label={dictionary.checkout.phone}
+            name="phone"
+            required
+            defaultValue={defaults?.phone}
+          />
+          <Field
+            label={dictionary.checkout.email}
+            name="email"
+            type="email"
+            required
+            defaultValue={defaults?.email}
+          />
         </div>
         {fulfillment === "delivery" ? (
           <>
@@ -361,19 +392,10 @@ export function CheckoutForm({
           </div>
         </fieldset>
 
-        {error ? <p className="text-sm text-rose">{error}</p> : null}
-        <button
-          type="submit"
-          disabled={status === "sending"}
-          className="mt-2 rounded-full bg-citrus px-8 py-3 text-[12px] tracking-[0.18em] text-ivory uppercase transition hover:bg-citrus/90 disabled:opacity-60"
-        >
-          {status === "sending"
-            ? dictionary.checkout.sending
-            : dictionary.checkout.submit}
-        </button>
+        {error ? <p className="text-sm text-rose lg:hidden">{error}</p> : null}
       </form>
 
-      <aside className="h-fit rounded-3xl bg-cream/70 p-6">
+      <aside className="h-fit rounded-3xl bg-cream/70 p-6 lg:sticky lg:top-24">
         <h2 className="serif text-2xl">{dictionary.checkout.summary}</h2>
         <ul className="mt-6 space-y-4">
           {items.map((item) => (
@@ -433,6 +455,15 @@ export function CheckoutForm({
           </div>
         </div>
         <p className="mt-4 text-xs leading-6 text-moss">{dictionary.checkout.payNote}</p>
+        {error ? <p className="mt-3 hidden text-sm text-rose lg:block">{error}</p> : null}
+        <button
+          type="submit"
+          form="checkout-form"
+          disabled={status === "sending"}
+          className="mt-5 w-full rounded-full bg-citrus px-8 py-3 text-[12px] tracking-[0.18em] text-ivory uppercase transition hover:bg-citrus/90 disabled:opacity-60"
+        >
+          {submitLabel}
+        </button>
         <Link
           href={`/${locale}/shop`}
           className="mt-4 inline-block border-b border-forest pb-0.5 text-[11px] tracking-[0.14em] uppercase"
