@@ -272,7 +272,7 @@ export const en = {
     kicker: "Checkout",
     title: "Where should the bouquet go?",
     intro:
-      "Browse and place the order here. Confirm availability, timing and payment on WhatsApp — including overseas guests. For most orders we send a photo of the finished bouquet before delivery.",
+      "Fill in the details below. Pay by VietQR (banks & MoMo) or cash. We’ll confirm flowers and delivery timing with you.",
     name: "Your name",
     phone: "Phone / WhatsApp",
     email: "Email (optional)",
@@ -291,9 +291,6 @@ export const en = {
     sending: "Sending…",
     payNote:
       "Choose an active payment method below (usually VietQR). Delivery fee and final total are confirmed before you pay. Questions? Message the studio on Zalo or WhatsApp.",
-    promisePhoto: "Photo before delivery",
-    promiseSameDay: "Same-day windows when capacity allows",
-    promisePay: "Pay the exact total shown",
     fulfillment: "Fulfillment",
     fulfillmentDelivery: "Delivery",
     fulfillmentPickup: "Pickup at studio",
