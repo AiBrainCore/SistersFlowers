@@ -280,7 +280,7 @@ export const en = {
     kicker: "Checkout",
     title: "Where should the bouquet go?",
     intro:
-      "Fill in the details below. Pay by VietQR (banks & MoMo) or cash. We’ll confirm flowers and delivery timing with you.",
+      "Fill in the details below. Pay by VietQR (banks & MoMo) before we make the bouquet. We’ll confirm flowers and delivery timing with you.",
     name: "Your name",
     phone: "Phone / Zalo / WhatsApp",
     email: "Email",
@@ -298,7 +298,7 @@ export const en = {
     submit: "Place order",
     sending: "Sending…",
     payNote:
-      "Choose an active payment method below (usually VietQR). Delivery fee and final total are confirmed before you pay. Questions? Message the studio on Zalo or WhatsApp.",
+      "Pay by VietQR (banks & MoMo) before the studio makes your bouquet. Delivery fee and final total are confirmed before you pay. Questions? Message the studio on Zalo or WhatsApp.",
     fulfillment: "Receive",
     fulfillmentDelivery: "Delivery",
     fulfillmentPickup: "Pickup",

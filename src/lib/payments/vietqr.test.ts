@@ -40,12 +40,15 @@ describe("payment methods catalog", () => {
     }
   });
 
-  it("defaults VietQR + cash on for storefront", () => {
-    for (const id of ["vietqr", "cod", "cash_pickup"] as const) {
+  it("defaults VietQR on; cash and COD off online", () => {
+    const vietqr = PAYMENT_METHODS.find((row) => row.id === "vietqr");
+    assert.ok(vietqr);
+    assert.equal(vietqr!.defaultEnabled, true);
+    assert.equal(vietqr!.defaultComingSoon, false);
+    for (const id of ["cash_pickup", "cod"] as const) {
       const m = PAYMENT_METHODS.find((row) => row.id === id);
       assert.ok(m, id);
-      assert.equal(m!.defaultEnabled, true);
-      assert.equal(m!.defaultComingSoon, false);
+      assert.equal(m!.defaultEnabled, false);
     }
   });
 

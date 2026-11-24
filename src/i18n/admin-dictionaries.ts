@@ -387,7 +387,7 @@ const en = {
     payosConfigured: "env credentials present (live activation still gated)",
     payosMissing: "credentials not set — adapter disabled",
     comingSoonNote:
-      "Storefront shows VietQR (banks & MoMo scan the same QR) plus cash. Separate MoMo / ZaloPay / cards / PayPal stay Coming soon until a real adapter exists.",
+      "Storefront is prepaid VietQR only (banks & MoMo scan the same QR). Cash and COD stay off online so bouquets are not made for no-shows. Separate MoMo / ZaloPay / cards / PayPal stay Coming soon until a real adapter exists.",
     methodsTitle: "Payment methods",
     accountsTitle: "Bank accounts",
     accountsIntro:
@@ -929,7 +929,7 @@ const vi: typeof en = {
     payosConfigured: "đã có env (kích hoạt live vẫn bị khóa)",
     payosMissing: "chưa có credentials — adapter tắt",
     comingSoonNote:
-      "Shop hiện VietQR (ngân hàng & MoMo quét cùng một QR) và tiền mặt. MoMo / ZaloPay / thẻ / PayPal riêng vẫn Coming soon đến khi có adapter thật.",
+      "Shop chỉ nhận VietQR trước (ngân hàng & MoMo quét cùng một QR). Tiền mặt và COD tắt online để không làm hoa cho khách không đến. MoMo / ZaloPay / thẻ / PayPal riêng vẫn Coming soon đến khi có adapter thật.",
     methodsTitle: "Phương thức thanh toán",
     accountsTitle: "Tài khoản ngân hàng",
     accountsIntro:

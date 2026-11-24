@@ -31,9 +31,9 @@ export async function ensurePaymentMethodSettings() {
         sortOrder: m.sortOrder,
       },
       update:
-        m.id === "whatsapp"
+        m.id === "whatsapp" || m.id === "cod" || m.id === "cash_pickup"
           ? {
-              // Keep WhatsApp off as a checkout “payment” — chat is Zalo/WhatsApp in contact UI.
+              // WhatsApp is chat, not payment. Cash/COD stay off online (no-shows / unpaid work).
               enabled: false,
               comingSoon: false,
               sortOrder: m.sortOrder,
@@ -50,23 +50,27 @@ export async function ensurePaymentMethodSettings() {
   }
 }
 
-/** One-shot: turn on VietQR + cash; keep unfinished methods Soon. Safe to re-run. */
+/** One-shot: turn on VietQR only; keep unfinished methods Soon. Safe to re-run. */
 export async function applyStorefrontPaymentDefaults() {
   await ensurePaymentMethodSettings();
-  const live = ["vietqr", "cod", "cash_pickup"] as const;
-  for (const methodId of live) {
-    await prisma.paymentMethodSetting.update({
-      where: { methodId },
-      data: { enabled: true, comingSoon: false },
-    });
-  }
+  await prisma.paymentMethodSetting.update({
+    where: { methodId: "vietqr" },
+    data: { enabled: true, comingSoon: false },
+  });
   for (const m of PAYMENT_METHODS) {
-    if (m.provider === "stub" || m.id === "payos" || m.id === "whatsapp") {
+    if (
+      m.provider === "stub" ||
+      m.id === "payos" ||
+      m.id === "whatsapp" ||
+      m.id === "cod" ||
+      m.id === "cash_pickup"
+    ) {
       await prisma.paymentMethodSetting.update({
         where: { methodId: m.id },
         data: {
           enabled: false,
-          comingSoon: m.id !== "whatsapp",
+          comingSoon:
+            m.id !== "whatsapp" && m.id !== "cod" && m.id !== "cash_pickup",
         },
       });
     }

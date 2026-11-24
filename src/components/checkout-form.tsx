@@ -90,16 +90,23 @@ export function CheckoutForm({
       .then((r) => r.json())
       .then((data) => {
         if (cancelled) return;
-        // Storefront: only working methods (VietQR + cash). Hide Soon stubs.
+        // Storefront: prepaid VietQR only. Cash/COD invite no-shows and unpaid work.
         const methods = ((data.methods || []) as typeof payMethods).filter(
-          (m) => m.id !== "whatsapp" && m.selectable,
+          (m) =>
+            m.selectable &&
+            m.id !== "whatsapp" &&
+            m.id !== "cod" &&
+            m.id !== "cash_pickup",
         );
         setPayMethods(methods);
-        const first =
-          methods.find((m) => m.selectable)?.id ||
-          methods.find((m) => m.id === "vietqr")?.id ||
-          "vietqr";
-        setPaymentMethod(first);
+        setPaymentMethod((current) => {
+          if (methods.some((m) => m.id === current)) return current;
+          return (
+            methods.find((m) => m.id === "vietqr")?.id ||
+            methods[0]?.id ||
+            "vietqr"
+          );
+        });
       })
       .catch(() => {
         if (!cancelled) {
@@ -299,16 +306,25 @@ export function CheckoutForm({
             defaultValue="Pickup at studio"
           />
         )}
-        <div className="grid grid-cols-2 gap-3 sm:gap-5">
-          <Field label={dictionary.checkout.date} name="deliveryDate" type="date" />
-          <label className="block">
+        <div className="grid grid-cols-2 gap-2 sm:gap-4">
+          <label className="block min-w-0">
+            <span className="text-[11px] tracking-[0.16em] text-moss uppercase">
+              {dictionary.checkout.date}
+            </span>
+            <input
+              name="deliveryDate"
+              type="date"
+              className="mt-2 box-border min-h-11 w-full min-w-0 max-w-full rounded-2xl border border-forest/15 bg-white/70 px-2.5 py-2.5 text-sm outline-none focus:border-rose sm:rounded-full sm:px-4 sm:py-3"
+            />
+          </label>
+          <label className="block min-w-0">
             <span className="text-[11px] tracking-[0.16em] text-moss uppercase">
               {dictionary.checkout.time}
             </span>
             <select
               name="deliveryTime"
               defaultValue=""
-              className="mt-2 min-h-11 w-full rounded-full border border-forest/15 bg-white/70 px-4 py-3 text-sm outline-none focus:border-rose"
+              className="mt-2 box-border min-h-11 w-full min-w-0 max-w-full rounded-2xl border border-forest/15 bg-white/70 px-2.5 py-2.5 text-sm outline-none focus:border-rose sm:rounded-full sm:px-4 sm:py-3"
             >
               <option value="">{dictionary.checkout.timeAny}</option>
               {DELIVERY_TIME_SLOTS.map((slot) => (

@@ -35,6 +35,14 @@ export async function submitOrderAction(
     payload.fulfillment === "pickup" ? "pickup" : "delivery";
   const paymentMethod = (payload.paymentMethod || "vietqr").trim();
 
+  // Online shop: prepaid only. Cash/COD invite no-shows and unpaid bouquets.
+  if (paymentMethod === "cod" || paymentMethod === "cash_pickup") {
+    return {
+      ok: false,
+      error: "Online orders require VietQR payment before the studio makes the bouquet",
+    };
+  }
+
   const { repriceCheckoutItems } = await import("@/lib/payments/pricing");
   const priced = await repriceCheckoutItems({
     items: payload.items,
