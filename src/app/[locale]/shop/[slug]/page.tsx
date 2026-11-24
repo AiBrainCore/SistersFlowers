@@ -2,7 +2,10 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { isLocale, type Locale } from "@/i18n/config";
 import { getStorefrontDictionary } from "@/lib/storefront";
-import { getProductBySlug, listPublishedProducts } from "@/lib/products";
+import {
+  getProductBySlug,
+  listRelatedProducts,
+} from "@/lib/products";
 import { listActiveAddons } from "@/lib/addons";
 import { ProductPurchase } from "@/components/product-purchase";
 import { ProductCard } from "@/components/product-card";
@@ -11,6 +14,7 @@ import { SalePrice } from "@/components/sale-price";
 import { buildPageMetadata, productJsonLd, siteUrl } from "@/lib/seo";
 import { hasAnySizePrice } from "@/lib/product-sizes";
 
+/** City cookie still forces dynamic; data paths below are short-cached. */
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
@@ -67,10 +71,13 @@ export default async function ProductPage({
   });
   if (!product) notFound();
   const [others, addons] = await Promise.all([
-    listPublishedProducts({
+    listRelatedProducts({
+      excludeSlug: slug,
+      productType: product.productType,
       cityId: activeCity.id,
       citySlug: activeCity.slug,
-    }).then((rows) => rows.filter((item) => item.slug !== slug).slice(0, 8)),
+      take: 4,
+    }),
     listActiveAddons(),
   ]);
 
@@ -168,14 +175,23 @@ export default async function ProductPage({
           </div>
         </div>
       </section>
-      <section className="mx-auto max-w-6xl px-4 py-14 sm:px-5 sm:py-16">
-        <h2 className="serif text-3xl text-forest sm:text-4xl">{t.product.more}</h2>
-        <div className="mt-8 grid grid-cols-2 gap-x-3 gap-y-7 sm:gap-x-4 sm:gap-y-10 md:grid-cols-3 lg:grid-cols-4">
-          {others.map((item) => (
-            <ProductCard key={item.slug} product={item} locale={locale} />
-          ))}
-        </div>
-      </section>
+      {others.length ? (
+        <section className="mx-auto max-w-6xl px-4 py-14 sm:px-5 sm:py-16">
+          <h2 className="serif text-3xl text-forest sm:text-4xl">
+            {t.product.more}
+          </h2>
+          <div className="mt-8 grid grid-cols-2 gap-x-3 gap-y-7 sm:gap-x-4 sm:gap-y-10 lg:grid-cols-4">
+            {others.map((item) => (
+              <ProductCard
+                key={item.slug}
+                product={item}
+                locale={locale}
+                citySlug={activeCity.slug}
+              />
+            ))}
+          </div>
+        </section>
+      ) : null}
     </div>
   );
 }

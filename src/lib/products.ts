@@ -1,4 +1,5 @@
 import { unstable_cache } from "next/cache";
+import { cache } from "react";
 import { prisma } from "@/lib/db";
 import { toProduct, type Product } from "@/data/products";
 import { seedProductCategoriesIfEmpty } from "@/lib/categories";
@@ -623,7 +624,7 @@ export async function listAdminProducts(): Promise<Product[]> {
   );
 }
 
-export async function getProductBySlug(
+async function getProductBySlugUncached(
   slug: string,
   opts?: { includeDraft?: boolean; cityId?: string; citySlug?: string },
 ): Promise<Product | null> {
@@ -641,17 +642,108 @@ export async function getProductBySlug(
     if (blocked) return null;
   }
   if (opts?.citySlug || opts?.cityId) {
-    const slug =
+    const citySlug =
       opts.citySlug ||
       row.cityStock?.find((s) => s.city.id === opts.cityId)?.city.slug;
-    product = withCityPrice(product, slug);
+    product = withCityPrice(product, citySlug);
   } else {
     product = {
       ...product,
       price: minOfferedPrice(product.sizePrices, undefined, product.price),
     };
   }
-  return product;
+  // Drop heavy dates from the JSON cache boundary.
+  return { ...product, createdAt: undefined, updatedAt: undefined };
+}
+
+/**
+ * Request-deduped + short-lived cache. Metadata + page share one fetch per request.
+ */
+export const getProductBySlug = cache(async function getProductBySlug(
+  slug: string,
+  opts?: { includeDraft?: boolean; cityId?: string; citySlug?: string },
+): Promise<Product | null> {
+  const cityId = opts?.cityId || "";
+  const citySlug = opts?.citySlug || "";
+  const draft = opts?.includeDraft ? "1" : "0";
+  return unstable_cache(
+    () => getProductBySlugUncached(slug, opts),
+    ["product-by-slug-v1", slug, cityId, citySlug, draft],
+    { revalidate: 60, tags: [SHOP_CATALOG_TAG, `product:${slug}`] },
+  )();
+});
+
+/** Lean “More bouquets” row — same type first, DB `take` (never load full catalog). */
+export async function listRelatedProducts(input: {
+  excludeSlug: string;
+  productType?: string | null;
+  cityId?: string;
+  citySlug?: string;
+  take?: number;
+}): Promise<Product[]> {
+  const take = Math.max(1, Math.min(input.take ?? 4, 12));
+  const type = input.productType?.trim() || "";
+  const cityId = input.cityId || "";
+  const citySlug = input.citySlug || "";
+
+  return unstable_cache(
+    async () => {
+      const select = shopCardSelect(citySlug || undefined);
+      const cityBlock = cityId
+        ? {
+            NOT: {
+              cityStock: {
+                some: { cityId, available: false },
+              },
+            },
+          }
+        : {};
+      const orderBy = [
+        { sortOrder: "asc" as const },
+        { createdAt: "asc" as const },
+      ];
+
+      let rows = await prisma.product.findMany({
+        where: {
+          published: true,
+          slug: { not: input.excludeSlug },
+          ...(type ? { productType: type } : {}),
+          ...cityBlock,
+        },
+        select,
+        orderBy,
+        take,
+      });
+
+      if (rows.length < take && type) {
+        const have = new Set(rows.map((r) => r.slug));
+        const extra = await prisma.product.findMany({
+          where: {
+            published: true,
+            slug: {
+              notIn: [input.excludeSlug, ...have],
+            },
+            ...cityBlock,
+          },
+          select,
+          orderBy,
+          take: take - rows.length,
+        });
+        rows = [...rows, ...extra];
+      }
+
+      return rows.map((row) => toShopCardProduct(row, citySlug || undefined));
+    },
+    [
+      "related-products-v1",
+      input.excludeSlug,
+      type,
+      cityId,
+      citySlug,
+      String(take),
+    ],
+    { revalidate: 60, tags: [SHOP_CATALOG_TAG] },
+  )();
 }
 
 export async function getProductById(id: string): Promise<Product | null> {

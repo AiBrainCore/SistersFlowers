@@ -1,3 +1,4 @@
+import { unstable_cache } from "next/cache";
 import { prisma } from "@/lib/db";
 import { slugify } from "@/lib/products";
 
@@ -114,43 +115,36 @@ const DEFAULT_ADDONS = [
   },
 ] as const;
 
-/** Seed if empty; refresh buyer-facing copy for known default slugs. */
+/** Seed once when the table is empty — never write on every PDP/checkout hit. */
 async function ensureDefaultAddons() {
   const count = await prisma.addon.count();
-  if (count === 0) {
-    for (const addon of DEFAULT_ADDONS) {
-      await prisma.addon.create({
-        data: {
-          ...addon,
-          image: "",
-          active: true,
-        },
-      });
-    }
-    return;
-  }
-
+  if (count > 0) return;
   for (const addon of DEFAULT_ADDONS) {
-    await prisma.addon.updateMany({
-      where: { slug: addon.slug },
+    await prisma.addon.create({
       data: {
-        nameEn: addon.nameEn,
-        nameVi: addon.nameVi,
-        descriptionEn: addon.descriptionEn,
-        descriptionVi: addon.descriptionVi,
-        partnerName: addon.partnerName,
+        ...addon,
+        image: "",
+        active: true,
       },
     });
   }
 }
 
-export async function listActiveAddons(): Promise<AddonPublic[]> {
+async function listActiveAddonsUncached(): Promise<AddonPublic[]> {
   await ensureDefaultAddons();
   const rows = await prisma.addon.findMany({
     where: { active: true },
     orderBy: [{ sortOrder: "asc" }, { nameEn: "asc" }],
   });
   return rows.map(toPublic);
+}
+
+/** Cached for storefront — admin addon edits should bump via revalidate if needed. */
+export async function listActiveAddons(): Promise<AddonPublic[]> {
+  return unstable_cache(listActiveAddonsUncached, ["active-addons-v1"], {
+    revalidate: 300,
+    tags: ["addons"],
+  })();
 }
 
 export async function listAllAddons() {
