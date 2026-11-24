@@ -11,7 +11,8 @@ export type ProductGalleryImage = {
 
 /**
  * Studio-frame PDP media: cream mat, wood/citrus frame, 3:4 main,
- * thumb row ready for up to 4 photos (hidden until 2+ exist).
+ * sticky on desktop so buy panel scroll doesn’t leave a tiny floating photo.
+ * Thumb row ready for up to 4 photos (hidden until 2+ exist).
  */
 export function ProductGallery({ images }: { images: ProductGalleryImage[] }) {
   const slides = images.filter((img) => img.src?.trim());
@@ -21,19 +22,19 @@ export function ProductGallery({ images }: { images: ProductGalleryImage[] }) {
   if (!current) return null;
 
   return (
-    <div className="flex h-full min-h-[22rem] flex-col justify-center bg-[linear-gradient(165deg,#fff8f2_0%,#f3ebe0_55%,#efe4d6_100%)] px-4 py-8 sm:min-h-[28rem] sm:px-8 sm:py-12 lg:min-h-[calc(100vh-4.5rem)] lg:px-10 lg:py-14">
-      <div className="mx-auto w-full max-w-[28rem]">
-        <figure className="overflow-hidden rounded-[1.35rem] border border-[#B58B65]/45 bg-white p-2 shadow-[0_18px_40px_rgba(44,41,38,0.1)] sm:p-2.5">
-          <div className="relative aspect-[3/4] overflow-hidden rounded-[1.05rem] bg-cream">
+    <div className="bg-[linear-gradient(165deg,#fff8f2_0%,#f3ebe0_55%,#efe4d6_100%)] px-4 py-6 sm:px-6 sm:py-8 lg:sticky lg:top-[4.5rem] lg:self-start lg:px-8 lg:py-10 lg:h-[calc(100vh-4.5rem)] lg:overflow-y-auto">
+      <div className="mx-auto flex w-full max-w-[36rem] flex-col justify-center lg:h-full lg:max-w-none">
+        <figure className="overflow-hidden rounded-[1.5rem] border border-[#B58B65]/50 bg-white p-2.5 shadow-[0_18px_40px_rgba(44,41,38,0.1)] sm:p-3">
+          <div className="relative aspect-[3/4] overflow-hidden rounded-[1.15rem] bg-cream">
             <ProductImage
               src={current.src}
               fallback={current.fallback}
               alt={current.alt}
               fill
               priority
-              quality={70}
+              quality={72}
               className="object-cover object-center"
-              sizes="(min-width: 1024px) 28rem, 90vw"
+              sizes="(min-width: 1024px) 42vw, 92vw"
             />
           </div>
         </figure>

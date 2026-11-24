@@ -97,7 +97,7 @@ export default async function ProductPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <section className="grid lg:grid-cols-2 lg:items-stretch">
+      <section className="grid lg:grid-cols-[minmax(0,1.12fr)_minmax(0,0.88fr)] lg:items-start">
         <ProductGallery
           images={[
             {
@@ -108,12 +108,12 @@ export default async function ProductPage({
             },
           ]}
         />
-        <div className="relative flex flex-col justify-center bg-[linear-gradient(160deg,rgba(251,249,245,0.96)_0%,rgba(243,235,224,0.88)_55%,rgba(240,212,204,0.45)_100%)] px-4 py-10 sm:px-10 sm:py-14 lg:px-14">
-          <div className="glass max-w-lg rounded-[1.75rem] p-6 sm:p-8">
+        <div className="relative bg-[linear-gradient(160deg,rgba(251,249,245,0.96)_0%,rgba(243,235,224,0.88)_55%,rgba(240,212,204,0.45)_100%)] px-4 py-8 sm:px-8 sm:py-10 lg:px-10 lg:py-10">
+          <div className="glass w-full max-w-xl rounded-[1.5rem] p-5 sm:p-6">
             <p className="text-[11px] tracking-[0.24em] text-citrus uppercase">
               {t.product.handmade}
             </p>
-            <h1 className="serif mt-3 text-4xl text-forest sm:text-5xl">
+            <h1 className="serif mt-2 text-3xl text-forest sm:text-4xl">
               {product.names[locale]}
             </h1>
             {product.sku ? (
@@ -150,10 +150,10 @@ export default async function ProductPage({
                 </p>
               );
             })()}
-            <p className="mt-6 max-w-md text-sm leading-7 text-moss">
+            <p className="mt-4 max-w-md text-sm leading-6 text-moss line-clamp-4 sm:line-clamp-5">
               {product.story[locale]}
             </p>
-            <p className="mt-4 text-xs text-moss">{t.product.deliveryNote}</p>
+            <p className="mt-3 text-xs text-moss">{t.product.deliveryNote}</p>
             {!hasAnySizePrice(product.sizePrices) ? (
               <div className="mt-6">
                 <SalePrice

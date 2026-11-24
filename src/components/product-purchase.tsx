@@ -98,8 +98,14 @@ export function ProductPurchase({
         <p className="text-[11px] tracking-[0.18em] text-moss uppercase">
           {title}
         </p>
-        <p className="mt-2 text-sm text-moss">{hint}</p>
-        <ul className="mt-4 space-y-3">
+        <p className="mt-1.5 text-xs text-moss sm:text-sm">{hint}</p>
+        <ul
+          className={`mt-3 gap-2 ${
+            list[0]?.kind === "partner"
+              ? "grid grid-cols-1 sm:grid-cols-2"
+              : "flex flex-col"
+          }`}
+        >
           {list.map((addon) => {
             const on = Boolean(selected[addon.id]);
             const name = locale === "vi" ? addon.nameVi : addon.nameEn;
@@ -110,34 +116,26 @@ export function ProductPurchase({
                 <button
                   type="button"
                   onClick={() => toggle(addon.id)}
-                  className={`flex min-h-14 w-full items-start justify-between gap-4 rounded-2xl border px-4 py-3.5 text-left transition ${
+                  className={`flex min-h-12 w-full items-center justify-between gap-3 rounded-2xl border px-3.5 py-2.5 text-left transition ${
                     on
                       ? "border-citrus/40 bg-citrus/10 shadow-[0_8px_24px_rgba(176,84,44,0.12)]"
                       : "glass border-forest/10 hover:border-citrus/30"
                   }`}
                 >
-                  <span>
+                  <span className="min-w-0">
                     <span className="block text-sm text-forest">{name}</span>
                     {addon.kind === "partner" && addon.partnerName ? (
-                      <span className="mt-1 block text-[11px] text-moss">
+                      <span className="mt-0.5 block text-[11px] text-moss">
                         {addon.partnerName}
                       </span>
                     ) : null}
-                    {description ? (
-                      <span className="mt-1 block text-xs text-moss">
+                    {description && addon.kind !== "partner" ? (
+                      <span className="mt-0.5 block text-xs text-moss line-clamp-1">
                         {description}
                       </span>
                     ) : null}
-                    {addon.kind === "partner" ? (
-                      <span className="mt-1 block text-[11px] text-moss">
-                        {dictionary.product.voucherValidDays.replace(
-                          "{days}",
-                          String(addon.validityDays || 90),
-                        )}
-                      </span>
-                    ) : null}
                   </span>
-                  <span className="shrink-0 text-sm text-forest">
+                  <span className="shrink-0 text-sm tabular-nums text-forest">
                     +{formatVnd(addon.price, locale)}
                   </span>
                 </button>
@@ -171,14 +169,14 @@ export function ProductPurchase({
   }
 
   return (
-    <div className="mt-8 space-y-8">
+    <div className="mt-6 space-y-5">
       {sized && sizes.length ? (
         <div>
           <p className="text-[11px] tracking-[0.18em] text-moss uppercase">
             {dictionary.product.sizeLabel}
           </p>
           <div
-            className={`mt-3 grid gap-2 ${
+            className={`mt-2.5 grid gap-2 ${
               sizes.length >= 3
                 ? "grid-cols-3"
                 : sizes.length === 2
@@ -239,7 +237,7 @@ export function ProductPurchase({
               {product.sizeNotes[size]![locale]}
             </p>
           ) : null}
-          <p className="mt-4 text-sm text-moss">
+          <p className="mt-3 text-xs text-moss sm:text-sm">
             {dictionary.product.customSizeHint}{" "}
             <Link
               href={`/${locale}/custom`}
