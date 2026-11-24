@@ -272,7 +272,7 @@ export const vi = {
     kicker: "Đặt hàng",
     title: "Bó hoa giao tới đâu?",
     intro:
-      "Chọn hoa và gửi đơn tại đây. Xác nhận sẵn hoa, giờ giao và thanh toán trên WhatsApp — kể cả khách đặt từ nước ngoài. Hầu hết đơn chúng tôi gửi ảnh bó đã hoàn thiện trước khi giao.",
+      "Điền thông tin bên dưới. Thanh toán VietQR (ngân hàng & MoMo) hoặc tiền mặt. Chúng tôi sẽ xác nhận hoa và giờ giao với bạn.",
     name: "Tên của bạn",
     phone: "Điện thoại / WhatsApp",
     email: "Email (không bắt buộc)",
@@ -291,9 +291,6 @@ export const vi = {
     sending: "Đang gửi…",
     payNote:
       "Chọn phương thức thanh toán đang mở bên dưới (thường là VietQR). Phí giao và tổng cuối được xác nhận trước khi bạn trả. Cần hỏi thêm? Nhắn studio qua Zalo hoặc WhatsApp.",
-    promisePhoto: "Ảnh trước khi giao",
-    promiseSameDay: "Giao trong ngày khi còn sức chứa",
-    promisePay: "Thanh toán đúng số tiền hiển thị",
     fulfillment: "Hình thức nhận",
     fulfillmentDelivery: "Giao tận nơi",
     fulfillmentPickup: "Nhận tại studio",
