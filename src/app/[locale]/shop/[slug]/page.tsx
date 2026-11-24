@@ -97,7 +97,7 @@ export default async function ProductPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <section className="grid lg:grid-cols-[minmax(0,1.12fr)_minmax(0,0.88fr)] lg:items-start">
+      <section className="grid lg:grid-cols-2 lg:items-start">
         <ProductGallery
           images={[
             {
@@ -108,8 +108,8 @@ export default async function ProductPage({
             },
           ]}
         />
-        <div className="relative bg-[linear-gradient(160deg,rgba(251,249,245,0.96)_0%,rgba(243,235,224,0.88)_55%,rgba(240,212,204,0.45)_100%)] px-4 py-8 sm:px-8 sm:py-10 lg:px-10 lg:py-10">
-          <div className="glass w-full max-w-xl rounded-[1.5rem] p-5 sm:p-6">
+        <div className="relative flex justify-center bg-[linear-gradient(160deg,rgba(251,249,245,0.96)_0%,rgba(243,235,224,0.88)_55%,rgba(240,212,204,0.45)_100%)] px-5 py-8 sm:px-8 sm:py-10 lg:justify-start lg:px-10 lg:py-10">
+          <div className="glass w-full max-w-md rounded-[1.5rem] p-5 sm:p-6 lg:max-w-lg">
             <p className="text-[11px] tracking-[0.24em] text-citrus uppercase">
               {t.product.handmade}
             </p>

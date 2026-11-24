@@ -10,8 +10,8 @@ export type ProductGalleryImage = {
 };
 
 /**
- * Studio-frame PDP media: equal white mat on all sides (no bottom clip),
- * sticky on desktop. Thumbs when 2–4 images exist.
+ * Studio-frame PDP media — capped so 3:4 never outgrows the buy column
+ * or bleeds past the viewport (width drives height via aspect-ratio).
  */
 export function ProductGallery({ images }: { images: ProductGalleryImage[] }) {
   const slides = images.filter((img) => img.src?.trim());
@@ -21,12 +21,8 @@ export function ProductGallery({ images }: { images: ProductGalleryImage[] }) {
   if (!current) return null;
 
   return (
-    <div className="bg-[linear-gradient(165deg,#fff8f2_0%,#f3ebe0_55%,#efe4d6_100%)] px-4 py-6 sm:px-6 sm:py-8 lg:sticky lg:top-[4.5rem] lg:self-start lg:px-8 lg:py-10">
-      <div className="mx-auto w-full max-w-[36rem] lg:max-w-none">
-        {/*
-          Mat must live on the figure with overflow visible.
-          overflow-hidden + viewport height on a parent was clipping the bottom mat.
-        */}
+    <div className="flex items-start justify-center bg-[linear-gradient(165deg,#fff8f2_0%,#f3ebe0_55%,#efe4d6_100%)] px-5 py-8 sm:px-8 sm:py-10 lg:sticky lg:top-[4.5rem] lg:self-start lg:px-10 lg:py-10">
+      <div className="w-full max-w-[22rem] xl:max-w-[24rem]">
         <figure className="box-border rounded-[1.5rem] border border-[#B58B65]/50 bg-white p-3 shadow-[0_18px_40px_rgba(44,41,38,0.1)] sm:p-3.5">
           <div className="relative aspect-[3/4] overflow-hidden rounded-[1.1rem] bg-cream">
             <ProductImage
@@ -37,7 +33,7 @@ export function ProductGallery({ images }: { images: ProductGalleryImage[] }) {
               priority
               quality={72}
               className="object-cover object-center"
-              sizes="(min-width: 1024px) 42vw, 92vw"
+              sizes="(min-width: 1280px) 24rem, (min-width: 1024px) 22rem, 90vw"
             />
           </div>
         </figure>
