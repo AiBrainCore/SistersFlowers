@@ -7,8 +7,17 @@ import {
   listActiveDeliveryZones,
 } from "@/lib/delivery-settings";
 import { getActiveCity } from "@/lib/locations";
+import { getCurrentCustomer } from "@/lib/customer-session";
 
 export const dynamic = "force-dynamic";
+
+function formatCheckoutPhone(phone: string | null | undefined) {
+  if (!phone) return undefined;
+  if (phone.startsWith("84") && phone.length >= 10) {
+    return `0${phone.slice(2)}`;
+  }
+  return phone;
+}
 
 export default async function CheckoutPage({
   params,
@@ -17,9 +26,10 @@ export default async function CheckoutPage({
   if (!isLocale(locale)) notFound();
   const { dictionary: t } = await getStorefrontDictionary(locale);
   const city = await getActiveCity();
-  const [deliveryConfig, zones] = await Promise.all([
+  const [deliveryConfig, zones, customer] = await Promise.all([
     getDeliveryConfig(city.slug),
     listActiveDeliveryZones(city.slug),
+    getCurrentCustomer().catch(() => null),
   ]);
 
   return (
@@ -37,6 +47,12 @@ export default async function CheckoutPage({
           citySlug={city.slug}
           deliveryConfig={deliveryConfig}
           zones={zones}
+          defaults={{
+            name: customer?.name || undefined,
+            email: customer?.email || undefined,
+            phone: formatCheckoutPhone(customer?.phone),
+            address: customer?.address || undefined,
+          }}
         />
       </div>
     </div>
