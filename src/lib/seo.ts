@@ -186,9 +186,10 @@ export function organizationJsonLd(locale: Locale) {
         telephone: ["+84-904-985-761", "+84-964-889-329"],
         address: {
           "@type": "PostalAddress",
-          streetAddress: "04 Chi Lang, Ward 9",
+          streetAddress: "27T Thi Sach Street, Cam Ly",
           addressLocality: "Da Lat",
           addressRegion: "Lam Dong",
+          postalCode: "67000",
           addressCountry: "VN",
         },
         areaServed: {

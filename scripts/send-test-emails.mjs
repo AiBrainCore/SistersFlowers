@@ -93,7 +93,7 @@ async function main() {
           customerName: "Anh/Chị",
           phone: "+84 90 000 0000",
           email: TO[0],
-          address: "04 Chi Lăng, P.9",
+          address: "27T Đường Thi Sách, Cam Ly",
           citySlug: "dalat",
           subtotal: 450000,
           deliveryFee: 0,

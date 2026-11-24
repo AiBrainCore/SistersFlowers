@@ -72,9 +72,9 @@ export const STUDIO_CONTACTS: StudioContact[] = [
     slug: "dalat",
     nameEn: "Da Lat",
     nameVi: "Đà Lạt",
-    addressEn: "04 Chi Lang, Ward 9, Da Lat, Lam Dong",
-    addressVi: "Số 04 Chi Lăng, P. 9, TP. Đà Lạt, Lâm Đồng",
-    // GBP “Sisters Flowers Shop” (Thi Sách / Cam Ly)
+    addressEn: "27T Thi Sach Street, Cam Ly, Da Lat, Lam Dong",
+    addressVi: "27T Đường Thi Sách, Cam Ly - Đà Lạt, Lâm Đồng",
+    // GBP “Sisters Flowers Shop” — 27T Đường Thi Sách, Cam Ly
     // ftid 0x317113b62bbc710f:0x781a704f30c2444
     lat: 11.949064,
     lng: 108.431574,

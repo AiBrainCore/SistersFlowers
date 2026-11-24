@@ -126,7 +126,7 @@ function studioBySlug(slug: "dalat" | "danang") {
 /**
  * Studio review / Maps targets — Google only (never Facebook, never fuzzy name search).
  *
- * Da Lat — GBP “Sisters Flowers Shop” (Thi Sách / Chi Lăng)
+ * Da Lat — GBP “Sisters Flowers Shop” (27T Đường Thi Sách, Cam Ly)
  *   place_id: ChIJD3G8K7YTcTERRCQM8wSngQc
  *   ftid: 0x317113b62bbc710f:0x781a704f30c2444
  *

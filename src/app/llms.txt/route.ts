@@ -26,7 +26,7 @@ export function GET() {
 
 ## Studios
 - Da Nang: 53 Luong Nhu Hoc, Hoa Cuong Bac, Hai Chau, Da Nang — 0904 985 761, 032 745 3536
-- Da Lat: 04 Chi Lang, Ward 9, Da Lat, Lam Dong — 0904 985 761, 0964 889 329
+- Da Lat: 27T Thi Sach Street, Cam Ly, Da Lat, Lam Dong — 0904 985 761, 0964 889 329
 - WhatsApp: https://wa.me/84327453536
 
 ## Policy

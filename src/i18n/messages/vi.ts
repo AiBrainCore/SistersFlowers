@@ -160,7 +160,7 @@ export const vi = {
     reviewsFacebookFallback: "Google Reviews — hãy là người viết đầu tiên",
     dalatName: "Đà Lạt",
     dalatStatus: "Đang mở",
-    dalatNote: "Số 04 Chi Lăng, P. 9, TP. Đà Lạt, Lâm Đồng",
+    dalatNote: "27T Đường Thi Sách, Cam Ly - Đà Lạt, Lâm Đồng",
     dalatCta: "Xem Đà Lạt",
     danangName: "Đà Nẵng",
     danangStatus: "Đang mở",

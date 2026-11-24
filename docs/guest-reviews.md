@@ -22,7 +22,7 @@ Google may resolve that to a **different flower shop**. Directions use **lat/lng
 
 | City | GBP | Place ID | Maps ftid |
 | --- | --- | --- | --- |
-| **Da Lat** | Sisters Flowers Shop · Thi Sách / Chi Lăng · ~4.8★ / 21 | `ChIJD3G8K7YTcTERRCQM8wSngQc` | `0x317113b62bbc710f:0x781a704f30c2444` |
+| **Da Lat** | Sisters Flowers Shop · 27T Đường Thi Sách, Cam Ly · ~4.8★ / 21 | `ChIJD3G8K7YTcTERRCQM8wSngQc` | `0x317113b62bbc710f:0x781a704f30c2444` |
 | **Da Nang** | Sisters Flowers Shop · 53 Lương Nhữ Hộc · ~5.0★ / 2 | `ChIJR3OPOi4ZQjERSv5_hslH2oQ` | `0x3142192e3a8f7347:0x84da47c9867ffe4a` |
 
 Da Nang share / directions example (ftid in the URL):
