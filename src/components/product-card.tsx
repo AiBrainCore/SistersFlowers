@@ -45,7 +45,7 @@ export function ProductCard({
         <ProductImage
           src={product.image}
           fallback={product.imageFallback}
-          alt={product.names[locale]}
+          alt={product.imageAlt?.[locale]?.trim() || product.names[locale]}
           fill
           priority={priority}
           className="object-cover transition duration-700 ease-out group-hover:scale-[1.05] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
