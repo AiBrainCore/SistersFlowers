@@ -10,9 +10,9 @@ export type ProductGalleryImage = {
 };
 
 /**
- * Studio-frame PDP media — deliberately LARGE on desktop.
- * Fills the left grid column width and stretches to the buy-card height.
- * No max-width caps; no aspect-ratio lock on lg (that kept the frame tiny).
+ * Studio-frame PDP media — full column width, moderated height.
+ * ~25% shorter than the old stretch-to-buy-card frame so 14″ laptops fit
+ * the photo without endless scroll; width stays the left grid column.
  */
 export function ProductGallery({ images }: { images: ProductGalleryImage[] }) {
   const slides = images.filter((img) => img.src?.trim());
@@ -22,13 +22,13 @@ export function ProductGallery({ images }: { images: ProductGalleryImage[] }) {
   if (!current) return null;
 
   return (
-    <div className="flex h-full min-h-[28rem] w-full flex-col self-stretch lg:min-h-[40rem]">
-      <figure className="box-border flex h-full min-h-[inherit] w-full flex-1 flex-col rounded-[1.5rem] border border-[#B58B65]/50 bg-white p-3 shadow-[0_14px_32px_rgba(44,41,38,0.1)] sm:p-3.5">
+    <div className="flex w-full flex-col">
+      <figure className="box-border w-full rounded-[1.5rem] border border-[#B58B65]/50 bg-white p-3 shadow-[0_14px_32px_rgba(44,41,38,0.1)] sm:p-3.5">
         {/*
-          Mobile: tall framed photo (min 28rem).
-          Desktop: 100% of left column height (≥40rem) + full column width.
+          Width: 100% of left column.
+          Height: capped (~21rem / ~30rem) — was 28rem / 40rem + stretch.
         */}
-        <div className="relative min-h-[28rem] w-full flex-1 overflow-hidden rounded-[1.15rem] bg-cream lg:min-h-[40rem]">
+        <div className="relative h-[21rem] w-full overflow-hidden rounded-[1.15rem] bg-cream sm:h-[24rem] lg:h-[30rem]">
           <ProductImage
             src={current.src}
             fallback={current.fallback}
