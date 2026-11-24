@@ -35,6 +35,17 @@ export async function submitOrderAction(
     payload.fulfillment === "pickup" ? "pickup" : "delivery";
   const paymentMethod = (payload.paymentMethod || "vietqr").trim();
 
+  // Online shop: no COD. Cash only when the guest picks up at the studio.
+  if (paymentMethod === "cod") {
+    return { ok: false, error: "Cash on delivery is not available online" };
+  }
+  if (paymentMethod === "cash_pickup" && fulfillment !== "pickup") {
+    return {
+      ok: false,
+      error: "Cash at pickup is only available for studio pickup",
+    };
+  }
+
   const { repriceCheckoutItems } = await import("@/lib/payments/pricing");
   const priced = await repriceCheckoutItems({
     items: payload.items,

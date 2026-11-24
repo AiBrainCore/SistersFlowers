@@ -280,7 +280,7 @@ export const vi = {
     kicker: "Đặt hàng",
     title: "Bó hoa giao tới đâu?",
     intro:
-      "Điền thông tin bên dưới. Thanh toán VietQR (ngân hàng & MoMo) hoặc tiền mặt. Chúng tôi sẽ xác nhận hoa và giờ giao với bạn.",
+      "Điền thông tin bên dưới. Thanh toán VietQR (ngân hàng & MoMo) — tiền mặt chỉ khi nhận tại studio. Chúng tôi sẽ xác nhận hoa và giờ giao với bạn.",
     name: "Tên của bạn",
     phone: "Điện thoại / Zalo / WhatsApp",
     email: "Email",

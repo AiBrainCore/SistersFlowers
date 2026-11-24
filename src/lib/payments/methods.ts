@@ -103,8 +103,9 @@ export const PAYMENT_METHODS: PaymentMethodDef[] = [
     id: "cod",
     nameEn: "Cash on delivery",
     nameVi: "Thanh toán khi giao",
+    /** Off online — COD invites fake / hostile addresses and unpaid deliveries. */
     defaultComingSoon: false,
-    defaultEnabled: true,
+    defaultEnabled: false,
     sortOrder: 80,
     icon: "/brand/payments/cod.svg",
     provider: "manual",
