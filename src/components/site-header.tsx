@@ -220,9 +220,9 @@ export function SiteHeader({
           </nav>
 
           {/*
-            Mobile (<1200): Lupa · Cart · ☰  (Account + language in menu)
-            Desktop: Lupa · Language · Account · Cart (cart last)
-            All icon hits are a uniform 40×40 circle.
+            Mobile (<1200): Lupa · Language · Cart · ☰
+            Desktop: Lupa · Language · Account · Cart
+            Language stays in the header so overseas guests can switch without opening the menu.
           */}
           <div className="flex shrink-0 items-center gap-1.5">
             <div className="order-1">
@@ -236,7 +236,7 @@ export function SiteHeader({
               </Suspense>
             </div>
 
-            <div className="order-2 hidden min-[1200px]:block">
+            <div className="order-2">
               <LanguageSwitch
                 locale={locale}
                 dictionary={dictionary}
@@ -260,7 +260,7 @@ export function SiteHeader({
               onClick={() => setOpen(true)}
               aria-label={dictionary.cart.openAria}
               title={dictionary.cart.openAria}
-              className="relative order-2 inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/35 bg-white/15 text-white transition hover:bg-white/25 min-[1200px]:order-4"
+              className="relative order-3 inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/35 bg-white/15 text-white transition hover:bg-white/25 min-[1200px]:order-4"
             >
               <IconBag className="h-4 w-4" />
               {count > 0 ? (
@@ -272,7 +272,7 @@ export function SiteHeader({
 
             <button
               type="button"
-              className="order-3 inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/35 bg-white/15 text-[13px] text-white min-[1200px]:hidden"
+              className="order-4 inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/35 bg-white/15 text-[13px] text-white min-[1200px]:hidden"
               aria-expanded={menuOpen}
               aria-controls="site-mobile-menu"
               aria-label={menuOpen ? dictionary.nav.close : dictionary.nav.menu}
@@ -309,13 +309,6 @@ export function SiteHeader({
             </button>
           </div>
           <nav className="mx-auto flex h-[calc(100dvh-3.5rem)] max-w-6xl flex-col gap-1 overflow-y-auto px-4 py-5 sm:px-5">
-            <div className="mb-3">
-              <LanguageSwitch
-                locale={locale}
-                dictionary={dictionary}
-                variant="panel"
-              />
-            </div>
             <Link
               href={`/${locale}/account`}
               onClick={closeAll}
@@ -324,14 +317,6 @@ export function SiteHeader({
               <IconAccount className="h-4 w-4 text-citrus" />
               {dictionary.nav.account}
             </Link>
-            <Suspense fallback={null}>
-              <HeaderSearch
-                locale={locale}
-                dictionary={dictionary}
-                variant="mobileMenu"
-                onNavigated={closeAll}
-              />
-            </Suspense>
             <Link
               href={`/${locale}/shop`}
               onClick={closeAll}
@@ -400,6 +385,13 @@ export function SiteHeader({
               className="flex min-h-12 items-center border-b border-forest/10 text-[15px] text-forest"
             >
               {dictionary.nav.delivery}
+            </Link>
+            <Link
+              href={`/${locale}/contact`}
+              onClick={closeAll}
+              className="flex min-h-12 items-center border-b border-forest/10 text-[15px] text-forest"
+            >
+              {dictionary.nav.contact}
             </Link>
             <Link
               href={`/${locale}/about`}
