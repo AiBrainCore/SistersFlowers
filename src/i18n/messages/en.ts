@@ -92,7 +92,7 @@ export const en = {
     openBouquet: "View this bouquet",
     featureDelivery: "Same-day windows",
     featureFresh: "Photo before delivery",
-    featureHandcrafted: "WhatsApp confirm",
+    featureHandcrafted: "Zalo confirm",
   },
   heroPreview: {
     badge: "Finished by hand",
@@ -424,7 +424,7 @@ export const en = {
     kicker: "Distance-based delivery",
     title: "Pick your area. See the fee.",
     intro:
-      "Choose a {city} area near the recipient — we estimate from the studio. Same-day windows when flowers and capacity allow; exact timing confirmed on WhatsApp.",
+      "Choose a {city} area near the recipient — we estimate from the studio. Same-day windows when flowers and capacity allow; exact timing confirmed on Zalo (or WhatsApp overseas).",
     calculatorKicker: "Delivery areas",
     calculatorTitle: "Where should the bouquet go?",
     calculatorBody:
@@ -445,13 +445,13 @@ export const en = {
     guideFar: "Timed drops for events and countryside tables — plan ahead.",
     promisePhotoTitle: "Photo before delivery",
     promisePhotoBody:
-      "We usually send a photo of the finished bouquet on WhatsApp before it leaves the studio.",
+      "We usually send a photo of the finished bouquet on Zalo (or WhatsApp overseas) before it leaves the studio.",
     promiseSlaTitle: "Clear timing",
     promiseSlaBody:
       "Pick a date and preferred window. We confirm what is possible for that day in {city}.",
     promisePayTitle: "Confirm, then pay",
     promisePayBody:
-      "No surprise fees. Final total and payment method are agreed on WhatsApp before you pay.",
+      "No surprise fees. Final total is confirmed with you on Zalo (or WhatsApp overseas) before you pay.",
     shopCta: "Browse bouquets",
     checkoutCta: "Go to checkout",
   },
@@ -521,7 +521,7 @@ export const en = {
     methodsTitle: "Payment options",
     comingSoon: "Soon",
     noneActive:
-      "Online payment is being configured — you can still order and confirm on WhatsApp.",
+      "Online payment is being configured — you can still order and confirm on Zalo or WhatsApp.",
     payTitle: "Pay for your order",
     amount: "Amount",
     transferRef: "Transfer content",
@@ -546,10 +546,10 @@ export const en = {
     kicker: "Contact",
     title: "Talk to the studio.",
     intro:
-      "Two Sisters Flowers studios in Da Nang and Da Lat — call, chat on Messenger or WhatsApp, or follow us on Facebook and TikTok. English and Vietnamese welcome.",
+      "Two Sisters Flowers studios in Da Nang and Da Lat — call or chat on Zalo (main for guests in Vietnam), WhatsApp for overseas, or follow us on Facebook and TikTok. Vietnamese and English welcome.",
     phonesLabel: "Phone",
     socialLabel: "Chat with us",
-    chatHint: "Chat with the studio",
+    chatHint: "Zalo first in Vietnam — WhatsApp for overseas",
     facebook: "Facebook",
     messenger: "Messenger",
     tiktok: "TikTok",

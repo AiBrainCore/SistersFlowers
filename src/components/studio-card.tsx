@@ -97,11 +97,12 @@ export function StudioCard({
   const mapsHref = studioMapsUrl(studio);
   const waDigits = studioWhatsAppDigits(studio);
 
+  // Zalo first among chat apps — most local guests; WhatsApp for overseas.
   const socialLinks = [
     {
-      key: "facebook",
-      href: studio.socials.facebook,
-      label: socialLabels?.facebook || "Facebook",
+      key: "zalo",
+      href: studioZaloUrl(studio),
+      label: socialLabels?.zalo || "Zalo",
     },
     {
       key: "messenger",
@@ -109,25 +110,27 @@ export function StudioCard({
       label: socialLabels?.messenger || "Messenger",
     },
     {
-      key: "tiktok",
-      href: studio.socials.tiktok,
-      label: socialLabels?.tiktok || "TikTok",
-    },
-    {
       key: "whatsapp",
       href: `https://wa.me/${waDigits}`,
       label: socialLabels?.whatsapp || "WhatsApp",
     },
     {
-      key: "zalo",
-      href: studioZaloUrl(studio),
-      label: socialLabels?.zalo || "Zalo",
+      key: "facebook",
+      href: studio.socials.facebook,
+      label: socialLabels?.facebook || "Facebook",
+    },
+    {
+      key: "tiktok",
+      href: studio.socials.tiktok,
+      label: socialLabels?.tiktok || "TikTok",
     },
   ];
 
   const chatHint =
     socialLabels?.chatHint ||
-    (locale === "vi" ? "Nhắn tin cho studio" : "Chat with the studio");
+    (locale === "vi"
+      ? "Ưu tiên Zalo tại Việt Nam — WhatsApp cho khách nước ngoài"
+      : "Zalo first in Vietnam — WhatsApp for overseas");
 
   return (
     <article
