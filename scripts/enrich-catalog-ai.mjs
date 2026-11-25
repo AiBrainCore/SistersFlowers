@@ -11,6 +11,8 @@
  *   ENRICH_FORCE=1 …   # re-analyze even if imageHash matches
  *   ENRICH_PRODUCT_TYPE=flower-basket   # optional; default bouquet
  *   ENRICH_PRODUCT_TYPE=all             # every published type
+ *   ENRICH_ONLY_NEW=1                   # skip already enriched (default on)
+ *   ENRICH_ONLY_NEW=0                   # re-process every published product
  *
  * Never overwrites contentLocked or contentSource=manual products' copy.
  * Placeholder names (Bouquet/Flower basket/… NNN) are eligible when ENRICH_APPLY=1.
@@ -33,6 +35,21 @@ const MODEL_VISION = process.env.ENRICH_VISION_MODEL || "gpt-4o-mini";
 const MODEL_COPY = process.env.ENRICH_COPY_MODEL || "gpt-4o-mini";
 const CONCURRENCY = Number(process.env.ENRICH_CONCURRENCY || 2);
 const PRODUCT_TYPE = (process.env.ENRICH_PRODUCT_TYPE || "bouquet").trim();
+/** Default: only placeholders / pending / failed — not the whole old catalog. */
+const ONLY_NEW = process.env.ENRICH_ONLY_NEW !== "0";
+
+function needsEnrichment(product) {
+  if (FORCE) return true;
+  if (isPlaceholderName(product.nameEn)) return true;
+  if (product.contentSource === "import" && product.aiStatus === "pending") {
+    return true;
+  }
+  if (product.aiStatus === "error" || product.aiStatus === "pending") {
+    return true;
+  }
+  if (!product.analysis) return true;
+  return false;
+}
 
 async function loadEnvFile(filePath) {
   try {
@@ -156,7 +173,9 @@ async function generateCopy(apiKey, analysis, keywords) {
         "You write bilingual product copy for Sisters Flowers (Da Lat & Da Nang). " +
         "Vietnamese first, natural shopping language. English independently localized (not literal). " +
         "Never invent stem counts, sizes, delivery promises, or flower species not in analysis. " +
-        "Avoid keyword stuffing. Return JSON only.",
+        "Avoid keyword stuffing. Return JSON only. " +
+        "nameEn/nameVi must be unique descriptive shop titles (e.g. White rose sympathy wreath) — " +
+        "NEVER placeholders like Condolence stand 001, Bouquet 012, Flower basket 003.",
     },
     {
       role: "user",
@@ -166,8 +185,8 @@ async function generateCopy(apiKey, analysis, keywords) {
         keywordNote:
           "Keywords are market terminology, not verified search volumes.",
         required: {
-          nameVi: "natural Vietnamese product name",
-          nameEn: "English product name",
+          nameVi: "natural Vietnamese product name (no numbers-only suffix)",
+          nameEn: "English product name (descriptive, not Type ###)",
           tagVi: "short VI tag ≤6 words",
           tagEn: "short EN tag ≤6 words",
           blurbVi: "1–2 sentences VI",
@@ -223,13 +242,33 @@ function pickKeywords(analysis) {
 async function main() {
   await loadEnvFile(path.join(ROOT, ".env.local"));
   await loadEnvFile(path.join(ROOT, "secrets", "supabase.env"));
-  await loadEnvFile(path.join(ROOT, "secrets", "openai.env"));
+  const openaiEnvPath = path.join(ROOT, "secrets", "openai.env");
+  const openaiExamplePath = path.join(ROOT, "secrets", "openai.env.example");
+  await loadEnvFile(openaiEnvPath);
 
-  const apiKey = process.env.OPENAI_API_KEY || "";
-  if (!apiKey) {
-    console.error(
-      "Missing OPENAI_API_KEY. Add secrets/openai.env or set env, then re-run.",
-    );
+  const apiKey = (process.env.OPENAI_API_KEY || "").trim();
+  const placeholder =
+    !apiKey ||
+    apiKey === "sk-..." ||
+    apiKey === "REPLACE_WITH_REAL_KEY" ||
+    apiKey.startsWith("sk-...");
+  let openaiEnvExists = false;
+  try {
+    await fs.stat(openaiEnvPath);
+    openaiEnvExists = true;
+  } catch {
+    openaiEnvExists = false;
+  }
+  if (!apiKey || placeholder) {
+    console.error("OpenAI key missing or still a placeholder.");
+    console.error(`  Use ONLY:  ${openaiEnvPath}`);
+    console.error(`  NOT:       ${openaiExamplePath}  (template in git — never put the real key there)`);
+    if (!openaiEnvExists) {
+      console.error("  Create:    cp secrets/openai.env.example secrets/openai.env");
+      console.error("  Then edit: open -e secrets/openai.env");
+    } else {
+      console.error("  Edit:      open -e secrets/openai.env");
+    }
     process.exit(2);
   }
 
@@ -253,6 +292,10 @@ async function main() {
     orderBy: { nameEn: "asc" },
     include: { analysis: true },
   });
+  const beforeFilter = products.length;
+  if (ONLY_NEW) {
+    products = products.filter(needsEnrichment);
+  }
   if (LIMIT) products = products.slice(0, LIMIT);
 
   const job = DRY_RUN
@@ -266,7 +309,7 @@ async function main() {
       });
 
   console.log(
-    `Enrich ${products.length} products (type=${PRODUCT_TYPE} apply=${APPLY} dry=${DRY_RUN} force=${FORCE})`,
+    `Enrich ${products.length} products (type=${PRODUCT_TYPE} apply=${APPLY} dry=${DRY_RUN} force=${FORCE} onlyNew=${ONLY_NEW}; scanned ${beforeFilter})`,
   );
 
   const usageAccum = { prompt_tokens: 0, completion_tokens: 0 };
@@ -424,10 +467,18 @@ async function main() {
                     : product.accent,
         };
 
-        if (APPLY && canApplyCopy(product)) {
+        const wantApply = APPLY && canApplyCopy(product);
+        if (wantApply) {
+          const nextNameEn = String(copy.nameEn || "").trim();
+          const nextNameVi = String(copy.nameVi || "").trim();
+          if (!nextNameEn || !nextNameVi || isPlaceholderName(nextNameEn)) {
+            throw new Error(
+              `AI copy unusable (nameEn="${nextNameEn || ""}") — retry needed`,
+            );
+          }
           Object.assign(data, {
-            nameEn: copy.nameEn || product.nameEn,
-            nameVi: copy.nameVi || product.nameVi,
+            nameEn: nextNameEn,
+            nameVi: nextNameVi,
             tagEn: copy.tagEn || product.tagEn,
             tagVi: copy.tagVi || product.tagVi,
             blurbEn: copy.blurbEn || product.blurbEn,
@@ -449,8 +500,12 @@ async function main() {
       }
 
       done++;
+      const applied =
+        APPLY &&
+        canApplyCopy(product) &&
+        !isPlaceholderName(String(copy?.nameEn || "").trim());
       console.log(
-        `${label}: ok conf=${a.confidence ?? "?"} apply=${APPLY && canApplyCopy(product)}`,
+        `${label}: ok conf=${a.confidence ?? "?"} apply=${applied}`,
       );
     } catch (err) {
       failed++;

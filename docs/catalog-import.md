@@ -63,7 +63,11 @@ IMPORT_SOURCE_DIR=/path/to/buckets npm run catalog:import-buckets
 npm run catalog:seed-attributes
 ENRICH_APPLY=1 ENRICH_PRODUCT_TYPE=flower-basket npm run catalog:enrich-ai
 ENRICH_APPLY=1 ENRICH_PRODUCT_TYPE=stand-congrats npm run catalog:enrich-ai
+ENRICH_APPLY=1 ENRICH_PRODUCT_TYPE=stand-funeral npm run catalog:enrich-ai
 ```
+
+By default enrich only processes **new / placeholder / pending** products (`ENRICH_ONLY_NEW=1`).  
+To re-run the whole type: `ENRICH_ONLY_NEW=0 ENRICH_APPLY=1 ENRICH_PRODUCT_TYPE=bouquet npm run catalog:enrich-ai`.
 
 ## Notes
 
