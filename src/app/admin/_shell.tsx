@@ -30,7 +30,6 @@ export async function AdminShell({
           shopping: t.nav.shopping,
           reports: t.nav.reports,
           builder: t.nav.builder,
-          studio: t.nav.studio,
           orders: t.nav.orders,
           customers: t.nav.customers,
           inquiries: t.nav.inquiries,

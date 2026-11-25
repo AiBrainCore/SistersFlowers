@@ -1099,6 +1099,7 @@ export async function markStudioPaymentAction(formData: FormData) {
   const id = String(formData.get("id") || "");
   const mode = String(formData.get("mode") || "paid");
   const amount = Math.max(0, Math.round(Number(formData.get("amount") || 0) || 0));
+  const returnTo = String(formData.get("returnTo") || "").trim();
 
   if (!id) redirect("/admin/studio-orders");
   const order = await prisma.order.findUnique({ where: { id } });
@@ -1144,7 +1145,216 @@ export async function markStudioPaymentAction(formData: FormData) {
   ]);
 
   revalidatePath("/admin/studio-orders");
+  revalidatePath("/admin/orders");
+  revalidatePath(`/admin/orders/${id}`);
+  if (returnTo.startsWith("/admin/orders/")) {
+    redirect(`${returnTo}?saved=1`);
+  }
   redirect(studioOrdersReturnPath(formData));
+}
+
+/** Set studio order status from the unified order detail page. */
+export async function setStudioOrderStatusAction(formData: FormData) {
+  await requireAdmin();
+  const studio = await import("@/lib/studio-orders");
+
+  const id = String(formData.get("id") || "").trim();
+  const statusRaw = String(formData.get("status") || "").trim();
+  if (!id) redirect("/admin/orders");
+
+  const order = await prisma.order.findUnique({ where: { id } });
+  if (!order || order.source !== "studio") {
+    redirect(id ? `/admin/orders/${id}` : "/admin/orders");
+  }
+
+  const status = (
+    studio.STUDIO_STATUSES as readonly string[]
+  ).includes(statusRaw)
+    ? statusRaw
+    : order.status;
+
+  if (
+    status === "making" &&
+    !studio.canStartMaking(order.paymentStatus) &&
+    order.status !== "making"
+  ) {
+    redirect(`/admin/orders/${id}?err=payment`);
+  }
+
+  if (status !== order.status) {
+    await prisma.$transaction([
+      prisma.order.update({
+        where: { id },
+        data: { status, version: { increment: 1 } },
+      }),
+      prisma.orderStatusHistory.create({
+        data: {
+          orderId: id,
+          fromStatus: order.status,
+          toStatus: status,
+          actor: "admin",
+        },
+      }),
+    ]);
+  }
+
+  revalidatePath("/admin/studio-orders");
+  revalidatePath("/admin/orders");
+  revalidatePath(`/admin/orders/${id}`);
+  redirect(`/admin/orders/${id}?saved=1`);
+}
+
+/** Correct buyer / receiver / delivery / payment fields on shop or studio orders. */
+export async function updateOrderDetailsAction(formData: FormData) {
+  await requireAdmin();
+  const id = String(formData.get("id") || "").trim();
+  if (!id) redirect("/admin/orders");
+
+  const order = await prisma.order.findUnique({
+    where: { id },
+    include: { items: true },
+  });
+  if (!order) redirect("/admin/orders");
+
+  const customerName = String(formData.get("customerName") || "").trim();
+  const phone = String(formData.get("phone") || "").trim();
+  const email = String(formData.get("email") || "").trim() || null;
+  const address = String(formData.get("address") || "").trim();
+  const zone = String(formData.get("zone") || "").trim() || order.zone;
+  const deliveryDate = String(formData.get("deliveryDate") || "").trim() || null;
+  const deliveryTime = String(formData.get("deliveryTime") || "").trim() || null;
+  const fulfillment =
+    String(formData.get("fulfillment") || order.fulfillment) === "pickup"
+      ? "pickup"
+      : "delivery";
+  const recipientName =
+    String(formData.get("recipientName") || "").trim() || null;
+  const recipientPhone =
+    String(formData.get("recipientPhone") || "").trim() || null;
+  const notes = String(formData.get("notes") || "").trim() || null;
+  const cardMessage =
+    String(formData.get("cardMessage") || "").trim() || null;
+  const hotelName = String(formData.get("hotelName") || "").trim() || null;
+  const roomNumber = String(formData.get("roomNumber") || "").trim() || null;
+  const anonymousSender = formData.get("anonymousSender") === "on";
+
+  const paymentStatusRaw = String(
+    formData.get("paymentStatus") || order.paymentStatus,
+  );
+  const paymentStatus = [
+    "unpaid",
+    "deposit",
+    "paid",
+    "cod",
+    "pending",
+    "expired",
+    "refunded",
+  ].includes(paymentStatusRaw)
+    ? paymentStatusRaw
+    : order.paymentStatus;
+
+  const deliveryFee =
+    fulfillment === "pickup"
+      ? 0
+      : Math.max(
+          0,
+          Math.round(
+            Number(formData.get("deliveryFee") ?? order.deliveryFee ?? 0) || 0,
+          ),
+        );
+  const depositAmount = Math.max(
+    0,
+    Math.round(Number(formData.get("depositAmount") || order.depositAmount) || 0),
+  );
+
+  if (!customerName || !phone) {
+    redirect(`/admin/orders/${id}/edit?error=1`);
+  }
+  if (fulfillment === "delivery" && !address) {
+    redirect(`/admin/orders/${id}/edit?error=1`);
+  }
+
+  const itemIds = formData.getAll("itemId").map(String);
+  const itemNames = formData.getAll("itemName").map(String);
+  const itemQtys = formData.getAll("itemQty").map(String);
+  const itemPrices = formData.getAll("itemPrice").map(String);
+
+  let subtotal = 0;
+  const itemUpdates: {
+    id: string;
+    name: string;
+    qty: number;
+    price: number;
+  }[] = [];
+
+  for (let i = 0; i < itemIds.length; i++) {
+    const itemId = itemIds[i];
+    if (!itemId) continue;
+    const name = (itemNames[i] || "").trim();
+    const qty = Math.max(1, Math.round(Number(itemQtys[i]) || 1));
+    const price = Math.max(0, Math.round(Number(itemPrices[i]) || 0));
+    if (!name) continue;
+    itemUpdates.push({ id: itemId, name, qty, price });
+    subtotal += qty * price;
+  }
+
+  if (!itemUpdates.length) {
+    subtotal = order.subtotal;
+  }
+
+  const deliveryTotal = subtotal + deliveryFee;
+
+  await prisma.$transaction(async (tx) => {
+    for (const item of itemUpdates) {
+      await tx.orderItem.update({
+        where: { id: item.id },
+        data: { name: item.name, qty: item.qty, price: item.price },
+      });
+    }
+    await tx.order.update({
+      where: { id },
+      data: {
+        customerName,
+        phone: phone || "—",
+        email,
+        address:
+          fulfillment === "pickup"
+            ? address || "Pickup at studio"
+            : address,
+        zone,
+        deliveryDate,
+        deliveryTime,
+        fulfillment,
+        recipientName,
+        recipientPhone,
+        notes,
+        cardMessage,
+        hotelName,
+        roomNumber,
+        anonymousSender,
+        paymentStatus,
+        depositAmount: paymentStatus === "deposit" ? depositAmount : 0,
+        deliveryFee,
+        subtotal,
+        deliveryTotal,
+        version: { increment: 1 },
+      },
+    });
+    await tx.orderStatusHistory.create({
+      data: {
+        orderId: id,
+        fromStatus: order.status,
+        toStatus: order.status,
+        note: `details edited · payment:${paymentStatus}`,
+        actor: "admin",
+      },
+    });
+  });
+
+  revalidatePath("/admin/orders");
+  revalidatePath(`/admin/orders/${id}`);
+  revalidatePath("/admin/studio-orders");
+  redirect(`/admin/orders/${id}?saved=1`);
 }
 
 export async function saveJournalPostAction(formData: FormData) {

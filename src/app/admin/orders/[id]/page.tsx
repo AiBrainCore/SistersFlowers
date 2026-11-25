@@ -2,6 +2,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AdminShell } from "@/app/admin/_shell";
 import {
+  markStudioPaymentAction,
+  setStudioOrderStatusAction,
+} from "@/app/admin/actions";
+import {
   acknowledgeOrderAction,
   confirmShopPaymentAction,
   saveFulfillmentChecklistAction,
@@ -23,6 +27,20 @@ import {
   deliveryBookingStatusLabel,
   shopOrderStatusLabel,
 } from "@/lib/payments/order-status-labels";
+import { STUDIO_STATUSES } from "@/lib/studio-orders";
+
+function studioStatusLabel(status: string, locale: "en" | "vi") {
+  const map: Record<string, { en: string; vi: string }> = {
+    new: { en: "New", vi: "Mới" },
+    making: { en: "Making", vi: "Đang làm" },
+    ready: { en: "Ready", vi: "Sẵn sàng" },
+    delivered: { en: "Delivered", vi: "Đã giao" },
+    cancelled: { en: "Cancelled", vi: "Huỷ" },
+  };
+  const row = map[status];
+  if (!row) return status;
+  return locale === "vi" ? row.vi : row.en;
+}
 
 export const dynamic = "force-dynamic";
 
@@ -53,17 +71,29 @@ export default async function AdminOrderDetailPage({
   });
   if (!order) notFound();
 
+  const isStudio = order.source === "studio";
   const checklist = order.fulfillmentChecklist;
   const complete = checklist ? checklistComplete(checklist) : false;
   const intent = order.paymentIntents[0];
   const hasSeparateReceiver = Boolean(
     order.recipientName || order.recipientPhone,
   );
+  const titleCode = isStudio
+    ? order.saleCode || order.reference
+    : order.reference;
 
   return (
-    <AdminShell title={`${t.orders.ref} ${order.reference}`}>
+    <AdminShell title={`${t.orders.ref} ${titleCode}`}>
       <p style={{ marginBottom: 16 }}>
         <Link href="/admin/orders">← {t.common.backToList}</Link>
+        {" · "}
+        <Link href={`/admin/orders/${order.id}/edit`}>{t.orders.editDetails}</Link>
+        {isStudio ? (
+          <>
+            {" · "}
+            <Link href="/admin/studio-orders">{t.orders.dayBoard}</Link>
+          </>
+        ) : null}
       </p>
       {saved ? (
         <p style={{ color: "#5c6b52", marginBottom: 12 }}>{t.common.saved}</p>
@@ -73,6 +103,14 @@ export default async function AdminOrderDetailPage({
           {t.orders.checklistRequired}
         </p>
       ) : null}
+      {err === "payment" ? (
+        <p style={{ color: "#a34b2e", marginBottom: 12 }}>
+          {t.studio.needPayment}
+        </p>
+      ) : null}
+      <p style={{ marginBottom: 12, fontSize: 13, opacity: 0.7 }}>
+        {isStudio ? t.orders.sourceStudio : t.orders.sourceWeb}
+      </p>
 
       <div className="admin-grid-2" style={{ alignItems: "stretch" }}>
         <div className="admin-card admin-card-stack">
@@ -238,50 +276,95 @@ export default async function AdminOrderDetailPage({
               {intent.reference ? ` · ${intent.reference}` : ""}
             </p>
           ) : null}
-          {order.paymentStatus !== "paid" ? (
-            <div className="admin-sticky-actions">
-              <form action={confirmShopPaymentAction} className="admin-sticky-actions-form">
-                <input type="hidden" name="orderId" value={order.id} />
-                {intent ? (
-                  <input type="hidden" name="intentId" value={intent.id} />
+          {isStudio ? (
+            order.paymentStatus === "unpaid" ||
+            order.paymentStatus === "deposit" ||
+            order.paymentStatus === "cod" ? (
+              <div className="admin-sticky-actions" style={{ display: "grid", gap: 8 }}>
+                {order.paymentStatus === "unpaid" ? (
+                  <form action={markStudioPaymentAction}>
+                    <input type="hidden" name="id" value={order.id} />
+                    <input
+                      type="hidden"
+                      name="returnTo"
+                      value={`/admin/orders/${order.id}`}
+                    />
+                    <input type="hidden" name="mode" value="deposit" />
+                    <button type="submit" className="admin-btn secondary admin-btn-block">
+                      {t.studio.markDeposit}
+                    </button>
+                  </form>
                 ) : null}
-                <button type="submit" className="admin-btn admin-btn-block">
-                  {t.orders.confirmPaid}
-                </button>
-              </form>
-            </div>
-          ) : null}
-          {!order.acknowledgedAt && order.paymentStatus === "paid" ? (
-            <div className="admin-sticky-actions">
-              <form action={acknowledgeOrderAction} className="admin-sticky-actions-form">
-                <input type="hidden" name="orderId" value={order.id} />
-                <button type="submit" className="admin-btn secondary admin-btn-block">
-                  {t.orders.acknowledge}
-                </button>
-              </form>
-            </div>
-          ) : null}
-
-          {order.status === "awaiting_delivery_quote" ? (
-            <form action={setDeliveryQuoteAction} className="admin-grid-2">
-              <input type="hidden" name="orderId" value={order.id} />
-              <label className="admin-field">
-                <span>{t.orders.quoteFee}</span>
-                <input
-                  name="deliveryFee"
-                  type="number"
-                  required
-                  min={0}
-                  step={1000}
-                />
-              </label>
-              <div style={{ alignSelf: "end" }}>
-                <button type="submit" className="admin-btn">
-                  {t.orders.sendQuote}
-                </button>
+                <form action={markStudioPaymentAction}>
+                  <input type="hidden" name="id" value={order.id} />
+                  <input
+                    type="hidden"
+                    name="returnTo"
+                    value={`/admin/orders/${order.id}`}
+                  />
+                  <input type="hidden" name="mode" value="paid" />
+                  <button type="submit" className="admin-btn admin-btn-block">
+                    {t.studio.markPaid}
+                  </button>
+                </form>
               </div>
-            </form>
-          ) : null}
+            ) : null
+          ) : (
+            <>
+              {order.paymentStatus !== "paid" ? (
+                <div className="admin-sticky-actions">
+                  <form
+                    action={confirmShopPaymentAction}
+                    className="admin-sticky-actions-form"
+                  >
+                    <input type="hidden" name="orderId" value={order.id} />
+                    {intent ? (
+                      <input type="hidden" name="intentId" value={intent.id} />
+                    ) : null}
+                    <button type="submit" className="admin-btn admin-btn-block">
+                      {t.orders.confirmPaid}
+                    </button>
+                  </form>
+                </div>
+              ) : null}
+              {!order.acknowledgedAt && order.paymentStatus === "paid" ? (
+                <div className="admin-sticky-actions">
+                  <form
+                    action={acknowledgeOrderAction}
+                    className="admin-sticky-actions-form"
+                  >
+                    <input type="hidden" name="orderId" value={order.id} />
+                    <button
+                      type="submit"
+                      className="admin-btn secondary admin-btn-block"
+                    >
+                      {t.orders.acknowledge}
+                    </button>
+                  </form>
+                </div>
+              ) : null}
+              {order.status === "awaiting_delivery_quote" ? (
+                <form action={setDeliveryQuoteAction} className="admin-grid-2">
+                  <input type="hidden" name="orderId" value={order.id} />
+                  <label className="admin-field">
+                    <span>{t.orders.quoteFee}</span>
+                    <input
+                      name="deliveryFee"
+                      type="number"
+                      required
+                      min={0}
+                      step={1000}
+                    />
+                  </label>
+                  <div style={{ alignSelf: "end" }}>
+                    <button type="submit" className="admin-btn">
+                      {t.orders.sendQuote}
+                    </button>
+                  </div>
+                </form>
+              ) : null}
+            </>
+          )}
         </div>
       </div>
 
@@ -330,60 +413,15 @@ export default async function AdminOrderDetailPage({
         </div>
       </div>
 
-      <div
-        className="admin-grid-2"
-        style={{ marginTop: 16, alignItems: "stretch" }}
-      >
-        <form
-          action={saveFulfillmentChecklistAction}
-          className="admin-card admin-card-stack"
-        >
-          <h2 style={{ fontFamily: "serif", margin: 0 }}>{t.orders.checklist}</h2>
-          <input type="hidden" name="orderId" value={order.id} />
-          <div className="admin-check-list">
-            {CHECKLIST_FIELDS.map((field) => (
-              <label key={field} className="admin-check">
-                <input
-                  type="checkbox"
-                  name={field}
-                  defaultChecked={Boolean(checklist?.[field])}
-                />
-                <span>
-                  {locale === "vi"
-                    ? CHECKLIST_LABELS[field].vi
-                    : CHECKLIST_LABELS[field].en}
-                </span>
-              </label>
-            ))}
-          </div>
-          <label className="admin-field" style={{ marginBottom: 0 }}>
-            <span>{t.orders.checklistOverride}</span>
-            <input
-              name="overrideNote"
-              defaultValue={checklist?.overrideNote || ""}
-              placeholder="Authorized override reason"
-            />
-          </label>
-          <p style={{ fontSize: 12, opacity: 0.7, margin: 0 }}>
-            {complete
-              ? t.orders.checklistComplete
-              : t.orders.checklistIncomplete}
-          </p>
-          <div>
-            <button type="submit" className="admin-btn">
-              {t.common.save}
-            </button>
-          </div>
-        </form>
-
-        <div className="admin-card">
+      {isStudio ? (
+        <div className="admin-card" style={{ marginTop: 16 }}>
           <h2 style={{ fontFamily: "serif", marginTop: 0 }}>
             {t.orders.orderStatus}
           </h2>
-          <form action={updateShopOrderStatusAction}>
-            <input type="hidden" name="orderId" value={order.id} />
+          <form action={setStudioOrderStatusAction}>
+            <input type="hidden" name="id" value={order.id} />
             <div className="admin-choice-row" style={{ marginBottom: 12 }}>
-              {SHOP_ORDER_STATUSES.map((status) => (
+              {STUDIO_STATUSES.map((status) => (
                 <label
                   key={status}
                   className={`admin-choice${
@@ -396,7 +434,7 @@ export default async function AdminOrderDetailPage({
                     value={status}
                     defaultChecked={order.status === status}
                   />
-                  {shopOrderStatusLabel(status, loc)}
+                  {studioStatusLabel(status, loc)}
                 </label>
               ))}
             </div>
@@ -404,86 +442,165 @@ export default async function AdminOrderDetailPage({
               {t.common.update}
             </button>
           </form>
-
-          {order.fulfillment === "delivery" ? (
-            <form
-              action={updateDeliveryBookingAction}
-              style={{ marginTop: 20 }}
-            >
-              <h3 style={{ fontSize: 16 }}>{t.orders.deliveryOps}</h3>
-              <input type="hidden" name="orderId" value={order.id} />
+        </div>
+      ) : (
+        <div
+          className="admin-grid-2"
+          style={{ marginTop: 16, alignItems: "stretch" }}
+        >
+          <form
+            action={saveFulfillmentChecklistAction}
+            className="admin-card admin-card-stack"
+          >
+            <h2 style={{ fontFamily: "serif", margin: 0 }}>
+              {t.orders.checklist}
+            </h2>
+            <input type="hidden" name="orderId" value={order.id} />
+            <div className="admin-check-list">
+              {CHECKLIST_FIELDS.map((field) => (
+                <label key={field} className="admin-check">
+                  <input
+                    type="checkbox"
+                    name={field}
+                    defaultChecked={Boolean(checklist?.[field])}
+                  />
+                  <span>
+                    {locale === "vi"
+                      ? CHECKLIST_LABELS[field].vi
+                      : CHECKLIST_LABELS[field].en}
+                  </span>
+                </label>
+              ))}
+            </div>
+            <label className="admin-field" style={{ marginBottom: 0 }}>
+              <span>{t.orders.checklistOverride}</span>
               <input
-                type="hidden"
-                name="provider"
-                value={order.deliveryBooking?.provider || "grab_manual"}
+                name="overrideNote"
+                defaultValue={checklist?.overrideNote || ""}
+                placeholder="Authorized override reason"
               />
-              <p style={{ fontSize: 13, marginBottom: 8 }}>
-                {t.orders.deliveryStatus}
-              </p>
+            </label>
+            <p style={{ fontSize: 12, opacity: 0.7, margin: 0 }}>
+              {complete
+                ? t.orders.checklistComplete
+                : t.orders.checklistIncomplete}
+            </p>
+            <div>
+              <button type="submit" className="admin-btn">
+                {t.common.save}
+              </button>
+            </div>
+          </form>
+
+          <div className="admin-card">
+            <h2 style={{ fontFamily: "serif", marginTop: 0 }}>
+              {t.orders.orderStatus}
+            </h2>
+            <form action={updateShopOrderStatusAction}>
+              <input type="hidden" name="orderId" value={order.id} />
               <div className="admin-choice-row" style={{ marginBottom: 12 }}>
-                {DELIVERY_BOOKING_STATUSES.map((status) => {
-                  const current =
-                    order.deliveryBooking?.status || "awaiting_arrangement";
-                  return (
-                    <label
-                      key={status}
-                      className={`admin-choice${
-                        current === status ? " on" : ""
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        name="status"
-                        value={status}
-                        defaultChecked={current === status}
-                      />
-                      {deliveryBookingStatusLabel(status, loc)}
-                    </label>
-                  );
-                })}
+                {SHOP_ORDER_STATUSES.map((status) => (
+                  <label
+                    key={status}
+                    className={`admin-choice${
+                      order.status === status ? " on" : ""
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="status"
+                      value={status}
+                      defaultChecked={order.status === status}
+                    />
+                    {shopOrderStatusLabel(status, loc)}
+                  </label>
+                ))}
               </div>
-              <label className="admin-field">
-                <span>{t.orders.bookingRef}</span>
-                <input
-                  name="bookingRef"
-                  defaultValue={order.deliveryBooking?.bookingRef || ""}
-                />
-              </label>
-              <label className="admin-field">
-                <span>{t.orders.courier}</span>
-                <input
-                  name="courierName"
-                  defaultValue={order.deliveryBooking?.courierName || ""}
-                />
-              </label>
-              <label className="admin-field">
-                <span>{t.orders.courierPhone}</span>
-                <input
-                  name="courierPhone"
-                  defaultValue={order.deliveryBooking?.courierPhone || ""}
-                />
-              </label>
-              <label className="admin-field">
-                <span>{t.orders.actualCost}</span>
-                <input
-                  name="actualCost"
-                  defaultValue={order.deliveryBooking?.actualCost ?? ""}
-                />
-              </label>
-              <label className="admin-field">
-                <span>{t.orders.notes}</span>
-                <input
-                  name="notes"
-                  defaultValue={order.deliveryBooking?.notes || ""}
-                />
-              </label>
               <button type="submit" className="admin-btn secondary">
                 {t.common.update}
               </button>
             </form>
-          ) : null}
+
+            {order.fulfillment === "delivery" ? (
+              <form
+                action={updateDeliveryBookingAction}
+                style={{ marginTop: 20 }}
+              >
+                <h3 style={{ fontSize: 16 }}>{t.orders.deliveryOps}</h3>
+                <input type="hidden" name="orderId" value={order.id} />
+                <input
+                  type="hidden"
+                  name="provider"
+                  value={order.deliveryBooking?.provider || "grab_manual"}
+                />
+                <p style={{ fontSize: 13, marginBottom: 8 }}>
+                  {t.orders.deliveryStatus}
+                </p>
+                <div className="admin-choice-row" style={{ marginBottom: 12 }}>
+                  {DELIVERY_BOOKING_STATUSES.map((status) => {
+                    const current =
+                      order.deliveryBooking?.status || "awaiting_arrangement";
+                    return (
+                      <label
+                        key={status}
+                        className={`admin-choice${
+                          current === status ? " on" : ""
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="status"
+                          value={status}
+                          defaultChecked={current === status}
+                        />
+                        {deliveryBookingStatusLabel(status, loc)}
+                      </label>
+                    );
+                  })}
+                </div>
+                <label className="admin-field">
+                  <span>{t.orders.bookingRef}</span>
+                  <input
+                    name="bookingRef"
+                    defaultValue={order.deliveryBooking?.bookingRef || ""}
+                  />
+                </label>
+                <label className="admin-field">
+                  <span>{t.orders.courier}</span>
+                  <input
+                    name="courierName"
+                    defaultValue={order.deliveryBooking?.courierName || ""}
+                  />
+                </label>
+                <label className="admin-field">
+                  <span>{t.orders.courierPhone}</span>
+                  <input
+                    name="courierPhone"
+                    defaultValue={order.deliveryBooking?.courierPhone || ""}
+                  />
+                </label>
+                <label className="admin-field">
+                  <span>{t.orders.actualCost}</span>
+                  <input
+                    name="actualCost"
+                    defaultValue={order.deliveryBooking?.actualCost ?? ""}
+                  />
+                </label>
+                <label className="admin-field">
+                  <span>{t.orders.notes}</span>
+                  <input
+                    name="notes"
+                    defaultValue={order.deliveryBooking?.notes || ""}
+                  />
+                </label>
+                <button type="submit" className="admin-btn secondary">
+                  {t.common.update}
+                </button>
+              </form>
+            ) : null}
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="admin-card" style={{ marginTop: 16 }}>
         <h2 style={{ fontFamily: "serif", marginTop: 0 }}>Timeline</h2>
@@ -494,10 +611,16 @@ export default async function AdminOrderDetailPage({
             <li key={h.id}>
               {h.createdAt.toLocaleString(loc === "vi" ? "vi-VN" : "en-GB")} ·{" "}
               {h.fromStatus
-                ? shopOrderStatusLabel(h.fromStatus, loc)
+                ? isStudio
+                  ? studioStatusLabel(h.fromStatus, loc)
+                  : shopOrderStatusLabel(h.fromStatus, loc)
                 : "—"}{" "}
               →{" "}
-              <strong>{shopOrderStatusLabel(h.toStatus, loc)}</strong>
+              <strong>
+                {isStudio
+                  ? studioStatusLabel(h.toStatus, loc)
+                  : shopOrderStatusLabel(h.toStatus, loc)}
+              </strong>
               {h.note ? ` · ${h.note}` : ""} · {h.actor}
             </li>
           ))}
