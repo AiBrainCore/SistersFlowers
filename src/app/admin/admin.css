@@ -1491,13 +1491,37 @@
 
 /** Keep qty/price, buyer/phone, date/time as two columns even on phones. */
 .studio-form .admin-grid-2 {
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 8px;
 }
 
 .studio-form .admin-grid-2 .admin-field {
   margin-bottom: 0;
   min-width: 0;
+  max-width: 100%;
+}
+
+/* iOS native date/select pills overflow half-width cells — keep them inside. */
+.studio-form .admin-grid-2 .admin-field input,
+.studio-form .admin-grid-2 .admin-field select {
+  min-width: 0;
+  max-width: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 8px;
+}
+
+.studio-form .admin-grid-2 .admin-field input[type="date"] {
+  padding-inline: 6px 4px;
+  font-size: 15px;
+}
+
+.studio-datetime-row {
+  overflow: hidden;
+}
+
+.studio-datetime-row .admin-field {
+  overflow: hidden;
 }
 
 .studio-sticky {

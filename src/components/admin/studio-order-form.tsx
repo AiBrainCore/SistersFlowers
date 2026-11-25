@@ -369,7 +369,7 @@ export function StudioOrderForm({
             {t.studio.tomorrow}
           </button>
         </div>
-        <div className="admin-grid-2">
+        <div className="admin-grid-2 studio-datetime-row">
           <label className="admin-field">
             <span>{t.studio.date}</span>
             <input
