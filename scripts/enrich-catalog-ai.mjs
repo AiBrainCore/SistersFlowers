@@ -173,7 +173,9 @@ async function generateCopy(apiKey, analysis, keywords) {
         "You write bilingual product copy for Sisters Flowers (Da Lat & Da Nang). " +
         "Vietnamese first, natural shopping language. English independently localized (not literal). " +
         "Never invent stem counts, sizes, delivery promises, or flower species not in analysis. " +
-        "Avoid keyword stuffing. Return JSON only.",
+        "Avoid keyword stuffing. Return JSON only. " +
+        "nameEn/nameVi must be unique descriptive shop titles (e.g. White rose sympathy wreath) — " +
+        "NEVER placeholders like Condolence stand 001, Bouquet 012, Flower basket 003.",
     },
     {
       role: "user",
@@ -183,8 +185,8 @@ async function generateCopy(apiKey, analysis, keywords) {
         keywordNote:
           "Keywords are market terminology, not verified search volumes.",
         required: {
-          nameVi: "natural Vietnamese product name",
-          nameEn: "English product name",
+          nameVi: "natural Vietnamese product name (no numbers-only suffix)",
+          nameEn: "English product name (descriptive, not Type ###)",
           tagVi: "short VI tag ≤6 words",
           tagEn: "short EN tag ≤6 words",
           blurbVi: "1–2 sentences VI",
@@ -465,10 +467,18 @@ async function main() {
                     : product.accent,
         };
 
-        if (APPLY && canApplyCopy(product)) {
+        const wantApply = APPLY && canApplyCopy(product);
+        if (wantApply) {
+          const nextNameEn = String(copy.nameEn || "").trim();
+          const nextNameVi = String(copy.nameVi || "").trim();
+          if (!nextNameEn || !nextNameVi || isPlaceholderName(nextNameEn)) {
+            throw new Error(
+              `AI copy unusable (nameEn="${nextNameEn || ""}") — retry needed`,
+            );
+          }
           Object.assign(data, {
-            nameEn: copy.nameEn || product.nameEn,
-            nameVi: copy.nameVi || product.nameVi,
+            nameEn: nextNameEn,
+            nameVi: nextNameVi,
             tagEn: copy.tagEn || product.tagEn,
             tagVi: copy.tagVi || product.tagVi,
             blurbEn: copy.blurbEn || product.blurbEn,
@@ -490,8 +500,12 @@ async function main() {
       }
 
       done++;
+      const applied =
+        APPLY &&
+        canApplyCopy(product) &&
+        !isPlaceholderName(String(copy?.nameEn || "").trim());
       console.log(
-        `${label}: ok conf=${a.confidence ?? "?"} apply=${APPLY && canApplyCopy(product)}`,
+        `${label}: ok conf=${a.confidence ?? "?"} apply=${applied}`,
       );
     } catch (err) {
       failed++;
