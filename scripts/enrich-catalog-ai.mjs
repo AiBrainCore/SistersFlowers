@@ -11,6 +11,8 @@
  *   ENRICH_FORCE=1 …   # re-analyze even if imageHash matches
  *   ENRICH_PRODUCT_TYPE=flower-basket   # optional; default bouquet
  *   ENRICH_PRODUCT_TYPE=all             # every published type
+ *   ENRICH_ONLY_NEW=1                   # skip already enriched (default on)
+ *   ENRICH_ONLY_NEW=0                   # re-process every published product
  *
  * Never overwrites contentLocked or contentSource=manual products' copy.
  * Placeholder names (Bouquet/Flower basket/… NNN) are eligible when ENRICH_APPLY=1.
@@ -33,6 +35,21 @@ const MODEL_VISION = process.env.ENRICH_VISION_MODEL || "gpt-4o-mini";
 const MODEL_COPY = process.env.ENRICH_COPY_MODEL || "gpt-4o-mini";
 const CONCURRENCY = Number(process.env.ENRICH_CONCURRENCY || 2);
 const PRODUCT_TYPE = (process.env.ENRICH_PRODUCT_TYPE || "bouquet").trim();
+/** Default: only placeholders / pending / failed — not the whole old catalog. */
+const ONLY_NEW = process.env.ENRICH_ONLY_NEW !== "0";
+
+function needsEnrichment(product) {
+  if (FORCE) return true;
+  if (isPlaceholderName(product.nameEn)) return true;
+  if (product.contentSource === "import" && product.aiStatus === "pending") {
+    return true;
+  }
+  if (product.aiStatus === "error" || product.aiStatus === "pending") {
+    return true;
+  }
+  if (!product.analysis) return true;
+  return false;
+}
 
 async function loadEnvFile(filePath) {
   try {
@@ -253,6 +270,10 @@ async function main() {
     orderBy: { nameEn: "asc" },
     include: { analysis: true },
   });
+  const beforeFilter = products.length;
+  if (ONLY_NEW) {
+    products = products.filter(needsEnrichment);
+  }
   if (LIMIT) products = products.slice(0, LIMIT);
 
   const job = DRY_RUN
@@ -266,7 +287,7 @@ async function main() {
       });
 
   console.log(
-    `Enrich ${products.length} products (type=${PRODUCT_TYPE} apply=${APPLY} dry=${DRY_RUN} force=${FORCE})`,
+    `Enrich ${products.length} products (type=${PRODUCT_TYPE} apply=${APPLY} dry=${DRY_RUN} force=${FORCE} onlyNew=${ONLY_NEW}; scanned ${beforeFilter})`,
   );
 
   const usageAccum = { prompt_tokens: 0, completion_tokens: 0 };
