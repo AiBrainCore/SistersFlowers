@@ -131,6 +131,9 @@ export default async function AdminStudioOrdersPage({
       <p style={{ maxWidth: 640, opacity: 0.8, marginTop: 0 }}>{t.studio.intro}</p>
 
       <div className="admin-studio-toolbar">
+        <Link href="/admin/orders" className="admin-btn secondary">
+          {t.orders.title}
+        </Link>
         <Link href="/admin/studio-orders/new" className="admin-btn">
           {t.studio.new}
         </Link>
@@ -295,6 +298,18 @@ export default async function AdminStudioOrdersPage({
                 </div>
 
                 <div className="admin-studio-order-actions">
+                  <Link
+                    href={`/admin/orders/${order.id}`}
+                    className="admin-btn secondary admin-btn-sm"
+                  >
+                    {t.orders.open}
+                  </Link>
+                  <Link
+                    href={`/admin/orders/${order.id}/edit`}
+                    className="admin-btn secondary admin-btn-sm"
+                  >
+                    {t.common.edit}
+                  </Link>
                   {order.paymentStatus === "unpaid" ||
                   order.paymentStatus === "deposit" ||
                   order.paymentStatus === "cod" ? (

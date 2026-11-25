@@ -9,16 +9,43 @@ import {
   shopOrderStatusLabel,
 } from "@/lib/payments/order-status-labels";
 
+type SourceFilter = "all" | "shop" | "studio";
+
+function studioStatusLabel(status: string, locale: "en" | "vi") {
+  const map: Record<string, { en: string; vi: string }> = {
+    new: { en: "New", vi: "Mới" },
+    making: { en: "Making", vi: "Đang làm" },
+    ready: { en: "Ready", vi: "Sẵn sàng" },
+    delivered: { en: "Delivered", vi: "Đã giao" },
+    cancelled: { en: "Cancelled", vi: "Huỷ" },
+  };
+  const row = map[status];
+  if (!row) return status;
+  return locale === "vi" ? row.vi : row.en;
+}
+
 export default async function AdminOrdersPage({
   searchParams,
 }: {
-  searchParams: Promise<{ paid?: string; delivery?: string }>;
+  searchParams: Promise<{
+    paid?: string;
+    delivery?: string;
+    source?: string;
+    saved?: string;
+  }>;
 }) {
   const { locale, t } = await getAdminT();
   const loc = locale === "en" ? "en" : "vi";
-  const { paid, delivery } = await searchParams;
+  const { paid, delivery, source: sourceRaw, saved } = await searchParams;
+
+  const sourceFilter: SourceFilter =
+    sourceRaw === "shop" || sourceRaw === "studio" ? sourceRaw : "all";
+
   const orders = await prisma.order.findMany({
-    where: { source: "shop" },
+    where:
+      sourceFilter === "all"
+        ? undefined
+        : { source: sourceFilter },
     include: {
       items: true,
       paymentIntents: { orderBy: { createdAt: "desc" }, take: 1 },
@@ -26,11 +53,56 @@ export default async function AdminOrdersPage({
       branch: { include: { city: true } },
     },
     orderBy: { createdAt: "desc" },
+    take: 200,
   });
+
+  function sourceHref(next: SourceFilter) {
+    if (next === "all") return "/admin/orders";
+    return `/admin/orders?source=${next}`;
+  }
+
+  const sourceChips: { id: SourceFilter; label: string }[] = [
+    { id: "all", label: t.orders.sourceAll },
+    { id: "shop", label: t.orders.sourceWeb },
+    { id: "studio", label: t.orders.sourceStudio },
+  ];
 
   return (
     <AdminShell title={t.orders.title}>
-      {paid || delivery ? (
+      <div
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          gap: 10,
+          marginBottom: 16,
+          alignItems: "center",
+        }}
+      >
+        <Link href="/admin/studio-orders" className="admin-btn secondary">
+          {t.orders.dayBoard}
+        </Link>
+        <Link href="/admin/studio-orders/new" className="admin-btn">
+          {t.orders.newStudio}
+        </Link>
+      </div>
+
+      <div className="admin-studio-status-filters" style={{ marginBottom: 16 }}>
+        {sourceChips.map((chip) => (
+          <Link
+            key={chip.id}
+            href={sourceHref(chip.id)}
+            className={
+              sourceFilter === chip.id
+                ? "admin-studio-status-chip on"
+                : "admin-studio-status-chip"
+            }
+          >
+            {chip.label}
+          </Link>
+        ))}
+      </div>
+
+      {paid || delivery || saved ? (
         <p style={{ marginBottom: 16, color: "#5c6b52" }}>{t.common.saved}</p>
       ) : null}
 
@@ -42,6 +114,7 @@ export default async function AdminOrdersPage({
         <div style={{ display: "grid", gap: 12 }}>
           {orders.map((order) => {
             const intent = order.paymentIntents[0];
+            const isStudio = order.source === "studio";
             const city =
               loc === "vi"
                 ? order.branch?.city.nameVi || order.branch?.city.nameEn
@@ -63,6 +136,12 @@ export default async function AdminOrdersPage({
                     .filter(Boolean)
                     .join(" · ")
                 : null;
+            const code = isStudio
+              ? order.saleCode || order.reference
+              : order.reference;
+            const statusLabel = isStudio
+              ? studioStatusLabel(order.status, loc)
+              : shopOrderStatusLabel(order.status, loc);
 
             return (
               <article key={order.id} className="admin-card admin-order-row">
@@ -84,8 +163,21 @@ export default async function AdminOrdersPage({
                         color: "inherit",
                       }}
                     >
-                      {order.reference}
+                      {code}
                     </Link>
+                    <span
+                      style={{
+                        fontSize: 11,
+                        fontWeight: 600,
+                        letterSpacing: "0.04em",
+                        textTransform: "uppercase",
+                        opacity: 0.55,
+                      }}
+                    >
+                      {isStudio
+                        ? t.orders.sourceStudio
+                        : t.orders.sourceWeb}
+                    </span>
                     <span style={{ fontSize: 12, opacity: 0.55 }}>
                       {order.createdAt.toLocaleString(
                         loc === "vi" ? "vi-VN" : "en-GB",
@@ -170,7 +262,7 @@ export default async function AdminOrdersPage({
                   </p>
                   <p>
                     <span>{t.orders.orderStatus}</span>
-                    <strong>{shopOrderStatusLabel(order.status, loc)}</strong>
+                    <strong>{statusLabel}</strong>
                   </p>
                   {order.fulfillment === "delivery" && order.deliveryBooking ? (
                     <p>
@@ -202,7 +294,13 @@ export default async function AdminOrdersPage({
                     >
                       {t.orders.open}
                     </Link>
-                    {order.paymentStatus !== "paid" ? (
+                    <Link
+                      href={`/admin/orders/${order.id}/edit`}
+                      className="admin-btn secondary admin-btn-sm"
+                    >
+                      {t.common.edit}
+                    </Link>
+                    {!isStudio && order.paymentStatus !== "paid" ? (
                       <form action={confirmShopPaymentAction}>
                         <input type="hidden" name="orderId" value={order.id} />
                         {intent ? (
@@ -224,7 +322,6 @@ export default async function AdminOrdersPage({
           })}
         </div>
       )}
-
     </AdminShell>
   );
 }
