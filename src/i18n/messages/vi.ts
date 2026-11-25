@@ -93,7 +93,7 @@ export const vi = {
     openBouquet: "Xem bó này",
     featureDelivery: "Giao trong ngày",
     featureFresh: "Ảnh trước khi giao",
-    featureHandcrafted: "Xác nhận WhatsApp",
+    featureHandcrafted: "Xác nhận Zalo",
   },
   heroPreview: {
     badge: "Gói tay tỉ mỉ",
@@ -424,7 +424,7 @@ export const vi = {
     kicker: "Giao hoa theo khoảng cách",
     title: "Chọn khu vực. Thấy phí ngay.",
     intro:
-      "Chọn khu {city} gần người nhận — chúng tôi ước tính từ studio. Giao trong ngày khi hoa và sức chứa cho phép; giờ cụ thể xác nhận trên WhatsApp.",
+      "Chọn khu {city} gần người nhận — chúng tôi ước tính từ studio. Giao trong ngày khi hoa và sức chứa cho phép; giờ cụ thể xác nhận trên Zalo (hoặc WhatsApp cho khách nước ngoài).",
     calculatorKicker: "Khu vực giao",
     calculatorTitle: "Bó hoa giao tới đâu?",
     calculatorBody:
@@ -445,13 +445,13 @@ export const vi = {
     guideFar: "Giao đúng giờ cho sự kiện và bàn tiệc ngoại ô — nên đặt trước.",
     promisePhotoTitle: "Ảnh trước khi giao",
     promisePhotoBody:
-      "Thường gửi ảnh bó hoàn thiện qua WhatsApp trước khi rời studio.",
+      "Thường gửi ảnh bó hoàn thiện qua Zalo (hoặc WhatsApp cho khách nước ngoài) trước khi rời studio.",
     promiseSlaTitle: "Giờ giao rõ ràng",
     promiseSlaBody:
       "Chọn ngày và khung giờ mong muốn. Chúng tôi xác nhận khả năng trong ngày tại {city}.",
     promisePayTitle: "Xác nhận rồi mới trả",
     promisePayBody:
-      "Không phí ẩn. Tổng cuối và cách thanh toán thỏa thuận trên WhatsApp trước khi bạn trả.",
+      "Không phí ẩn. Tổng cuối xác nhận với bạn trên Zalo (hoặc WhatsApp cho khách nước ngoài) trước khi bạn trả.",
     shopCta: "Xem bó hoa",
     checkoutCta: "Tới đặt hàng",
   },
@@ -521,7 +521,7 @@ export const vi = {
     methodsTitle: "Phương thức thanh toán",
     comingSoon: "Sắp có",
     noneActive:
-      "Thanh toán online đang cấu hình — bạn vẫn có thể đặt và xác nhận qua WhatsApp.",
+      "Thanh toán online đang cấu hình — bạn vẫn có thể đặt và xác nhận qua Zalo hoặc WhatsApp.",
     payTitle: "Thanh toán đơn hàng",
     amount: "Số tiền",
     transferRef: "Nội dung chuyển khoản",
@@ -546,10 +546,10 @@ export const vi = {
     kicker: "Liên hệ",
     title: "Nhắn studio.",
     intro:
-      "Hai studio Sisters Flowers tại Đà Nẵng và Đà Lạt — gọi điện, nhắn Messenger hoặc WhatsApp, theo dõi Facebook và TikTok. English và tiếng Việt đều được chào đón.",
+      "Hai studio Sisters Flowers tại Đà Nẵng và Đà Lạt — gọi điện hoặc nhắn Zalo (chính cho khách Việt), WhatsApp cho khách nước ngoài, hoặc theo dõi Facebook và TikTok. Tiếng Việt và English đều được chào đón.",
     phonesLabel: "Điện thoại",
     socialLabel: "Nhắn tin cho chúng tôi",
-    chatHint: "Nhắn tin cho studio",
+    chatHint: "Ưu tiên Zalo tại Việt Nam — WhatsApp cho khách nước ngoài",
     facebook: "Facebook",
     messenger: "Messenger",
     tiktok: "TikTok",
