@@ -240,13 +240,33 @@ function pickKeywords(analysis) {
 async function main() {
   await loadEnvFile(path.join(ROOT, ".env.local"));
   await loadEnvFile(path.join(ROOT, "secrets", "supabase.env"));
-  await loadEnvFile(path.join(ROOT, "secrets", "openai.env"));
+  const openaiEnvPath = path.join(ROOT, "secrets", "openai.env");
+  const openaiExamplePath = path.join(ROOT, "secrets", "openai.env.example");
+  await loadEnvFile(openaiEnvPath);
 
-  const apiKey = process.env.OPENAI_API_KEY || "";
-  if (!apiKey) {
-    console.error(
-      "Missing OPENAI_API_KEY. Add secrets/openai.env or set env, then re-run.",
-    );
+  const apiKey = (process.env.OPENAI_API_KEY || "").trim();
+  const placeholder =
+    !apiKey ||
+    apiKey === "sk-..." ||
+    apiKey === "REPLACE_WITH_REAL_KEY" ||
+    apiKey.startsWith("sk-...");
+  let openaiEnvExists = false;
+  try {
+    await fs.stat(openaiEnvPath);
+    openaiEnvExists = true;
+  } catch {
+    openaiEnvExists = false;
+  }
+  if (!apiKey || placeholder) {
+    console.error("OpenAI key missing or still a placeholder.");
+    console.error(`  Use ONLY:  ${openaiEnvPath}`);
+    console.error(`  NOT:       ${openaiExamplePath}  (template in git — never put the real key there)`);
+    if (!openaiEnvExists) {
+      console.error("  Create:    cp secrets/openai.env.example secrets/openai.env");
+      console.error("  Then edit: open -e secrets/openai.env");
+    } else {
+      console.error("  Edit:      open -e secrets/openai.env");
+    }
     process.exit(2);
   }
 
