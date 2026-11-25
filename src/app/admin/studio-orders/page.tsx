@@ -295,20 +295,28 @@ export default async function AdminStudioOrdersPage({
                 </div>
 
                 <div className="admin-studio-order-actions">
-                  {order.paymentStatus === "unpaid" ? (
+                  {order.paymentStatus === "unpaid" ||
+                  order.paymentStatus === "deposit" ||
+                  order.paymentStatus === "cod" ? (
                     <>
-                      <form action={markStudioPaymentAction}>
-                        <input type="hidden" name="id" value={order.id} />
-                        <input type="hidden" name="day" value={returnDay} />
-                        <input type="hidden" name="status" value={returnStatus} />
-                        <input type="hidden" name="mode" value="deposit" />
-                        <button
-                          type="submit"
-                          className="admin-btn secondary admin-btn-sm"
-                        >
-                          {t.studio.markDeposit}
-                        </button>
-                      </form>
+                      {order.paymentStatus === "unpaid" ? (
+                        <form action={markStudioPaymentAction}>
+                          <input type="hidden" name="id" value={order.id} />
+                          <input type="hidden" name="day" value={returnDay} />
+                          <input
+                            type="hidden"
+                            name="status"
+                            value={returnStatus}
+                          />
+                          <input type="hidden" name="mode" value="deposit" />
+                          <button
+                            type="submit"
+                            className="admin-btn secondary admin-btn-sm"
+                          >
+                            {t.studio.markDeposit}
+                          </button>
+                        </form>
+                      ) : null}
                       <form action={markStudioPaymentAction}>
                         <input type="hidden" name="id" value={order.id} />
                         <input type="hidden" name="day" value={returnDay} />
