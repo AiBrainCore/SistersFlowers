@@ -1417,7 +1417,7 @@
 
 .studio-photo-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 8px;
   margin-bottom: 10px;
 }
@@ -1428,6 +1428,7 @@
   border-radius: 12px;
   overflow: hidden;
   background: #eee;
+  min-height: 72px;
 }
 
 .studio-photo img {
@@ -1437,25 +1438,66 @@
   display: block;
 }
 
-.studio-photo button {
+.studio-photo-remove {
   position: absolute;
   top: 4px;
   right: 4px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 28px;
   height: 28px;
   border: 0;
   border-radius: 999px;
-  background: rgba(0, 0, 0, 0.55);
+  background: rgba(0, 0, 0, 0.62);
   color: #fff;
+  font-size: 18px;
+  line-height: 1;
   cursor: pointer;
 }
 
-.studio-photo-btn {
-  display: inline-flex;
+.studio-photo-add {
+  display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 100%;
+  gap: 4px;
+  border: 1px dashed rgba(31, 42, 36, 0.22);
+  background: #fffdf8;
+  color: #5c574f;
+  cursor: pointer;
+  text-align: center;
+  padding: 6px;
   box-sizing: border-box;
+}
+
+.studio-photo-add > span:first-child {
+  font-size: 22px;
+  line-height: 1;
+  color: #b0542c;
+}
+
+.studio-photo-add-label {
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+  max-width: 100%;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/** Keep qty/price, buyer/phone, date/time as two columns even on phones. */
+.studio-form .admin-grid-2 {
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.studio-form .admin-grid-2 .admin-field {
+  margin-bottom: 0;
+  min-width: 0;
 }
 
 .studio-sticky {
@@ -1827,6 +1869,14 @@
   .admin-grid-3,
   .admin-party-grid {
     grid-template-columns: 1fr;
+  }
+
+  .studio-form .admin-grid-2 {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .studio-photo-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
   .admin-dash-grid {

@@ -135,6 +135,12 @@ export function StudioOrderForm({
     );
   }
 
+  function isImageFile(file: File) {
+    if (file.type.startsWith("image/")) return true;
+    // iPhone often sends HEIC with an empty MIME type
+    return /\.(jpe?g|png|webp|gif|heic|heif)$/i.test(file.name);
+  }
+
   function addLinePhotos(key: string, files: FileList | null) {
     if (!files?.length) return;
     setLines((prev) =>
@@ -144,7 +150,7 @@ export function StudioOrderForm({
         const previews = [...line.previews];
         for (const file of Array.from(files)) {
           if (photos.length >= 4) break;
-          if (!file.type.startsWith("image/")) continue;
+          if (!isImageFile(file)) continue;
           photos.push(file);
           previews.push(URL.createObjectURL(file));
         }
@@ -279,11 +285,12 @@ export function StudioOrderForm({
               <p className="studio-photos-hint">{t.studio.itemPhotosHint}</p>
               <div className="studio-photo-grid">
                 {line.previews.map((src, i) => (
-                  <div key={src} className="studio-photo">
+                  <div key={`${line.key}-photo-${i}`} className="studio-photo">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={src} alt="" />
                     <button
                       type="button"
+                      className="studio-photo-remove"
                       onClick={() => removeLinePhoto(line.key, i)}
                       aria-label="Remove"
                     >
@@ -291,22 +298,25 @@ export function StudioOrderForm({
                     </button>
                   </div>
                 ))}
+                {line.photos.length < 4 ? (
+                  <label className="studio-photo studio-photo-add">
+                    <span aria-hidden>+</span>
+                    <span className="studio-photo-add-label">
+                      {t.studio.addPhotos}
+                    </span>
+                    <input
+                      type="file"
+                      accept="image/*,.heic,.heif"
+                      multiple
+                      hidden
+                      onChange={(e) => {
+                        addLinePhotos(line.key, e.target.files);
+                        e.target.value = "";
+                      }}
+                    />
+                  </label>
+                ) : null}
               </div>
-              {line.photos.length < 4 ? (
-                <label className="admin-btn secondary studio-photo-btn">
-                  {t.studio.addPhotos}
-                  <input
-                    type="file"
-                    accept="image/jpeg,image/png,image/webp"
-                    multiple
-                    hidden
-                    onChange={(e) => {
-                      addLinePhotos(line.key, e.target.files);
-                      e.target.value = "";
-                    }}
-                  />
-                </label>
-              ) : null}
             </div>
           </div>
         ))}

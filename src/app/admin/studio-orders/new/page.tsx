@@ -15,6 +15,7 @@ export default async function AdminNewStudioOrderPage({
 
   const branches = await prisma.branch.findMany({
     where: { status: "open" },
+    include: { city: true },
     orderBy: [{ sortOrder: "asc" }, { nameEn: "asc" }],
   });
 
@@ -32,8 +33,9 @@ export default async function AdminNewStudioOrderPage({
         error={error}
         branches={branches.map((b) => ({
           id: b.id,
-          nameEn: b.nameEn,
-          nameVi: b.nameVi,
+          // City label only — “Sisters Flowers …” is redundant in admin.
+          nameEn: b.city.nameEn,
+          nameVi: b.city.nameVi,
           slug: b.slug,
         }))}
       />
